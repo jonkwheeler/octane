@@ -28,7 +28,7 @@ The pinned repository contains seven runtime suites plus four support files unde
 | `test/TransitionGroup-test.js` | Pristine oracle + adapted in `tests/upstream/TransitionGroup.test.ts` (StrictMode double-appear is divergence `react-transition-group-no-strict-double-appear`) |
 | `test/SwitchTransition-test.js` | Pristine oracle + adapted in `tests/upstream/SwitchTransition.test.ts` |
 | `test/ChildMapping-test.js` | Pristine oracle + adapted in `tests/upstream/ChildMapping.test.ts` |
-| `test/SSR-test.js` | Pristine oracle + adapted import/server coverage in `tests/ssr/server.test.ts` |
+| `test/SSR-test.js` | Pristine oracle + adapted in `tests/ssr/upstream-import.test.ts` |
 | `test/setup.js`, `setupAfterEnv.js`, `utils.js`, `.eslintrc.yml` | Support artifacts for the pristine Jest runner |
 
 ## Public surface
