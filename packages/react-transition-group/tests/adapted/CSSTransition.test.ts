@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, mount } from '../../../octane/tests/_helpers.ts';
-import { CSSHarness, type CSSHarnessProps } from './_fixtures.tsrx';
+import {
+	CSSHarness,
+	ReenterFactoryHarness,
+	type CSSHarnessProps,
+	type ReenterFactoryHarnessProps,
+} from './_fixtures.tsrx';
 
 function createCSS(overrides: Partial<CSSHarnessProps> = {}) {
 	const trace: string[] = [];
@@ -182,19 +187,50 @@ describe('CSSTransition', function cssTransitionSuite() {
 
 	describe('reentering', function reenteringSuite() {
 		it('should remove dynamically applied classes', async function dynamicClasses() {
-			const result = createCSS({ classNames: 'down' });
-			await act(function enter() {
-				toggle(result.view.container);
+			let count = 0;
+			const view = mount(ReenterFactoryHarness, {
+				direction: 'down',
+				text: 'foo',
+			} satisfies ReenterFactoryHarnessProps);
+
+			await act(function toBar() {
+				view.update(ReenterFactoryHarness, {
+					direction: 'up',
+					text: 'bar',
+					onEnter: function onEnter(className) {
+						count += 1;
+						expect(className).toBe('up-enter');
+					},
+					onEntering: function onEntering(className) {
+						count += 1;
+						expect(className).toBe('up-enter up-enter-active');
+					},
+				});
+			});
+			await act(function finishBar() {
 				vi.runAllTimers();
 			});
-			expect(node(result.view.container).className).toBe('down-enter-done');
-			await act(function exit() {
-				toggle(result.view.container);
+			expect(count).toBe(2);
+
+			await act(function toFoo() {
+				view.update(ReenterFactoryHarness, {
+					direction: 'down',
+					text: 'foo',
+					onEntering: function onEntering(className) {
+						count += 1;
+						expect(className).toBe('down-enter down-enter-active');
+					},
+					onEntered: function onEntered(className) {
+						count += 1;
+						expect(className).toBe('down-enter-done');
+					},
+				});
+			});
+			await act(function finishFoo() {
 				vi.runAllTimers();
 			});
-			expect(node(result.view.container).className).toBe('down-exit-done');
-			expect(node(result.view.container).className).not.toContain('down-enter');
-			result.view.unmount();
+			expect(count).toBe(4);
+			view.unmount();
 		});
 	});
 });

@@ -5,6 +5,7 @@ import {
 	GroupHarness,
 	GroupShapeHarness,
 	NullRenderingGroupHarness,
+	UnmountedAppearHarness,
 } from './_fixtures.tsrx';
 
 function items(container: HTMLElement) {
@@ -24,6 +25,7 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 	});
 
 	it('should clean-up silently after the timeout elapses', async function cleanUp() {
+		const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(function noop() {});
 		const result = mount(GroupHarness, { trace: [] });
 		await act(function replace() {
 			click(result.container, '#group-replace');
@@ -32,8 +34,10 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 		await act(function finish() {
 			vi.runAllTimers();
 		});
+		expect(consoleErrorSpy).not.toHaveBeenCalled();
 		expect(items(result.container)).toHaveLength(1);
 		expect(items(result.container)[0].getAttribute('data-group-item')).toBe('two');
+		consoleErrorSpy.mockRestore();
 		result.unmount();
 	});
 
@@ -132,15 +136,12 @@ describe('CSSTransitionGroup', function cssTransitionGroupSuite() {
 	});
 
 	it('should handle unmounted elements properly', async function unmountedElements() {
-		const result = mount(GroupHarness, { trace: [] });
-		await act(function clear() {
-			click(result.container, '#group-clear');
-		});
-		result.unmount();
+		const result = mount(UnmountedAppearHarness);
 		await act(function finish() {
 			vi.runAllTimers();
 		});
 		expect(vi.getTimerCount()).toBe(0);
+		result.unmount();
 	});
 
 	it('should work with custom component wrapper cloning children', function customWrapper() {

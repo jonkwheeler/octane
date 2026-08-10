@@ -1,4 +1,11 @@
-import { cloneElement, useRef, useState, type ElementDescriptor, type OctaneNode } from 'octane';
+import {
+	cloneElement,
+	useLayoutEffect,
+	useRef,
+	useState,
+	type ElementDescriptor,
+	type OctaneNode,
+} from 'octane';
 import {
 	CSSTransition,
 	SwitchTransition,
@@ -154,6 +161,7 @@ export interface GroupHarnessProps {
 	initialItems?: string[];
 	initialExit?: boolean;
 	enter?: boolean;
+	appear?: boolean;
 }
 
 export function GroupHarness(props: GroupHarnessProps) @{
@@ -179,14 +187,20 @@ export function GroupHarness(props: GroupHarnessProps) @{
 	const children: ElementDescriptor[] = [];
 	for (const id of items) {
 		const nodeRef = { current: null } as { current: HTMLSpanElement | null };
-		function entered() {
-			props.trace.push('entered:' + id);
+		function onEnter(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appear:' : 'enter:') + id);
 		}
-		function entering() {
-			props.trace.push('entering:' + id);
+		function onEntering(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appearing:' : 'entering:') + id);
 		}
-		function enter() {
-			props.trace.push('enter:' + id);
+		function onEntered(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appeared:' : 'entered:') + id);
 		}
 		function exiting() {
 			props.trace.push('exiting:' + id);
@@ -203,9 +217,9 @@ export function GroupHarness(props: GroupHarnessProps) @{
 				nodeRef={nodeRef}
 				timeout={10}
 				classNames="yolo"
-				onEnter={enter}
-				onEntering={entering}
-				onEntered={entered}
+				onEnter={onEnter}
+				onEntering={onEntering}
+				onEntered={onEntered}
 				onExit={exit}
 				onExiting={exiting}
 				onExited={exited}
@@ -220,12 +234,22 @@ export function GroupHarness(props: GroupHarnessProps) @{
 		<button id="group-one" onClick={showOne}>{'one'}</button>
 		<button id="group-clear" onClick={clear}>{'clear'}</button>
 		<button id="group-enable-exit" onClick={enableExit}>{'enable exit'}</button>
-		<TransitionGroup enter={props.enter} exit={exitEnabled} children={children} />
+		<TransitionGroup
+			appear={props.appear}
+			enter={props.enter}
+			exit={exitEnabled}
+			children={children}
+		/>
 	</main>
 }
 
 function NullChild() {
 	return null;
+}
+
+function AppearToggleChild(props: { show: boolean }) {
+	if (!props.show) return null;
+	return <div data-unmounted-appear={'yes'} />;
 }
 
 export function NullRenderingGroupHarness(props: { trace: string[] }) @{
@@ -254,6 +278,68 @@ export function NullRenderingGroupHarness(props: { trace: string[] }) @{
 		<button id="null-group-show" onClick={show}>{'show'}</button>
 		<button id="null-group-hide" onClick={hide}>{'hide'}</button>
 		<TransitionGroup children={children} />
+	</main>
+}
+
+export interface ReenterFactoryHarnessProps {
+	direction: string;
+	text: string;
+	onEnter?: (className: string) => void;
+	onEntering?: (className: string) => void;
+	onEntered?: (className: string) => void;
+}
+
+export function ReenterFactoryHarness(props: ReenterFactoryHarnessProps) @{
+	const fooRef = useRef<HTMLSpanElement | null>(null);
+	const barRef = useRef<HTMLSpanElement | null>(null);
+	const nodeRef = props.text === 'bar' ? barRef : fooRef;
+	function childFactory(child: ElementDescriptor) {
+		return cloneElement(child, { classNames: props.direction });
+	}
+	function onEnter() {
+		props.onEnter?.(nodeRef.current?.className ?? '');
+	}
+	function onEntering() {
+		props.onEntering?.(nodeRef.current?.className ?? '');
+	}
+	function onEntered() {
+		props.onEntered?.(nodeRef.current?.className ?? '');
+	}
+	const child = (
+		<CSSTransition
+			key={props.text}
+			timeout={10}
+			classNames={props.direction}
+			nodeRef={nodeRef}
+			onEnter={onEnter}
+			onEntering={onEntering}
+			onEntered={onEntered}
+		>
+			<span ref={nodeRef} data-reenter={props.text}>{props.text as string}</span>
+		</CSSTransition>
+	);
+	<main data-reenter-root="">
+		<TransitionGroup component={null} childFactory={childFactory} children={[child]} />
+	</main>
+}
+
+/**
+ * Upstream "should handle unmounted elements properly": TransitionGroup stays
+ * mounted with appear while a child flips from a DOM node to null mid-lifecycle.
+ */
+export function UnmountedAppearHarness() @{
+	const [showChild, setShowChild] = useState(true);
+	useLayoutEffect(function hideOnMount() {
+		setShowChild(false);
+	}, []);
+	const nodeRef = useRef<HTMLDivElement | null>(null);
+	const child = (
+		<CSSTransition key="child" appear timeout={10} classNames="yolo" nodeRef={nodeRef}>
+			<AppearToggleChild show={showChild} />
+		</CSSTransition>
+	);
+	<main>
+		<TransitionGroup appear={true} children={[child]} />
 	</main>
 }
 
@@ -289,10 +375,28 @@ export function SwitchNullableHarness(props: {
 	let child: ElementDescriptor | null = null;
 	if (mode !== 'none') {
 		const id = mode;
-		function entered() {
-			props.trace.push('entered:' + id);
+		function onEnter(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appear:' : 'enter:') + id);
 		}
-		function exited() {
+		function onEntering(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appearing:' : 'entering:') + id);
+		}
+		function onEntered(nodeOrAppearing?: Element | boolean, isAppearing?: boolean) {
+			const appearing =
+				typeof nodeOrAppearing === 'boolean' ? nodeOrAppearing : isAppearing;
+			props.trace.push((appearing ? 'appeared:' : 'entered:') + id);
+		}
+		function onExit() {
+			props.trace.push('exit:' + id);
+		}
+		function onExiting() {
+			props.trace.push('exiting:' + id);
+		}
+		function onExited() {
 			props.trace.push('exited:' + id);
 		}
 		function renderChild(status: string) {
@@ -301,8 +405,12 @@ export function SwitchNullableHarness(props: {
 		child = <Transition
 			key={id}
 			timeout={10}
-			onEntered={entered}
-			onExited={exited}
+			onEnter={onEnter}
+			onEntering={onEntering}
+			onEntered={onEntered}
+			onExit={onExit}
+			onExiting={onExiting}
+			onExited={onExited}
 			children={renderChild}
 		/>;
 	}

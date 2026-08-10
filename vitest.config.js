@@ -3604,8 +3604,35 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-transition-group-adapted',
-					include: ['packages/react-transition-group/tests/adapted/**/*.test.ts'],
+					include: [
+						'packages/react-transition-group/tests/adapted/**/*.test.ts',
+						'!packages/react-transition-group/tests/adapted/SSR.test.ts',
+					],
 					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-transition-group$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/react-transition-group/src/index.ts',
+							),
+						},
+					],
+				},
+			},
+			{
+				// Upstream SSR-test.js is `@jest-environment node`: prove the client
+				// package import does not require browser globals. Keep it out of the
+				// jsdom adapted project so a DOM-polluting import cannot pass.
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-transition-group-adapted-ssr',
+					include: ['packages/react-transition-group/tests/adapted/SSR.test.ts'],
+					environment: 'node',
 					globals: false,
 				},
 				plugins: [octane()],

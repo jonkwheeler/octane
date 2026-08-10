@@ -38,7 +38,13 @@ describe('TransitionGroup', function transitionGroupSuite() {
 
 	it('should handle transitioning correctly', async function transitionChildren() {
 		const trace: string[] = [];
-		const result = mount(GroupHarness, { trace });
+		// Octane has no StrictMode double-invoke; assert the single appear sequence.
+		const result = mount(GroupHarness, { trace, appear: true });
+		await act(function finishAppear() {
+			vi.runAllTimers();
+		});
+		expect(trace).toEqual(['appear:one', 'appearing:one', 'appeared:one']);
+		trace.length = 0;
 		await act(function add() {
 			click(result.container, '#group-add');
 			vi.runAllTimers();

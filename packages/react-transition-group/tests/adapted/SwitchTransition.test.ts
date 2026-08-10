@@ -41,16 +41,26 @@ describe('SwitchTransition', function switchTransitionSuite() {
 	});
 
 	it('should switch between components on change state', async function switchComponents() {
-		const result = mount(SwitchNullableHarness, { trace: [], initial: 'first' });
+		const trace: string[] = [];
+		const result = mount(SwitchNullableHarness, { trace, initial: 'first' });
 		await act(function switchChild() {
 			click(result.container, '#switch-second');
 		});
+		expect(trace).toEqual(['exit:first', 'exiting:first']);
 		await act(function finishExit() {
 			vi.advanceTimersByTime(20);
 		});
 		await act(function finishEnter() {
 			vi.advanceTimersByTime(20);
 		});
+		expect(trace).toEqual([
+			'exit:first',
+			'exiting:first',
+			'exited:first',
+			'enter:second',
+			'entering:second',
+			'entered:second',
+		]);
 		expect(result.container.querySelector('[data-nullable-switch="second"]')?.textContent).toBe(
 			'second',
 		);
@@ -64,6 +74,7 @@ describe('SwitchTransition', function switchTransitionSuite() {
 			click(result.container, '#switch-first');
 			vi.runAllTimers();
 		});
+		expect(trace).toEqual(['enter:first', 'entering:first', 'entered:first']);
 		expect(result.container.querySelector('[data-nullable-switch="first"]')).not.toBeNull();
 		await act(function showSecond() {
 			click(result.container, '#switch-second');
@@ -72,8 +83,18 @@ describe('SwitchTransition', function switchTransitionSuite() {
 		await act(function finish() {
 			vi.runAllTimers();
 		});
+		expect(trace).toEqual([
+			'enter:first',
+			'entering:first',
+			'entered:first',
+			'exit:first',
+			'exiting:first',
+			'exited:first',
+			'enter:second',
+			'entering:second',
+			'entered:second',
+		]);
 		expect(result.container.querySelector('[data-nullable-switch="second"]')).not.toBeNull();
-		expect(trace).toContain('entered:second');
 		result.unmount();
 	});
 });
