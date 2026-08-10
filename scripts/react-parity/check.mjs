@@ -16,6 +16,8 @@ import { verifyPortTestClassifications } from './binding-classifications-lib.mjs
 import { verifyLivestoreTestClassifications } from './livestore-classifications-lib.mjs';
 import { verifyLivestoreTypes } from './livestore-types-lib.mjs';
 import { verifySolanaReactTypes } from './solana-react-types-lib.mjs';
+import { verifyVisxTestClassifications } from './visx-classifications-lib.mjs';
+import { verifyVisxTypes } from './visx-types-lib.mjs';
 import { loadManifest, verifyLaneEnvironment, verifyManifestFiles } from './harness-lib.mjs';
 import { runRequiredBindingLanes } from './check-lib.mjs';
 
@@ -65,6 +67,16 @@ try {
 	verifyLivestoreTestClassifications(REPO);
 } catch (error) {
 	errors.push(`livestore test classifications are invalid: ${error.message}`);
+}
+try {
+	verifyVisxTypes(REPO);
+} catch (error) {
+	errors.push(`@octanejs/visx type evidence is invalid: ${error.message}`);
+}
+try {
+	verifyVisxTestClassifications(REPO);
+} catch (error) {
+	errors.push(`visx test classifications are invalid: ${error.message}`);
 }
 // The home marketing surface was split from a single Home.tsrx into per-section
 // .tsrx files, and its benchmark/marketing copy also moved into shared components
@@ -141,7 +153,7 @@ for (const relativeFile of CLAIM_FILES) {
 }
 // Bindings that opt into the shared hook-form disposition schema fail closed here.
 // livestore uses its own verifier; bindings without classifications stay optional.
-const PORT_TEST_CLASSIFICATION_BINDINGS = new Set(['hook-form', 'visx']);
+const PORT_TEST_CLASSIFICATION_BINDINGS = new Set(['hook-form']);
 for (const relativeFile of BINDING_MANIFESTS) {
 	try {
 		const manifest = await loadManifest(path.join(REPO, relativeFile));

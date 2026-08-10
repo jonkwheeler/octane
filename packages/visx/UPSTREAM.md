@@ -1,17 +1,21 @@
 # Upstream Visx audit
 
-This port was audited against two immutable Airbnb Visx revisions:
+## Pin and oracle environment
 
-- release `v4.0.0` at `78839796081beb0370fc928cc922b21908bbabaf`, used as the
-  installed React runtime/type oracle;
-- current 4.x `master` at `485c0359664ee8e612992defb16e1f035ed40b23`, used to
-  pin the public additions awaiting the next registry release.
+| Field | Value |
+|---|---|
+| Package | `@visx/visx` |
+| Version | `4.0.0` |
+| Canonical release commit | `78839796081beb0370fc928cc922b21908bbabaf` |
+| Current-master audit commit | `485c0359664ee8e612992defb16e1f035ed40b23` |
+| React oracle | `react@19.2.7` and `react-dom@19.2.7` |
+| React types oracle | `@types/react@19.2.17` and `@types/react-dom@19.2.3` |
+| Claimed compatibility range | workspace `catalog:default` (`react`/`react-dom` `^19.2.7`, `@types/react` `^19.2.17`) |
+| License | MIT |
 
-The `@visx/visx@4.0.0` npm artifact has SHA-256
-`429a337f2a3c437d40707e59c5c7acf2b10db2e6b0e142f415b01a79ec7dae44`.
-The release and current-master source are MIT licensed. The published aggregate
-contains compiled output and declarations; source and tests are audited from the
-canonical repository revisions above.
+Exact lockfile-resolved oracle versions are also recorded as immutable audit
+metadata in [`audit/oracle-environment.json`](./audit/oracle-environment.json)
+and hashed into the parity manifest lanes that inherit them.
 
 ## Public package inventory
 

@@ -67,6 +67,16 @@
       "path": "packages/visx/tests/ssr/ssr.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks deterministic DOM-free Octane server rendering."
+    },
+    {
+      "path": "packages/visx/typetests/adapted/types.test-d.ts",
+      "disposition": "adapted-types",
+      "oracle": "Repo-authored PieProps OctaneNode accept probes against @octanejs/visx under tsrx-tsc (visx-adapted-types lane)."
+    },
+    {
+      "path": "packages/visx/typetests/pristine/types.test-d.ts",
+      "disposition": "pristine-types",
+      "oracle": "Repo-authored Shape.Pie ReactNode reject probes against @visx/visx under plain tsc (visx-pristine-types lane)."
     }
   ]
 }

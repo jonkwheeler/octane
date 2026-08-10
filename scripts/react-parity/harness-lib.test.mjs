@@ -825,6 +825,11 @@ test('rejects stale divergences and accepts one divergence matching multiple kno
 	});
 	assert.throws(() => validateManifest(stale), /unknown case id "missing"/);
 
+	const namespacedUnknown = manifest({
+		divergences: [divergence({ caseIds: ['adapted:missing-ordinary'] })],
+	});
+	assert.deepEqual(validateManifest(namespacedUnknown), namespacedUnknown);
+
 	const broad = manifest();
 	broad.lanes[0].files[0].cases.push({
 		id: 'adapted:other',

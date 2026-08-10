@@ -22,8 +22,12 @@
       "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": ["packages/visx/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": ["packages/visx/tests/differential", "packages/visx/tests/conformance"],
+      "include": [
+        "parity\\.test\\.ts$",
+        "wordcloud-parity\\.test\\.ts$",
+        "spring-parity\\.test\\.ts$"
+      ],
       "exclude": ["setup\\.test\\.ts$"]
     }
   },
@@ -51,7 +55,7 @@
       "environment": "workspace-node",
       "project": "visx-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Pie children/centroid ReactNode returns reject unknown Octane renderables under plain tsc against @visx/visx Shape.Pie.",
+      "notes": "Pie children/centroid ReactNode returns reject unknown Octane renderables under plain tsc against @visx/visx Shape.Pie. Paired with adapted probes under packages/visx/audit/type-parity.json; oracle React versions are pinned in packages/visx/audit/oracle-environment.json.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -61,7 +65,7 @@
         {
           "path": "packages/visx/typetests/pristine/types.test-d.ts",
           "role": "test",
-          "sha256": "2c6a1d424b178b25ad7675bb6704fa1d10b4326ef0aeeb72769ffcd40bae4d06",
+          "sha256": "d00c6f324eab6c18b1722051cf04c99c31339714c7707bdc04ea39445ef04d0c",
           "cases": [
             {
               "id": "types:pristine-reactnode",
@@ -78,7 +82,37 @@
         {
           "path": "packages/visx/typetests/assertions.md",
           "role": "support",
-          "sha256": "54512cebf352e0011063969e3869fd74e6bd21dfcd7f1c1f8a76b530a66c74b7"
+          "sha256": "65cdd24e7832ee0d1b1d02df7a8dc04ae3903e6b328ac44a565a707d73c9c141"
+        },
+        {
+          "path": "packages/visx/audit/oracle-environment.json",
+          "role": "support",
+          "sha256": "80c1d46b25a5e7950e4ed848ccabacebd29592fa86e4784f89b56a4daaa52f42"
+        },
+        {
+          "path": "packages/visx/audit/type-parity.json",
+          "role": "support",
+          "sha256": "b00b721969f655109a81e04c4ebd83700a916b3c5f8e68c9f1e989760d2c0f5e"
+        },
+        {
+          "path": "packages/visx/audit/pristine-types.json",
+          "role": "support",
+          "sha256": "45a4ec77976979684ffa103148c53b1aafeec01d8d5b64e7be02382ce81303db"
+        },
+        {
+          "path": "packages/visx/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "bc4ebfdc2d17c21dbf177bbd7beb7dc6a0645acd3ddefde57cf1773e6230d4f3"
+        },
+        {
+          "path": "scripts/react-parity/visx-types-lib.mjs",
+          "role": "support",
+          "sha256": "81ce68b746a4d516c8e1c2d3e9072f0ebbd910c297de09996ee28cf14b6f94ed"
+        },
+        {
+          "path": "scripts/react-parity/visx-types-lib.test.mjs",
+          "role": "support",
+          "sha256": "e367b50ac84aecd26127673e92d77ca214b36b1095da5e34c0c614e6657beb6f"
         }
       ]
     },
@@ -89,7 +123,7 @@
       "environment": "workspace-node",
       "project": "visx-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Matching Pie OctaneNode returns accept unknown Octane renderables under tsrx-tsc against PieProps from @octanejs/visx/shape.",
+      "notes": "Matching Pie OctaneNode returns accept unknown Octane renderables under tsrx-tsc against PieProps from @octanejs/visx/shape. Mechanical assertion inventory and permitted transforms live in packages/visx/audit/type-parity.json.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -99,7 +133,7 @@
         {
           "path": "packages/visx/typetests/adapted/types.test-d.ts",
           "role": "test",
-          "sha256": "404ea6a240241ece973846818784c1dcadcc55c2e300af7677da2b718ebf3f07",
+          "sha256": "f359616f6752849da18e54bb0493701b4fd6711e66b3cc4183228d9a24170d24",
           "cases": [
             {
               "id": "types:adapted-reactnode",
@@ -116,7 +150,37 @@
         {
           "path": "packages/visx/typetests/assertions.md",
           "role": "support",
-          "sha256": "54512cebf352e0011063969e3869fd74e6bd21dfcd7f1c1f8a76b530a66c74b7"
+          "sha256": "65cdd24e7832ee0d1b1d02df7a8dc04ae3903e6b328ac44a565a707d73c9c141"
+        },
+        {
+          "path": "packages/visx/audit/oracle-environment.json",
+          "role": "support",
+          "sha256": "80c1d46b25a5e7950e4ed848ccabacebd29592fa86e4784f89b56a4daaa52f42"
+        },
+        {
+          "path": "packages/visx/audit/type-parity.json",
+          "role": "support",
+          "sha256": "b00b721969f655109a81e04c4ebd83700a916b3c5f8e68c9f1e989760d2c0f5e"
+        },
+        {
+          "path": "packages/visx/audit/pristine-types.json",
+          "role": "support",
+          "sha256": "45a4ec77976979684ffa103148c53b1aafeec01d8d5b64e7be02382ce81303db"
+        },
+        {
+          "path": "packages/visx/audit/adapted-types.json",
+          "role": "support",
+          "sha256": "bc4ebfdc2d17c21dbf177bbd7beb7dc6a0645acd3ddefde57cf1773e6230d4f3"
+        },
+        {
+          "path": "scripts/react-parity/visx-types-lib.mjs",
+          "role": "support",
+          "sha256": "81ce68b746a4d516c8e1c2d3e9072f0ebbd910c297de09996ee28cf14b6f94ed"
+        },
+        {
+          "path": "scripts/react-parity/visx-types-lib.test.mjs",
+          "role": "support",
+          "sha256": "e367b50ac84aecd26127673e92d77ca214b36b1095da5e34c0c614e6657beb6f"
         }
       ]
     },
@@ -127,7 +191,7 @@
       "environment": "workspace-node",
       "project": "visx-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Runs exact primitive SVG, render-prop layout, interactive state, Brush controller, and Zoom native-gesture scenarios against @visx/visx@4.0.0.",
+      "notes": "Runs exact primitive SVG, render-prop layout, interactive state, Brush controller, and Zoom native-gesture scenarios against @visx/visx@4.0.0 using the React oracle versions pinned in packages/visx/audit/oracle-environment.json.",
       "files": [
         {
           "path": "packages/visx/tests/differential/parity.test.ts",
@@ -180,45 +244,11 @@
           "path": "vitest.config.js",
           "role": "support",
           "sha256": "3442ab8e9e0236b895195089ce1d8fe257d7211fa886059afed6444d5052fb7c"
-        }
-      ]
-    },
-    {
-      "id": "visx-adapted-divergences",
-      "type": "adapted-octane",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "visx",
-      "notes": "Ordinary conformance cases that pin deterministic wordcloud measurement and fixed-duration RAF react-spring interpolation without claiming React byte identity.",
-      "files": [
-        {
-          "path": "packages/visx/tests/conformance/wordcloud-parity.test.ts",
-          "role": "test",
-          "sha256": "e103a92cf87b8db7d2de6fb2aa1cb03d7804cec2bba82c2b8b42adb1c118e4dd",
-          "cases": [
-            {
-              "id": "adapted:visx-deterministic-measurement",
-              "testName": "places estimated rotated glyph rectangles within bounds without overlap",
-              "fullName": "@octanejs/visx deterministic wordcloud layout places estimated rotated glyph rectangles within bounds without overlap"
-            }
-          ]
         },
         {
-          "path": "packages/visx/tests/conformance/spring-parity.test.ts",
-          "role": "test",
-          "sha256": "35014edb40c6fd289d0680411489e0ce6f925f2c4af4f7910142f5a74ed95e32",
-          "cases": [
-            {
-              "id": "adapted:visx-react-spring-raf",
-              "testName": "interpolates numeric spring targets on a fixed 250ms RAF timeline",
-              "fullName": "@octanejs/visx react-spring RAF interpolator interpolates numeric spring targets on a fixed 250ms RAF timeline"
-            }
-          ]
-        },
-        {
-          "path": "packages/visx/tests/_fixtures/spring-raf.tsrx",
+          "path": "packages/visx/audit/oracle-environment.json",
           "role": "support",
-          "sha256": "15faf361f96bff59b2e5692e0976123d27998bcef693812d7f8b79b9bc6b3437"
+          "sha256": "80c1d46b25a5e7950e4ed848ccabacebd29592fa86e4784f89b56a4daaa52f42"
         }
       ]
     }

@@ -493,7 +493,10 @@ export function validateManifest(manifest) {
 			fail(`divergence ${divergence.id} must match at least one case id`);
 		}
 		for (const caseId of divergence.caseIds) {
-			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:'))
+			// Lane-backed and runtime: ids are proven here. Ordinary-shard @parity-case
+			// ids (kept after removing an adapted-octane lane) are proven later in
+			// verifyManifestFiles against adaptedRoots discoveries.
+			if (!caseIds.has(caseId) && !caseId.startsWith('runtime:') && !caseId.includes(':'))
 				fail(`divergence ${divergence.id} references unknown case id "${caseId}"`);
 			if (divergentCases.has(caseId)) fail(`case id "${caseId}" has multiple divergences`);
 			divergentCases.add(caseId);
@@ -598,19 +601,32 @@ export async function verifyManifestFiles(manifest, root) {
 		throw new Error(
 			`adapted runtime inventory summary drifted: expected ${JSON.stringify(manifest.adaptedRuntimeSummary)}, received ${JSON.stringify(actualRuntimeSummary)}`,
 		);
-	for (const divergence of manifest.divergences) {
-		for (const caseId of divergence.caseIds.filter((id) => id.startsWith('runtime:'))) {
-			if (!runtimeCaseIds.has(caseId))
-				throw new Error(
-					`divergence ${divergence.id} references unknown runtime case id "${caseId}"`,
-				);
-		}
-	}
-	const markerCounts = new Map();
 	const markerFiles = new Set([
 		...(await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.source)),
 		...(await discoverAdaptedFiles(absoluteRoot, manifest.adaptedRoots.tests)),
 	]);
+	const ordinaryCaseIds = new Set();
+	for (const path of markerFiles) {
+		const source = await readFile(resolve(absoluteRoot, path), 'utf8');
+		for (const match of source.matchAll(/^\s*\/\/\s*@parity-case\s+(\S+)\s*$/gm)) {
+			ordinaryCaseIds.add(match[1]);
+		}
+	}
+	const knownCaseIds = new Set([...caseIdsForManifest(manifest), ...ordinaryCaseIds]);
+	for (const divergence of manifest.divergences) {
+		for (const caseId of divergence.caseIds) {
+			if (caseId.startsWith('runtime:')) {
+				if (!runtimeCaseIds.has(caseId))
+					throw new Error(
+						`divergence ${divergence.id} references unknown runtime case id "${caseId}"`,
+					);
+				continue;
+			}
+			if (!knownCaseIds.has(caseId))
+				throw new Error(`divergence ${divergence.id} references unknown case id "${caseId}"`);
+		}
+	}
+	const markerCounts = new Map();
 	for (const path of markerFiles) {
 		const source = await readFile(resolve(absoluteRoot, path), 'utf8');
 		if (/OCTANE DIVERGENCE\s*:/.test(source))
@@ -621,7 +637,7 @@ export async function verifyManifestFiles(manifest, root) {
 			const entry = manifest.divergences.find((candidate) => candidate.id === match[1]);
 			if (
 				!entry.caseIds.includes(match[2]) ||
-				(!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2]))
+				(!runtimeCaseIds.has(match[2]) && !knownCaseIds.has(match[2]))
 			)
 				throw new Error(
 					`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`,

@@ -1,11 +1,11 @@
 // Pristine side: published Visx Shape.Pie typings via @visx/visx, compiled with plain tsc.
-// Proves React.ReactNode child/render-prop returns reject Octane renderables.
+// Shared assertion groups match ../adapted/types.test-d.ts under packages/visx/audit/type-parity.json.
 import { Shape } from '@visx/visx';
 
 type ComponentProps<C> = C extends (props: infer P) => any ? P : never;
-type PieProps = ComponentProps<typeof Shape.Pie>;
-type ChildrenRender = NonNullable<PieProps['children']>;
-type CentroidRender = NonNullable<PieProps['centroid']>;
+type PiePropsUnderTest = ComponentProps<typeof Shape.Pie>;
+type ChildrenRender = NonNullable<PiePropsUnderTest['children']>;
+type CentroidRender = NonNullable<PiePropsUnderTest['centroid']>;
 
 declare function acceptChildrenReturn(value: ReturnType<ChildrenRender>): void;
 declare function acceptCentroidReturn(value: ReturnType<CentroidRender>): void;
