@@ -1,7 +1,8 @@
 /**
- * Octane-only framework contract: nested sync scroll notification inside a
- * discrete-event flush (flushSync degradation). Unpaired with a React-side
- * scenario, so it stays in ordinary shards outside react-parity ownership.
+ * Octane-only divergence: nested sync scroll notification inside a discrete-
+ * event flush (flushSync re-entrancy degradation vs React). Unpaired with a
+ * React-side scenario, so it stays in ordinary shards outside react-parity
+ * ownership. Ledger: nested-flushsync-degradation.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mount, nextPaint } from '../_helpers';

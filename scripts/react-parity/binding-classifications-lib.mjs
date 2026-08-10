@@ -8,19 +8,38 @@ const DISPOSITIONS = new Set([
 	'octane-only-framework-contract',
 ]);
 
+function discoverAuthoredTests(root, binding) {
+	const packageRoot = resolve(root, `packages/${binding}`);
+	const discovered = [];
+	const testsRoot = resolve(packageRoot, 'tests');
+	if (existsSync(testsRoot)) {
+		for (const entry of readdirSync(testsRoot, { recursive: true, withFileTypes: true })) {
+			if (!entry.isFile() || !/\.test\.(?:ts|tsx|tsrx)$/.test(entry.name)) continue;
+			const path = relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+				.split(sep)
+				.join('/');
+			if (path.includes('/tests/upstream/')) continue;
+			discovered.push(path);
+		}
+	}
+	const typetestsRoot = resolve(packageRoot, 'typetests');
+	if (existsSync(typetestsRoot)) {
+		for (const entry of readdirSync(typetestsRoot, { recursive: true, withFileTypes: true })) {
+			if (!entry.isFile() || !/\.test-d\.ts$/.test(entry.name)) continue;
+			discovered.push(
+				relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+					.split(sep)
+					.join('/'),
+			);
+		}
+	}
+	return discovered.sort();
+}
+
 export function verifyPortTestClassifications(root, binding = 'hook-form') {
 	const configPath = `packages/${binding}/audit/test-classifications.json`;
 	const manifestPath = `packages/${binding}/audit/react-parity.json`;
-	const testsRoot = resolve(root, `packages/${binding}/tests`);
-	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
-		.filter((entry) => entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name))
-		.map((entry) =>
-			relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
-				.split(sep)
-				.join('/'),
-		)
-		.filter((path) => !path.includes('/tests/upstream/'))
-		.sort();
+	const discovered = discoverAuthoredTests(root, binding);
 	const absoluteConfigPath = resolve(root, configPath);
 	if (!existsSync(absoluteConfigPath))
 		throw new Error(`missing port-test classifications: ${configPath}`);

@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-virtual/src"
-      ],
-      "include": [
-        "\\.ts$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-virtual/src"],
+      "include": ["\\.ts$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-virtual/tests/differential"
-      ],
-      "include": [
-        "parity\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-virtual/tests/differential"],
+      "include": ["parity\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -143,5 +133,18 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "nested-flushsync-degradation",
+      "caseIds": ["conformance:nested-flush-sync-scroll"],
+      "upstreamResult": "Nested flushSync during a sync scroll notify re-enters React and applies the window update inside the nested flush.",
+      "octaneResult": "Nested flushSync hits Octane's re-entrancy guard and degrades to a plain dispatch drained by the ambient flush; the window still updates once that flush settles.",
+      "rationale": "Octane intentionally refuses nested flushSync; the adapter preserves upstream's flushSync-on-sync-scroll wiring and relies on the ambient flush to land the update.",
+      "classification": "flush-model",
+      "consumerImpact": "Consumer-invisible for normal scroll/input paths; only programs that depend on nested flushSync completing before the outer flush continues can observe timing differences.",
+      "migrationGuidance": "Keep relying on the settled window after the outer event/flush; do not assume nested flushSync mutates DOM before the outer flush returns.",
+      "owner": "@octanejs/tanstack-virtual",
+      "reviewCondition": "Review if Octane gains true nested flushSync or the adapter stops calling flushSync on sync scroll notifies."
+    }
+  ]
 }

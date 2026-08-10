@@ -13,8 +13,9 @@
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/nested-flush.test.ts",
-      "disposition": "octane-only-framework-contract",
-      "reason": "Pins Octane flushSync re-entrancy degradation for nested sync scroll notifications; unpaired with a React-side scenario, so it stays outside react-parity ownership."
+      "disposition": "octane-only-divergence",
+      "reason": "Pins the known nested flushSync re-entrancy divergence versus React; stays in ordinary shards outside react-parity ownership.",
+      "divergenceId": "nested-flushsync-degradation"
     },
     {
       "path": "packages/tanstack-virtual/tests/conformance/parity.test.ts",
@@ -40,6 +41,11 @@
       "path": "packages/tanstack-virtual/tests/ssr/server.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks DOM-free initial-window server rendering; it is not compared with React SSR."
+    },
+    {
+      "path": "packages/tanstack-virtual/typetests/public-api.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Octane-only declaration coverage for the published virtualizer surface; upstream has no dedicated type-test harness, so this is not parity type evidence."
     }
   ]
 }
