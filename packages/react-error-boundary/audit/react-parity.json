@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-error-boundary/src"
-      ],
-      "include": [
-        "$a"
-      ],
+      "roots": ["packages/react-error-boundary/src"],
+      "include": ["$a"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-error-boundary/tests/differential"
-      ],
-      "include": [
-        "$a"
-      ],
+      "roots": ["packages/react-error-boundary/tests/differential"],
+      "include": ["$a"],
       "exclude": []
     }
   },
@@ -68,8 +60,8 @@
           "cases": [
             {
               "id": "differential:react-error-boundary-reset",
-              "testName": "imperative reset: fallback \u2192 content renders byte-identical",
-              "fullName": "differential: @octanejs/react-error-boundary vs real react-error-boundary imperative reset: fallback \u2192 content renders byte-identical"
+              "testName": "imperative reset: fallback → content renders byte-identical",
+              "fullName": "differential: @octanejs/react-error-boundary vs real react-error-boundary imperative reset: fallback → content renders byte-identical"
             }
           ]
         },
@@ -91,7 +83,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d42d9e289e3790e3a3b2449cfc30160f9450794085e00c5def682379a3fed734"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         }
       ]
     }

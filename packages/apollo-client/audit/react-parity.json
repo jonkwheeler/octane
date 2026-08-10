@@ -17,21 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/apollo-client/src"
-      ],
-      "include": [
-        "\\.(?:js|d\\.ts)$"
-      ],
+      "roots": ["packages/apollo-client/src"],
+      "include": ["\\.(?:js|d\\.ts)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/apollo-client/tests/conformance"
-      ],
-      "include": [
-        "upstream-(?:ApolloProvider|useApolloClient)\\.test\\.ts$"
-      ],
+      "roots": ["packages/apollo-client/tests/conformance"],
+      "include": ["upstream-(?:ApolloProvider|useApolloClient)\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -118,7 +110,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "d42d9e289e3790e3a3b2449cfc30160f9450794085e00c5def682379a3fed734"
+          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
         },
         {
           "path": "packages/apollo-client/audit/test-classifications.json",
