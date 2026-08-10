@@ -1,10 +1,12 @@
 import { useRef } from 'octane';
 
 export function useEventCallback<T>(handler?: (value: T) => void): (value: T) => void {
-	const callbackRef = useRef(handler);
-	const fn = useRef((value: T) => {
+	const resolvedHandler =
+		typeof handler === 'symbol' ? undefined : handler;
+	const callbackRef = useRef(resolvedHandler);
+	const fn = useRef(function (value: T) {
 		callbackRef.current?.(value);
 	});
-	callbackRef.current = handler;
+	callbackRef.current = resolvedHandler;
 	return fn.current;
 }

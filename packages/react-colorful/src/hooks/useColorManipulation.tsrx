@@ -9,8 +9,12 @@ export function useColorManipulation<T extends AnyColor>(
 	onChange?: (color: T) => void,
 	onChangeEnd?: (color: T) => void,
 ): [HsvaColor, (color: Partial<HsvaColor>) => void, () => void] {
-	const onChangeCallback = useEventCallback<T>(onChange);
-	const onChangeEndCallback = useEventCallback<T>(onChangeEnd);
+	const resolvedOnChange =
+		typeof onChange === 'symbol' ? undefined : onChange;
+	const resolvedOnChangeEnd =
+		typeof onChangeEnd === 'symbol' ? undefined : onChangeEnd;
+	const onChangeCallback = useEventCallback<T>(resolvedOnChange);
+	const onChangeEndCallback = useEventCallback<T>(resolvedOnChangeEnd);
 	const [hsva, updateHsva] = useState<HsvaColor>(() => colorModel.toHsva(color));
 	const cache = useRef({ color, hsva });
 	const isDirty = useRef(false);
