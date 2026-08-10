@@ -667,6 +667,39 @@ test('rejects local no-op act clicks paired with live direct source writes', fun
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects renamed cleanup-as-act clicks paired with live direct source writes', function rejectsRenamedActImportClickPadding() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const withImport = adaptedSource.replace(
+		"import { describe, expect, it, vi } from 'vitest';",
+		"import { describe, expect, it, vi } from 'vitest';\nimport { cleanup as act } from '@testing-library/react';",
+	);
+	assert.notEqual(withImport, adaptedSource);
+	const padded = withImport.replace(
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tresult.click('#set');\n\t\texpect(countSignal()).toBe(10);\n\t\tresult.click('#inc');\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+		"\tit('useSetSignal should return setter only', function useSetSignalShouldReturnSetterOnly() {\n\t\tconst countSignal = createSignal(0);\n\t\tconst result = mount(SetterOnly, { source: countSignal });\n\t\tact(function padSet() {\n\t\t\tresult.click('#set');\n\t\t});\n\t\tact(function padInc() {\n\t\t\tresult.click('#inc');\n\t\t});\n\t\tcountSignal(10);\n\t\texpect(countSignal()).toBe(10);\n\t\tcountSignal(15);\n\t\texpect(countSignal()).toBe(15);\n\t\tresult.unmount();\n\t});",
+	);
+	assert.notEqual(padded, withImport);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: padded,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects shadowed Promise.resolve clicks paired with live direct source writes', function rejectsShadowedPromiseResolveClickPadding() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),

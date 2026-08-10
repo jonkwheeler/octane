@@ -555,31 +555,33 @@ const AUTHENTICATED_ACT_MODULES = new Set([
 ]);
 
 /**
- * True when `identifier` is bound by a named import of the same spelling from
- * one of `modules`. Any closer local binding (param, var/let/const, function,
- * class) wins and fails authentication — so a no-op `const act = () => {}`
- * cannot credit nested callbacks the way imported Testing Library `act` does.
+ * True when `identifier` is bound by a named import of the same export spelling
+ * from one of `modules` — e.g. `import { act } from '@testing-library/react'`.
+ * Default imports, namespace imports, and renames such as
+ * `import { cleanup as act }` bind locally but do not authenticate. Any closer
+ * local binding (param, var/let/const, function, class) also fails.
  */
 function identifierIsNamedImportFrom(identifier, modules) {
 	const name = identifier.text;
 
-	function importModuleIfNamed(statement) {
+	function importBindingKind(statement) {
 		if (!ts.isImportDeclaration(statement) || !statement.importClause) return null;
 		const clause = statement.importClause;
-		let matched = false;
-		if (clause.name && clause.name.text === name) matched = true;
+		if (clause.name && clause.name.text === name) return 'local';
 		const bindings = clause.namedBindings;
 		if (bindings && ts.isNamespaceImport(bindings) && bindings.name.text === name) {
-			matched = true;
+			return 'local';
 		}
 		if (bindings && ts.isNamedImports(bindings)) {
 			for (const element of bindings.elements) {
-				if (element.name.text === name) matched = true;
+				if (element.name.text !== name) continue;
+				const exportName = element.propertyName ? element.propertyName.text : element.name.text;
+				if (exportName !== name) return 'local';
+				if (!ts.isStringLiteral(statement.moduleSpecifier)) return 'local';
+				return modules.has(statement.moduleSpecifier.text) ? 'auth-import' : 'local';
 			}
 		}
-		if (!matched) return null;
-		if (!ts.isStringLiteral(statement.moduleSpecifier)) return '';
-		return statement.moduleSpecifier.text;
+		return null;
 	}
 
 	function bindingKindInStatementList(statements) {
@@ -597,10 +599,8 @@ function identifierIsNamedImportFrom(identifier, modules) {
 			if (ts.isClassDeclaration(statement) && statement.name && statement.name.text === name) {
 				return 'local';
 			}
-			const moduleName = importModuleIfNamed(statement);
-			if (moduleName !== null) {
-				return modules.has(moduleName) ? 'auth-import' : 'local';
-			}
+			const kind = importBindingKind(statement);
+			if (kind !== null) return kind;
 		}
 		return null;
 	}
