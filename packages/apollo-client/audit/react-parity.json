@@ -110,7 +110,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "9369847ebfed4f491d31089adac018df607fec03515f32958c4ac92e862067a3"
+          "sha256": "4d7867b3e26001d6d3064825c9d9c2dbe25dbb2e4e57898e3c8ea302b8d7fc0a"
         },
         {
           "path": "packages/apollo-client/audit/test-classifications.json",
