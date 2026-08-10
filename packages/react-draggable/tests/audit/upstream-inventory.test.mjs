@@ -240,6 +240,18 @@ await rejectsMutation(
 );
 
 await rejectsMutation(
+	'a hollow adapted consumer type file fails closed',
+	async (root) => {
+		const path = join(root, 'typetests/adapted/typings.consumer.ts');
+		await writeFile(
+			path,
+			`import Draggable, { DraggableCore, type DraggableCoreProps, type DraggableProps } from '@octanejs/react-draggable';\nvoid [Draggable, DraggableCore];\n`,
+		);
+	},
+	/react-draggable adapted type inventory drifted|missing required adapted assertion group|prop-probe:draggableProps/,
+);
+
+await rejectsMutation(
 	'an unclassified authored test fails closed',
 	async (root) => {
 		const path = join(root, 'tests/runtime/orphan-unclassified.test.ts');

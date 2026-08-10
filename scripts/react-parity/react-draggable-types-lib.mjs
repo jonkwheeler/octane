@@ -66,19 +66,24 @@ function assertionGroups(source, fileName) {
 					: '';
 			groups.push(`expectType:${typeText}:${argText}`);
 		}
-		if (
-			ts.isVariableDeclaration(node) &&
-			node.type &&
-			ts.isIndexedAccessTypeNode(node.type) &&
-			node.initializer
-		) {
+		if (ts.isVariableDeclaration(node) && node.type && node.initializer) {
 			const typeText = normalizeText(
 				printer.printNode(ts.EmitHint.Unspecified, node.type, sourceFile),
 			);
+			const initText = normalizeText(
+				printer.printNode(ts.EmitHint.Unspecified, node.initializer, sourceFile),
+			);
 			if (/\[.children.\]/.test(typeText) || /\['children'\]/.test(typeText)) {
-				groups.push(
-					`children-probe:${typeText}:${normalizeText(printer.printNode(ts.EmitHint.Unspecified, node.initializer, sourceFile))}`,
-				);
+				groups.push(`children-probe:${typeText}:${initText}`);
+			} else if (
+				typeText === 'DraggableProps' ||
+				typeText === 'DraggableCoreProps' ||
+				typeText === 'ControlPosition' ||
+				typeText === 'DraggableBounds' ||
+				typeText === 'DraggableData' ||
+				typeText === 'PositionOffsetControlPosition'
+			) {
+				groups.push(`prop-probe:${node.name.getText(sourceFile)}:${typeText}:${initText}`);
 			}
 		}
 		if (ts.isJsxSelfClosingElement(node) || ts.isJsxElement(node)) {

@@ -41,7 +41,20 @@
       "path": "typings/test.tsx",
       "disposition": "adapted",
       "adaptedPath": "packages/react-draggable/typetests/adapted/typings.consumer.ts",
-      "rationale": "Consumer typings program is adapted to Octane prop-object/nodeRef probes; JSX mount probes remain covered by the pristine lane include."
+      "rationale": "Consumer typings program is adapted to Octane prop-object/nodeRef probes; JSX mount probes remain covered by the pristine lane include.",
+      "minExpectErrors": 0,
+      "upstreamOnlyAssertionGroups": [
+        "jsx-probe:<Draggable axis=\"y\" handle=\".handle\" cancel=\".cancel\" grid={[10, 10]} onStart={handleStart} onDrag={handleDrag} onStop={handleStop} offsetParent={document.body} onMouseDown={handleMouseDown} allowAnyClick={true} allowMobileScroll={false} disabled={true} enableUserSelectHack={false} bounds={false} defaultClassName={'draggable'} defaultClassNameDragging={'dragging'} defaultClassNameDragged={'dragged'} defaultPosition={{ x: 0, y: 0 }} nodeRef={nodeRef} positionOffset={{ x: 0, y: 0 }} position={{ x: 50, y: 50 }}> <div className=\"foo bar\" ref={nodeRef}> <div className=\"handle\"/> <div className=\"cancel\"/> </div> </Draggable>",
+        "jsx-probe:<DraggableCore handle=\".handle\" cancel=\".cancel\" allowAnyClick={true} disabled={true} onMouseDown={handleMouseDown} grid={[10, 10]} nodeRef={nodeRefCore} onStart={handleStart} onDrag={handleDrag} onStop={handleStop} offsetParent={document.body} enableUserSelectHack={false} allowMobileScroll={false}> <div className=\"foo bar\" ref={nodeRefCore}> <div className=\"handle\"/> <div className=\"cancel\"/> </div> </DraggableCore>",
+        "jsx-probe:<Draggable><div /></Draggable>",
+        "jsx-probe:<DraggableCore><div /></DraggableCore>"
+      ],
+      "requiredAdaptedAssertionGroups": [
+        "prop-probe:draggableProps:DraggableProps:{ axis: 'y', handle: '.handle', cancel: '.cancel', grid: [10, 10], onStart: handleStart, onDrag: handleDrag, onStop: handleStop, offsetParent: document.body, onMouseDown: handleMouseDown, allowAnyClick: true, allowMobileScroll: false, disabled: true, enableUserSelectHack: false, bounds: false, defaultClassName: 'draggable', defaultClassNameDragging: 'dragging', defaultClassNameDragged: 'dragged', defaultPosition: { x: 0, y: 0 }, nodeRef, positionOffset: { x: 0, y: 0 }, position: { x: 50, y: 50 }, }",
+        "prop-probe:coreProps:DraggableCoreProps:{ handle: '.handle', cancel: '.cancel', allowAnyClick: true, disabled: true, onMouseDown: handleMouseDown, grid: [10, 10], nodeRef, onStart: handleStart, onDrag: handleDrag, onStop: handleStop, offsetParent: document.body, enableUserSelectHack: false, allowMobileScroll: false, }",
+        "prop-probe:bareDraggableProps:DraggableProps:{}",
+        "prop-probe:bareCoreProps:DraggableCoreProps:{}"
+      ]
     }
   ],
   "permittedTransformations": [
