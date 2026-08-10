@@ -208,12 +208,12 @@
 				{
 					"path": "packages/tiptap/tests/_fixtures/custom-views-parity.tsrx",
 					"role": "support",
-					"sha256": "aa043ac4a5edcf816a49338581c4f3f75c0e92605801fb5168a9d4c8428ef85f"
+					"sha256": "2150de75b00deb207f1ac8270818c39852c4ba5ba1c10cc2cc87ec6cb496fde5"
 				},
 				{
 					"path": "packages/tiptap/tests/_fixtures/custom-views-as-prop-parity.tsrx",
 					"role": "support",
-					"sha256": "80218b70c5332257f45083a61dc91bdc90e7beaa6792787efa6c07be01d0f575"
+					"sha256": "5be071a5b39421959ed575061639931631e39f5e8e08057e03ac02c7d5f06796"
 				},
 				{
 					"path": "packages/tiptap/tests/differential/mark-view-portal-cleanup.test.ts",

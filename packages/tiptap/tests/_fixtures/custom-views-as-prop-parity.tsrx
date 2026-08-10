@@ -232,7 +232,10 @@ export function CustomViewsAsPropParity(props) @{
 			ParityPanel.configure({ onLifecycle: props.onLifecycle }),
 			ParityBadge.configure({
 				onMarkLifecycle: function onMarkLifecycle(phase) {
-					props.onMarkLifecycle ?? () => {}(paritySide, phase);
+					const notify = props.onMarkLifecycle;
+					if (notify) {
+						notify(paritySide, phase);
+					}
 				},
 			}),
 		],
