@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/day-picker/src"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/day-picker/src"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/day-picker/tests/differential"],
-      "include": ["parity\\.test\\.ts$"],
+      "roots": [
+        "packages/day-picker/tests/differential"
+      ],
+      "include": [
+        "parity\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -59,12 +67,12 @@
         {
           "path": "packages/day-picker/audit/differential-runtime.json",
           "role": "support",
-          "sha256": "de615e7ae95e028eae74ccaa3fdd0b1a80daf2faeaddee85a072035ad4b97519"
+          "sha256": "883a7b1ce707b41b7d6331546ab8b91a7f8cfe41c4954a2bfdc6106a84fae6cb"
         },
         {
           "path": "scripts/react-parity/react-day-picker-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "cb89501a524eb8f308d892236bb8b4e467a07f7359cba7879e3e984a26ad86e0"
+          "sha256": "979a7cbac6b828560ac52e25d60d21dff7de6af9542cefff30b3973ff61400e3"
         },
         {
           "path": "packages/day-picker/audit/upstream-integrity.json",

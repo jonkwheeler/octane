@@ -9,12 +9,12 @@
   ],
   "tests": [
     {
-      "id": "runtime:0e18bdb6c3b9d3bc",
+      "id": "runtime:e592b899fb660cc9",
       "file": "packages/day-picker/tests/differential/parity.test.ts",
       "fullName": "differential: @octanejs/day-picker vs react-day-picker 10.0.1 matches React month navigation output"
     },
     {
-      "id": "runtime:0abf0668fe8a83f9",
+      "id": "runtime:0caabb9c182f2718",
       "file": "packages/day-picker/tests/differential/parity.test.ts",
       "fullName": "differential: @octanejs/day-picker vs react-day-picker 10.0.1 matches the default calendar semantic shape and constraints"
     }
