@@ -382,11 +382,12 @@ function isUnconditionalTerminator(statement) {
  * Visit nodes on the always-executed entry path of `root`.
  *
  * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
- * loop / switch / catch bodies (not proven to run), and nested function bodies
- * that are not call arguments (or IIFEs). Callbacks passed to calls on the
- * executed path (e.g. `Promise.then(fn)`) are entered. A nested function's
- * `return`/`throw` only stops that function body. Unknown statement shapes
- * authenticate nothing rather than recursively crediting every child.
+ * loop / switch / catch bodies (not proven to run), for-loop incrementors
+ * (post-body only), and nested function bodies that are not call arguments (or
+ * IIFEs). Callbacks passed to calls on the executed path (e.g. `Promise.then(fn)`)
+ * are entered. A nested function's `return`/`throw` only stops that function
+ * body. Unknown statement shapes authenticate nothing rather than recursively
+ * crediting every child.
  */
 function forEachAlwaysExecutedNode(root, visitNode) {
 	function visitFunctionBody(fn) {
@@ -512,6 +513,9 @@ function forEachAlwaysExecutedNode(root, visitNode) {
 		}
 
 		if (ts.isForStatement(statement)) {
+			// Initializer + condition run before the first iteration attempt.
+			// The incrementor only runs after a successful body iteration, so
+			// it is not always-executed (e.g. `for (; false; props.record(s))`).
 			if (statement.initializer !== undefined) {
 				if (ts.isVariableDeclarationList(statement.initializer)) {
 					for (const declaration of statement.initializer.declarations) {
@@ -525,7 +529,6 @@ function forEachAlwaysExecutedNode(root, visitNode) {
 				}
 			}
 			if (statement.condition !== undefined) visitExpression(statement.condition, 'value');
-			if (statement.incrementor !== undefined) visitExpression(statement.incrementor, 'value');
 			return false;
 		}
 

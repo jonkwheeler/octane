@@ -611,6 +611,34 @@ test('rejects dead while-loop fixture record of the setter', function rejectsDea
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects dead for-loop incrementor fixture record of the setter', function rejectsDeadForIncrementorFixtureRecord() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replace(
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(setValue);',
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(props.source);\n\tfor (; false; props.record(setValue)) {\n\t\t/* dead */\n\t}',
+	);
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects catch-only record-callback param pushes', function rejectsCatchOnlyRecordParamPush() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
