@@ -17,13 +17,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/lucide/src"],
-      "include": ["\\.ts$"],
+      "roots": [
+        "packages/lucide/src"
+      ],
+      "include": [
+        "\\.ts$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/lucide/tests"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/lucide/tests"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -56,7 +64,7 @@
         {
           "path": "packages/lucide/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "167fdf3cdd0ed31eff77554ce11c67b6dc45cce5603940afe6a6d0d720f42ca7",
+          "sha256": "ecc4185f323ababb406f2122603f864b24cfdbb77238cbc731c7c2150c8ecddd",
           "cases": [
             {
               "id": "differential:lucide-icons",
