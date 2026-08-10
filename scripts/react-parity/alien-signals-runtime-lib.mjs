@@ -379,16 +379,124 @@ function isUnconditionalTerminator(statement) {
 }
 
 /**
+ * True when `nameNode` binds the identifier `name` (including nested binding
+ * patterns). Used to reject shadowed globals such as a local `Promise`.
+ */
+function bindingNameDeclares(nameNode, name) {
+	if (nameNode === undefined || nameNode === null) return false;
+	if (ts.isIdentifier(nameNode)) return nameNode.text === name;
+	if (ts.isBindingElement(nameNode)) return bindingNameDeclares(nameNode.name, name);
+	if (ts.isObjectBindingPattern(nameNode) || ts.isArrayBindingPattern(nameNode)) {
+		for (const element of nameNode.elements) {
+			if (ts.isOmittedExpression(element)) continue;
+			if (bindingNameDeclares(element, name)) return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * True when `identifier` resolves to a local binding rather than the unshadowed
+ * global of the same spelling. Walks enclosing scopes via parent pointers
+ * (source files are created with `setParentNodes`).
+ */
+function identifierHasLocalBinding(identifier) {
+	const name = identifier.text;
+	let current = identifier.parent;
+	while (current !== undefined && current !== null) {
+		if (
+			ts.isFunctionDeclaration(current) ||
+			ts.isFunctionExpression(current) ||
+			ts.isArrowFunction(current) ||
+			ts.isMethodDeclaration(current) ||
+			ts.isConstructorDeclaration(current) ||
+			ts.isGetAccessorDeclaration(current) ||
+			ts.isSetAccessorDeclaration(current)
+		) {
+			if (current.name && ts.isIdentifier(current.name) && current.name.text === name) {
+				return true;
+			}
+			for (const parameter of current.parameters) {
+				if (bindingNameDeclares(parameter.name, name)) return true;
+			}
+		}
+
+		if (ts.isCatchClause(current) && current.variableDeclaration) {
+			if (bindingNameDeclares(current.variableDeclaration.name, name)) return true;
+		}
+
+		if (
+			ts.isForStatement(current) ||
+			ts.isForInStatement(current) ||
+			ts.isForOfStatement(current)
+		) {
+			const initializer = current.initializer;
+			if (initializer && ts.isVariableDeclarationList(initializer)) {
+				for (const declaration of initializer.declarations) {
+					if (bindingNameDeclares(declaration.name, name)) return true;
+				}
+			}
+		}
+
+		if (ts.isBlock(current) || ts.isSourceFile(current) || ts.isModuleBlock(current)) {
+			for (const statement of current.statements) {
+				if (ts.isVariableStatement(statement)) {
+					for (const declaration of statement.declarationList.declarations) {
+						if (bindingNameDeclares(declaration.name, name)) return true;
+					}
+				}
+				if (ts.isFunctionDeclaration(statement) && statement.name && statement.name.text === name) {
+					return true;
+				}
+				if (ts.isClassDeclaration(statement) && statement.name && statement.name.text === name) {
+					return true;
+				}
+				if (ts.isImportDeclaration(statement) && statement.importClause) {
+					const clause = statement.importClause;
+					if (clause.name && clause.name.text === name) return true;
+					const bindings = clause.namedBindings;
+					if (bindings && ts.isNamespaceImport(bindings) && bindings.name.text === name) {
+						return true;
+					}
+					if (bindings && ts.isNamedImports(bindings)) {
+						for (const element of bindings.elements) {
+							if (element.name.text === name) return true;
+						}
+					}
+				}
+			}
+		}
+
+		if (ts.isCaseClause(current) || ts.isDefaultClause(current)) {
+			for (const statement of current.statements) {
+				if (ts.isVariableStatement(statement)) {
+					for (const declaration of statement.declarationList.declarations) {
+						if (bindingNameDeclares(declaration.name, name)) return true;
+					}
+				}
+			}
+		}
+
+		current = current.parent;
+	}
+	return false;
+}
+
+/**
  * `Promise.resolve(...)` — the only thenable the suite uses whose fulfillment
  * callback is statically known to run. A bare `.then` property (lookalike
- * sink, rejected Promise, arbitrary thenable) does not authenticate.
+ * sink, rejected Promise, arbitrary thenable) does not authenticate. A local
+ * binding that shadows `Promise` also does not — only the unshadowed global.
  */
 function isPromiseResolveCall(node) {
 	if (!ts.isCallExpression(node)) return false;
 	if (!ts.isPropertyAccessExpression(node.expression)) return false;
 	if (!ts.isIdentifier(node.expression.expression)) return false;
 	if (!ts.isIdentifier(node.expression.name)) return false;
-	return node.expression.expression.text === 'Promise' && node.expression.name.text === 'resolve';
+	if (node.expression.expression.text !== 'Promise' || node.expression.name.text !== 'resolve') {
+		return false;
+	}
+	return !identifierHasLocalBinding(node.expression.expression);
 }
 
 /**
