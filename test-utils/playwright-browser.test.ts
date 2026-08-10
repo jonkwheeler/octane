@@ -93,20 +93,37 @@ describe('heavy-integration browser ownership', () => {
 	});
 
 	it('contains no direct Playwright browser access in the selected browser directories', () => {
-		const roots = ['octane', 'dexie', 'tiptap', 'three'].map((packageName) =>
-			resolve(import.meta.dirname, `../packages/${packageName}/tests/browser`),
-		);
-		const browserFiles = roots.flatMap((root) =>
-			readdirSync(root, { recursive: true, withFileTypes: true })
-				.filter((entry) => entry.isFile() && /\.(?:[cm]?js|tsx?)$/.test(entry.name))
-				.map((entry) => resolve(entry.parentPath, entry.name)),
-		);
+		const roots = ['octane', 'dexie', 'tiptap', 'three'].map(function (packageName) {
+			return resolve(import.meta.dirname, `../packages/${packageName}/tests/browser`);
+		});
+		// behavior-root intentionally launches Chromium and WebKit for ownership
+		// coverage; CI provisions those engines beside PLAYWRIGHT_BROWSER.
+		const ownershipCoverageAllowlist = new Set([
+			resolve(
+				import.meta.dirname,
+				'../packages/octane/tests/browser/behavior-root/behavior-root.test.ts',
+			),
+		]);
+		const browserFiles = roots.flatMap(function (root) {
+			return readdirSync(root, { recursive: true, withFileTypes: true })
+				.filter(function (entry) {
+					return entry.isFile() && /\.(?:[cm]?js|tsx?)$/.test(entry.name);
+				})
+				.map(function (entry) {
+					return resolve(entry.parentPath, entry.name);
+				});
+		});
 
-		const offenders = browserFiles.filter((filePath) => {
+		const offenders = browserFiles.filter(function (filePath) {
+			if (ownershipCoverageAllowlist.has(filePath)) return false;
 			const source = readFileSync(filePath, 'utf8');
 			return containsDirectPlaywrightBrowserAccess(source);
 		});
 
 		expect(offenders).toEqual([]);
+		expect(ownershipCoverageAllowlist.size).toBe(1);
+		for (const allowed of ownershipCoverageAllowlist) {
+			expect(containsDirectPlaywrightBrowserAccess(readFileSync(allowed, 'utf8'))).toBe(true);
+		}
 	});
 });
