@@ -68,6 +68,7 @@
       "@octanejs/tiptap",
       "@octanejs/streamdown",
       "@octanejs/react-pdf",
+      "@octanejs/monaco-editor",
       "@octanejs/mdx",
       "@octanejs/i18next"
     ]
