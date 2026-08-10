@@ -9,13 +9,13 @@
   "lanes": {
     "pristine": {
       "compiler": "tsc",
-      "project": "packages/tanstack-devtools/audit/type-probes/tsconfig.pristine.json",
-      "sourcePolicy": "repo-authored React declaration probes against the pinned adapter public entry"
+      "project": "packages/tanstack-devtools/typetests/pristine/tsconfig.json",
+      "sourcePolicy": "upstream test:types compiles the complete React adapter source"
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/tanstack-devtools/typetests/tsconfig.json",
-      "sourcePolicy": "one-for-one adapted probes after permitted transformations"
+      "project": "packages/tanstack-devtools/typetests/adapted/tsconfig.json",
+      "sourcePolicy": "adapted test:types compiles the complete Octane adapter source"
     }
   },
   "permittedTransformations": [
@@ -42,5 +42,6 @@
       "kind": "types",
       "rule": "Public adapter types keep framework-prefixed names on each side"
     }
-  ]
+  ],
+  "notes": "Public-API probes under type-probes/ and typetests/ are classified controls that keep one-for-one assertion inventories; they do not substitute for the upstream-suite source compiles declared in react-parity.json."
 }

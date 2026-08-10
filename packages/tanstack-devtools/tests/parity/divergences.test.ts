@@ -25,6 +25,7 @@ const upstreamReactDevtools = readInstalledPackage('@tanstack/react-devtools');
 const octaneCore = readInstalledPackage('@tanstack/devtools');
 
 describe('@octanejs/tanstack-devtools divergence contracts', function divergenceSuite() {
+	// @parity-case audit:core-version
 	it('records the framework-neutral core version drift', function coreVersion() {
 		const upstreamVersion = upstreamReactDevtools.dependencies['@tanstack/devtools'];
 		const octaneVersion = octaneCore.version;
@@ -39,6 +40,7 @@ describe('@octanejs/tanstack-devtools divergence contracts', function divergence
 		});
 	});
 
+	// @parity-case audit:octane-type-names
 	it('records the Octane-prefixed public adapter type names', function typeNames() {
 		expect(octaneIndex).toContain('TanStackDevtoolsOctanePlugin');
 		expect(octaneIndex).toContain('TanStackDevtoolsOctaneInit');
@@ -58,6 +60,7 @@ describe('@octanejs/tanstack-devtools divergence contracts', function divergence
 		);
 	});
 
+	// @parity-case audit:extra-core-reexports
 	it('records the additional framework-neutral core re-exports', function coreReexports() {
 		expect(octaneIndex).toContain('TanStackDevtoolsCore');
 		expect(octaneIndex).toContain('PLUGIN_CONTAINER_ID');

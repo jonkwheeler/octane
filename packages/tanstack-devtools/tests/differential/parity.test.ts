@@ -49,7 +49,6 @@ function coreFor(container: HTMLElement): FakeCore {
 }
 
 describe('differential: @octanejs/tanstack-devtools vs @tanstack/react-devtools', function differentialSuite() {
-	// OCTANE DIVERGENCE[core-version][differential:tanstack-devtools-portal-lifecycle]
 	// @parity-case differential:tanstack-devtools-portal-lifecycle
 	it('matches mount, plugin, title, trigger, config, and teardown behavior', async function portalLifecycle() {
 		instances.length = 0;
