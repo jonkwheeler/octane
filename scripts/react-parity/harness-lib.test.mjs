@@ -1070,6 +1070,87 @@ test('an unavailable optional oracle is never reported as parity evidence', () =
 	);
 });
 
+test('optional available lanes can crosswalk structured divergences without required ownership', async () => {
+	const root = await mkdtemp(join(tmpdir(), 'react-parity-optional-divergence-'));
+	const probePath = 'packages/example/tests/optional/divergence.test.ts';
+	const requiredPath = 'packages/example/tests/required/required.test.ts';
+	await mkdir(join(root, 'packages/example/src'), { recursive: true });
+	await mkdir(join(root, 'packages/example/tests/optional'), { recursive: true });
+	await mkdir(join(root, 'packages/example/tests/required'), { recursive: true });
+	const probeSource =
+		'// OCTANE DIVERGENCE[example-divergence][adapted:example]\n' +
+		'// @parity-case adapted:example\n' +
+		'it("does the thing", () => {})\n';
+	const requiredSource =
+		'// @parity-case differential:required\n' + 'it("stays required", () => {})\n';
+	await writeFile(join(root, probePath), probeSource);
+	await writeFile(join(root, requiredPath), requiredSource);
+	const value = manifest({
+		adaptedRoots: {
+			source: {
+				roots: ['packages/example/src'],
+				include: ['\\.ts$'],
+				exclude: [],
+			},
+			tests: {
+				roots: ['packages/example/tests'],
+				include: ['\\.test\\.ts$'],
+				exclude: [],
+			},
+		},
+		lanes: [
+			{
+				...manifest().lanes[0],
+				id: 'required-differential',
+				type: 'differential',
+				oracle: 'required',
+				evidenceOrigin: 'repo-authored',
+				files: [
+					{
+						path: requiredPath,
+						role: 'test',
+						sha256: sha256(requiredSource),
+						cases: [
+							{
+								id: 'differential:required',
+								testName: 'stays required',
+								fullName: 'example suite stays required',
+							},
+						],
+					},
+				],
+			},
+			{
+				...manifest().lanes[0],
+				id: 'optional-divergences',
+				type: 'adapted-octane',
+				oracle: 'optional',
+				files: [
+					{
+						path: probePath,
+						role: 'test',
+						sha256: sha256(probeSource),
+						cases: [
+							{
+								id: 'adapted:example',
+								testName: 'does the thing',
+								fullName: 'example suite does the thing',
+							},
+						],
+					},
+				],
+			},
+		],
+		divergences: [divergence({ id: 'example-divergence', caseIds: ['adapted:example'] })],
+	});
+	assert.deepEqual(validateManifest(value), value);
+	assert.deepEqual(
+		requiredExecutableLanes(value).map((lane) => lane.id),
+		['required-differential'],
+	);
+	await assert.doesNotReject(() => verifyManifestFiles(validateManifest(value), root));
+});
+
 test('rejects additional properties at every strict manifest level', () => {
 	for (const mutate of [
 		(value) => (value.extra = true),

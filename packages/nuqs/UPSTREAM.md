@@ -19,6 +19,9 @@ Interim evidence that does run today:
 - paired pristine (`tsc` vs published `nuqs`) and adapted (`tsrx-tsc` vs
   `@octanejs/nuqs`) public-API typetests with structural import-only verification
 
-Repo-authored Octane-only conformance and divergence probes stay on the ordinary
-`nuqs` Vitest project. They are framework-contract coverage, not required adapted
-parity evidence.
+Repo-authored Octane-only divergence probes stay on the ordinary `nuqs` Vitest
+project and are classified as `octane-only-divergence` with structured
+`react-parity.json` divergence records. An optional crosswalk lane binds those
+probes to the records; it is not required adapted-parity ownership and is not
+executed by `run-required`. Do not claim verified parity until real
+one-for-one upstream paired case evidence exists.

@@ -624,7 +624,7 @@ export async function verifyManifestFiles(manifest, root) {
 				(!runtimeCaseIds.has(match[2]) && !caseIdsForManifest(manifest).has(match[2]))
 			)
 				throw new Error(
-					`${path}: divergence marker "${match[1]}" is not bound to required executed case "${match[2]}"`,
+					`${path}: divergence marker "${match[1]}" is not bound to an available lane case "${match[2]}"`,
 				);
 			markerCounts.set(match[1], (markerCounts.get(match[1]) ?? 0) + 1);
 		}
@@ -639,9 +639,11 @@ export async function verifyManifestFiles(manifest, root) {
 }
 
 function caseIdsForManifest(manifest) {
+	// Include optional available lanes so Octane-only divergence probes can keep a
+	// structured case crosswalk without becoming required adapted-parity ownership.
 	return new Set(
 		manifest.lanes
-			.filter((lane) => lane.oracle === 'required' && lane.available !== false)
+			.filter((lane) => lane.available !== false)
 			.flatMap((lane) => lane.files.flatMap((file) => (file.cases ?? []).map((entry) => entry.id))),
 	);
 }
