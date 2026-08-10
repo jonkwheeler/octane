@@ -4,9 +4,14 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { inventoryFromIdentities } from './tanstack-store-pristine-runtime.mjs';
-import { verifyTanstackStoreUpstreamEvidence } from './tanstack-store-upstream-lib.mjs';
+import {
+	compareAdaptedRuntimeAssertions,
+	verifyTanstackStoreUpstreamEvidence,
+} from './tanstack-store-upstream-lib.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const ADAPTED_FIXTURE = 'packages/tanstack-store/tests/_fixtures/upstream/index.tsrx';
+const UPSTREAM_TEST = 'packages/tanstack-store/upstream/tests/index.test.tsx';
 
 function read(relativePath) {
 	return readFileSync(join(REPO, relativePath), 'utf8');
@@ -41,7 +46,11 @@ test('adapted inventory preserves every selected pristine identity one-for-one',
 		.filter(function absent(fullName) {
 			return !fullName.startsWith('_useStore ') && !adaptedNames.has(fullName);
 		});
-	assert.deepEqual(missing, [], `adapted suite omitted pristine identities:\n${missing.join('\n')}`);
+	assert.deepEqual(
+		missing,
+		[],
+		`adapted suite omitted pristine identities:\n${missing.join('\n')}`,
+	);
 });
 
 test('omitting an inventoried pristine identity fails inventory validation', () => {
@@ -78,5 +87,33 @@ test('executable upstream verifier accepts the committed tanstack-store evidence
 		upstreamCases: 32,
 		adaptedCases: 30,
 		omittedCases: 2,
+		assertionGroups: 62,
+		permittedTransformations: 5,
 	});
+});
+
+test('deleting an adapted runtime assertion fails the source-level crosswalk', () => {
+	const upstream = read(UPSTREAM_TEST);
+	const adapted = read(ADAPTED_FIXTURE);
+	const mutated = adapted.replace(
+		'expect(result.current).toBe(atom);\n\t\texpect(result.current.get()).toBe(1);',
+		'expect(result.current).toBe(atom);',
+	);
+	assert.notEqual(mutated, adapted);
+	assert.throws(function deletedAssertion() {
+		compareAdaptedRuntimeAssertions(upstream, mutated);
+	}, /assertions drifted/);
+});
+
+test('changing an adapted runtime assertion fails the source-level crosswalk', () => {
+	const upstream = read(UPSTREAM_TEST);
+	const adapted = read(ADAPTED_FIXTURE);
+	const mutated = adapted.replace(
+		'expect(result.current.get()).toBe(1);',
+		'expect(result.current.get()).toBe(999);',
+	);
+	assert.notEqual(mutated, adapted);
+	assert.throws(function changedAssertion() {
+		compareAdaptedRuntimeAssertions(upstream, mutated);
+	}, /assertions drifted/);
 });

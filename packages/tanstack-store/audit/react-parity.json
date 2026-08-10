@@ -17,23 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/tanstack-store/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
-      "exclude": [
-        "\\.d\\.ts$"
-      ]
+      "roots": ["packages/tanstack-store/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
+      "exclude": ["\\.d\\.ts$"]
     },
     "tests": {
-      "roots": [
-        "packages/tanstack-store/tests/conformance"
-      ],
-      "include": [
-        "upstream-index\\.test\\.ts$"
-      ],
+      "roots": ["packages/tanstack-store/tests/conformance"],
+      "include": ["upstream-index\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -100,7 +90,7 @@
         {
           "path": "packages/tanstack-store/scripts/verify-upstream.mjs",
           "role": "support",
-          "sha256": "3ec33b22b48031a331606f1367027aee6a6718d72c086c0c227f5b9cf9380056"
+          "sha256": "082590c6edb1bf9bd11c20ed5659763853fe83a511e584d7f3cb123dd03b330c"
         },
         {
           "path": "packages/tanstack-store/upstream/SHA256SUMS",
@@ -116,7 +106,7 @@
       "environment": "workspace-node",
       "project": "tanstack-store",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the one-for-one adapted packages/react-store/tests/index.test.tsx suite. Upstream _useStore cases are classified not-applicable outside this adapted evidence.",
+      "notes": "Runs the one-for-one adapted packages/react-store/tests/index.test.tsx suite with an executable assertion-group crosswalk and allowed-transformation ledger. Upstream _useStore cases are classified not-applicable outside this adapted evidence.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tanstack-store/audit/adapted-runtime.json"
@@ -126,6 +116,11 @@
           "path": "packages/tanstack-store/audit/adapted-runtime.json",
           "role": "support",
           "sha256": "e25cbd446e9231d1de9fd02573c71339cf90d240ab32a38e8992d25164e5fd7d"
+        },
+        {
+          "path": "packages/tanstack-store/audit/runtime-parity.json",
+          "role": "support",
+          "sha256": "e876d961505c0f13977941c215218080fedffc6b0c837d656a98ee7c12d5cae5"
         },
         {
           "path": "packages/tanstack-store/tests/conformance/upstream-index.test.ts",
@@ -150,12 +145,12 @@
         {
           "path": "packages/tanstack-store/audit/test-classifications.json",
           "role": "support",
-          "sha256": "5a94c4a65b9f6db2d673dc66b206654389712c4140775ddb0a726a632aab38e7"
+          "sha256": "20da4d0d9c9ac4828f07a59307448922dca586fa9885ee76012506f133dee1ed"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f03355be5491fd1dbda1e060523aee84ed6bfdfad98319cba59c2e6b91002794"
+          "sha256": "c2f50f0a7264f53d997cf5e31758e79d4a3203738b53cd375a1c0b7dd5edbaf6"
         }
       ]
     },
@@ -299,7 +294,7 @@
         {
           "path": "packages/tanstack-store/audit/test-classifications.json",
           "role": "support",
-          "sha256": "5a94c4a65b9f6db2d673dc66b206654389712c4140775ddb0a726a632aab38e7"
+          "sha256": "20da4d0d9c9ac4828f07a59307448922dca586fa9885ee76012506f133dee1ed"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -309,7 +304,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "f03355be5491fd1dbda1e060523aee84ed6bfdfad98319cba59c2e6b91002794"
+          "sha256": "c2f50f0a7264f53d997cf5e31758e79d4a3203738b53cd375a1c0b7dd5edbaf6"
         }
       ]
     }
@@ -317,9 +312,7 @@
   "divergences": [
     {
       "id": "tanstack-store-experimental-use-store",
-      "caseIds": [
-        "types:tanstack-store-adapted-upstream"
-      ],
+      "caseIds": ["types:tanstack-store-adapted-upstream"],
       "upstreamResult": "@tanstack/react-store exports the experimental _useStore hook.",
       "octaneResult": "@octanejs/tanstack-store intentionally omits _useStore while retaining the stable useSelector and useStore APIs.",
       "rationale": "The experimental hook is not part of the supported stable binding surface.",

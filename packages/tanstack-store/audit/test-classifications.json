@@ -41,6 +41,17 @@
       "path": "packages/tanstack-store/tests/upstream-original.test.ts",
       "disposition": "unmodified-upstream-suite-wrapper",
       "oracle": "Runs the byte-exact pinned @tanstack/react-store@0.11.0 Vitest suite against React after vendored-byte verification."
+    },
+    {
+      "path": "packages/tanstack-store/typetests/_useStore-omission.test-d.ts",
+      "disposition": "octane-only-divergence",
+      "divergenceId": "tanstack-store-experimental-use-store",
+      "reason": "Octane-only type evidence that the experimental _useStore export is absent from the published binding."
+    },
+    {
+      "path": "packages/tanstack-store/typetests/test.test-d.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Adapted packages/react-store/tests/test.test-d.ts assertion groups against @octanejs/tanstack-store after permitted import-root transformation and intentional _useStore omission."
     }
   ]
 }

@@ -9,26 +9,62 @@ const DISPOSITIONS = new Set([
 	'octane-only-framework-contract',
 ]);
 
+// Bindings whose authored typetests must appear in the classification ledger so
+// adapted/divergence type coverage cannot be silently counted as parity evidence.
+const TYPE_TEST_DISCOVERY_BINDINGS = new Set(['tanstack-store']);
+
+function discoverTestFiles(root, binding) {
+	const testsRoot = resolve(root, `packages/${binding}/tests`);
+	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
+		.filter(function keepRuntimeTests(entry) {
+			return entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name);
+		})
+		.map(function toRepoPath(entry) {
+			return relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+				.split(sep)
+				.join('/');
+		})
+		.filter(function excludeUpstreamPorts(path) {
+			return !path.includes('/tests/upstream/');
+		});
+	if (TYPE_TEST_DISCOVERY_BINDINGS.has(binding)) {
+		const typetestsRoot = resolve(root, `packages/${binding}/typetests`);
+		if (existsSync(typetestsRoot)) {
+			for (const entry of readdirSync(typetestsRoot, {
+				recursive: true,
+				withFileTypes: true,
+			})) {
+				if (!entry.isFile() || !/\.test-d\.ts$/.test(entry.name)) continue;
+				discovered.push(
+					relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+						.split(sep)
+						.join('/'),
+				);
+			}
+		}
+	}
+	return discovered.sort();
+}
+
 export function verifyPortTestClassifications(root, binding = 'hook-form') {
 	const configPath = `packages/${binding}/audit/test-classifications.json`;
 	const manifestPath = `packages/${binding}/audit/react-parity.json`;
-	const testsRoot = resolve(root, `packages/${binding}/tests`);
-	const discovered = readdirSync(testsRoot, { recursive: true, withFileTypes: true })
-		.filter((entry) => entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name))
-		.map((entry) =>
-			relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
-				.split(sep)
-				.join('/'),
-		)
-		.filter((path) => !path.includes('/tests/upstream/'))
-		.sort();
+	const discovered = discoverTestFiles(root, binding);
 	const absoluteConfigPath = resolve(root, configPath);
 	if (!existsSync(absoluteConfigPath))
 		throw new Error(`missing port-test classifications: ${configPath}`);
 	const config = JSON.parse(readFileSync(absoluteConfigPath, 'utf8'));
 	const manifest = JSON.parse(readFileSync(resolve(root, manifestPath), 'utf8'));
-	const divergenceIds = new Set(manifest.divergences.map((entry) => entry.id));
-	const declared = config.tests.map((entry) => entry.path).sort();
+	const divergenceIds = new Set(
+		manifest.divergences.map(function id(entry) {
+			return entry.id;
+		}),
+	);
+	const declared = config.tests
+		.map(function path(entry) {
+			return entry.path;
+		})
+		.sort();
 	if (JSON.stringify(discovered) !== JSON.stringify(declared))
 		throw new Error(`every port-authored ${binding} test must have exactly one classification`);
 	for (const entry of config.tests) {

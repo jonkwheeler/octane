@@ -69,7 +69,7 @@ for (const [binding, testCount] of [
 	['redux-toolkit', 6],
 	['shadcn', 23],
 	['sonner', 7],
-	['tanstack-store', 8],
+	['tanstack-store', 10],
 ]) {
 	test(`verifies the ${binding} classification ledger`, async (t) => {
 		const root = await mkdtemp(join(tmpdir(), 'binding-classifications-'));
@@ -79,6 +79,13 @@ for (const [binding, testCount] of [
 			join(root, `packages/${binding}/tests`),
 			{ recursive: true },
 		);
+		if (binding === 'tanstack-store') {
+			await cp(
+				new URL(`../../packages/${binding}/typetests`, import.meta.url),
+				join(root, `packages/${binding}/typetests`),
+				{ recursive: true },
+			);
+		}
 		for (const file of ['test-classifications.json', 'react-parity.json']) {
 			await cp(
 				new URL(`../../packages/${binding}/audit/${file}`, import.meta.url),
