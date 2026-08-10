@@ -17,13 +17,22 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-transition-group/src", "packages/react-transition-group/typetests"],
-      "include": ["\\.(?:ts|tsrx)$"],
+      "roots": [
+        "packages/react-transition-group/src",
+        "packages/react-transition-group/typetests"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-transition-group/tests/adapted"],
-      "include": ["\\.test\\.ts$"],
+      "roots": [
+        "packages/react-transition-group/tests/adapted"
+      ],
+      "include": [
+        "\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -40,7 +49,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "359aa6d23cda7d6bf50e394f8d9704ccda6052160799320aa50e71824e2af6f9"
+      "lockfileSha256": "fff56751f1882113c98e5494b4231a0a5bdd26f931c15c3a43f03ae4a5f03d9a"
     }
   },
   "lanes": [
@@ -98,7 +107,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-adapted",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the complete one-for-one Octane adaptation lane: 55 applicable cases are ported and the sole legacy findDOMNode case is explicitly not applicable.",
+      "notes": "Runs the jsdom Octane adaptation lane for every applicable non-SSR case; the sole legacy findDOMNode case remains explicitly not applicable.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-transition-group/audit/adapted-runtime.json"
@@ -107,12 +116,12 @@
         {
           "path": "packages/react-transition-group/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "16c322b7f188268af4fcee39d542fc29105c5daf795c24ff97bb951a48129669"
+          "sha256": "03301be38be50cafef54b669081dc675a83e6d08ceedb690c58568d206491158"
         },
         {
           "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "7ea8f31d2a98e42565b58d0c886607ddc99b319342105f40041381b538b4ee00"
+          "sha256": "364ba5abf9417804ed4f93e4106f7a111063f8893c39a5b641b65d27a66c0251"
         },
         {
           "path": "packages/react-transition-group/audit/adaptation.json",
@@ -122,12 +131,37 @@
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.mjs",
           "role": "support",
-          "sha256": "178939aa03947ba96fe19685b9276edaedb018b4b721072f3e681a51466e6271"
+          "sha256": "c4578752a9d1f0972ecad438f5c4998d8a90cf046fa15fc9d621fec6ce0515ea"
         },
         {
           "path": "scripts/react-parity/react-transition-group-adaptation.test.mjs",
           "role": "support",
           "sha256": "bebad24ecf99b00c424f133a4d8c63f0d4054eb781f545d3e390de844aa79383"
+        }
+      ]
+    },
+    {
+      "id": "react-transition-group-adapted-ssr",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-transition-group-adapted-ssr",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the node-only Octane adaptation of upstream SSR-test.js so the client package import is proven without browser globals.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-transition-group/audit/adapted-runtime-ssr.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-transition-group/audit/adapted-runtime-ssr.json",
+          "role": "support",
+          "sha256": "b340701fc0348d33e30a86bb8cfd935fbf6fb3a1fb2b3406c3327c95575c58aa"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "364ba5abf9417804ed4f93e4106f7a111063f8893c39a5b641b65d27a66c0251"
         }
       ]
     },

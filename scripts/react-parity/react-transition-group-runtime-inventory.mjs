@@ -9,6 +9,10 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const lanes = [
 	['react-transition-group-adapted', 'packages/react-transition-group/audit/adapted-runtime.json'],
+	[
+		'react-transition-group-adapted-ssr',
+		'packages/react-transition-group/audit/adapted-runtime-ssr.json',
+	],
 ];
 
 for (const [project, destination] of lanes) {

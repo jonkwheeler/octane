@@ -72,3 +72,19 @@ test('rejects an unexecuted adapted identity', function rejectsUnexecutedAdaptat
 		buildAdaptationInventory(pristineFixture(), adapted);
 	}, /Adapted case did not pass/);
 });
+
+test('records canonical skipped identities as not-applicable', function recordsSkippedIdentities() {
+	const inventory = buildAdaptationInventory(pristineFixture(), adaptedFixture());
+	assert.equal(inventory.upstreamCases, 258);
+	assert.equal(inventory.adaptedCases, 255);
+	assert.equal(inventory.notApplicableCases, 3);
+	assert.equal(inventory.pendingCases, 0);
+	const skipped = inventory.cases.filter(function notApplicable(entry) {
+		return entry.disposition === 'not-applicable';
+	});
+	assert.equal(skipped.length, 3);
+	for (const entry of skipped) {
+		assert.equal(typeof entry.reason, 'string');
+		assert.ok(entry.reason.length > 0);
+	}
+});

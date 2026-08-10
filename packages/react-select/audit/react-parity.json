@@ -16,13 +16,22 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/react-select/src", "packages/react-select/typetests"],
-      "include": ["\\.(?:ts|tsrx|mjs)$"],
+      "roots": [
+        "packages/react-select/src",
+        "packages/react-select/typetests"
+      ],
+      "include": [
+        "\\.(?:ts|tsrx|mjs)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/react-select/tests/upstream"],
-      "include": ["\\.test\\.(?:ts|mjs)$"],
+      "roots": [
+        "packages/react-select/tests/upstream"
+      ],
+      "include": [
+        "\\.test\\.(?:ts|mjs)$"
+      ],
       "exclude": []
     }
   },
@@ -39,7 +48,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "359aa6d23cda7d6bf50e394f8d9704ccda6052160799320aa50e71824e2af6f9"
+      "lockfileSha256": "fff56751f1882113c98e5494b4231a0a5bdd26f931c15c3a43f03ae4a5f03d9a"
     }
   },
   "lanes": [
@@ -50,7 +59,7 @@
       "environment": "workspace-node",
       "project": "react-select-pristine",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the byte-exact react-select 5.10.2 Jest suites against the vendored React implementation, verifies all 255 passing identities and five snapshots, and preserves the three canonical upstream skips.",
+      "notes": "Runs the byte-exact react-select 5.10.2 Jest suites against the vendored React implementation, verifies all 255 passing identities and five snapshots, and leaves the three canonical upstream skips to adaptation.json not-applicable dispositions.",
       "execution": {
         "kind": "jest-full",
         "config": "packages/react-select/tests/upstream-jest.config.cjs",
@@ -122,7 +131,7 @@
       "environment": "workspace-node",
       "project": "react-select",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs all 255 pristine identities one-for-one through the Octane adaptation lane across all five suites, including all upstream snapshots.",
+      "notes": "Runs all 255 pristine identities one-for-one through the Octane adaptation lane across all five suites, including all upstream snapshots; the three canonical upstream skips are individually justified as not-applicable.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-select/audit/adapted-runtime.json"
@@ -136,12 +145,12 @@
         {
           "path": "packages/react-select/audit/adaptation.json",
           "role": "support",
-          "sha256": "a0fff2b6feb4891ee6b2e9fb89cc9b045341a5c155fb6d26411b518966679f3e"
+          "sha256": "e60868ba415dad272fd5f2cc886d575d20d94b491447e19680af6da570e7a614"
         },
         {
           "path": "packages/react-select/audit/test-classifications.json",
           "role": "support",
-          "sha256": "b53ff709f766e16374e624c6e417015aa19fa62950414e41505596e92f50c336"
+          "sha256": "58e52e9c05a8b7ce9d8d51b6e8944a264edb1881aebe5957361610090a94e41a"
         },
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
@@ -151,12 +160,22 @@
         {
           "path": "scripts/react-parity/react-select-adaptation.mjs",
           "role": "support",
-          "sha256": "a10f24f090c3ccfafa7849d9da67afc1403284516ab0c2f7e54813c4cfbe652e"
+          "sha256": "b553f6cb865bdaf152f59afc6f40a08ac977cc34439ffc4f813d023d6fb67665"
         },
         {
           "path": "scripts/react-parity/react-select-adaptation.test.mjs",
           "role": "support",
-          "sha256": "45715a84032b83838e3400dfbce3875974c8dbb7cba61492dc3d574c3706ba36"
+          "sha256": "7043598f486a8dc2a7f79258112ac9666f1e4518397e5acf7f4699859317475b"
+        },
+        {
+          "path": "scripts/react-parity/react-select-classifications-lib.mjs",
+          "role": "support",
+          "sha256": "522f3c44c02b6178acdc7c8675da16a24c0113f105e965c352ea403a5733db91"
+        },
+        {
+          "path": "scripts/react-parity/react-select-classifications-lib.test.mjs",
+          "role": "support",
+          "sha256": "92f59b3c7bae61ea618028179c8b4c61718f03898f0703b4c337af6e5644702c"
         }
       ]
     },
@@ -298,7 +317,9 @@
   "divergences": [
     {
       "id": "react-select-octane-node",
-      "caseIds": ["types:octane-node-adaptation"],
+      "caseIds": [
+        "types:octane-node-adaptation"
+      ],
       "upstreamResult": "Renderable callbacks and component contracts use ReactNode.",
       "octaneResult": "Renderable callbacks and component contracts use OctaneNode.",
       "rationale": "Octane components render Octane nodes without a React runtime dependency.",
@@ -310,7 +331,9 @@
     },
     {
       "id": "react-select-native-events",
-      "caseIds": ["types:native-event-adaptation"],
+      "caseIds": [
+        "types:native-event-adaptation"
+      ],
       "upstreamResult": "Event-bearing contracts expose React synthetic events.",
       "octaneResult": "Event-bearing contracts expose native DOM events.",
       "rationale": "Octane delivers native DOM events rather than React synthetic events.",
@@ -322,7 +345,9 @@
     },
     {
       "id": "react-select-octane-styles",
-      "caseIds": ["types:octane-style-adaptation"],
+      "caseIds": [
+        "types:octane-style-adaptation"
+      ],
       "upstreamResult": "Renderer-owned style contracts expose Emotion CSSObjectWithLabel values.",
       "octaneResult": "Renderer-owned style contracts expose Octane style objects.",
       "rationale": "Octane owns style serialization and does not require Emotion at runtime.",

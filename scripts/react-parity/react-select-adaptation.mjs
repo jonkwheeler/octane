@@ -10,6 +10,38 @@ const destination = resolve(root, 'packages/react-select/audit/adaptation.json')
 const expectedPristineCases = 255;
 const expectedAdaptedCases = 255;
 
+// Upstream registers these three identities with skip/test.skip. They never enter
+// pristine-runtime.json (jest-full inventories keep only passed cases), but every
+// upstream case still needs an adapted or individually justified disposition.
+export const canonicalSkippedCases = [
+	{
+		id: 'src/__tests__/Async.test.tsx\0in case of callbacks should handle an error by setting options to an empty array',
+		upstreamFile: 'src/__tests__/Async.test.tsx',
+		fullName: 'in case of callbacks should handle an error by setting options to an empty array',
+		disposition: 'not-applicable',
+		reason:
+			'Pinned react-select leaves this as an open product question rather than an asserted Async contract; adapting it would invent callback-error → empty-options semantics the published package does not ship.',
+	},
+	{
+		id: 'src/__tests__/Select.test.tsx\0clicking on select using secondary button on mouse single select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop',
+		upstreamFile: 'src/__tests__/Select.test.tsx',
+		fullName:
+			'clicking on select using secondary button on mouse single select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop',
+		disposition: 'not-applicable',
+		reason:
+			'Upstream marks this matrix entry skipped because its asserted secondary-button menu gating conflicts with observed browser behavior on the pin; encoding it would invent a contested oracle rather than adapt a shipped contract.',
+	},
+	{
+		id: 'src/__tests__/Select.test.tsx\0clicking on select using secondary button on mouse multi select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop',
+		upstreamFile: 'src/__tests__/Select.test.tsx',
+		fullName:
+			'clicking on select using secondary button on mouse multi select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop',
+		disposition: 'not-applicable',
+		reason:
+			'Upstream marks this matrix entry skipped because its asserted secondary-button menu gating conflicts with observed browser behavior on the pin; encoding it would invent a contested oracle rather than adapt a shipped contract.',
+	},
+];
+
 function upstreamFileFor(adaptedFile) {
 	const adaptedBasename = basename(adaptedFile);
 	if (!adaptedBasename.endsWith('.test.ts')) {
@@ -82,7 +114,7 @@ export function buildAdaptationInventory(pristine, adapted) {
 		adaptedKeys.set(key, test.file);
 	}
 
-	const cases = pristineEntries.map(function classify(test) {
+	const adaptedCases = pristineEntries.map(function classify(test) {
 		const adaptedFile = adaptedKeys.get(test.matchId);
 		if (adaptedFile) {
 			return {
@@ -96,11 +128,29 @@ export function buildAdaptationInventory(pristine, adapted) {
 		throw new Error(`Pristine case has no adaptation: ${test.file} ${test.fullName}`);
 	});
 
+	const skippedIds = new Set(
+		canonicalSkippedCases.map(function skippedId(entry) {
+			return entry.id;
+		}),
+	);
+	if (skippedIds.size !== canonicalSkippedCases.length) {
+		throw new Error('Canonical skipped identities must be unique');
+	}
+	for (const entry of pristineEntries) {
+		if (skippedIds.has(entry.id)) {
+			throw new Error(`Canonical skipped identity unexpectedly passed pristine: ${entry.id}`);
+		}
+	}
+
+	const cases = [...adaptedCases, ...canonicalSkippedCases].sort(function byId(left, right) {
+		return left.id < right.id ? -1 : left.id > right.id ? 1 : 0;
+	});
+
 	return {
 		schemaVersion: 1,
-		upstreamCases: pristineEntries.length,
+		upstreamCases: pristineEntries.length + canonicalSkippedCases.length,
 		adaptedCases: adaptedKeys.size,
-		notApplicableCases: 0,
+		notApplicableCases: canonicalSkippedCases.length,
 		pendingCases: cases.filter(function pending(entry) {
 			return entry.disposition === 'pending';
 		}).length,
@@ -122,6 +172,6 @@ if (process.argv.includes('--write')) {
 	const inventory = buildAdaptationInventory(pristine, adapted);
 	writeFileSync(destination, `${JSON.stringify(inventory, null, 2)}\n`);
 	console.log(
-		`packages/react-select/audit/adaptation.json: ${inventory.adaptedCases} adapted, ${inventory.notApplicableCases} not applicable, ${inventory.pendingCases} pending`,
+		`packages/react-select/audit/adaptation.json: ${inventory.adaptedCases} adapted, ${inventory.notApplicableCases} not applicable, ${inventory.pendingCases} pending (${inventory.upstreamCases} upstream)`,
 	);
 }

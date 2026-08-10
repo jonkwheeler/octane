@@ -1,14 +1,11 @@
 {
   "schemaVersion": 1,
   "project": "react-transition-group-adapted",
-  "roots": [
-    "packages/react-transition-group/tests/adapted"
-  ],
+  "roots": ["packages/react-transition-group/tests/adapted"],
   "files": [
     "packages/react-transition-group/tests/adapted/CSSTransition.test.ts",
     "packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts",
     "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
-    "packages/react-transition-group/tests/adapted/SSR.test.ts",
     "packages/react-transition-group/tests/adapted/SwitchTransition.test.ts",
     "packages/react-transition-group/tests/adapted/Transition.test.ts",
     "packages/react-transition-group/tests/adapted/TransitionGroup.test.ts"
@@ -153,11 +150,6 @@
       "id": "runtime:69cfbc98e289804f",
       "file": "packages/react-transition-group/tests/adapted/ChildMapping.test.ts",
       "fullName": "ChildMapping should support mergeChildMappings with undefined input"
-    },
-    {
-      "id": "runtime:6546083fa3c470e6",
-      "file": "packages/react-transition-group/tests/adapted/SSR.test.ts",
-      "fullName": "SSR should import react-transition-group in node env"
     },
     {
       "id": "runtime:a50ee5f624209836",

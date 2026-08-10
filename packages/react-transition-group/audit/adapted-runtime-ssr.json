@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "project": "react-transition-group-adapted-ssr",
+  "roots": ["packages/react-transition-group/tests/adapted"],
+  "files": ["packages/react-transition-group/tests/adapted/SSR.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:6546083fa3c470e6",
+      "file": "packages/react-transition-group/tests/adapted/SSR.test.ts",
+      "fullName": "SSR should import react-transition-group in node env"
+    }
+  ]
+}

@@ -5,7 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const pristinePath = resolve(root, 'packages/react-transition-group/audit/pristine-runtime.json');
-const adaptedPath = resolve(root, 'packages/react-transition-group/audit/adapted-runtime.json');
+const adaptedPaths = [
+	resolve(root, 'packages/react-transition-group/audit/adapted-runtime.json'),
+	resolve(root, 'packages/react-transition-group/audit/adapted-runtime-ssr.json'),
+];
 const destination = resolve(root, 'packages/react-transition-group/audit/adaptation.json');
 const findDOMNodeCase = 'Transition should use `React.findDOMNode` when `nodeRef` is not provided';
 
@@ -101,7 +104,11 @@ export function buildAdaptationInventory(pristine, adapted) {
 
 if (process.argv.includes('--write')) {
 	const pristine = JSON.parse(readFileSync(pristinePath, 'utf8'));
-	const adapted = JSON.parse(readFileSync(adaptedPath, 'utf8'));
+	const adapted = {
+		tests: adaptedPaths.flatMap(function loadAdaptedInventory(path) {
+			return JSON.parse(readFileSync(path, 'utf8')).tests;
+		}),
+	};
 	const inventory = buildAdaptationInventory(pristine, adapted);
 	writeFileSync(destination, `${JSON.stringify(inventory, null, 2)}\n`);
 	console.log(

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "upstreamCases": 255,
+  "upstreamCases": 258,
   "adaptedCases": 255,
-  "notApplicableCases": 0,
+  "notApplicableCases": 3,
   "pendingCases": 0,
   "permittedTransforms": [
     "import React APIs from Octane equivalents",
@@ -26,6 +26,13 @@
       "fullName": "in case of callbacks display the most recently-requested loaded options (if results are returned out of order)",
       "disposition": "adapted",
       "adaptedFile": "packages/react-select/tests/upstream/Async.test.ts"
+    },
+    {
+      "id": "src/__tests__/Async.test.tsx\u0000in case of callbacks should handle an error by setting options to an empty array",
+      "upstreamFile": "src/__tests__/Async.test.tsx",
+      "fullName": "in case of callbacks should handle an error by setting options to an empty array",
+      "disposition": "not-applicable",
+      "reason": "Pinned react-select leaves this as an open product question rather than an asserted Async contract; adapting it would invent callback-error → empty-options semantics the published package does not ship."
     },
     {
       "id": "src/__tests__/Async.test.tsx\u0000load option prop with defaultOptions true with callback  > should resolve options",
@@ -621,6 +628,20 @@
       "fullName": "clicking on disabled option single select > should not select the disabled option",
       "disposition": "adapted",
       "adaptedFile": "packages/react-select/tests/upstream/Select.test.ts"
+    },
+    {
+      "id": "src/__tests__/Select.test.tsx\u0000clicking on select using secondary button on mouse multi select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop",
+      "upstreamFile": "src/__tests__/Select.test.tsx",
+      "fullName": "clicking on select using secondary button on mouse multi select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop",
+      "disposition": "not-applicable",
+      "reason": "Upstream marks this matrix entry skipped because its asserted secondary-button menu gating conflicts with observed browser behavior on the pin; encoding it would invent a contested oracle rather than adapt a shipped contract."
+    },
+    {
+      "id": "src/__tests__/Select.test.tsx\u0000clicking on select using secondary button on mouse single select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop",
+      "upstreamFile": "src/__tests__/Select.test.tsx",
+      "fullName": "clicking on select using secondary button on mouse single select > secondary click is ignored > should not call onMenuOpen and onMenuClose prop",
+      "disposition": "not-applicable",
+      "reason": "Upstream marks this matrix entry skipped because its asserted secondary-button menu gating conflicts with observed browser behavior on the pin; encoding it would invent a contested oracle rather than adapt a shipped contract."
     },
     {
       "id": "src/__tests__/Select.test.tsx\u0000clicking when focused does not open select when openMenuOnClick=false",

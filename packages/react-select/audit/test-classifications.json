@@ -4,22 +4,27 @@
     {
       "path": "packages/react-select/tests/upstream/Async.test.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Ports eight cases one-for-one from upstream/src/__tests__/Async.test.tsx with unchanged titles."
+      "oracle": "Ports nine cases one-for-one from upstream/src/__tests__/Async.test.tsx with unchanged titles."
     },
     {
       "path": "packages/react-select/tests/upstream/AsyncCreatable.test.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Ports four cases one-for-one from upstream/src/__tests__/AsyncCreatable.test.tsx with unchanged titles."
+      "oracle": "Ports five cases one-for-one from upstream/src/__tests__/AsyncCreatable.test.tsx with unchanged titles."
     },
     {
       "path": "packages/react-select/tests/upstream/Creatable.test.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Ports fourteen cases one-for-one from upstream/src/__tests__/Creatable.test.tsx with unchanged titles."
+      "oracle": "Ports eighteen cases one-for-one from upstream/src/__tests__/Creatable.test.tsx with unchanged titles."
+    },
+    {
+      "path": "packages/react-select/tests/upstream/Select.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Ports one hundred eighty-six cases one-for-one from upstream/src/__tests__/Select.test.tsx with unchanged titles."
     },
     {
       "path": "packages/react-select/tests/upstream/StateManaged.test.ts",
       "disposition": "adapted-upstream-suite",
-      "oracle": "Ports twelve cases one-for-one from upstream/src/__tests__/StateManaged.test.tsx with unchanged titles."
+      "oracle": "Ports thirty-seven cases one-for-one from upstream/src/__tests__/StateManaged.test.tsx with unchanged titles."
     },
     {
       "path": "packages/react-select/tests/upstream-original.test.ts",
