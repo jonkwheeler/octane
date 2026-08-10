@@ -2891,6 +2891,7 @@ export default defineConfig({
 					exclude: [
 						'packages/motion/tests/differential/**/*.test.ts',
 						'packages/motion/tests/upstream/**/*.test.ts',
+						'packages/motion/tests/upstream-original.test.ts',
 					],
 					globals: false,
 				},
