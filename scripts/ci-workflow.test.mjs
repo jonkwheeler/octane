@@ -298,9 +298,10 @@ describe('CI workflow aggregation', () => {
 		assert.doesNotMatch(executionBranch, /verifyManifestTestSelections/);
 	});
 
-	test('routes unpaired Vaul browser conformance through the generic Chromium browser lane', () => {
-		const browserGlob = 'packages/vaul/tests/browser-conformance/**/*.test.ts';
+	test('routes unpaired browser-conformance suites through a package-agnostic Chromium lane', () => {
+		const browserGlob = 'packages/*/tests/browser-conformance/**/*.test.ts';
 		assert.ok(jobSource('test_shard').includes(`--exclude "${browserGlob}"`));
+		assert.ok(!jobSource('test_shard').includes('packages/vaul/tests/browser-conformance'));
 
 		const heavyIntegration = jobSource('heavy_integration');
 		const browserStart = heavyIntegration.indexOf('- lane: browser');
@@ -309,7 +310,8 @@ describe('CI workflow aggregation', () => {
 		assert.notEqual(nextLane, -1);
 		const browserLane = heavyIntegration.slice(browserStart, nextLane);
 		assert.match(browserLane, /chromium: true/);
-		assert.ok(browserLane.includes('packages/vaul/tests/browser-conformance'));
+		assert.ok(browserLane.includes('packages/*/tests/browser-conformance'));
+		assert.ok(!browserLane.includes('packages/vaul/tests/browser-conformance'));
 
 		const projects = new Map(
 			baseVitestModule.default.test.projects.map((project) => [project.test?.name, project]),
