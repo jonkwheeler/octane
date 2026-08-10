@@ -224,7 +224,7 @@
 				{
 					"path": "packages/tiptap/audit/pristine-types.json",
 					"role": "test",
-					"sha256": "1e163f6734a7ea78f3ba3a65887d1e740d631b820e1a5c45e6fab53276327f74",
+					"sha256": "bccdb8c86ca5837f6f41d14141ec3f99c012d8ceb6cffb8c54d8edccb8656d3d",
 					"cases": [
 						{
 							"id": "types:tiptap-pristine",
@@ -236,7 +236,7 @@
 				{
 					"path": "packages/tiptap/typetests/pristine/types.test-d.ts",
 					"role": "support",
-					"sha256": "81ff7fd39229c9e2e3affb8c143f1bca24514a2c060a9fbc70e59c2e2306fc83"
+					"sha256": "c8e85abab88801923a78ba33be8ad20a5bbe62d8eb816400766fc341c658a25f"
 				},
 				{
 					"path": "packages/tiptap/typetests/pristine/tsconfig.json",
@@ -251,7 +251,7 @@
 				{
 					"path": "packages/tiptap/typetests/assertions.md",
 					"role": "support",
-					"sha256": "97a2a0437babb07352e44e45eade1b87e333d92e35c6cd11a3280da68d4d7c5a"
+					"sha256": "e57265cb52352b451e9cd8186bd0b09106b48e52b15899215ac596c619dc692f"
 				}
 			]
 		},
@@ -272,7 +272,7 @@
 				{
 					"path": "packages/tiptap/audit/adapted-types.json",
 					"role": "test",
-					"sha256": "cc7c6b12e14818e078006e7628dabe0c6010133023ba021785c88dee27ccd84d",
+					"sha256": "02ea2b8d17d5be65ce85cdb84a88e287d59c0dc9b02c8d06ea07a9322df7c8da",
 					"cases": [
 						{
 							"id": "types:tiptap-adapted",
@@ -284,7 +284,7 @@
 				{
 					"path": "packages/tiptap/typetests/adapted/types.test-d.ts",
 					"role": "support",
-					"sha256": "7dd53639719f142d7ff1956ef21584dbbeff960abc8f3f8e1b2caa2032c6a321"
+					"sha256": "a3e61ced250a701ef528080b09634e541ad50093a875c65b5a4a69fae906df17"
 				},
 				{
 					"path": "packages/tiptap/typetests/adapted/tsconfig.json",
@@ -299,7 +299,7 @@
 				{
 					"path": "packages/tiptap/typetests/assertions.md",
 					"role": "support",
-					"sha256": "97a2a0437babb07352e44e45eade1b87e333d92e35c6cd11a3280da68d4d7c5a"
+					"sha256": "e57265cb52352b451e9cd8186bd0b09106b48e52b15899215ac596c619dc692f"
 				}
 			]
 		}

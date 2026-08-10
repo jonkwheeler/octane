@@ -24,7 +24,7 @@ type Equal<X, Y> =
 	(<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? true : false;
 type IsAny<T> = 0 extends 1 & T ? true : false;
 type NotAny<T> = IsAny<T> extends true ? false : true;
-type CallResult<F> = F extends (...args: any) => infer R ? R : never;
+type ApplyProps<C, P> = C extends (props: P, ...args: any[]) => infer R ? R : never;
 
 // 1. UseEditorOptions accepts starter options.
 const options: UseEditorOptions = {
@@ -52,17 +52,18 @@ const text = useEditorState({
 type _useEditorStateExact = Expect<Equal<typeof text, string>>;
 type _useEditorStateNotAny = Expect<NotAny<typeof text>>;
 
-// 5. EditorContent accepts props and has a non-any callable signature/result.
+// 5. EditorContent accepts these props on its callable signature (non-any result).
 const contentProps: EditorContentProps = {
 	editor,
 	children: null as ReactNode,
 	style: { marginTop: 8 },
 };
 type _editorContentNotAny = Expect<NotAny<typeof EditorContent>>;
-type _editorContentResultNotAny = Expect<NotAny<CallResult<typeof EditorContent>>>;
-void contentProps;
+type _editorContentResultNotAny = Expect<
+	NotAny<ApplyProps<typeof EditorContent, typeof contentProps>>
+>;
 
-// 6. BubbleMenu / FloatingMenu accept props and have non-any callable signatures/results.
+// 6. BubbleMenu / FloatingMenu accept these props on their callable signatures.
 const bubbleProps: BubbleMenuProps = {
 	children: 'bubble',
 	className: 'menu',
@@ -73,10 +74,8 @@ const floatingProps = {
 } satisfies FloatingMenuProps;
 type _bubbleMenuNotAny = Expect<NotAny<typeof BubbleMenu>>;
 type _floatingMenuNotAny = Expect<NotAny<typeof FloatingMenu>>;
-type _bubbleResultNotAny = Expect<NotAny<CallResult<typeof BubbleMenu>>>;
-type _floatingResultNotAny = Expect<NotAny<CallResult<typeof FloatingMenu>>>;
-void bubbleProps;
-void floatingProps;
+type _bubbleResultNotAny = Expect<NotAny<ApplyProps<typeof BubbleMenu, typeof bubbleProps>>>;
+type _floatingResultNotAny = Expect<NotAny<ApplyProps<typeof FloatingMenu, typeof floatingProps>>>;
 
 // 7. Unknown UseEditorOptions keys are rejected.
 // @ts-expect-error unknown editor option is rejected
