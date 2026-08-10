@@ -12,9 +12,9 @@
 - npm lock integrity: `sha512-Vsv7kFaXm+ptHDMZ7izaRsP70GgrW9NBNGswt9OZaVBLlE0SNpDq8eu/VGXyF9r7M0azK3Wy7OlYXsuyYLFzHg==`
 - Supported upstream range: exactly `1.1.1`
 - License: MIT
-- React oracle: `react@19.2.7` and `react-dom@19.2.7` via the dedicated
-  `catalog:cmdk-react-oracle` pin (exact versions, not `catalog:default`'s caret
-  range)
+- React oracle: `react@19.2.7`, `react-dom@19.2.7`, `@types/react@19.2.17`, and
+  `@types/react-dom@19.2.3` via the dedicated `catalog:cmdk-react-oracle` pin
+  (exact versions, not `catalog:default`'s caret ranges)
 
 The published archive contains compiled runtime and declarations, but not the canonical
 Playwright suite. The byte-exact package source, all test specs and fixtures, test configuration,

@@ -108,7 +108,7 @@
         {
           "path": "packages/cmdk/audit/test-classifications.json",
           "role": "support",
-          "sha256": "93b6bbcbd55adc42a4e1a5c560cdb0089046b67242974745b0cc3c441ac29926"
+          "sha256": "8ad81def1144092ed80c5e06238639a5197cb18712c553799d5c1704046d7ec3"
         },
         {
           "path": "packages/cmdk/scripts/check-upstream-ledger.mjs",
@@ -123,7 +123,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "9a77b3de29dd64b3d51878119ed45b1db23342047d3af900d23ad4579d1498f0"
+          "sha256": "49d70e93848d1afbe0ca65efdbe805976fac579bf17f85b31060ee3d1781d68f"
         }
       ]
     },

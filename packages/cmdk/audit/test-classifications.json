@@ -7,14 +7,64 @@
       "reason": "Checks the reused scorer inside the Octane package and is not counted as pristine upstream evidence."
     },
     {
-      "path": "packages/cmdk/tests/command.test.ts",
+      "path": "packages/cmdk/tests/command.batcher-isolation.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Inventories batcher isolation for throwing onValueChange callbacks; structured divergence promotion waits on a React-comparing case id."
+    },
+    {
+      "path": "packages/cmdk/tests/command.css-order-ranking.test.ts",
       "disposition": "octane-only-divergence",
-      "reason": "Exercises documented consumer-visible divergences (force-mount Empty counting, force-mount ranking, and registration teardown release) without a same-case React oracle.",
-      "divergenceIds": [
-        "force-mount-empty-count",
-        "force-mount-rank-order",
-        "registration-teardown-release"
-      ]
+      "reason": "Pins CSS-order ranking, ranked navigation, and clear-to-source-order restoration without a same-case React oracle.",
+      "divergenceIds": ["runtime-adaptation-divergences"]
+    },
+    {
+      "path": "packages/cmdk/tests/command.duplicate-value.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Inventories development duplicate-value warnings; structured divergence promotion waits on a React-comparing case id."
+    },
+    {
+      "path": "packages/cmdk/tests/command.force-mount-empty.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises force-mount Empty counting and release without a same-case React oracle.",
+      "divergenceIds": ["force-mount-empty-count"]
+    },
+    {
+      "path": "packages/cmdk/tests/command.force-mount-rank.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises force-mounted non-match ranking below scored matches without a same-case React oracle.",
+      "divergenceIds": ["force-mount-rank-order"]
+    },
+    {
+      "path": "packages/cmdk/tests/command.group-ordering.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises corrected group reordering by best item score without a same-case React oracle.",
+      "divergenceIds": ["corrected-group-ordering"]
+    },
+    {
+      "path": "packages/cmdk/tests/command.registration-teardown.test.ts",
+      "disposition": "octane-only-divergence",
+      "reason": "Exercises symmetric registration release across item, forceMount, and group teardowns.",
+      "divergenceIds": ["registration-teardown-release"]
+    },
+    {
+      "path": "packages/cmdk/tests/command.selection-teardown.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Inventories multi-item teardown reselection; structured divergence promotion waits on a React-comparing case id."
+    },
+    {
+      "path": "packages/cmdk/tests/command.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Command/Dialog framework contracts that do not record a React incompatibility."
+    },
+    {
+      "path": "packages/cmdk/tests/command.unscored-arrival.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Inventories inferred-value arrivals during an active search; structured divergence promotion waits on a React-comparing case id."
+    },
+    {
+      "path": "packages/cmdk/tests/command.value-change-filter.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Inventories filter-aggregate refresh when an item value changes during a search; structured divergence promotion waits on a React-comparing case id."
     },
     {
       "path": "packages/cmdk/tests/differential/parity.test.ts",

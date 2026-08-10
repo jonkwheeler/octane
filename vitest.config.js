@@ -3732,6 +3732,10 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/cmdk/tests/ssr/empty-differential.test.ts'],
+				},
 				test: {
 					name: 'cmdk-ssr',
 					include: ['packages/cmdk/tests/ssr/**/*.test.ts'],
