@@ -38,9 +38,19 @@ export function compileFixture(
 	const rewritten = transformed.code
 		.replace(
 			/from\s+["']@octanejs\/tanstack-store(\/[^"']*)?["']/g,
-			(_match, subpath) => `from "@tanstack/react-store${subpath || ''}"`,
+			function rewriteTanstackStore(_match: string, subpath: string | undefined) {
+				return `from "@tanstack/react-store${subpath || ''}"`;
+			},
 		)
 		.replace(/from\s+["']octane["']/g, 'from "react"');
+	if (
+		/(?:from|import)\s+["']@octanejs\//.test(rewritten) ||
+		/from\s+["']octane["']/.test(rewritten)
+	) {
+		throw new Error(
+			`React fixture rewrite left Octane-only imports in ${sourcePath}; keep differential oracles under _fixtures/differential`,
+		);
+	}
 	const slug = basename(sourcePath).replace(/\.tsrx$/, '');
 	dependencies.writeFile(join(cacheDirectory, `${slug}-${hashString(sourcePath)}.js`), rewritten);
 }

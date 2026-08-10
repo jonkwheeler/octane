@@ -150,7 +150,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c2f50f0a7264f53d997cf5e31758e79d4a3203738b53cd375a1c0b7dd5edbaf6"
+          "sha256": "db8e4a7c35caaf6d2c0f61ad034935a7eb9306af91800b815049e0774580f5fa"
         }
       ]
     },
@@ -305,7 +305,7 @@
         {
           "path": "packages/tanstack-store/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "5436a86835735e858432ff26a5b8ba2548409363cc53c09f729d0cfab83b1baf",
+          "sha256": "c0e5f9c50d87145f3306532144fea7ad8e4cc3b9b36385f72ecce7a45b49c575",
           "cases": [
             {
               "id": "differential:tanstack-store-public-contract",
@@ -317,15 +317,15 @@
         {
           "path": "packages/tanstack-store/tests/differential/_setup.ts",
           "role": "support",
-          "sha256": "cf56991aebd796dcc37f9b679f8ec60b8d7ee75946423d45b683ca604cdb258b"
+          "sha256": "f9f5a54a2fa499c0ee2c9a112ef36394e729dbc302156d72291244ce9725fa7d"
         },
         {
           "path": "packages/tanstack-store/tests/differential/fixture-compiler.ts",
           "role": "support",
-          "sha256": "e4fb3b47e0916dbb117721a1cf06e58b4bcbeeb2966eb2ac761ae79c10fc3592"
+          "sha256": "1657529172f3d6beab732c51edd124d3a54b1caf679806a5bc8f405a7dc2d33c"
         },
         {
-          "path": "packages/tanstack-store/tests/_fixtures/parity.tsrx",
+          "path": "packages/tanstack-store/tests/_fixtures/differential/parity.tsrx",
           "role": "support",
           "sha256": "7aff5688701aaba0cd483a9231c2834d2b2a1525f04b52583fe204402a3e61e7"
         },
@@ -342,7 +342,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "c2f50f0a7264f53d997cf5e31758e79d4a3203738b53cd375a1c0b7dd5edbaf6"
+          "sha256": "db8e4a7c35caaf6d2c0f61ad034935a7eb9306af91800b815049e0774580f5fa"
         }
       ]
     }
