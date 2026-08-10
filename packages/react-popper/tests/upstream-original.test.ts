@@ -89,7 +89,7 @@ it('runs all 18 pinned react-popper tests unchanged', function runsPinnedReactPo
 		.sort(function compare(left: Identity, right: Identity) {
 			const leftKey = `${left.file}\0${left.fullName}`;
 			const rightKey = `${right.file}\0${right.fullName}`;
-			return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+			return leftKey.localeCompare(rightKey);
 		});
 	expect(executed).toEqual(
 		expected.map(function expectedIdentity(test: Identity) {

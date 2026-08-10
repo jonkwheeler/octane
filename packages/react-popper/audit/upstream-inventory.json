@@ -244,18 +244,18 @@
     },
     {
       "path": "tag/src/__snapshots__/Manager.test.js.snap",
-      "bytes": 208,
-      "sha256": "6632b7b51bb4dcbd6c96921ef1a9244b06c01a56eb4eb9100e9012022151923e"
+      "bytes": 226,
+      "sha256": "216a5973588d3eea671f6b02018c1b3f6a750c781f9ecfae2c7ed8cc8bd53721"
     },
     {
       "path": "tag/src/__snapshots__/Popper.test.js.snap",
-      "bytes": 374,
-      "sha256": "b49e1a52352ca84f0f0c6f1cc90c0dce1056b6ec44263f3909ddc2f03b08511e"
+      "bytes": 392,
+      "sha256": "5f196fea8eb332feb834e5ead074de3e2e4c6fced020f7f5480f8a3409bad682"
     },
     {
       "path": "tag/src/__snapshots__/Reference.test.js.snap",
-      "bytes": 157,
-      "sha256": "0ea85478907cf4964a96cc8bc6df15079efbe34f8ff8520761b525a123c1b7d4"
+      "bytes": 175,
+      "sha256": "3b513d7160533381778eb38cd57d799fcbc3f0886134558db15d830b4080e3c2"
     },
     {
       "path": "tag/src/__typings__/main-test.js",

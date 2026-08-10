@@ -11,3 +11,11 @@ metadata, README, and license are vendored under `upstream/tag`. The published
 npm declaration, package metadata, README, and license are vendored under
 `upstream/npm`. `audit/upstream-inventory.json` records their SHA-256 hashes and
 the parity audit fails closed when either authority or its case map changes.
+
+## Host tooling adaptation
+
+The three Jest snapshot files under `upstream/tag/src/__snapshots__/` keep the
+pinned v2.3.0 bodies but use the current Jest snapshot guide URL
+(`https://jestjs.io/docs/snapshot-testing`) instead of the legacy `goo.gl`
+header. Jest 30 rejects the outdated header; the inventory checksums cover the
+adapted files.
