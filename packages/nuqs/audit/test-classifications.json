@@ -45,12 +45,8 @@
     {
       "path": "packages/nuqs/tests/parity/divergences.test.ts",
       "disposition": "octane-only-divergence",
-      "reason": "Authenticates the supported adapter export set, missing RSC cache helper, and React-free transition type.",
-      "divergenceIds": [
-        "router-adapters-unavailable",
-        "rsc-cache-unavailable",
-        "local-transition-start-type"
-      ]
+      "reason": "Authenticates the supported adapter export set and React-free transition type.",
+      "divergenceIds": ["router-adapters-unavailable", "local-transition-start-type"]
     },
     {
       "path": "packages/nuqs/tests/parity/rsc-cache.test.ts",
