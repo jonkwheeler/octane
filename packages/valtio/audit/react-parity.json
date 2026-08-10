@@ -65,7 +65,7 @@
         {
           "path": "packages/valtio/tests/upstream/use-hooks.test.ts",
           "role": "support",
-          "sha256": "a68f6830fd3266c919137bd4049aa0342b6e1fb079fc54d96a7408c64e6a2eab"
+          "sha256": "6764b9a57602e0cb95203aa7cbee80ef6ba22644ad3e269e79623c4b54d0b0c3"
         }
       ]
     },
