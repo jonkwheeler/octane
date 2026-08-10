@@ -69,5 +69,5 @@ packages/tanstack-hotkeys/.vite-pristine/
 
 # Published declaration trees vendored for binding pristine type probes.
 # Root `dist` would otherwise ignore packages/*/upstream/dist/.
-!packages/react-textarea-autosize/upstream/dist/
-!packages/react-textarea-autosize/upstream/dist/**
+!packages/textarea-autosize/upstream/dist/
+!packages/textarea-autosize/upstream/dist/**
