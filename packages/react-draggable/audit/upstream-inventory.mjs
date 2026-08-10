@@ -56,8 +56,12 @@ function adaptedUnitIdentity(entry) {
 	return `${entry.file}::${entry.name}`;
 }
 
+function adaptedBrowserIdentity(entry) {
+	return `${entry.file}::${entry.name}`;
+}
+
 function adaptedBrowserId(entry) {
-	return `adapted-browser:${entry.id}`;
+	return `adapted-browser:${adaptedBrowserIdentity(entry)}`;
 }
 
 async function buildInventory(root = packageRoot) {
@@ -97,7 +101,6 @@ async function buildInventory(root = packageRoot) {
 		'tests/differential/parity.test.ts',
 		'tests/hydration/hydration.test.ts',
 		'tests/ssr/server.test.ts',
-		'tests/browser/parity.browser.test.ts',
 	];
 	const adaptedCases = [];
 	for (const path of markerPaths) {
@@ -123,15 +126,20 @@ async function buildInventory(root = packageRoot) {
 			line: matched.line,
 		});
 	}
+	const browserCasePath = 'tests/browser/parity.browser.test.ts';
+	const browserCaseSource = await readFile(join(root, browserCasePath), 'utf8');
+	const browserAdapted = staticCalls(browserCaseSource, ['adaptedCase']);
+	sameIdentities(browserAdapted, browserCases, 'adapted browser case', (value) =>
+		value.file ? adaptedBrowserIdentity(value) : value.name,
+	);
 	for (const entry of browserCases) {
-		const scenario = /iframe|shadow DOM|unmount|defocus|steal focus/.test(entry.name)
-			? 'browser:react-draggable-ownership-cleanup'
-			: 'browser:react-draggable-native';
+		const identity = adaptedBrowserIdentity(entry);
+		const matched = browserAdapted.find((candidate) => candidate.name === identity);
 		adaptedCases.push({
 			id: adaptedBrowserId(entry),
-			path: 'tests/browser/parity.browser.test.ts',
+			path: browserCasePath,
 			name: entry.name,
-			scenario,
+			line: matched.line,
 		});
 	}
 	adaptedCases.push(
@@ -145,9 +153,6 @@ async function buildInventory(root = packageRoot) {
 		adaptedById.size === adaptedCases.length,
 		'adapted parity case identifiers must be unique',
 	);
-	for (const entry of adaptedCases.filter((value) => value.scenario)) {
-		assert(adaptedById.has(entry.scenario), `${entry.id}: browser scenario marker is missing`);
-	}
 
 	const sourceFiles = artifactFiles.filter((path) => path.startsWith('tag/lib/'));
 	const runtimeExports = ['default', 'DraggableCore'];
@@ -279,7 +284,7 @@ async function buildInventory(root = packageRoot) {
 					value.id,
 					'browser-case',
 					evidenceFor(caseIds),
-					'Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox.',
+					'Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity.',
 					caseIds,
 				);
 			}),
@@ -287,8 +292,8 @@ async function buildInventory(root = packageRoot) {
 				adapted(
 					value,
 					'fixture',
-					['tests/browser/parity.browser.test.ts'],
-					'Replaced by deterministic Octane real-browser fixtures.',
+					['tests/browser/parity.browser.test.ts', 'tests/browser/harness/mount.ts'],
+					'Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand.',
 				),
 			),
 			typeAssertions: expectTypeAssertions(typeSource).map((value) =>

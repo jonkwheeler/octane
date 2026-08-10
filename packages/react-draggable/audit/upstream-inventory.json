@@ -1998,14 +1998,6 @@
         "path": "tests/ssr/server.test.ts"
       },
       {
-        "id": "browser:react-draggable-native",
-        "path": "tests/browser/parity.browser.test.ts"
-      },
-      {
-        "id": "browser:react-draggable-ownership-cleanup",
-        "path": "tests/browser/parity.browser.test.ts"
-      },
-      {
         "id": "adapted-public:tag/test/Draggable.test.jsx::should have sensible defaults",
         "path": "tests/upstream/public-root.test.ts",
         "name": "should have sensible defaults",
@@ -2372,142 +2364,142 @@
         "line": 538
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:42::should update transform on drag",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should update transform on drag",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should update transform on drag",
-        "scenario": "browser:react-draggable-native"
+        "line": 99
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:79::should honor x axis constraint",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should honor x axis constraint",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should honor x axis constraint",
-        "scenario": "browser:react-draggable-native"
+        "line": 115
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:109::should honor y axis constraint",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should honor y axis constraint",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should honor y axis constraint",
-        "scenario": "browser:react-draggable-native"
+        "line": 127
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:141::should call onStop when drag ends",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should call onStop when drag ends",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should call onStop when drag ends",
-        "scenario": "browser:react-draggable-native"
+        "line": 139
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to bounds object",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to bounds object",
-        "scenario": "browser:react-draggable-native"
+        "line": 151
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to parent bounds",
-        "scenario": "browser:react-draggable-native"
+        "line": 166
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:256::should clip to negative bounds",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should clip to negative bounds",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip to negative bounds",
-        "scenario": "browser:react-draggable-native"
+        "line": 178
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:293::should snap movement to grid",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should snap movement to grid",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should snap movement to grid",
-        "scenario": "browser:react-draggable-native"
+        "line": 193
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should not trigger onDrag when movement is less than grid",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not trigger onDrag when movement is less than grid",
-        "scenario": "browser:react-draggable-native"
+        "line": 205
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should snap to larger grid correctly",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should snap to larger grid correctly",
-        "scenario": "browser:react-draggable-native"
+        "line": 220
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should adjust position when scale is 2x",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should adjust position when scale is 2x",
-        "scenario": "browser:react-draggable-native"
+        "line": 232
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:454::should only drag from handle",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should only drag from handle",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should only drag from handle",
-        "scenario": "browser:react-draggable-native"
+        "line": 244
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should drag from deeply nested handle elements",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should drag from deeply nested handle elements",
-        "scenario": "browser:react-draggable-native"
+        "line": 261
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should not drag from deeply nested cancel elements",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not drag from deeply nested cancel elements",
-        "scenario": "browser:react-draggable-native"
+        "line": 276
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should work correctly inside an iframe",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should work correctly inside an iframe",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 291
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should respect bounds inside an iframe",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should respect bounds inside an iframe",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 314
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should handle dragging in scrollable containers",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should handle dragging in scrollable containers",
-        "scenario": "browser:react-draggable-native"
+        "line": 333
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds in shadow DOM",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to parent bounds in shadow DOM",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 350
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to selector bounds in shadow DOM",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should clip dragging to selector bounds in shadow DOM",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 378
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should not throw when unmounted during onStop callback",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not throw when unmounted during onStop callback",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 406
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should not defocus inputs when draggable unmounts",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not defocus inputs when draggable unmounts",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 429
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should not steal focus from inputs when starting drag",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should not steal focus from inputs when starting drag",
-        "scenario": "browser:react-draggable-ownership-cleanup"
+        "line": 465
       },
       {
-        "id": "adapted-browser:tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
+        "id": "adapted-browser:tag/test/browser/browser.test.js::should calculate drag with offset position correctly",
         "path": "tests/browser/parity.browser.test.ts",
         "name": "should calculate drag with offset position correctly",
-        "scenario": "browser:react-draggable-native"
+        "line": 486
       },
       {
         "id": "type-program:adapted-consumer",
@@ -4856,9 +4848,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:42::should update transform on drag"
+          "adapted-browser:tag/test/browser/browser.test.js::should update transform on drag"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:79::should honor x axis constraint",
@@ -4868,9 +4860,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:79::should honor x axis constraint"
+          "adapted-browser:tag/test/browser/browser.test.js::should honor x axis constraint"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:109::should honor y axis constraint",
@@ -4880,9 +4872,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:109::should honor y axis constraint"
+          "adapted-browser:tag/test/browser/browser.test.js::should honor y axis constraint"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:141::should call onStop when drag ends",
@@ -4892,9 +4884,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:141::should call onStop when drag ends"
+          "adapted-browser:tag/test/browser/browser.test.js::should call onStop when drag ends"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:179::should clip dragging to bounds object",
@@ -4904,9 +4896,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:179::should clip dragging to bounds object"
+          "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to bounds object"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:213::should clip dragging to parent bounds",
@@ -4916,9 +4908,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:213::should clip dragging to parent bounds"
+          "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:256::should clip to negative bounds",
@@ -4928,9 +4920,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:256::should clip to negative bounds"
+          "adapted-browser:tag/test/browser/browser.test.js::should clip to negative bounds"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:293::should snap movement to grid",
@@ -4940,9 +4932,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:293::should snap movement to grid"
+          "adapted-browser:tag/test/browser/browser.test.js::should snap movement to grid"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid",
@@ -4952,9 +4944,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:332::should not trigger onDrag when movement is less than grid"
+          "adapted-browser:tag/test/browser/browser.test.js::should not trigger onDrag when movement is less than grid"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:371::should snap to larger grid correctly",
@@ -4964,9 +4956,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:371::should snap to larger grid correctly"
+          "adapted-browser:tag/test/browser/browser.test.js::should snap to larger grid correctly"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:413::should adjust position when scale is 2x",
@@ -4976,9 +4968,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:413::should adjust position when scale is 2x"
+          "adapted-browser:tag/test/browser/browser.test.js::should adjust position when scale is 2x"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:454::should only drag from handle",
@@ -4988,9 +4980,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:454::should only drag from handle"
+          "adapted-browser:tag/test/browser/browser.test.js::should only drag from handle"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements",
@@ -5000,9 +4992,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:507::should drag from deeply nested handle elements"
+          "adapted-browser:tag/test/browser/browser.test.js::should drag from deeply nested handle elements"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements",
@@ -5012,9 +5004,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:548::should not drag from deeply nested cancel elements"
+          "adapted-browser:tag/test/browser/browser.test.js::should not drag from deeply nested cancel elements"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:591::should work correctly inside an iframe",
@@ -5024,9 +5016,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:591::should work correctly inside an iframe"
+          "adapted-browser:tag/test/browser/browser.test.js::should work correctly inside an iframe"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:664::should respect bounds inside an iframe",
@@ -5036,9 +5028,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:664::should respect bounds inside an iframe"
+          "adapted-browser:tag/test/browser/browser.test.js::should respect bounds inside an iframe"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers",
@@ -5048,9 +5040,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:728::should handle dragging in scrollable containers"
+          "adapted-browser:tag/test/browser/browser.test.js::should handle dragging in scrollable containers"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM",
@@ -5060,9 +5052,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:770::should clip dragging to parent bounds in shadow DOM"
+          "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to parent bounds in shadow DOM"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM",
@@ -5072,9 +5064,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:833::should clip dragging to selector bounds in shadow DOM"
+          "adapted-browser:tag/test/browser/browser.test.js::should clip dragging to selector bounds in shadow DOM"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback",
@@ -5084,9 +5076,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:898::should not throw when unmounted during onStop callback"
+          "adapted-browser:tag/test/browser/browser.test.js::should not throw when unmounted during onStop callback"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts",
@@ -5096,9 +5088,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:953::should not defocus inputs when draggable unmounts"
+          "adapted-browser:tag/test/browser/browser.test.js::should not defocus inputs when draggable unmounts"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag",
@@ -5108,9 +5100,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:1021::should not steal focus from inputs when starting drag"
+          "adapted-browser:tag/test/browser/browser.test.js::should not steal focus from inputs when starting drag"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       },
       {
         "upstream": "tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly",
@@ -5120,9 +5112,9 @@
           "tests/browser/parity.browser.test.ts"
         ],
         "adaptedCases": [
-          "adapted-browser:tag/test/browser/browser.test.js:1076::should calculate drag with offset position correctly"
+          "adapted-browser:tag/test/browser/browser.test.js::should calculate drag with offset position correctly"
         ],
-        "note": "Mapped to a unique behavior dimension in the selected-engine real-browser scenario, which CI executes once in Chromium and once in Firefox."
+        "note": "Mapped one-to-one to an executable Playwright adaptedCase with the exact upstream browser identity."
       }
     ],
     "fixtures": [
@@ -5131,45 +5123,50 @@
         "kind": "fixture",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "tests/browser/parity.browser.test.ts"
+          "tests/browser/parity.browser.test.ts",
+          "tests/browser/harness/mount.ts"
         ],
-        "note": "Replaced by deterministic Octane real-browser fixtures."
+        "note": "Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand."
       },
       {
         "upstream": "tag/test/setup.js",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "tests/browser/parity.browser.test.ts"
+          "tests/browser/parity.browser.test.ts",
+          "tests/browser/harness/mount.ts"
         ],
-        "note": "Replaced by deterministic Octane real-browser fixtures."
+        "note": "Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand."
       },
       {
         "upstream": "tag/test/testUtils.js",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "tests/browser/parity.browser.test.ts"
+          "tests/browser/parity.browser.test.ts",
+          "tests/browser/harness/mount.ts"
         ],
-        "note": "Replaced by deterministic Octane real-browser fixtures."
+        "note": "Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand."
       },
       {
         "upstream": "tag/test/typeCompat/fixture.tsx",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "tests/browser/parity.browser.test.ts"
+          "tests/browser/parity.browser.test.ts",
+          "tests/browser/harness/mount.ts"
         ],
-        "note": "Replaced by deterministic Octane real-browser fixtures."
+        "note": "Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand."
       },
       {
         "upstream": "tag/test/typeCompat/tsconfig.json",
         "kind": "fixture",
         "disposition": "adapted-and-executable",
         "evidence": [
-          "tests/browser/parity.browser.test.ts"
+          "tests/browser/parity.browser.test.ts",
+          "tests/browser/harness/mount.ts"
         ],
-        "note": "Replaced by deterministic Octane real-browser fixtures."
+        "note": "Replaced by deterministic Octane real-browser mount fixtures that render each upstream case on demand."
       }
     ],
     "typeAssertions": [
