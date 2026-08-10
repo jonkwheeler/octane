@@ -213,6 +213,57 @@ describe('octane/compiler/vite public options', () => {
 		expect(load).not.toHaveBeenCalled();
 	});
 
+	it('discovers imported marked bindings used as TSRX Element tags', async () => {
+		const { findDescriptorChildrenImports } = await import('octane/compiler/bundler');
+		const jsxSource =
+			"import Slot from './Slot.tsrx';\n" + 'export function App() @{ <Slot><b>x</b></Slot> }\n';
+		expect(findDescriptorChildrenImports(jsxSource, `${ROOT}/src/App.tsrx`)).toEqual([
+			{ request: './Slot.tsrx', imported: 'default', local: 'Slot' },
+		]);
+
+		// Legacy/compiler Element nodes expose the tag as Identifier `id`, not
+		// JSXOpeningElement/JSXIdentifier — the same shape void-import scanning covers.
+		const elementAst = {
+			type: 'Program',
+			body: [
+				{
+					type: 'ImportDeclaration',
+					source: { value: './Slot.tsrx' },
+					specifiers: [
+						{
+							type: 'ImportDefaultSpecifier',
+							local: { type: 'Identifier', name: 'Slot' },
+						},
+					],
+				},
+				{
+					type: 'ExportNamedDeclaration',
+					declaration: {
+						type: 'FunctionDeclaration',
+						id: { type: 'Identifier', name: 'App' },
+						params: [],
+						body: {
+							type: 'BlockStatement',
+							body: [
+								{
+									type: 'ReturnStatement',
+									argument: {
+										type: 'Element',
+										id: { type: 'Identifier', name: 'Slot' },
+										children: [],
+									},
+								},
+							],
+						},
+					},
+				},
+			],
+		};
+		expect(findDescriptorChildrenImports(elementAst, `${ROOT}/src/App.tsrx`)).toEqual([
+			{ request: './Slot.tsrx', imported: 'default', local: 'Slot' },
+		]);
+	});
+
 	it('reads descriptor metadata from the live graph after loading a dependency', async () => {
 		const plugin = octane({ hmr: false });
 		configure(plugin, 'build', { ssr: true });

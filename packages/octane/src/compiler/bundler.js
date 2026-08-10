@@ -376,7 +376,7 @@ export function findDescriptorChildrenExports(source, id) {
 export function findDescriptorChildrenImports(source, id) {
 	let ast;
 	try {
-		ast = parseModule(source, id);
+		ast = source && typeof source === 'object' ? source : parseModule(source, id);
 	} catch {
 		return [];
 	}
@@ -404,8 +404,14 @@ export function findDescriptorChildrenImports(source, id) {
 		const value = pending.pop();
 		if (value === null || typeof value !== 'object' || visited.has(value)) continue;
 		visited.add(value);
-		if (value.type === 'JSXOpeningElement' && value.name?.type === 'JSXIdentifier') {
-			jsxBindings.add(value.name.name);
+		// Match void-import discovery: JSX tags use openingElement.name
+		// (JSXIdentifier), while TSRX Element nodes expose the tag as id/name
+		// (Identifier). Only JSXOpeningElement/JSXIdentifier missed the latter.
+		if (value.type === 'JSXElement' || value.type === 'Element') {
+			const tag = value.openingElement?.name || value.id || value.name;
+			if (tag?.type === 'Identifier' || tag?.type === 'JSXIdentifier') {
+				jsxBindings.add(tag.name);
+			}
 		}
 		for (const [key, child] of Object.entries(value)) {
 			if (key === 'loc' || key === 'metadata') continue;
