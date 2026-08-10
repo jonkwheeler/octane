@@ -52,6 +52,11 @@ try {
 	errors.push(`react-hook-form test classifications are invalid: ${error.message}`);
 }
 try {
+	verifyPortTestClassifications(REPO, 'swr');
+} catch (error) {
+	errors.push(`swr test classifications are invalid: ${error.message}`);
+}
+try {
 	verifyLivestoreTypes(REPO);
 } catch (error) {
 	errors.push(`livestore type evidence is invalid: ${error.message}`);

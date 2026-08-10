@@ -4,6 +4,8 @@ export function readDevtoolsMiddleware<T = unknown>(target: object): T[] {
 	return descriptor.value.slice() as T[];
 }
 
+// OCTANE DIVERGENCE[swr-devtools-global][runtime:c00d484f4ecc81a0]: Octane identifies
+// itself through __SWR_DEVTOOLS_OCTANE__ and does not claim React's __SWR_DEVTOOLS_REACT__.
 export function setupOctaneDevtools(target: object, runtime: unknown): void {
 	Object.defineProperty(target, '__SWR_DEVTOOLS_OCTANE__', {
 		configurable: true,

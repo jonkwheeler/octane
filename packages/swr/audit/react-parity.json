@@ -9,7 +9,7 @@
     "testRoot": "test",
     "license": "MIT",
     "integrity": "sha256:948ad899c51e73ca9555e8182946978f367410406fe6c2acb4d1012c509c9982",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -36,8 +36,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 18,
-    "uniqueIdentities": 18,
+    "inventoryEntries": 19,
+    "uniqueIdentities": 19,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -195,7 +195,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "swr-adapted-internal-types",
-      "evidenceOrigin": "upstream-suite",
+      "evidenceOrigin": "repo-authored",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -227,7 +227,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "swr-adapted-root-types",
-      "evidenceOrigin": "upstream-suite",
+      "evidenceOrigin": "repo-authored",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -259,7 +259,7 @@
       "oracle": "required",
       "environment": "workspace-node",
       "project": "swr-adapted-specialized-types",
-      "evidenceOrigin": "upstream-suite",
+      "evidenceOrigin": "repo-authored",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -286,12 +286,13 @@
       ]
     },
     {
-      "id": "swr-adapted-full-suite",
+      "id": "swr-adapted-selected-cases",
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
       "project": "swr",
-      "evidenceOrigin": "upstream-suite",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Selected adapted Octane cases with upstream citations; not a one-for-one map of the 367 pristine identities. Exhaustive dispositions remain required before verified provenance.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/swr/audit/adapted-runtime.json"
@@ -300,7 +301,7 @@
         {
           "path": "packages/swr/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "c1fc70bfb88e1f1d48a88d652f01ed1457937100c89a1104e446c4d571741850"
+          "sha256": "7647f2b0bfd94c795f294e029e3e89e1409db0f9ae49653a00f9557d5f92f519"
         },
         {
           "path": "scripts/react-parity/swr-runtime-inventory.mjs",
@@ -321,7 +322,7 @@
       "environment": "workspace-node",
       "project": "swr-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted full suite. Octane-only request-state oracles live under tests/unit/.",
+      "notes": "Direct Octane-vs-pinned-upstream traces and export oracles for U2–U4; kept in a dedicated Vitest project so they do not share ownership with the adapted selected-case suite. Octane-only request-state oracles live under tests/unit/.",
       "files": [
         {
           "path": "packages/swr/tests/differential/cache.test.ts",
@@ -384,5 +385,20 @@
       ]
     }
   ],
-  "divergences": []
+  "divergences": [
+    {
+      "id": "swr-devtools-global",
+      "caseIds": [
+        "runtime:c00d484f4ecc81a0"
+      ],
+      "upstreamResult": "window.__SWR_DEVTOOLS_REACT__ is assigned the React package reference for React-only SWR DevTools.",
+      "octaneResult": "window.__SWR_DEVTOOLS_OCTANE__ identifies the Octane binding; __SWR_DEVTOOLS_REACT__ is not claimed.",
+      "rationale": "Octane is not React. Claiming the React identity would mislead React-only SWR DevTools about the host runtime.",
+      "classification": "devtools-host-identity",
+      "consumerImpact": "React-only SWR DevTools that require window.__SWR_DEVTOOLS_REACT__ do not attach to this binding.",
+      "migrationGuidance": "Prefer Octane-aware tooling that reads window.__SWR_DEVTOOLS_OCTANE__, or treat React-only SWR DevTools as unsupported.",
+      "owner": "@octanejs/swr",
+      "reviewCondition": "Review if Octane ships a shared SWR DevTools bridge that can safely advertise a host-compatible identity."
+    }
+  ]
 }

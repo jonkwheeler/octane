@@ -19,6 +19,20 @@ tarball at `upstream/npm/swr-2.4.2.tgz`. The tarball is retained because it
 contains compiled condition branches and declarations rather than the canonical
 source and tests.
 
+## Provenance status
+
+`packages/swr/audit/react-parity.json` is `recorded-unverified`. Required lanes
+still execute through the generic harness, but the adapted runtime inventory is a
+selected cited subset (not a one-for-one map of the pristine identities), and the
+adapted type projects are repo-authored export/call probes rather than structural
+ports of the upstream type assertion suite.
+
+Port-authored Vitest files outside `tests/upstream/` are classified exactly once
+in `packages/swr/audit/test-classifications.json`. Promoting provenance to
+`verified` still requires the exhaustive two-way runtime/type crosswalk with
+assertion/fixture preservation controls and per-upstream dispositions for every
+applicable pristine identity.
+
 ## U1 gate
 
 U1 is not a partial implementation. Authored source modules currently expose
@@ -33,5 +47,4 @@ root/subpath/condition graph. U2 may begin only after:
 4. the external-store, Suspense, mutation, streaming, hydration, and devtools
    architecture probes pass.
 
-The full runtime/type crosswalk and per-test dispositions are populated during
-the assertion-preserving U2-U5 work. No U1 sentinel is parity evidence.
+No U1 sentinel is parity evidence.

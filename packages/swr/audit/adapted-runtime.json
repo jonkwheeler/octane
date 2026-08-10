@@ -1,9 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "swr",
-  "roots": [
-    "packages/swr/tests/upstream"
-  ],
+  "roots": ["packages/swr/tests/upstream"],
   "files": [
     "packages/swr/tests/upstream/root/root.test.ts",
     "packages/swr/tests/upstream/specialized/specialized.test.ts"
@@ -13,6 +11,11 @@
       "id": "runtime:483952ca70cf3e3e",
       "file": "packages/swr/tests/upstream/root/root.test.ts",
       "fullName": "SWR U3 root lifecycle deduplicates concurrent sibling requests by serialized key"
+    },
+    {
+      "id": "runtime:c00d484f4ecc81a0",
+      "file": "packages/swr/tests/upstream/root/root.test.ts",
+      "fullName": "SWR U3 root lifecycle exposes __SWR_DEVTOOLS_OCTANE__ and does not claim __SWR_DEVTOOLS_REACT__"
     },
     {
       "id": "runtime:244dc543526ea047",
