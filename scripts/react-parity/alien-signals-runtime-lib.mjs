@@ -474,8 +474,7 @@ function forEachAlwaysExecutedNode(root, visitNode) {
 			}
 			const callbackIndexes = alwaysExecutedCallbackArgIndexes(call);
 			for (let index = 0; index < call.arguments.length; index += 1) {
-				const enterCallback =
-					callbackIndexes !== null && callbackIndexes.indexOf(index) !== -1;
+				const enterCallback = callbackIndexes !== null && callbackIndexes.indexOf(index) !== -1;
 				visitExpression(call.arguments[index], enterCallback ? 'call-arg' : 'value');
 			}
 			return;
