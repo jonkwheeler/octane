@@ -38,7 +38,7 @@ export async function transformTailwindHtml(
 		const classes = collectClasses(fragment);
 		const styles = await compileStyles(classes, options);
 		const transformed = inlineFragment(fragment, styles.inline);
-		output = output.replace(boundaryPattern, transformed);
+		output = output.replace(boundaryPattern, () => transformed);
 		if (styles.nonInline) output = injectHeadStyle(output, styles.nonInline);
 	}
 	return output;
@@ -128,7 +128,7 @@ function inlineFragment(html: string, styles: ReadonlyMap<string, string>): stri
 
 function injectHeadStyle(html: string, css: string): string {
 	const style = `<style>${css}</style>`;
-	if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, `${style}</head>`);
+	if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, () => `${style}</head>`);
 	throw new Error('Tailwind: <head> not found. Move <Head /> inside <Tailwind>.');
 }
 

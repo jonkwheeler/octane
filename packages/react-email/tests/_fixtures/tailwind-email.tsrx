@@ -10,7 +10,7 @@ export function TailwindEmail() @{
 					className="bg-blue-500 p-4 text-sm hover:text-red-500 md:text-lg"
 					style={{ color: 'rebeccapurple', paddingTop: '99px' }}
 				>
-					Hello Tailwind
+					Price: $1
 				</Text>
 			</Body>
 		</Tailwind>

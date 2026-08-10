@@ -73,7 +73,9 @@ function CodeToken({
 	)}</span>;
 	const style = { ...inheritedStyle, ...tokenStyle(token, theme) };
 	if (Array.isArray(token.content)) return <>
-		{token.content.map((child) => <CodeToken token={child} theme={theme} inheritedStyle={style} />)}
+		@for (const child of token.content; index childIndex; key childIndex) {
+			<CodeToken token={child} theme={theme} inheritedStyle={style} />
+		}
 	</>;
 	return <span style={style}>
 		{typeof token.content === 'string'
