@@ -13,7 +13,8 @@ import type { ManagerProps, PopperChildrenProps, PopperProps, ReferenceProps } f
 import { setRef } from './utils';
 
 const ManagerReferenceNodeContext = createContext<Element | null>(null);
-const ManagerReferenceNodeSetterContext = createContext<
+/** Private upstream Manager export; kept for Reference identity tests. */
+export const ManagerReferenceNodeSetterContext = createContext<
 	((node: Element | null) => void) | undefined
 >(undefined);
 

@@ -1,6 +1,10 @@
 /** @jsxImportSource octane */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { BareReferenceHarness, ManagedPopperHarness } from '../runtime/_fixtures/Harness.tsrx';
+import {
+	BareReferenceHarness,
+	ManagedPopperHarness,
+	ReferenceSetterSpyHarness,
+} from '../runtime/_fixtures/Harness.tsrx';
 import { createRootTracker, settle } from './_helpers';
 
 const { tracked, cleanup } = createRootTracker();
@@ -18,11 +22,10 @@ describe('Arrow component', function referenceSuite() {
 	});
 
 	it('consumes the ManagerReferenceNodeSetterContext from Manager', function consumesManagerContext() {
-		const spy = vi.spyOn(console, 'error').mockImplementation(function noop() {});
-		const root = tracked(ManagedPopperHarness, {});
+		const setReferenceNode = vi.fn();
+		tracked(ReferenceSetterSpyHarness, { setReferenceNode });
 		settle();
-		expect(root.find('#reference')).toBeInstanceOf(HTMLButtonElement);
-		expect(spy).not.toHaveBeenCalled();
+		expect(setReferenceNode).toHaveBeenCalled();
 	});
 
 	it('warns when setReferenceNode is present', function warnsWhenPresent() {

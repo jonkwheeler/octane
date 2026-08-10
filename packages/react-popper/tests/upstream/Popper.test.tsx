@@ -18,8 +18,16 @@ describe('Popper component', function popperSuite() {
 		settle();
 		await Promise.resolve();
 		settle();
-		expect(root.find('#popper')).toBeInstanceOf(HTMLDivElement);
-		expect(root.find('#arrow')).toBeInstanceOf(HTMLDivElement);
+		const popper = root.find('#popper') as HTMLElement;
+		const arrow = root.find('#arrow') as HTMLElement;
+		expect(popper.getAttribute('data-placement')).toBe('bottom');
+		expect(popper.style.position).toBe('absolute');
+		expect(popper.style.left).toBe('0px');
+		expect(popper.style.top).toBe('0px');
+		expect(popper.style.transform).toBe('translate(0px, 0px)');
+		expect(arrow.style.position).toBe('absolute');
+		expect(arrow.style.left).toBe('0px');
+		expect(arrow.style.transform).toBe('translate(0px, 0px)');
 	});
 
 	it('handles changing refs gracefully', function handlesChangingRefsGracefully() {

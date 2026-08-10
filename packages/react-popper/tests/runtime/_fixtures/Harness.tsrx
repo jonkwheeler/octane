@@ -1,4 +1,5 @@
 import { Manager, Popper, Reference, usePopper } from '@octanejs/react-popper';
+import { ManagerReferenceNodeSetterContext } from '../../../src/components.tsrx';
 import type { Instance, VirtualElement } from '@popperjs/core';
 
 export function UsePopperHarness(props: {
@@ -72,6 +73,23 @@ export function BareReferenceHarness(props: { innerRef?: any }) {
 	return <Reference innerRef={props.innerRef}>
 		{({ ref }) => <div id="reference" ref={ref} />}
 	</Reference>;
+}
+
+export function TransparentManagerHarness() {
+	return <Manager>
+		<div id="reference" />
+		<div id="popper" />
+	</Manager>;
+}
+
+export function ReferenceSetterSpyHarness(props: {
+	setReferenceNode: (node: Element | null) => void;
+}) {
+	return <ManagerReferenceNodeSetterContext.Provider value={props.setReferenceNode}>
+		<Reference>
+			{({ ref }) => <div id="reference" ref={ref} />}
+		</Reference>
+	</ManagerReferenceNodeSetterContext.Provider>;
 }
 
 export function ServerPopperHarness() {
