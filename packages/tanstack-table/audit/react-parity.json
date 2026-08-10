@@ -182,7 +182,7 @@
         {
           "path": "packages/tanstack-table/typetests/assertions.md",
           "role": "support",
-          "sha256": "55aea06b2218bab26c7e8ddb7f47fdcc075b4ae20aaa4524641cc0b63c85399c"
+          "sha256": "3c705814e055f8dd06438a1dc1dcf6b94d5049968ca1283fbe4d8546f1b4eee0"
         },
         {
           "path": "packages/tanstack-table/audit/type-parity.json",
@@ -236,7 +236,7 @@
         {
           "path": "packages/tanstack-table/typetests/assertions.md",
           "role": "support",
-          "sha256": "55aea06b2218bab26c7e8ddb7f47fdcc075b4ae20aaa4524641cc0b63c85399c"
+          "sha256": "3c705814e055f8dd06438a1dc1dcf6b94d5049968ca1283fbe4d8546f1b4eee0"
         },
         {
           "path": "packages/tanstack-table/audit/type-parity.json",
@@ -249,12 +249,35 @@
           "sha256": "6da105d5ade5db790439261a1ff528bbd1c1a8f52dbba6cb420fef3d354a94e6"
         }
       ]
+    },
+    {
+      "id": "tanstack-table-legacy-subpath",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "tanstack-table",
+      "notes": "Focused same-scenario package-export observation for the ./legacy omission. Lives in the ordinary tanstack-table Vitest project (outside react-parity testExecution) and pins divergence legacy-migration-subpath.",
+      "files": [
+        {
+          "path": "packages/tanstack-table/tests/conformance/parity-legacy-api.test.ts",
+          "role": "test",
+          "sha256": "a1ce67f812df9a828c09c6a08985a7913242355b45dc8e8339ec35a2a100e2d8",
+          "cases": [
+            {
+              "id": "adapted:tanstack-table-legacy-subpath",
+              "testName": "records React ./legacy presence versus Octane omission",
+              "fullName": "export surface records React ./legacy presence versus Octane omission"
+            }
+          ]
+        }
+      ]
     }
   ],
   "divergences": [
     {
       "id": "legacy-migration-subpath",
-      "caseIds": ["types:tanstack-table-adapted"],
+      "caseIds": ["adapted:tanstack-table-legacy-subpath"],
       "upstreamResult": "@tanstack/react-table publishes a ./legacy migration subpath for React v8 codebases.",
       "octaneResult": "@octanejs/tanstack-table omits ./legacy from package exports and does not port useLegacyTable.",
       "rationale": "The legacy adapter exists only to migrate existing React v8 table apps; an Octane binding has no such migration surface and targets the v9 useTable API directly.",
