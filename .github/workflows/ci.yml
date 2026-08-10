@@ -651,6 +651,14 @@ jobs:
         if: ${{ matrix.lane == 'browser' }}
         run: pnpm exec playwright install --with-deps ${{ matrix.playwright_browser }}
 
+      - name: Install Playwright Chromium for ownership coverage
+        if: ${{ matrix.lane == 'browser' && matrix.playwright_browser != 'chromium' }}
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install Playwright WebKit for cross-browser ownership coverage
+        if: ${{ matrix.lane == 'browser' }}
+        run: pnpm --filter octane exec playwright install --with-deps webkit
+
       - name: Install Playwright Chromium (astro)
         if: ${{ matrix.lane == 'astro' }}
         run: pnpm --filter @octanejs/astro exec playwright install --with-deps chromium
