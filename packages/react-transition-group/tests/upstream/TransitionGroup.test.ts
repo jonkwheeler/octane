@@ -51,7 +51,7 @@ describe('TransitionGroup', function transitionGroupSuite() {
 	});
 
 	// Per path: packages/react-transition-group/upstream/test/TransitionGroup-test.js:78-118
-	// OCTANE DIVERGENCE: react-transition-group-no-strict-double-appear
+	// OCTANE DIVERGENCE[react-transition-group-no-strict-double-appear][runtime:6c41127d1ba18206]
 	// Upstream StrictMode double-appear is not exact adapted parity (Octane has
 	// no StrictMode double-invoke). Assert single appear/enter/exit sequencing.
 	it('should handle transitioning correctly', async function transitioning() {

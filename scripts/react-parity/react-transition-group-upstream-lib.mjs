@@ -504,10 +504,10 @@ function assertDivergenceMarker(adaptedSource, entry, citedLine) {
 	const lines = adaptedSource.split('\n');
 	const windowStart = Math.max(0, citedLine - 8);
 	const window = lines.slice(windowStart, citedLine + 2).join('\n');
-	const marker = `// OCTANE DIVERGENCE: ${entry.divergenceId}`;
-	if (!window.includes(marker)) {
+	const markerPrefix = `// OCTANE DIVERGENCE[${entry.divergenceId}]`;
+	if (!window.includes(markerPrefix)) {
 		throw new Error(
-			`${entry.adaptedFile}::${entry.adaptedTitle}: missing ${marker} near the adapted assertion`,
+			`${entry.adaptedFile}::${entry.adaptedTitle}: missing ${markerPrefix}[caseId] near the adapted assertion`,
 		);
 	}
 }

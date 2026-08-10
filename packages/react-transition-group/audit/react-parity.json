@@ -122,7 +122,7 @@
 				{
 					"path": "scripts/react-parity/react-transition-group-upstream-lib.mjs",
 					"role": "support",
-					"sha256": "691d4ffbc9fc61fd530c8351555f792ee122281afd9b5d0fc3fdb1d3e41fdcb2"
+					"sha256": "b680415f8c3a356333676f2224e09060759543256b5619901d4b7dbff16afa98"
 				},
 				{
 					"path": "scripts/react-parity/react-transition-group-upstream.mjs",
@@ -132,7 +132,7 @@
 				{
 					"path": "scripts/react-parity/react-transition-group-upstream-lib.test.mjs",
 					"role": "support",
-					"sha256": "613be27a8a889145df76d965f55105ae3f68d53345f916b01983f19e5d507e79"
+					"sha256": "5f80b72a32f3ff58c999e2fa136adcd9c7244979b64c09d07bf44f6c7165dda4"
 				},
 				{
 					"path": "scripts/react-parity/jest-full-runner.mjs",
@@ -142,12 +142,12 @@
 				{
 					"path": "packages/react-transition-group/audit/adapted-evidence.SHA256SUMS",
 					"role": "support",
-					"sha256": "2a7d04b5be8b60d24da49687a98d3b77b25b7441f12f35168a894284334d55e3"
+					"sha256": "1a496d7e832a4f42374ddd6252e2ad39581314256c9db62d51de63e5b6ed856f"
 				},
 				{
 					"path": "packages/react-transition-group/audit/adapted-case-contracts.json",
 					"role": "support",
-					"sha256": "a67635c1191464fd1daa49c855556cd3abc3142d78122d8846e849bc89b5a3cb"
+					"sha256": "96fd1c04efc0d8a2d78d5a4e7674444668d127607d6ad343a267e41bb4133c94"
 				}
 			]
 		},
@@ -307,7 +307,7 @@
 		{
 			"id": "react-transition-group-no-strict-double-appear",
 			"caseIds": [
-				"adapted:transition-group-handle-transitioning"
+				"runtime:6c41127d1ba18206"
 			],
 			"upstreamResult": "Under React 18 StrictEffects, appear/enter callbacks fire twice (`['appear','appear','appearing','appeared']` / `['enter','enter','entering','entered']`).",
 			"octaneResult": "Octane does not double-invoke; adapted coverage asserts the single-invoke sequence (`['appear','appearing','appeared']` / `['enter','entering','entered']`).",
