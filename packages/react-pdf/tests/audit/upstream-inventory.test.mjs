@@ -14,13 +14,13 @@ test('the pinned React PDF authorities and case crosswalk validate', async () =>
 		inventory.crosswalk.filter(function isPending(entry) {
 			return entry.disposition === 'pending-adaptation';
 		}).length,
-		180,
+		174,
 	);
 	assert.equal(
 		inventory.crosswalk.filter(function isAdapted(entry) {
 			return entry.disposition === 'adapted-and-executable';
 		}).length,
-		2,
+		8,
 	);
 });
 
