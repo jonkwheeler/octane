@@ -50,14 +50,18 @@ package typecheck.
 
 `audit/react-parity.json` registers the pristine upstream Playwright lane, the
 separate adapted upstream browser lane, the `drei-differential` Vitest project
-(all paired React/Octane characterization files, including the View canary), and
-repo-authored pristine/adapted type lanes with the global
-`react-parity:check` harness.
-`audit/test-classifications.json` gives every port-authored test file exactly
-one disposition. Paired files import the pinned React Drei oracle in the test
-body; `config.test.ts`, `crosswalk-guard.test.ts`, `react-parity-guard.test.ts`,
-and `view-renderer-boundary.test.ts` are Octane-only and execute in the ordinary
-`drei-guards` project outside `testExecution`.
+(all paired React/Octane characterization files, including the View canary), a
+separate ordinary `drei-guards` lane for the View renderer-boundary case (so the
+divergence can link without claiming differential evidence), and repo-authored
+pristine/adapted type lanes with the global `react-parity:check` harness.
+`audit/test-classifications.json` gives every port-authored runtime and type
+test file exactly one disposition. Paired files import the pinned React Drei
+oracle in the test body; `config.test.ts`, `crosswalk-guard.test.ts`,
+`react-parity-guard.test.ts`, and `view-renderer-boundary.test.ts` are
+Octane-only and execute in the ordinary `drei-guards` project outside
+`testExecution`. Ordinary `typetests/*.test-d.ts` files are classified
+Octane-only and stay outside parity evidence; only the public-API pair under
+`typetests/{pristine,adapted}/` is parity type evidence.
 
 `audit/runtime-evidence.json` hashes every test file and every collected assertion
 inventory. `audit/upstream-test-artifacts.json` records the executed screenshot

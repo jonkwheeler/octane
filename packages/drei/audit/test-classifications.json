@@ -650,6 +650,481 @@
       "path": "packages/drei/tests/wireframe.test.ts",
       "disposition": "react-octane-differential",
       "oracle": "Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body."
+    },
+    {
+      "path": "packages/drei/typetests/accumulative-shadows.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/adapted/public-api.test-d.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Matching public-surface type assertions against @octanejs/drei."
+    },
+    {
+      "path": "packages/drei/typetests/adaptive-performance.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/ascii-renderer.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/basic-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/bounds.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/box-projected-env.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/bvh.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/camera-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/camera-shake.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/cameras.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/catalog-textures.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/caustics.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/center.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/clone.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/cloud.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/contact-shadows.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/curve-modifier.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/cycle-raycast.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/decal.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/depth-buffer.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/detect-gpu.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/effects-utils.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/effects.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/environment-components.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/environment.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/example.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/face-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/face-landmarker.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/facemesh.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/fbo.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/fisheye.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/font.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/gizmo-helper.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/grid.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/helper.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/hooks.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/html.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/hud.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/image.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/instances.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/keyboard-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/lightformer.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/lines.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/marching-cubes.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/mesh-portal-material.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/mesh-reflector-material.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/mesh-refraction-material.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/mesh-transmission-material.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/models.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/motion-materials.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/motion-path.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/outlines.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/performance-monitor.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/pivot-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/pointer-lock.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/points.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/positional-audio.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/preload.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/presentation-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/pristine/public-api.test-d.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Repo-authored public-surface type assertions against pinned @react-three/drei."
+    },
+    {
+      "path": "packages/drei/typetests/progress.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/render-textures.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/resize.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/sampler.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/scene-helpers.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/scene-motion.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/screen-sizer.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/scroll-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/segments.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/select.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/shadows.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/shapes.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/simple-materials.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/sky.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/soft-shadows.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/sparkles.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/splat.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/spot-light.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/sprite-animator.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/sprite-loader-utils.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/stage.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/stars.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/stats.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/svg.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/text.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/text3d.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/textures.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/trail-texture.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/trail.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/transform-controls.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/use-animations.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/use-cursor.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/video-textures.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
+    },
+    {
+      "path": "packages/drei/typetests/view.test-d.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes."
     }
   ]
 }

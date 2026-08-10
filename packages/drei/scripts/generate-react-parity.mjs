@@ -57,6 +57,13 @@ function withIds(tests) {
 const differentialTests = withIds(listProject('drei-differential'));
 const browserTests = withIds(listProject('drei-adapted-browser'));
 const guardTests = listProject('drei-guards');
+const typeTests = readdirSync(resolve(root, 'packages/drei/typetests'), {
+	recursive: true,
+	withFileTypes: true,
+})
+	.filter((entry) => entry.isFile() && entry.name.endsWith('.test-d.ts'))
+	.map((entry) => portable(relative(root, resolve(entry.parentPath, entry.name))))
+	.sort();
 
 const inventory = {
 	schemaVersion: 1,
@@ -78,66 +85,91 @@ const allParityAndGuardFiles = [
 	...browserTests.map((test) => test.file),
 	...guardTests.map((test) => test.file),
 ].sort();
-const uniqueFiles = [...new Set(allParityAndGuardFiles)];
+const uniqueRuntimeFiles = [...new Set(allParityAndGuardFiles)];
+const uniqueFiles = [...uniqueRuntimeFiles, ...typeTests].sort();
 
-const classifications = {
-	schemaVersion: 1,
-	tests: uniqueFiles.map((path) => {
-		if (path.includes('/tests/browser/')) {
-			return {
-				path,
-				disposition: 'adapted-octane-upstream-suite',
-				oracle:
-					'Ports the vendored Playwright gallery scene to Octane; pristine upstream execution is tracked separately.',
-			};
-		}
-		if (isOctaneOnly(path)) {
-			if (path.endsWith('/config.test.ts')) {
-				return {
-					path,
-					disposition: 'octane-only-framework-contract',
-					reason: 'Validates the Octane renderer-boundary preset, which has no React counterpart.',
-				};
-			}
-			if (path.endsWith('/view-renderer-boundary.test.ts')) {
-				return {
-					path,
-					disposition: 'octane-only-framework-contract',
-					reason:
-						'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
-				};
-			}
-			if (path.includes('/tests/octane-contracts/')) {
-				return {
-					path,
-					disposition: 'octane-only-framework-contract',
-					reason:
-						'Octane-only compiler, provider, or lifecycle contract without a paired React scenario.',
-				};
-			}
+function classifyPath(path) {
+	if (path === 'packages/drei/typetests/pristine/public-api.test-d.ts') {
+		return {
+			path,
+			disposition: 'repo-authored-type-parity',
+			oracle: 'Repo-authored public-surface type assertions against pinned @react-three/drei.',
+		};
+	}
+	if (path === 'packages/drei/typetests/adapted/public-api.test-d.ts') {
+		return {
+			path,
+			disposition: 'repo-authored-type-parity',
+			oracle: 'Matching public-surface type assertions against @octanejs/drei.',
+		};
+	}
+	if (path.includes('/typetests/')) {
+		return {
+			path,
+			disposition: 'octane-only-framework-contract',
+			reason:
+				'Ordinary Octane-only type coverage executed by package typecheck; outside parity evidence lanes.',
+		};
+	}
+	if (path.includes('/tests/browser/')) {
+		return {
+			path,
+			disposition: 'adapted-octane-upstream-suite',
+			oracle:
+				'Ports the vendored Playwright gallery scene to Octane; pristine upstream execution is tracked separately.',
+		};
+	}
+	if (isOctaneOnly(path)) {
+		if (path.endsWith('/config.test.ts')) {
 			return {
 				path,
 				disposition: 'octane-only-framework-contract',
-				reason: 'Validates repository audit machinery; it is not React behavioral evidence.',
+				reason: 'Validates the Octane renderer-boundary preset, which has no React counterpart.',
 			};
 		}
-		const source = readFileSync(resolve(root, path), 'utf8');
-		if (!source.includes('@react-three/drei')) {
-			throw new Error(`${path} needs an explicit non-differential classification`);
+		if (path.endsWith('/view-renderer-boundary.test.ts')) {
+			return {
+				path,
+				disposition: 'octane-only-framework-contract',
+				reason:
+					'Pins the intentional DOM-root View renderer-boundary divergence; it is not paired React behavioral evidence.',
+			};
+		}
+		if (path.includes('/tests/octane-contracts/')) {
+			return {
+				path,
+				disposition: 'octane-only-framework-contract',
+				reason:
+					'Octane-only compiler, provider, or lifecycle contract without a paired React scenario.',
+			};
 		}
 		return {
 			path,
-			disposition: 'react-octane-differential',
-			oracle:
-				'Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body.',
+			disposition: 'octane-only-framework-contract',
+			reason: 'Validates repository audit machinery; it is not React behavioral evidence.',
 		};
-	}),
+	}
+	const source = readFileSync(resolve(root, path), 'utf8');
+	if (!source.includes('@react-three/drei')) {
+		throw new Error(`${path} needs an explicit non-differential classification`);
+	}
+	return {
+		path,
+		disposition: 'react-octane-differential',
+		oracle:
+			'Executes the same observable scenario against pinned @react-three/drei and @octanejs/drei in the test body.',
+	};
+}
+
+const classifications = {
+	schemaVersion: 1,
+	tests: uniqueFiles.map(classifyPath),
 };
 
 const runtimeEvidence = {
 	schemaVersion: 1,
 	oracle: '@react-three/drei@10.7.7 with React 19 and @react-three/fiber@9.6.1',
-	files: uniqueFiles.map((path) => {
+	files: uniqueRuntimeFiles.map((path) => {
 		const contents = readFileSync(resolve(root, path));
 		const assertions = differentialTests.filter((test) => test.file === path);
 		const guardAssertions = guardTests.filter((test) => test.file === path);
@@ -399,7 +431,9 @@ manifest.lanes = [
 			{
 				path: 'packages/drei/audit/differential-runtime.json',
 				role: 'support',
-				sha256: digest(readFileSync(resolve(root, 'packages/drei/audit/differential-runtime.json'))),
+				sha256: digest(
+					readFileSync(resolve(root, 'packages/drei/audit/differential-runtime.json')),
+				),
 			},
 			{
 				path: 'packages/drei/audit/runtime-evidence.json',
@@ -445,6 +479,17 @@ manifest.lanes = [
 					},
 				],
 			},
+		],
+	},
+	{
+		id: 'drei-octane-only-view-boundary',
+		type: 'adapted-octane',
+		oracle: 'required',
+		environment: 'workspace-node',
+		project: 'drei-guards',
+		notes:
+			'Ordinary drei-guards inventory for the View renderer-boundary case the divergence links to. Owned by drei-guards (outside testExecution / differential); required so the divergence marker binds without a vitest-full parity claim.',
+		files: [
 			{
 				path: 'packages/drei/tests/view-renderer-boundary.test.ts',
 				role: 'test',
@@ -454,7 +499,8 @@ manifest.lanes = [
 				cases: [
 					{
 						id: 'octane-only:view-renderer-boundary',
-						testName: 'documents the outside-DOM renderer boundary while keeping View.Port callable',
+						testName:
+							'documents the outside-DOM renderer boundary while keeping View.Port callable',
 						fullName: viewBoundaryCase.fullName,
 					},
 				],

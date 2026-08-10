@@ -16,13 +16,21 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": ["packages/drei/src"],
-      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
+      "roots": [
+        "packages/drei/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/drei/tests/browser"],
-      "include": ["\\.browser\\.test\\.ts$"],
+      "roots": [
+        "packages/drei/tests/browser"
+      ],
+      "include": [
+        "\\.browser\\.test\\.ts$"
+      ],
       "exclude": []
     }
   },
@@ -138,7 +146,7 @@
         {
           "path": "packages/drei/audit/test-classifications.json",
           "role": "support",
-          "sha256": "92f7ddb6361d43a81369773cb8c243e48a981b35f8febb83c90e06d5dde99b43"
+          "sha256": "e3ae21a4713d44b42137b85e4f4ff202ddad85b415877a9ff3f97299fa619f96"
         },
         {
           "path": "packages/drei/audit/upstream-test-artifacts.json",
@@ -148,7 +156,7 @@
         {
           "path": "packages/drei/scripts/check-react-parity.mjs",
           "role": "support",
-          "sha256": "41e3f0136b0c9b3753febbc7f6873f894c72e524c9930f67da9b6b4c218f8113"
+          "sha256": "0fd319bcc25ea0d4e8e6229994e75643f148078cf4a4375623701d335d5be31e"
         },
         {
           "path": "packages/drei/tests/differential/view.test.ts",
@@ -166,7 +174,17 @@
               "fullName": "View matches invisible and offscreen clear/render boundaries and event connection cleanup"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "drei-octane-only-view-boundary",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "drei-guards",
+      "notes": "Ordinary drei-guards inventory for the View renderer-boundary case the divergence links to. Owned by drei-guards (outside testExecution / differential); required so the divergence marker binds without a vitest-full parity claim.",
+      "files": [
         {
           "path": "packages/drei/tests/view-renderer-boundary.test.ts",
           "role": "test",
@@ -251,7 +269,9 @@
   "divergences": [
     {
       "id": "view-renderer-boundary",
-      "caseIds": ["octane-only:view-renderer-boundary"],
+      "caseIds": [
+        "octane-only:view-renderer-boundary"
+      ],
       "upstreamResult": "React Drei View can render from a DOM root and move authored Three children through View.Port via tunnel-rat.",
       "octaneResult": "Calling View from an Octane DOM root fails with the universal renderer-boundary diagnostic, and View.Port is a callable no-op.",
       "rationale": "Octane components are statically renderer-owned, so one component cannot switch between DOM and Three renderers or transport authored Three children between independent roots.",

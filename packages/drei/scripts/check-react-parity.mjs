@@ -44,17 +44,25 @@ const classifications = read('test-classifications.json');
 const upstream = read('upstream-test-artifacts.json');
 const manifest = read('react-parity.json');
 
-const discovered = readdirSync(resolve(root, 'packages/drei/tests'), {
+const discoveredRuntime = readdirSync(resolve(root, 'packages/drei/tests'), {
 	recursive: true,
 	withFileTypes: true,
 })
 	.filter((entry) => entry.isFile() && /\.test\.(?:ts|tsx|tsrx)$/.test(entry.name))
 	.map((entry) => portable(relative(root, resolve(entry.parentPath, entry.name))))
 	.sort();
+const discoveredTypes = readdirSync(resolve(root, 'packages/drei/typetests'), {
+	recursive: true,
+	withFileTypes: true,
+})
+	.filter((entry) => entry.isFile() && entry.name.endsWith('.test-d.ts'))
+	.map((entry) => portable(relative(root, resolve(entry.parentPath, entry.name))))
+	.sort();
+const discovered = [...discoveredRuntime, ...discoveredTypes].sort();
 const inventoried = [...inventory.files].sort();
 const differential = inventoried;
-const guards = discovered.filter((path) => isOctaneOnly(path));
-const expectedDifferential = discovered
+const guards = discoveredRuntime.filter((path) => isOctaneOnly(path));
+const expectedDifferential = discoveredRuntime
 	.filter((path) => !isOctaneOnly(path) && !path.includes('/tests/browser/'))
 	.sort();
 if (JSON.stringify(expectedDifferential) !== JSON.stringify(inventoried))
@@ -70,6 +78,11 @@ if (JSON.stringify(discovered) !== JSON.stringify(classified))
 	fail('every port-authored test must have exactly one classification');
 if (new Set(classified).size !== classified.length)
 	fail('a port-authored test has multiple classifications');
+
+const TYPE_PARITY_FILES = new Set([
+	'packages/drei/typetests/pristine/public-api.test-d.ts',
+	'packages/drei/typetests/adapted/public-api.test-d.ts',
+]);
 
 for (const entry of classifications.tests) {
 	if (entry.disposition === 'react-octane-differential') {
@@ -88,14 +101,23 @@ for (const entry of classifications.tests) {
 			!source.includes('playright:r3f')
 		)
 			fail(`${entry.path} does not port the vendored upstream browser case`);
+	} else if (entry.disposition === 'repo-authored-type-parity') {
+		if (!TYPE_PARITY_FILES.has(entry.path) || !entry.oracle)
+			fail(`${entry.path} is not a declared public-API type parity file`);
 	} else if (!entry.disposition.startsWith('octane-only-') || !entry.reason || entry.oracle) {
 		fail(`${entry.path} has an invalid unpaired classification`);
+	} else if (entry.path.includes('/typetests/')) {
+		if (TYPE_PARITY_FILES.has(entry.path))
+			fail(`${entry.path} public-API type pair must use repo-authored-type-parity`);
 	} else if (!isOctaneOnly(entry.path)) {
 		fail(`${entry.path} is classified Octane-only but is not a declared guard`);
 	}
 }
 
-if (JSON.stringify(evidence.files.map((entry) => entry.path).sort()) !== JSON.stringify(discovered))
+if (
+	JSON.stringify(evidence.files.map((entry) => entry.path).sort()) !==
+	JSON.stringify(discoveredRuntime)
+)
 	fail('runtime file evidence does not cover the complete suite');
 for (const file of evidence.files) {
 	const contents = readFileSync(resolve(root, file.path));
@@ -166,6 +188,31 @@ if (
 	adaptedE2eLane.execution?.kind !== 'vitest-full'
 )
 	fail('the Octane e2e port must remain separate adapted upstream-suite evidence');
+const differentialLane = manifest.lanes.find(
+	(lane) => lane.id === 'drei-repo-authored-differential',
+);
+if (
+	differentialLane?.files?.some(
+		(file) => file.path === 'packages/drei/tests/view-renderer-boundary.test.ts',
+	)
+)
+	fail('view-renderer-boundary must not be claimed as differential lane evidence');
+const boundaryLane = manifest.lanes.find((lane) => lane.id === 'drei-octane-only-view-boundary');
+if (
+	boundaryLane?.type !== 'adapted-octane' ||
+	boundaryLane.oracle !== 'required' ||
+	boundaryLane.project !== 'drei-guards' ||
+	boundaryLane.execution !== undefined ||
+	!boundaryLane.files?.some(
+		(file) =>
+			file.path === 'packages/drei/tests/view-renderer-boundary.test.ts' &&
+			file.role === 'test' &&
+			file.cases?.some((parityCase) => parityCase.id === 'octane-only:view-renderer-boundary'),
+	)
+)
+	fail(
+		'view-renderer-boundary must be inventoried in a required ordinary drei-guards lane (no differential/vitest-full claim)',
+	);
 const upstreamFiles = readdirSync(resolve(root, 'packages/drei/upstream'), {
 	recursive: true,
 	withFileTypes: true,
@@ -237,5 +284,5 @@ for (const lane of manifest.lanes.filter((lane) =>
 }
 
 console.log(
-	`Drei parity evidence is current (${inventory.tests.length} differential assertions in ${inventory.files.length} files; ${guards.length} Octane-only guards).`,
+	`Drei parity evidence is current (${inventory.tests.length} differential assertions in ${inventory.files.length} files; ${guards.length} Octane-only guards; ${discoveredTypes.length} type tests classified).`,
 );
