@@ -10,6 +10,8 @@ import { ENTERED, ENTERING, EXITING } from './Transition.tsrx';
 import TransitionGroupContext from './TransitionGroupContext.ts';
 import type { SwitchTransitionProps, TransitionCallbacks, TransitionStatus } from './types.ts';
 
+export type { SwitchTransitionProps } from './types.ts';
+
 export const modes = { out: 'out-in', in: 'in-out' } as const;
 
 function different(a: ElementDescriptor | null, b: ElementDescriptor | null | undefined) {

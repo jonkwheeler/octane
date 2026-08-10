@@ -52,9 +52,14 @@
       "reason": "Broad repo-authored conformance coverage predates the one-for-one adapted lane and is not counted as upstream parity evidence."
     },
     {
-      "path": "packages/react-transition-group/tests/upstream-original.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
-      "oracle": "Runs all 56 pinned upstream Jest cases unchanged against React."
+      "path": "packages/react-transition-group/typetests/local.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Paired Octane consumer-shaped public type probes structurally compared to typetests/upstream.ts."
+    },
+    {
+      "path": "packages/react-transition-group/typetests/upstream.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Paired React consumer-shaped public type probes for the pinned react-transition-group declarations."
     }
   ]
 }

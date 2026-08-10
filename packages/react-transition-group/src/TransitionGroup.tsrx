@@ -8,6 +8,8 @@ import {
 	type ChildMapping,
 } from './utils/ChildMapping.ts';
 
+export type { TransitionGroupProps } from './types.ts';
+
 export function TransitionGroup(props: TransitionGroupProps) @{
 	const mounted = useRef(false);
 	const first = useRef(true);

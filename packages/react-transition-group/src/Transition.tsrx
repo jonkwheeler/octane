@@ -18,6 +18,8 @@ import type {
 } from './types.ts';
 import { forceReflow } from './utils/reflow.ts';
 
+export type { TransitionProps } from './types.ts';
+
 export const UNMOUNTED = 'unmounted';
 export const EXITED = 'exited';
 export const ENTERING = 'entering';

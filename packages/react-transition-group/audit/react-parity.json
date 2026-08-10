@@ -17,22 +17,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-transition-group/src",
-        "packages/react-transition-group/typetests"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/react-transition-group/src", "packages/react-transition-group/typetests"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-transition-group/tests/adapted"
-      ],
-      "include": [
-        "\\.test\\.ts$"
-      ],
+      "roots": ["packages/react-transition-group/tests/adapted"],
+      "include": ["\\.test\\.ts$"],
       "exclude": []
     }
   },
@@ -68,11 +59,6 @@
         "inventory": "packages/react-transition-group/audit/pristine-runtime.json"
       },
       "files": [
-        {
-          "path": "packages/react-transition-group/tests/upstream-original.test.ts",
-          "role": "support",
-          "sha256": "a411c350bd02239a0682d3a6889599a2bc74e59598dbef664a61755402c843f9"
-        },
         {
           "path": "packages/react-transition-group/tests/upstream-jest.config.cjs",
           "role": "support",
@@ -172,7 +158,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-local-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles consumer-shaped Octane declarations across the public Transition Group entry points.",
+      "notes": "Compiles consumer-shaped Octane declarations across the public Transition Group entry points after structural assertion-group verification against the paired React fixture.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -182,7 +168,7 @@
         {
           "path": "packages/react-transition-group/audit/local-types.json",
           "role": "test",
-          "sha256": "722eb106b8f26afb49872a86fabb9a1e297b875256e4a9752a45f410aefb80db",
+          "sha256": "913571694f7d869ec23c869eaf3d2e3e90d6bd1076bec209b481e3693d201c46",
           "cases": [
             {
               "id": "types:local-public-surface",
@@ -199,7 +185,17 @@
         {
           "path": "packages/react-transition-group/typetests/local.ts",
           "role": "support",
-          "sha256": "b7a9c1fc2922d3f200f5ae9a92d9547327f98f2f93a04d3dab4236c8b24dc16f"
+          "sha256": "c43529df2ac97312875207e4de1f71aaa9dc981330d779356da6db1a26cdc3fa"
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-parity.json",
+          "role": "support",
+          "sha256": "9d6d4bbff30b219cf6b2360894950bc5dd1c8b60025a3c2dbb9617fa85ad5a86"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
+          "role": "support",
+          "sha256": "b1f1dac51a6ff6ede2d3a5a7a012ff8c4ed491baf25abbe1b4561f841a4c9cfc"
         }
       ]
     },
@@ -210,7 +206,7 @@
       "environment": "workspace-node",
       "project": "react-transition-group-upstream-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the same consumer-shaped fixture against pinned @types/react-transition-group declarations.",
+      "notes": "Compiles the same consumer-shaped fixture against pinned @types/react-transition-group declarations with assertion-group inventory and mutation controls.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -220,7 +216,7 @@
         {
           "path": "packages/react-transition-group/audit/upstream-types.json",
           "role": "test",
-          "sha256": "50bd24a9a7e3299d5322854c2e83c19253b90befe4ac84ea47e72f17628daecf",
+          "sha256": "3486a215ae8716b413aa4b320242a3b41cad6a0ba3a2f0bd518cbe233b021564",
           "cases": [
             {
               "id": "types:upstream-public-surface",
@@ -238,6 +234,16 @@
           "path": "packages/react-transition-group/typetests/upstream.ts",
           "role": "support",
           "sha256": "70cbdf053962c36291858d6d6969a71cc8e6257478fc212da2036b795930daa2"
+        },
+        {
+          "path": "packages/react-transition-group/audit/type-parity.json",
+          "role": "support",
+          "sha256": "9d6d4bbff30b219cf6b2360894950bc5dd1c8b60025a3c2dbb9617fa85ad5a86"
+        },
+        {
+          "path": "scripts/react-parity/react-transition-group-types-lib.mjs",
+          "role": "support",
+          "sha256": "b1f1dac51a6ff6ede2d3a5a7a012ff8c4ed491baf25abbe1b4561f841a4c9cfc"
         }
       ]
     }

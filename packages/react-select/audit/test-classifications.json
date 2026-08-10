@@ -27,11 +27,6 @@
       "oracle": "Ports thirty-seven cases one-for-one from upstream/src/__tests__/StateManaged.test.tsx with unchanged titles."
     },
     {
-      "path": "packages/react-select/tests/upstream-original.test.ts",
-      "disposition": "unmodified-upstream-suite-wrapper",
-      "oracle": "Runs all 255 pinned upstream Jest cases byte-exact against React."
-    },
-    {
       "path": "packages/react-select/tests/animated.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Repo-authored animated-component coverage is not counted as adapted upstream evidence."
@@ -110,6 +105,21 @@
       "path": "packages/react-select/tests/verifier-negative.test.mjs",
       "disposition": "octane-only-framework-contract",
       "reason": "Negative controls for the package verifier are not adapted upstream behavior."
+    },
+    {
+      "path": "packages/react-select/typetests/compat.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Cross-environment structural compatibility and recorded renderer adaptations against pinned react-select declarations."
+    },
+    {
+      "path": "packages/react-select/typetests/local.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Paired Octane consumer-shaped public type probes structurally compared to typetests/upstream.ts."
+    },
+    {
+      "path": "packages/react-select/typetests/upstream.ts",
+      "disposition": "repo-authored-type-parity",
+      "oracle": "Paired React consumer-shaped public type probes for the pinned react-select declarations."
     }
   ]
 }

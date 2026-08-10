@@ -7,6 +7,7 @@ headless subset.
 | Field | Pinned value |
 | --- | --- |
 | Package | `react-select@5.10.2` |
+| Supported upstream range | exactly `5.10.2` |
 | License | MIT |
 | npm integrity | `sha512-Z33nHdEFWq9tfnfVXaiM12rbJmk+QjFEztWLtmXqQhz6Al4UZZ9xc0wiatmGtUOCCnHN0WizL3tCMYRENX4rVQ==` |
 | npm SHA-1 | `8dffc69dfd7d74684d9613e6eb27204e3b99e127` |
@@ -15,6 +16,10 @@ headless subset.
 | License SHA-256 | `d736dd18c7e53f88217fa2106c748f1a1687bb91d69a1f673fa685269402d784` |
 | Published files | 138 |
 | Published unpacked bytes | 725,500 |
+| Pristine React oracle | `react@16.14.0` and `react-dom@16.14.0` via `react-select-pristine-react` / `react-select-pristine-react-dom` |
+| Pristine Jest | `jest@25.5.4`, `jest-environment-jsdom@25.5.0`, `babel-jest@25.5.1` |
+| Pristine Testing Library | `@testing-library/react@12.1.4`, `@testing-library/jest-dom@6.9.1`, `@testing-library/user-event@10.4.1` |
+| Pristine Emotion | `@emotion/react@11.9.3`, `@emotion/jest@11.5.0`, `@emotion/cache@11.9.3` |
 
 The published API has root, `base`, `async`, `animated`, `creatable`, and
 `async-creatable` JavaScript entry points plus `package.json`. The canonical
@@ -43,11 +48,11 @@ JavaScript entry points and all 20 runtime exports are tracked fail-closed in
 | `react-select/creatable` | `default`, `useCreatable` | Ported and tested |
 | `react-select/async-creatable` | `default` | Ported and tested |
 
-The paired fixtures in `typetests/` compile the same consumer-shaped public types against all six entry points of the pinned React package and the Octane port. A cross-environment fixture adds exact or bidirectional structural checks for shared pure value/action contracts and selected non-renderer members: core props, async and creatable configuration, imperative methods, plus component, style, class-name, and accessibility key sets. It is intentionally not described as an exhaustive value-signature proof for every exported declaration. Browser fixtures have a dedicated typecheck project so Vite cannot hide invalid type-only imports. Renderer-owned types deliberately substitute `OctaneNode`, native DOM events, and Octane style objects for ReactNode, synthetic events, and Emotion CSS objects; these consumer-visible adaptations are recorded in `status.json`, `audit/react-parity.json`, and fail-closed in `audit/export-crosswalk.json`. The crosswalk is verified against the actual pinned package exports so a new or removed upstream runtime export fails the repository gate.
+The paired fixtures in `typetests/upstream.ts` and `typetests/local.ts` compile the same consumer-shaped public types against all six entry points of the pinned React package and the Octane port. `audit/type-parity.json` inventories their assertion groups, runs an executable structural comparison under the permitted import-root transforms, and the control tests reject skipped files, deleted assertions, and removed `@ts-expect-error` markers. A separate cross-environment fixture adds exact or bidirectional structural checks for shared pure value/action contracts and selected non-renderer members: core props, async and creatable configuration, imperative methods, plus component, style, class-name, and accessibility key sets. It is intentionally not described as an exhaustive value-signature proof for every exported declaration. Browser fixtures have a dedicated typecheck project so Vite cannot hide invalid type-only imports. Renderer-owned types deliberately substitute `OctaneNode`, native DOM events, and Octane style objects for ReactNode, synthetic events, and Emotion CSS objects; these consumer-visible adaptations are recorded in `status.json`, `audit/react-parity.json`, and fail-closed in `audit/export-crosswalk.json`. The crosswalk is verified against the actual pinned package exports so a new or removed upstream runtime export fails the repository gate.
 
 ## Upstream test disposition
 
-The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The `react-select-pristine` project executes them unchanged against the vendored React source with the pinned upstream React, Jest, Testing Library, and Emotion stack. It verifies 255 passing Jest identities and five snapshots; the three canonical upstream skips are inventoried as individually justified `not-applicable` dispositions in `audit/adaptation.json` (they are not counted as adapted evidence). The `react-select` project's narrowly owned `tests/upstream/**` lane runs all 255 pristine identities one-for-one across all five suites, including all five adapted snapshots, with `verification: verified` and zero pending adaptations. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
+The five canonical Jest suites and their snapshots are retained verbatim under `upstream/src/__tests__`. The required pristine Jest lane (`execution.kind: "jest-full"`) executes them unchanged against the vendored React source with the pinned React 16.14.0, Jest 25.5.x, Testing Library, and Emotion stack recorded above. It verifies 255 passing Jest identities and five snapshots; the three canonical upstream skips are inventoried as individually justified `not-applicable` dispositions in `audit/adaptation.json` (they are not counted as adapted evidence). The `react-select` project's narrowly owned `tests/upstream/**` lane runs all 255 pristine identities one-for-one across all five suites, including all five adapted snapshots, with `verification: verified` and zero pending adaptations. The other Octane tests remain ordinary repo-authored differential, SSR, browser, verifier, and crosswalk evidence:
 
 | Retained suite | Executable Octane evidence |
 | --- | --- |

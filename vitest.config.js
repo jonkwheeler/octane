@@ -4207,16 +4207,6 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-transition-group-pristine',
-					include: ['packages/react-transition-group/tests/upstream-original.test.ts'],
-					environment: 'node',
-					sequence: { groupOrder: 1 },
-					globals: false,
-				},
-			},
-			{
-				testExecution: { group: 'react-parity' },
-				test: {
 					name: 'react-transition-group-adapted',
 					include: [
 						'packages/react-transition-group/tests/adapted/**/*.test.ts',
@@ -4269,7 +4259,6 @@ export default defineConfig({
 						'packages/react-transition-group/tests/**/*.test.ts',
 						'!packages/react-transition-group/tests/ssr/**/*.test.ts',
 						'!packages/react-transition-group/tests/adapted/**/*.test.ts',
-						'!packages/react-transition-group/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -4312,16 +4301,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
-				test: {
-					name: 'react-select-pristine',
-					include: ['packages/react-select/tests/upstream-original.test.ts'],
-					environment: 'node',
-					sequence: { groupOrder: 1 },
-					globals: false,
-				},
-			},
-			{
 				// Repo-authored SSR/Chromium/verifier/crosswalk coverage stays in the
 				// ordinary shards. Only one-for-one upstream adaptations belong to the
 				// dedicated parity execution group.
@@ -4335,7 +4314,6 @@ export default defineConfig({
 						'packages/react-select/tests/**/*.test.ts',
 						'packages/react-select/tests/**/*.test.mjs',
 					],
-					exclude: ['packages/react-select/tests/upstream-original.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,

@@ -30,6 +30,11 @@ test('rejects a missing authored test classification', async function rejectsMis
 		join(root, 'packages/react-select/tests'),
 		{ recursive: true },
 	);
+	await cp(
+		new URL('../../packages/react-select/typetests', import.meta.url),
+		join(root, 'packages/react-select/typetests'),
+		{ recursive: true },
+	);
 	assert.deepEqual(verifyReactSelectTestClassifications(root), {
 		tests: verifyReactSelectTestClassifications(repoRoot).tests,
 	});

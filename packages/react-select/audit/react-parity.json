@@ -16,22 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-select/src",
-        "packages/react-select/typetests"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx|mjs)$"
-      ],
+      "roots": ["packages/react-select/src", "packages/react-select/typetests"],
+      "include": ["\\.(?:ts|tsrx|mjs)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-select/tests/upstream"
-      ],
-      "include": [
-        "\\.test\\.(?:ts|mjs)$"
-      ],
+      "roots": ["packages/react-select/tests/upstream"],
+      "include": ["\\.test\\.(?:ts|mjs)$"],
       "exclude": []
     }
   },
@@ -67,11 +58,6 @@
         "inventory": "packages/react-select/audit/pristine-runtime.json"
       },
       "files": [
-        {
-          "path": "packages/react-select/tests/upstream-original.test.ts",
-          "role": "support",
-          "sha256": "5f097f6c4debdf0a515629aeebbfc542ff70e614a0d2d9958ee07321b580a444"
-        },
         {
           "path": "packages/react-select/audit/pristine-runtime.json",
           "role": "support",
@@ -150,7 +136,7 @@
         {
           "path": "packages/react-select/audit/test-classifications.json",
           "role": "support",
-          "sha256": "58e52e9c05a8b7ce9d8d51b6e8944a264edb1881aebe5957361610090a94e41a"
+          "sha256": "c28f2ae1a88bc4b38a80d50e6e4701668ab457d0b853f856eeaadbe6dddd04d5"
         },
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
@@ -170,12 +156,12 @@
         {
           "path": "scripts/react-parity/react-select-classifications-lib.mjs",
           "role": "support",
-          "sha256": "522f3c44c02b6178acdc7c8675da16a24c0113f105e965c352ea403a5733db91"
+          "sha256": "908106ffa00b078ae47219806e8e5c052a47e23515478ea7202966ef603a80ab"
         },
         {
           "path": "scripts/react-parity/react-select-classifications-lib.test.mjs",
           "role": "support",
-          "sha256": "92f59b3c7bae61ea618028179c8b4c61718f03898f0703b4c337af6e5644702c"
+          "sha256": "8802ad692384a9306d889032850ed24df1c8efe5d40b1d0a365051c32ec2b059"
         }
       ]
     },
@@ -186,7 +172,7 @@
       "environment": "workspace-node",
       "project": "react-select-local-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles consumer-shaped Octane declarations across all six public entry points.",
+      "notes": "Compiles consumer-shaped Octane declarations across all six public entry points after structural assertion-group verification against the paired React fixture.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -196,7 +182,7 @@
         {
           "path": "packages/react-select/audit/local-types.json",
           "role": "test",
-          "sha256": "a231a749ae01bcee04f86f2d27ef62dea79d5144ab00c97126302cc6dcb6cf0d",
+          "sha256": "4cffca79821c6bef62aa8ddfdaa69b53e8b094472e124eafc243202ea3b2f907",
           "cases": [
             {
               "id": "types:local-public-surface",
@@ -219,6 +205,16 @@
           "path": "packages/react-select/tests/browser/tsconfig.json",
           "role": "support",
           "sha256": "63d45556d53458cac6d733ab43410f3250865f564ab1b4ebc72c63a5dc2d9afc"
+        },
+        {
+          "path": "packages/react-select/audit/type-parity.json",
+          "role": "support",
+          "sha256": "4917ca5ee1236e73292c5f031e5f68ceecc6eb86d315307adae5975316ff21c0"
+        },
+        {
+          "path": "scripts/react-parity/react-select-types-lib.mjs",
+          "role": "support",
+          "sha256": "302db6e2f085fcc755be3330d966d109408065ca62ec64b17ea1a35bbede78bb"
         }
       ]
     },
@@ -229,7 +225,7 @@
       "environment": "workspace-node",
       "project": "react-select-upstream-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles the same consumer-shaped fixture against pinned react-select declarations.",
+      "notes": "Compiles the same consumer-shaped fixture against pinned react-select declarations with assertion-group inventory and mutation controls.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -239,7 +235,7 @@
         {
           "path": "packages/react-select/audit/upstream-types.json",
           "role": "test",
-          "sha256": "17069a56c63d0f38ccaa6ccbfb327fb7d9a4bd00e919aa637e5a8c813c6b0622",
+          "sha256": "46ea717c93755fce733fb1d8f94cdd13ecf634c8497f6cc34123fa42eb825075",
           "cases": [
             {
               "id": "types:upstream-public-surface",
@@ -257,6 +253,16 @@
           "path": "packages/react-select/typetests/upstream.ts",
           "role": "support",
           "sha256": "1d3a88d6a604176219efc33fec3009d0dde78a14db597bac5c3f837163421a49"
+        },
+        {
+          "path": "packages/react-select/audit/type-parity.json",
+          "role": "support",
+          "sha256": "4917ca5ee1236e73292c5f031e5f68ceecc6eb86d315307adae5975316ff21c0"
+        },
+        {
+          "path": "scripts/react-parity/react-select-types-lib.mjs",
+          "role": "support",
+          "sha256": "302db6e2f085fcc755be3330d966d109408065ca62ec64b17ea1a35bbede78bb"
         }
       ]
     },
@@ -317,9 +323,7 @@
   "divergences": [
     {
       "id": "react-select-octane-node",
-      "caseIds": [
-        "types:octane-node-adaptation"
-      ],
+      "caseIds": ["types:octane-node-adaptation"],
       "upstreamResult": "Renderable callbacks and component contracts use ReactNode.",
       "octaneResult": "Renderable callbacks and component contracts use OctaneNode.",
       "rationale": "Octane components render Octane nodes without a React runtime dependency.",
@@ -331,9 +335,7 @@
     },
     {
       "id": "react-select-native-events",
-      "caseIds": [
-        "types:native-event-adaptation"
-      ],
+      "caseIds": ["types:native-event-adaptation"],
       "upstreamResult": "Event-bearing contracts expose React synthetic events.",
       "octaneResult": "Event-bearing contracts expose native DOM events.",
       "rationale": "Octane delivers native DOM events rather than React synthetic events.",
@@ -345,9 +347,7 @@
     },
     {
       "id": "react-select-octane-styles",
-      "caseIds": [
-        "types:octane-style-adaptation"
-      ],
+      "caseIds": ["types:octane-style-adaptation"],
       "upstreamResult": "Renderer-owned style contracts expose Emotion CSSObjectWithLabel values.",
       "octaneResult": "Renderer-owned style contracts expose Octane style objects.",
       "rationale": "Octane owns style serialization and does not require Emotion at runtime.",

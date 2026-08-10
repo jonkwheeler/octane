@@ -4,12 +4,12 @@ import {
 	Transition,
 	TransitionGroup,
 	config,
-	type CSSTransitionProps,
-	type SwitchTransitionProps,
-	type TransitionGroupProps,
-	type TransitionProps,
 	type TransitionStatus,
 } from '../src/index';
+import type { CSSTransitionProps } from '../src/CSSTransition.tsrx';
+import type { SwitchTransitionProps } from '../src/SwitchTransition.tsrx';
+import type { TransitionProps } from '../src/Transition.tsrx';
+import type { TransitionGroupProps } from '../src/TransitionGroup.tsrx';
 
 declare const transitionProps: TransitionProps;
 declare const cssProps: CSSTransitionProps;

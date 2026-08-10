@@ -40,7 +40,8 @@
     "./config": "./src/config.ts"
   },
   "scripts": {
-    "test": "pnpm upstream:check && vitest run --root ../.. --project react-transition-group-pristine --project react-transition-group-adapted --project react-transition-group-adapted-ssr --project react-transition-group --project react-transition-group-ssr",
+    "test": "pnpm upstream:check && pnpm test:pristine && vitest run --root ../.. --project react-transition-group-adapted --project react-transition-group-adapted-ssr --project react-transition-group --project react-transition-group-ssr",
+    "test:pristine": "jest --config tests/upstream-jest.config.cjs --runInBand --no-watchman",
     "parity:inventory": "node ../../scripts/react-parity/react-transition-group-runtime-inventory.mjs",
     "upstream:check": "node audit/check-upstream.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.local.json && tsc --noEmit -p typetests/tsconfig.upstream.json"

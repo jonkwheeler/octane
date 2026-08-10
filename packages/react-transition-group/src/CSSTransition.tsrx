@@ -3,6 +3,8 @@ import Transition from './Transition.tsrx';
 import type { CSSClassNames, CSSTransitionProps } from './types.ts';
 import { forceReflow } from './utils/reflow.ts';
 
+export type { CSSTransitionProps } from './types.ts';
+
 type TransitionType = 'appear' | 'enter' | 'exit';
 type Phase = 'base' | 'active' | 'done';
 type AppliedClasses = Record<TransitionType, Partial<Record<Phase, string>>>;
