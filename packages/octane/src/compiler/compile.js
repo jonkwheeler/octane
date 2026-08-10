@@ -1762,6 +1762,62 @@ function moduleImportsViewTransition(astBody) {
 	}
 }
 
+function classifyViewTransitionOwnership(astBody, production, ownComponents) {
+	if (!moduleImportsViewTransition(astBody)) return { global: false, owners: new Set() };
+	if (!production) return { global: true, owners: new Set() };
+
+	const imported = new Set();
+	for (const statement of astBody) {
+		if (statement.type === 'ImportDeclaration' && statement.source?.value === 'octane') {
+			for (const specifier of statement.specifiers || []) {
+				if (specifier.type === 'ImportNamespaceSpecifier') {
+					return { global: true, owners: new Set() };
+				}
+				const name = specifier.imported?.name ?? specifier.imported?.value;
+				if (name === 'ViewTransition' || name === 'unstable_ViewTransition') {
+					imported.add(specifier.local.name);
+				}
+			}
+		} else if (
+			(statement.type === 'ExportNamedDeclaration' || statement.type === 'ExportAllDeclaration') &&
+			statement.source?.value === 'octane'
+		) {
+			return { global: true, owners: new Set() };
+		}
+	}
+	if (imported.size === 0) return { global: true, owners: new Set() };
+
+	const mentionsImportedTransition = (root) => {
+		const free = collectFreeIdentifiers(
+			root,
+			isComponentFunction(root) ? collectComponentLocals(root) : new Set(),
+		);
+		for (const name of imported) {
+			if (free.has(name)) return true;
+		}
+		return false;
+	};
+
+	let global = false;
+	const owners = new Set();
+	for (const statement of astBody) {
+		if (statement.type === 'ImportDeclaration') continue;
+		const declaration =
+			statement.type === 'ExportNamedDeclaration' || statement.type === 'ExportDefaultDeclaration'
+				? statement.declaration
+				: statement;
+		if (!mentionsImportedTransition(declaration ?? statement)) continue;
+		const exported =
+			statement.type === 'ExportNamedDeclaration' || statement.type === 'ExportDefaultDeclaration';
+		if (ownComponents && exported && isComponentFunction(declaration)) {
+			owners.add(declaration.id.name);
+		} else {
+			global = true;
+		}
+	}
+	return { global, owners };
+}
+
 export const HOOK_NAMES = new Set([
 	'useState',
 	'useLinkedState',
@@ -2217,7 +2273,7 @@ function isArrowStableOver(arrow, stable, componentLocals) {
  * Idempotent: a const we already rewrote into `useCallback(...)` won't be
  * re-wrapped (its init is now a CallExpression, not an ArrowFunctionExpression).
  */
-function rewriteAutoCallback(stmt, stable, componentLocals, ctx) {
+function rewriteAutoCallback(stmt, stable, componentLocals, ctx, invariant) {
 	if (stmt.type !== 'VariableDeclaration' || stmt.kind !== 'const') return stmt;
 	let modified = false;
 	const newDecls = stmt.declarations.map((decl) => {
@@ -2249,7 +2305,11 @@ function rewriteAutoCallback(stmt, stable, componentLocals, ctx) {
 					// `_octaneGenerated` tells rewriteHookCalls (which slots this call next)
 					// that the callee is compiler-inserted — it renames it to the shadow-proof
 					// `_$useCallback` alias instead of treating it as a user identifier.
-					{ ...b.id('useCallback'), _octaneGenerated: true },
+					{
+						...b.id('useCallback'),
+						_octaneGenerated: true,
+						_octaneLifetimeInvariant: invariant.has(decl.id.name),
+					},
 					arrow,
 					b.array(deps.map((n) => b.id(n))),
 				),
@@ -3410,9 +3470,11 @@ function containsComponentCallOrControlFlow(stmts) {
 }
 
 /**
- * A host-only conditional can share its keyed row's immutable item/dependency
- * proof, but entering that conditional still needs the row's active scope. Keep
- * components and every other control-flow boundary on their existing path.
+ * A host-only conditional can share its containing row's immutable
+ * item/dependency proof, including through a narrowly proven nested keyed list.
+ * Entering either construct still needs the row's active scope. Lists without a
+ * conditional, components, opaque list expressions, and every other
+ * control-flow boundary remain on their existing path.
  */
 function hasOnlyHostConditionalItemBodies(stmts) {
 	let hasConditional = false;
@@ -3441,6 +3503,28 @@ function hasOnlyHostConditionalItemBodies(stmts) {
 		}
 		if (type === 'IfStatement' || type === 'JSXIfExpression') {
 			hasConditional = true;
+		} else if (type === 'JSXForExpression') {
+			const declaration = node.left;
+			const item = declaration?.declarations?.[0]?.id;
+			const key = unwrapTsExpr(node.key);
+			if (
+				node.await === true ||
+				node.index != null ||
+				node.nativeArrayMap !== undefined ||
+				declaration?.type !== 'VariableDeclaration' ||
+				declaration.declarations?.length !== 1 ||
+				item?.type !== 'Identifier' ||
+				!isAutoMemoCalculationDependency(node.right) ||
+				key?.type !== 'MemberExpression' ||
+				key.computed === true ||
+				key.optional === true ||
+				key.object?.type !== 'Identifier' ||
+				key.object.name !== item.name ||
+				key.property?.type !== 'Identifier'
+			) {
+				disallowed = true;
+				return;
+			}
 		} else if (
 			type === 'ForStatement' ||
 			type === 'ForInStatement' ||
@@ -3450,7 +3534,6 @@ function hasOnlyHostConditionalItemBodies(stmts) {
 			type === 'TryStatement' ||
 			type === 'SwitchStatement' ||
 			type === 'ActivityStatement' ||
-			type === 'JSXForExpression' ||
 			type === 'JSXTryExpression' ||
 			type === 'JSXSwitchExpression' ||
 			type === 'JSXActivityExpression' ||
@@ -4204,11 +4287,12 @@ function containsDeferredRefRead(root) {
 	return found;
 }
 
-// Both probes visit the identical node set, so one pass answers both. The ref
-// probe loses its early exit; it finds nothing in 97% of components anyway.
+// Imported component tags rendered anywhere in the body — the auto-memo
+// region's runtime witnesses. (Deferred-ref reads are no longer collected
+// body-wide here: they gate per call site and per local through
+// collectAutoMemoLocalHazards.)
 function scanComponentBody(root, importedNames) {
 	const importedComponents = new Set();
-	let readsDeferredRef = false;
 	const seen = new WeakSet();
 	function walk(node) {
 		if (!node || typeof node !== 'object') return;
@@ -4218,7 +4302,6 @@ function scanComponentBody(root, importedNames) {
 		}
 		if (seen.has(node)) return;
 		seen.add(node);
-		if (!readsDeferredRef && isDeferredRefRead(node)) readsDeferredRef = true;
 		const imported = importedComponentTag(node, importedNames);
 		if (imported !== null) importedComponents.add(imported);
 		for (const key in node) {
@@ -4227,7 +4310,7 @@ function scanComponentBody(root, importedNames) {
 		}
 	}
 	walk(root);
-	return { importedComponents, readsDeferredRef };
+	return { importedComponents };
 }
 
 // A JSX member chain bottoms out at a JSXIdentifier, so the base test below
@@ -4263,9 +4346,137 @@ function containsImportedMemberRead(root, importedNames) {
 	return found;
 }
 
+/**
+ * Component locals whose values a region's dependency tuple cannot witness.
+ *
+ * A region dep on a LOCAL compares the local's per-render value. Locals
+ * re-initialize on every body entry, so a plain value local — however it is
+ * conditionally reassigned during render — is always an exact witness of
+ * itself. What it CANNOT witness is a value drawn from mutable state whose
+ * container identity hides the drift:
+ *
+ *   - a ref read (`.current` / any computed member — `isDeferredRefRead`'s
+ *     definition): ref contents mutate outside render without scheduling one,
+ *     and a stable-identity closure (`useCallback(() => ref.current, [])`)
+ *     hands a skipped subtree a LIVE read whose changes nothing witnesses —
+ *     so the classification descends into nested function values;
+ *   - an imported binding's member read: a live import's property can move
+ *     while the import's identity (the only thing a dep can hold) stays
+ *     fixed.
+ *
+ * A name is tainted when such a read reaches its value through ANY feed —
+ * declaration initializers at every nesting depth, destructuring patterns
+ * that carry the read themselves (`const { current: el } = ref`, a default or
+ * computed key reading a ref or live import), assignment right-hand sides, or
+ * a for-of/for-in source — directly or through another tainted local (fixed
+ * point, so declaration order and arrow-hoisted back-references cannot hide a
+ * hazard). Nested and loop-scoped names are not component locals, so tainting
+ * them is inert at call sites directly (unknown names already fail closed),
+ * but it is what lets a hazard PROPAGATE through them into a top-level local
+ * (`let out; for (const x of ref.current.items) out = x`). Shadowing is
+ * folded by name — an inner binding's hazard taints its outer namesake —
+ * which only ever declines more. Props params and same-module function
+ * declarations never taint: the former are the witnessed snapshot itself, the
+ * latter are immutable identities whose render-time CALLS the per-site
+ * render-call gate already rejects.
+ *
+ * The direct forms of these reads inside a call site's own props are rejected
+ * per site (containsAutoMemoUnsafeStructure / containsImportedMemberRead);
+ * this set covers the same reads laundered through a local.
+ */
+function collectAutoMemoLocalHazards(stmts, importedNames) {
+	const hazards = new Set();
+	// name -> union of free identifiers across its clean value sources; a name
+	// with a directly hazardous source moves to `hazards` and leaves this map.
+	const sourceFrees = new Map();
+	const feed = (pattern, rhs) => {
+		if (!rhs) return;
+		const names = new Set();
+		collectBindings(pattern, names);
+		if (names.size === 0) return;
+		// The pattern side can carry the read itself: a `current`/computed
+		// binding key destructures ref contents off the source, and a default's
+		// expression evaluates at destructure time. Both walks descend the whole
+		// pattern, so nested shapes and defaults are covered together.
+		const direct =
+			containsDeferredRefRead(rhs) ||
+			containsImportedMemberRead(rhs, importedNames) ||
+			containsDeferredRefRead(pattern) ||
+			containsImportedMemberRead(pattern, importedNames);
+		// Default expressions inside the pattern read values too; their free
+		// identifiers (which include the pattern's own bound names — inert
+		// self-loops) join the clean-source union.
+		const frees = direct
+			? null
+			: [...collectFreeIdentifiers(rhs, []), ...collectFreeIdentifiers(pattern, [])];
+		for (const name of names) {
+			if (hazards.has(name)) continue;
+			if (direct) {
+				hazards.add(name);
+				sourceFrees.delete(name);
+				continue;
+			}
+			let set = sourceFrees.get(name);
+			if (set === undefined) sourceFrees.set(name, (set = new Set()));
+			for (const id of frees) set.add(id);
+		}
+	};
+	// One walk feeds every binding form at every depth, including inside
+	// nested function values: a deferred write targets a PREVIOUS render's
+	// binding and can never leak into the next render's dep snapshot, but
+	// walking uniformly is cheaper than proving which writes are deferred, and
+	// only hazardous sources taint anyway.
+	const seen = new WeakSet();
+	(function walk(n) {
+		if (!n) return;
+		if (Array.isArray(n)) {
+			for (const x of n) walk(x);
+			return;
+		}
+		if (typeof n !== 'object' || !n.type || seen.has(n)) return;
+		seen.add(n);
+		if (n.type === 'VariableDeclaration') {
+			for (const d of n.declarations || []) feed(d.id, d.init);
+		} else if (n.type === 'AssignmentExpression' && n.left?.type !== 'MemberExpression') {
+			feed(n.left, n.right);
+		} else if ((n.type === 'ForOfStatement' || n.type === 'ForInStatement') && n.left) {
+			// The loop source feeds the bound names whether the left declares
+			// (`for (const x of src)` — declarator inits are null, so the
+			// declaration arm above cannot see src) or reuses an outer binding.
+			if (n.left.type === 'VariableDeclaration') {
+				for (const d of n.left.declarations || []) feed(d.id, n.right);
+			} else {
+				feed(n.left, n.right);
+			}
+		}
+		for (const key in n) {
+			if (AST_WALK_SKIP_KEYS.has(key)) continue;
+			walk(n[key]);
+		}
+	})(stmts);
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const [name, free] of sourceFrees) {
+			for (const id of free) {
+				if (!hazards.has(id)) continue;
+				hazards.add(name);
+				sourceFrees.delete(name);
+				changed = true;
+				break;
+			}
+		}
+	}
+	return hazards;
+}
+
 function containsAutoMemoUnsafeStructure(stmts) {
 	let found = false;
 	const seen = new WeakSet();
+	// Spread bags on HOST elements, marked admissible by the owning element's
+	// visit below. Parents walk before their attributes, so membership is
+	// decided before the spread node itself is reached.
+	const hostSpreads = new WeakSet();
 	function walk(n) {
 		if (found || !n) return;
 		if (Array.isArray(n)) {
@@ -4297,12 +4508,28 @@ function containsAutoMemoUnsafeStructure(stmts) {
 			t === 'YieldExpression' ||
 			t === 'ThrowStatement' ||
 			t === 'TryStatement' ||
-			t === 'JSXTryExpression' ||
-			t === 'SpreadAttribute' ||
-			t === 'JSXSpreadAttribute'
+			t === 'JSXTryExpression'
 		) {
 			found = true;
 			return;
+		}
+		if (t === 'SpreadAttribute' || t === 'JSXSpreadAttribute') {
+			// A HOST element's spread bag is one setSpread binding re-diffed on every
+			// region entry. Its argument is composed of deps the region guard already
+			// witnesses (unwitnessed names fail closed independently), so a skip is
+			// the no-op a re-entry would have been — the same immutable-snapshot
+			// argument that admits `class={e.cls}` member reads; runtime keys the
+			// walk cannot see (ref/on*/value) diff per entry with full parity to
+			// their direct-attribute forms. A COMPONENT tag's spread instead builds
+			// the child's props snapshot (getter evaluation, hidden prop names) and
+			// stays rejected, matching the callSiteOk exclusion — which
+			// isAutoMemoPropsParam's rest admission relies on. The argument still
+			// walks below: accessors, computed members, and ref reads inside it keep
+			// failing closed.
+			if (!hostSpreads.has(n)) {
+				found = true;
+				return;
+			}
 		}
 		if (t === 'UnaryExpression' && n.operator === 'delete') {
 			found = true;
@@ -4371,6 +4598,13 @@ function containsAutoMemoUnsafeStructure(stmts) {
 				found = true;
 				return;
 			}
+			if (!isComponentTag(n)) {
+				for (const attr of n.attributes || n.openingElement?.attributes || []) {
+					if (attr.type === 'SpreadAttribute' || attr.type === 'JSXSpreadAttribute') {
+						hostSpreads.add(attr);
+					}
+				}
+			}
 		}
 		for (const key in n) {
 			if (AST_WALK_SKIP_KEYS.has(key)) continue;
@@ -4379,6 +4613,54 @@ function containsAutoMemoUnsafeStructure(stmts) {
 	}
 	for (const s of stmts) walk(s);
 	return found;
+}
+
+/**
+ * Can this props parameter stand in for autoMemo's "one ordinary props
+ * snapshot"? A bare Identifier always can. A destructuring ObjectPattern can
+ * when destructuring it evaluates NO expressions and reads NOTHING mutable:
+ * every binding it introduces is already a component local
+ * (collectComponentLocals walks patterns), so the body's free-identifier and
+ * capture analysis is complete for it — the pattern itself is the only part
+ * those walks never see, because they take the body root, not the params.
+ *
+ * Fail closed on exactly the shapes whose evaluation escapes that analysis or
+ * reads outside the snapshot:
+ *   - defaults (`{ a = expr }`): `expr` evaluates at destructure time, and its
+ *     reads are invisible to the body walks;
+ *   - computed keys (`{ [k]: v }`): same, for the key expression;
+ *   - a `current` binding at any depth: the same mutable-ref hazard the body
+ *     walk rejects for ObjectPattern declarations (a ref's identity is not a
+ *     complete witness for its contents);
+ *   - array patterns: destructuring runs the iterator protocol, which is
+ *     arbitrary user code on a non-Array prop;
+ *   - rest (`...rest`) with anything but a plain Identifier target.
+ * Rest itself is admitted: object rest is an engine-level own-property copy of
+ * the same snapshot, and spread-bearing call sites never receive a region
+ * anyway (callSiteOk excludes them), so a getter-bearing props object cannot
+ * reach a cached region.
+ */
+function isAutoMemoPropsParam(param) {
+	if (param == null) return false;
+	if (param.type === 'Identifier') return true;
+	if (param.type !== 'ObjectPattern') return false;
+	const admissible = (pattern) => {
+		if (pattern == null || pattern.type !== 'ObjectPattern') return false;
+		for (const p of pattern.properties || []) {
+			if (p.type === 'RestElement') {
+				if (p.argument?.type !== 'Identifier') return false;
+				continue;
+			}
+			if (p.type !== 'Property' || p.computed) return false;
+			const key = p.key?.name ?? p.key?.value;
+			if (key === 'current') return false;
+			const value = p.value;
+			if (value?.type === 'Identifier') continue;
+			if (!admissible(value)) return false;
+		}
+		return true;
+	};
+	return admissible(param);
 }
 
 /**
@@ -6822,10 +7104,16 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		exactOrigins: new Map(), // see registerExactOrigin
 		originAliases: [], // see registerOriginAlias
 		hoistedTemplates: [], // { name, ast, html, ns, frag, origins }
+		internedTemplates: new Map(), // HTML -> one template or namespace/fragment variants
 		hoistedHelpers: [], // statement NODES (sub-components, hook Symbols, key fns) + hook-slot-base markers
 		delegatedEvents: new Set(), // bubble event names seen in JSX — auto-emits delegateEvents(...)
 		capturedEvents: new Set(), // capture-phase event names (onXxxCapture) — auto-emits delegateCaptureEvents(...)
+		unownedDelegatedEvents: new Set(),
+		unownedCapturedEvents: new Set(),
 		cssInjections: [], // { hash, css } — one entry per component with a <style> block
+		ownedCssInjections: new Set(),
+		componentOwners: [],
+		currentComponentOwner: null,
 		currentComponentLocals: null, // Set<string> while compiling a component body; null otherwise
 		currentMapTemps: null, // receiver/method temps owned by the current emitted function
 		currentAutoMemoOffset: 0, // flat compiler-cache cell offset for the body being emitted
@@ -7036,8 +7324,54 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 	ctx.moduleFunctionDeclarations = collectImmutableModuleFunctions(ast.body);
 	// M3 inherit-range exclusion set (see inheritSoleCompRoot).
 	ctx._octaneBoundaryNames = collectOctaneBoundaryNames(ast.body);
-	// Client prelude `_$vtSeen()` module-load hint (view-transitions plan).
-	ctx._usesViewTransition = moduleImportsViewTransition(ast.body);
+	const productionEffects = !ctx.hmr && !ctx.dev && !ctx.profile;
+	const exportedComponents = ast.body.filter(
+		(statement) =>
+			(statement.type === 'ExportNamedDeclaration' ||
+				statement.type === 'ExportDefaultDeclaration') &&
+			isComponentFunction(statement.declaration),
+	);
+	// Prelude registration historically precedes every authored module effect.
+	// An effect above any component could observe its stylesheet, delegated
+	// listeners, or transition capability, so retain the entire module prelude.
+	let effectBeforeComponent = false;
+	let precedingModuleEffect = false;
+	if (productionEffects && exportedComponents.length > 1) {
+		for (const statement of ast.body) {
+			const declaration =
+				statement.type === 'ExportNamedDeclaration' || statement.type === 'ExportDefaultDeclaration'
+					? statement.declaration
+					: statement;
+			if (isComponentFunction(declaration)) {
+				if (precedingModuleEffect) {
+					effectBeforeComponent = true;
+					break;
+				}
+				continue;
+			}
+			if (
+				statement.type === 'ImportDeclaration' ||
+				statement.type === 'ExportAllDeclaration' ||
+				(statement.type === 'ExportNamedDeclaration' && declaration == null) ||
+				declaration?.type === 'FunctionDeclaration' ||
+				declaration?.type === 'TSInterfaceDeclaration' ||
+				declaration?.type === 'TSTypeAliasDeclaration' ||
+				statement.type === 'EmptyStatement'
+			) {
+				continue;
+			}
+			precedingModuleEffect = true;
+		}
+	}
+	ctx.componentEffectOwnership =
+		productionEffects && exportedComponents.length > 1 && !effectBeforeComponent;
+	const viewTransitions = classifyViewTransitionOwnership(
+		ast.body,
+		productionEffects,
+		ctx.componentEffectOwnership,
+	);
+	ctx._usesViewTransition = viewTransitions.global;
+	ctx.viewTransitionOwners = viewTransitions.owners;
 
 	// List of exported components needing HMR wrapping. Each entry: { name,
 	// exportKind: 'default' | 'named' }. We emit the `Comp = hmr(Comp)` lines
@@ -7076,6 +7410,7 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 				eligible: false,
 				autoMemoSafe: false,
 				autoMemoCallsitesSafe: true,
+				autoMemoLocalHazards: null,
 				autoMemoCaptures: [],
 				autoMemoComponentDeps: [],
 				autoMemoImportedComponents: [],
@@ -7108,16 +7443,26 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		if (compNode.body.render) stmts.push(compNode.body.render);
 		const root = b.block(stmts);
 		const free = collectFreeIdentifiers(root, locals);
-		const { importedComponents: autoMemoImportedComponents, readsDeferredRef } = scanComponentBody(
+		const { importedComponents: autoMemoImportedComponents } = scanComponentBody(
 			root,
 			ctx.importedNames,
 		);
-		// Both proofs below ask this of the same root. Kept lazy because the
-		// short-circuits ahead of each use skip it entirely for some components.
+		// The callee-side proof below asks this of the same root. Kept lazy because
+		// the short-circuits ahead of its use skip it entirely for some components.
 		let importedMemberRead = null;
 		const readsImportedMember = () =>
 			(importedMemberRead ??= containsImportedMemberRead(root, ctx.importedNames));
-		let autoMemoCallsitesSafe = !readsDeferredRef && !readsImportedMember();
+		// Call-site regions inside this body are gated per site: the site's own
+		// props are walked directly (containsAutoMemoUnsafeStructure /
+		// containsImportedMemberRead over the JSX node), and ref/imported-member
+		// reads laundered through a body local are carried by this hazard set —
+		// a site whose free identifiers touch a tainted local falls back. The
+		// free-name loop below still vetoes the whole body for names no dep can
+		// witness at all (boundary wrappers, namespaces, ambient module state).
+		const autoMemoLocalHazards = ctx.autoMemo
+			? collectAutoMemoLocalHazards(stmts, ctx.importedNames)
+			: null;
+		let autoMemoCallsitesSafe = true;
 		for (const name of free) {
 			if (
 				ctx._octaneBoundaryNames.has(name) ||
@@ -7131,13 +7476,14 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 				break;
 			}
 		}
-		// autoMemo's first proof is intentionally narrower than lite eligibility.
-		// It models a pure component as a function of one ordinary props snapshot;
-		// destructuring/default/rest parameters can be admitted once their evaluation
-		// is included in the shared dependency/purity analysis.
+		// autoMemo models a pure component as a function of one ordinary props
+		// snapshot. A destructuring param is that same snapshot read once at
+		// entry, admitted only while the pattern evaluates no expressions of its
+		// own — see isAutoMemoPropsParam for the exact fail-closed shapes
+		// (defaults, computed keys, `current`, array patterns).
 		const ordinaryPropsParam =
 			(compNode.params?.length ?? 0) <= 1 &&
-			(compNode.params?.length !== 1 || compNode.params[0]?.type === 'Identifier');
+			(compNode.params?.length !== 1 || isAutoMemoPropsParam(compNode.params[0]));
 		let autoMemoSafe =
 			ordinaryPropsParam &&
 			!containsRenderCall(stmts, ctx) &&
@@ -7175,6 +7521,7 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 		}
 		info.autoMemoSafe = autoMemoSafe;
 		info.autoMemoCallsitesSafe = autoMemoCallsitesSafe;
+		info.autoMemoLocalHazards = autoMemoLocalHazards;
 		info.autoMemoCaptures = autoMemoSafe ? autoMemoCaptures.sort() : [];
 		info.autoMemoComponentDeps = autoMemoSafe ? autoMemoComponentDeps.sort() : [];
 		info.autoMemoImportedComponents = autoMemoSafe ? [...autoMemoImportedComponents].sort() : [];
@@ -7514,22 +7861,24 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 			),
 		);
 	}
-	const styleNodes = ctx.cssInjections.map((i) => {
-		// Point the authored `<style>` block at the CSS this injection carries.
-		// Both sides are whole units — the block and the stylesheet it became —
-		// which is the useful pairing for a scoped style.
-		const anchor = claimCssOrigins(ctx, i);
-		return inheritOriginLoc(
-			b.stmt(
-				b.call(
-					'_$injectStyle',
-					b.literal(i.hash, JSON.stringify(i.hash)),
-					b.literal(i.css, JSON.stringify(i.css)),
+	const styleNodes = ctx.cssInjections
+		.filter((i) => !ctx.ownedCssInjections.has(i))
+		.map((i) => {
+			// Point the authored `<style>` block at the CSS this injection carries.
+			// Both sides are whole units — the block and the stylesheet it became —
+			// which is the useful pairing for a scoped style.
+			const anchor = claimCssOrigins(ctx, i);
+			return inheritOriginLoc(
+				b.stmt(
+					b.call(
+						'_$injectStyle',
+						b.literal(i.hash, JSON.stringify(i.hash)),
+						b.literal(i.css, JSON.stringify(i.css)),
+					),
 				),
-			),
-			anchor ?? moduleOrigin,
-		);
-	});
+				anchor ?? moduleOrigin,
+			);
+		});
 	const templateNodes = ctx.hoistedTemplates.map((t) => {
 		const args = [b.literal(t.html, JSON.stringify(t.html))];
 		if (t.ns || t.frag) args.push(b.literal(t.ns | 0));
@@ -9796,6 +10145,18 @@ function ssrEmitComponent(node, ctx, name, inlinedSubs, parentNs, cssHash, compo
 	return ssrCall(helper, args, node);
 }
 
+// ---------------------------------------------------------------------------
+// Server control flow — @if/@for/@switch/@try lowered to HTML-string builders.
+// Each branch/item/case body is compiled (via ssrCompileSub) into a server
+// sub-function returning a string, and the chosen branch's output is wrapped in
+// `_$ssrBlock(…)` (BLOCK_OPEN/BLOCK_CLOSE markers) so a future client hydrate
+// cursor can find the boundaries. Expressions (test/items/discriminant) are
+// printed and evaluated at render time.
+// ---------------------------------------------------------------------------
+
+// Compile a list of body statements into a server sub-function `function NAME(__s,
+// …params, __extra) { return <html>; }`. Returns { fnName, fn }; the caller pushes
+// `fn` into the enclosing inlinedSubs.
 function collectDescriptorChildrenBindings(ast, isDescriptorChildrenImport) {
 	const markerNames = new Set();
 	const bindings = new Set();
@@ -11082,6 +11443,19 @@ function compileComponent(node, ctx, options) {
 	const isDefault = !!node.default;
 	const hmrWrap = !!(options && options.hmrWrap);
 	const returnedOutput = node.body?.type === 'JSXCodeBlock' && hasOwnValueReturn(node);
+	const owner =
+		ctx.componentEffectOwnership && isExported
+			? {
+					name,
+					origin: node,
+					delegatedEvents: new Set(),
+					capturedEvents: new Set(),
+					styles: [],
+					transition: ctx.viewTransitionOwners.has(name),
+					declaration: null,
+				}
+			: null;
+	const firstStyle = ctx.cssInjections.length;
 
 	// Scoped `<style>` block. New TSRX surfaces each style block as a
 	// `JSXStyleElement` child of the rendered tree (parser pre-computes the
@@ -11111,11 +11485,15 @@ function compileComponent(node, ctx, options) {
 	// locals.
 	const prevLocals = ctx.currentComponentLocals;
 	const prevAutoMemoCallsitesSafe = ctx.currentAutoMemoCallsitesSafe;
+	const prevAutoMemoLocalHazards = ctx.currentAutoMemoLocalHazards;
 	const prevKnownStr = ctx.knownStringLocals;
 	const prevProfileComponentId = ctx.currentProfileComponentId;
+	const previousComponentOwner = ctx.currentComponentOwner;
 	ctx.currentComponentLocals = collectComponentLocals(node);
 	ctx.currentAutoMemoCallsitesSafe = ctx.componentInfo.get(name)?.autoMemoCallsitesSafe !== false;
+	ctx.currentAutoMemoLocalHazards = ctx.componentInfo.get(name)?.autoMemoLocalHazards ?? null;
 	ctx.knownStringLocals = collectKnownStringLocals(node);
+	ctx.currentComponentOwner = owner;
 	if (ctx.profile) ctx.currentProfileComponentId = profileComponentId(ctx, name, node);
 	let fnNode;
 	try {
@@ -11131,9 +11509,12 @@ function compileComponent(node, ctx, options) {
 	} finally {
 		ctx.currentComponentLocals = prevLocals;
 		ctx.currentAutoMemoCallsitesSafe = prevAutoMemoCallsitesSafe;
+		ctx.currentAutoMemoLocalHazards = prevAutoMemoLocalHazards;
 		ctx.knownStringLocals = prevKnownStr;
 		ctx.currentProfileComponentId = prevProfileComponentId;
+		ctx.currentComponentOwner = previousComponentOwner;
 	}
+	if (owner !== null) owner.styles = ctx.cssInjections.slice(firstStyle);
 
 	// Parallel-use warm plan: attached to the INNER function object (not the
 	// module const) so the component's own body — where the function-
@@ -11174,6 +11555,11 @@ function compileComponent(node, ctx, options) {
 		sourceBeforeNode !== '' &&
 		new RegExp(`\\b${name.replace(/\$/g, '\\$')}\\b`).test(sourceBeforeNode);
 	if (referencedAboveDeclaration) {
+		if (owner !== null) {
+			for (const event of owner.delegatedEvents) ctx.unownedDelegatedEvents.add(event);
+			for (const event of owner.capturedEvents) ctx.unownedCapturedEvents.add(event);
+			if (owner.transition) ctx._usesViewTransition = true;
+		}
 		// Every stamp is `typeof`-guarded: route code-splitters (TanStack's) may
 		// EXTRACT the declaration into its own module and leave these statements
 		// behind — `typeof` on the then-undeclared identifier short-circuits
@@ -11263,6 +11649,10 @@ function compileComponent(node, ctx, options) {
 		b.declaration(declKind, [b.declarator(b.id(name, node.id ?? node), valueExpr)]),
 		node,
 	);
+	if (owner !== null) {
+		owner.declaration = declNode;
+		ctx.componentOwners.push(owner);
+	}
 	if (isDefault) {
 		if (options && options.hmrMutable) {
 			return {
@@ -11368,7 +11758,8 @@ function compileFunctionBody(node, ctx, name, parentNs = 'html', cssHash = null,
 			);
 		}
 		workingStatements = removeMountEventCallbackDeclarations(statements, mountCallbackSinks).map(
-			(s) => rewriteAutoCallback(s, stableSet, ctx.currentComponentLocals, ctx),
+			(s) =>
+				rewriteAutoCallback(s, stableSet, ctx.currentComponentLocals, ctx, bodyInvariantLocals),
 		);
 	}
 	if (returnedOutput) {
@@ -14041,7 +14432,17 @@ function authoredHookMemoOf(stmt) {
 		if (containsHookShapedCall(fn.body)) return null;
 		if (fn.body.type === 'BlockStatement' && !blockBodyInlineSafe(fn.body)) return null;
 	}
-	return { name, decl, kind: stmt.kind, fn, deps };
+	return {
+		name,
+		decl,
+		kind: stmt.kind,
+		fn,
+		deps,
+		generatedInvariant:
+			name === 'useCallback' &&
+			callee._octaneGenerated === true &&
+			callee._octaneLifetimeInvariant === true,
+	};
 }
 
 // Compute statements writing the site's result into `target` (an expression
@@ -14117,7 +14518,7 @@ function lowerPuMemoDecl(stmt, ctx) {
 function lowerAuthoredHookMemo(stmt, ctx) {
 	const entry = authoredHookMemoOf(stmt);
 	if (entry === null) return null;
-	const { name, decl, kind, fn, deps } = entry;
+	const { name, decl, kind, fn, deps, generatedInvariant } = entry;
 	// Explicit `null` deps: recompute every render — no cache at all. A
 	// useCallback degenerates to the factory itself; a useMemo evaluates
 	// inline (via the shared block machinery when the body is a block).
@@ -14133,6 +14534,24 @@ function lowerAuthoredHookMemo(stmt, ctx) {
 	}
 	const names = hookMemoNames(ctx);
 	const base = ctx.currentHookMemoOffset;
+	if (generatedInvariant) {
+		// A compiler-owned callback whose captures are lifetime-invariant cannot
+		// miss after its first render. Its function value doubles as the init flag,
+		// and publishing it immediately preserves identity across suspension.
+		ctx.currentHookMemoOffset = base + 1;
+		const valueCell = () => b.member(b.id(names.cache), hkNumLit(base), true);
+		return [
+			{
+				...stmt,
+				declarations: [
+					{
+						...decl,
+						init: b.logical('??', valueCell(), b.assignment('=', valueCell(), fn)),
+					},
+				],
+			},
+		];
+	}
 	const k = deps.length;
 	ctx.currentHookMemoOffset = base + k + 2;
 	const cellRef = (i) => b.member(b.id(names.cache), hkNumLit(i), true);
@@ -14501,11 +14920,14 @@ function compileReturnJsxFunction(node, ctx, options) {
 	const prevValueDirectiveLowering = ctx._valueDirectiveLowering;
 	const prevLocals = ctx.currentComponentLocals;
 	const prevAutoMemoCallsitesSafe = ctx.currentAutoMemoCallsitesSafe;
+	const prevAutoMemoLocalHazards = ctx.currentAutoMemoLocalHazards;
+	const prevAutoCalculatedRenderableRefs = ctx.currentAutoCalculatedRenderableRefs;
 	const prevMapTemps = ctx.currentMapTemps;
 	const mapTemps = [];
 	ctx._valueDirectiveLowering = lowerBodyValueDirective;
 	ctx.currentComponentLocals = collectComponentLocals(node);
 	ctx.currentAutoMemoCallsitesSafe = ctx.componentInfo.get(name)?.autoMemoCallsitesSafe !== false;
+	ctx.currentAutoMemoLocalHazards = ctx.componentInfo.get(name)?.autoMemoLocalHazards ?? null;
 	ctx.currentMapTemps = mapTemps;
 	let newStatements;
 	try {
@@ -14514,6 +14936,7 @@ function compileReturnJsxFunction(node, ctx, options) {
 			.filter((statement) => statement.type === 'ReturnStatement' && isJsxNode(statement.argument))
 			.map((statement) => statement.argument);
 		const renderReadNames = collectRenderReadNames(renderedRoots, ctx);
+		let autoCalculatedDeclarations = null;
 		let renderScopeEstablished = false;
 		newStatements = authoredStatements.map((sourceStatement) => {
 			// Return-JSX functions keep their ordinary callable ABI. Introducing a
@@ -14523,6 +14946,12 @@ function compileReturnJsxFunction(node, ctx, options) {
 			const calculated = renderScopeEstablished
 				? rewriteAutoCalculation(sourceStatement, ctx.currentComponentLocals, renderReadNames, ctx)
 				: sourceStatement;
+			if (ctx.autoMemo && calculated !== sourceStatement) {
+				(autoCalculatedDeclarations ??= new Map()).set(
+					sourceStatement.declarations[0].id.name,
+					sourceStatement,
+				);
+			}
 			if (!renderScopeEstablished && sourceStatement.type === 'VariableDeclaration') {
 				renderScopeEstablished = (sourceStatement.declarations || []).some(
 					(declaration) => stableHookCallName(unwrapTsExpr(declaration.init)) !== null,
@@ -14545,6 +14974,25 @@ function compileReturnJsxFunction(node, ctx, options) {
 			// The `return <jsx>` output → a compiled-fragment descriptor (reconcile path),
 			// not the host-string de-opt (rebuild). Other JSX in setup keeps value-lowering.
 			if (h.type === 'ReturnStatement' && h.argument && isJsxNode(h.argument)) {
+				if (autoCalculatedDeclarations !== null) {
+					// Unlike a JSXCodeBlock, a returned-JSX body's statement list also
+					// contains its output. Do not mistake that owned return for a setup
+					// escape: the separate render-root walk checks its exact hole nodes.
+					const setupStatements = authoredStatements.filter(
+						(statement) => statement.type !== 'ReturnStatement' || !isJsxNode(statement.argument),
+					);
+					const refs = collectAutoCalculatedRenderableRefs(
+						setupStatements,
+						renderedRoots,
+						autoCalculatedDeclarations,
+					);
+					if (refs !== null) {
+						ctx.currentAutoCalculatedRenderableRefs = {
+							nodes: refs,
+							parent: prevAutoCalculatedRenderableRefs,
+						};
+					}
+				}
 				return { ...h, argument: lowerReturnJsx(h.argument, ctx, compInlinedSubs, cssHash) };
 			}
 			return rewriteJsxValues(h, ctx);
@@ -14553,6 +15001,8 @@ function compileReturnJsxFunction(node, ctx, options) {
 		ctx._valueDirectiveLowering = prevValueDirectiveLowering;
 		ctx.currentComponentLocals = prevLocals;
 		ctx.currentAutoMemoCallsitesSafe = prevAutoMemoCallsitesSafe;
+		ctx.currentAutoMemoLocalHazards = prevAutoMemoLocalHazards;
+		ctx.currentAutoCalculatedRenderableRefs = prevAutoCalculatedRenderableRefs;
 		ctx.currentMapTemps = prevMapTemps;
 	}
 	if (
@@ -15922,10 +16372,10 @@ function rewriteJsxValues(node, ctx, eagerMapCallbackRoots = false, eagerMapCall
 	});
 }
 
-// Lower one inspectable descriptor child (marked `descriptorChildren` calls and
-// value-position descriptor paths). Control-flow directives under that child
-// must fold through the owning body's setup-value pass first — bare
-// `lowerJsxChild` rejects them as unowned or drops the markup.
+// Lower one JSX child node to a `createElement` argument expression (or null to
+// drop it). Text → string literal (whitespace-only-with-newline indentation is
+// dropped, JSX rule); `{expr}` → the lowered inner expression; nested element →
+// recurse; fragment → positional children or a scope-preserving descriptor.
 function lowerInspectableJsxChild(child, ctx) {
 	const fold = ctx._valueDirectiveLowering;
 	if (fold == null) return lowerJsxChild(child, ctx);
@@ -16087,6 +16537,96 @@ function jsxValueChildrenNeedRenderScope(node, descendantElementsOwnChildren = f
 	return false;
 }
 
+// A returned host preserves nested component children as inspectable
+// descriptors. An actual Octane Context can reuse its static host descriptor
+// while a compiler-proven plain descriptor array stays unchanged; the existing
+// implicit element bailout then skips its list without changing the children
+// representation or hydration ranges. Admit only one ordinary `.Provider`, its
+// `value`, and one static host whose sole child is the exact non-escaping
+// calculation Identifier.
+function autoMemoReturnedProviderChild(node, nameNode, ctx) {
+	if (
+		!ctx.autoMemo ||
+		ctx._universalRuntimeUnit != null ||
+		ctx._foldCtx?.immediateRenderedOutput !== true ||
+		!Array.isArray(ctx._foldCtx.compInlinedSubs) ||
+		ctx.currentAutoCalculatedRenderableRefs === null ||
+		(nameNode?.type !== 'MemberExpression' && nameNode?.type !== 'JSXMemberExpression') ||
+		(nameNode.object?.type !== 'Identifier' && nameNode.object?.type !== 'JSXIdentifier') ||
+		nameNode.property?.name !== 'Provider'
+	) {
+		return null;
+	}
+
+	const attributes = node.attributes || node.openingElement?.attributes || [];
+	if (attributes.length !== 1) return null;
+	const valueAttribute = attributes[0];
+	if (
+		(valueAttribute.type !== 'Attribute' && valueAttribute.type !== 'JSXAttribute') ||
+		jsxAttrRawName(valueAttribute) !== 'value'
+	) {
+		return null;
+	}
+	const value =
+		valueAttribute.value?.type === 'JSXExpressionContainer'
+			? unwrapTsExpr(valueAttribute.value.expression)
+			: valueAttribute.value;
+	if (
+		value == null ||
+		(value.type !== 'Identifier' && value.type !== 'Literal' && value.type !== 'StringLiteral')
+	) {
+		return null;
+	}
+
+	const onlyMeaningfulChild = (children) => {
+		let result = null;
+		for (const child of children || []) {
+			if (child?.type === 'JSXText' || child?.type === 'Text') {
+				const text = child.value ?? child.raw;
+				if (typeof text === 'string' && /^\s*$/.test(text) && /[\n\r]/.test(text)) {
+					continue;
+				}
+			}
+			if (result !== null) return null;
+			result = child;
+		}
+		return result;
+	};
+	const host = onlyMeaningfulChild(node.children);
+	if ((host?.type !== 'Element' && host?.type !== 'JSXElement') || isComponentTag(host)) {
+		return null;
+	}
+	for (const attribute of host.attributes || host.openingElement?.attributes || []) {
+		if (attribute.type !== 'Attribute' && attribute.type !== 'JSXAttribute') return null;
+		const name = jsxAttrRawName(attribute);
+		if (
+			name === 'key' ||
+			name === 'ref' ||
+			name === 'children' ||
+			name === 'dangerouslySetInnerHTML'
+		) {
+			return null;
+		}
+		if (
+			attribute.value != null &&
+			attribute.value.type !== 'Literal' &&
+			attribute.value.type !== 'StringLiteral'
+		) {
+			return null;
+		}
+	}
+	const child = onlyMeaningfulChild(host.children);
+	if (child?.type !== 'JSXExpressionContainer' || child.expression?.type !== 'Identifier') {
+		return null;
+	}
+	for (let proof = ctx.currentAutoCalculatedRenderableRefs; proof !== null; proof = proof.parent) {
+		if (proof.nodes.has(child.expression)) {
+			return { host, contextName: nameNode.object.name, rows: child.expression };
+		}
+	}
+	return null;
+}
+
 // Build a `createElement(Comp, { ...props })` CallExpression AST node from a
 // component Element node. Recurses into prop values so nested JSX values lower too.
 function jsxElementToCreateElement(node, ctx, eagerRoot = false) {
@@ -16171,6 +16711,9 @@ function jsxElementToCreateElement(node, ctx, eagerRoot = false) {
 		childrenNeedRenderScope &&
 		(nameNode?.type === 'MemberExpression' || nameNode?.type === 'JSXMemberExpression') &&
 		nameNode.property?.name === 'Provider';
+	const autoMemoProviderChild = eagerProviderChildren
+		? autoMemoReturnedProviderChild(node, nameNode, ctx)
+		: null;
 	const loweredChildren = [];
 	// Children → trailing `createElement(type, props, ...children)` args, each
 	// lowered recursively (host child → createElement, `{expr}` → expr, text →
@@ -16202,6 +16745,71 @@ function jsxElementToCreateElement(node, ctx, eagerRoot = false) {
 	let descriptor;
 	if (childrenNeedRenderScope && loweredChildren.length > 0) {
 		let childrenValue = loweredChildren[0];
+		let memoizedChildrenBody = null;
+		if (autoMemoProviderChild !== null && loweredChildren.length === 1) {
+			const { host, contextName, rows } = autoMemoProviderChild;
+			ctx.runtimeNeeded.add('compilerCacheArray');
+			// `.Provider` is a public property and can belong to any component.
+			// Ask the runtime whether this exact value is provided by the CURRENT
+			// scope. Its identity-map lookup never re-reads `.Provider`, invokes
+			// a fake component's `$$kind` getter, or observes a user Proxy trap.
+			const genuineContext = inheritOriginLoc(
+				b.call(
+					requireRuntimeForContext(ctx, 'compilerOwnsContextProvider'),
+					inheritOriginLoc(b.id(contextName), nameNode.object),
+				),
+				nameNode,
+			);
+			// The scoped descriptor's readChildren callback runs while this
+			// verified Provider owns CURRENT_SCOPE. Its compiler-minted Symbol
+			// therefore belongs to that stable Provider instance, never to an
+			// arbitrary component or to a descriptor inspected outside render.
+			// This site is client-only, so defer its Symbol until shared authored
+			// sites have claimed their ids in both the server and client compiles.
+			const slot = allocTailHookSymbol(ctx, `${contextName}.provider.child.memo`, {
+				componentName: contextName,
+				name: 'provider child memo',
+				kind: 'useMemo',
+				node: host,
+			});
+			const freshName = allocCompilerName(ctx, '__memoFresh');
+			const childName = allocCompilerName(ctx, '__memoChild');
+			const memoizedDescriptor = inheritOriginLoc(
+				b.call(
+					requireRuntimeForContext(ctx, 'useMemo'),
+					b.arrow(
+						[],
+						b.sequence([b.assignment('=', b.id(freshName), b.literal(true)), childrenValue]),
+					),
+					b.array([rows]),
+					b.id(slot),
+				),
+				host,
+			);
+			// A fresh descriptor must reconcile regardless of array contents.
+			// Inspect dense/accessor/scoped eligibility only when the memo HIT
+			// could actually skip reconciliation, just like compilerCacheArray's
+			// ordinary previous-value path. This keeps mount and changed inputs
+			// free of an extra linear scan.
+			const cacheable = b.logical(
+				'&&',
+				genuineContext,
+				b.sequence([
+					b.assignment('=', b.id(childName), memoizedDescriptor),
+					b.logical('||', b.id(freshName), b.call('_$compilerCacheArray', rows, rows)),
+				]),
+			);
+			memoizedChildrenBody = inheritOriginLoc(
+				b.block([
+					b.declaration('let', [
+						b.declarator(b.id(freshName), b.literal(false)),
+						b.declarator(b.id(childName), null),
+					]),
+					b.return(b.conditional(cacheable, b.id(childName), childrenValue)),
+				]),
+				host,
+			);
+		}
 		if (loweredChildren.length > 1) {
 			ctx.runtimeNeeded.add('positionalChildren');
 			childrenValue = inheritOriginLoc(
@@ -16210,7 +16818,7 @@ function jsxElementToCreateElement(node, ctx, eagerRoot = false) {
 			);
 		}
 		ctx.runtimeNeeded.add('createScopedElement');
-		const readChildren = inheritOriginLoc(b.arrow([], childrenValue), node);
+		const readChildren = inheritOriginLoc(b.arrow([], memoizedChildrenBody ?? childrenValue), node);
 		descriptor = inheritOriginLoc(
 			b.call('_$createScopedElement', compNode, propsNode, readChildren),
 			node,
@@ -18018,10 +18626,11 @@ function planJsx(
 			const elVar = ensureVar(c.hostPath || []);
 			c.elVar = elVar;
 			const org = c.origin ?? planOrigin;
-			if (!noTemplate) {
+			const key = `_${hostKey}$${c.id}`;
+			if (!noTemplate && bag.host(key, elVar)) {
 				mountLines.push(
 					inheritOriginLoc(
-						b.stmt(b.assignment('=', b.id(bag.local(`_${hostKey}$${c.id}`)), hostVarNode(elVar))),
+						b.stmt(b.assignment('=', b.id(bag.local(key)), hostVarNode(elVar))),
 						org,
 					),
 				);
@@ -19121,6 +19730,7 @@ function bagLetter(i) {
 function makeBag() {
 	const fields = [];
 	const byKey = new Map();
+	const byHost = new Map();
 	const reg = (key, constExpr) => {
 		let r = byKey.get(key);
 		if (r === undefined) {
@@ -19143,6 +19753,16 @@ function makeBag() {
 	return {
 		/** Mount-write target for `key` — the pre-declared local. */
 		local: (key) => reg(key, undefined).local,
+		/** Register one immutable DOM-host field; aliases reuse its first mount write. */
+		host: (key, host) => {
+			const existing = byHost.get(host);
+			if (existing !== undefined) {
+				byKey.set(key, existing);
+				return false;
+			}
+			byHost.set(host, reg(key, undefined));
+			return true;
+		},
 		/** Seed `key` with a constant expression (no local, no mount write). */
 		constField: (key, expr) => {
 			reg(key, expr);
@@ -19287,8 +19907,10 @@ function emitDeferredMount(bind, elVar, bag) {
 	if (!(bind.kind === 'class' && bind.fresh)) {
 		bag.constField(bind.kind === 'style' ? `_sty$${bind.id}` : `_prev$${bind.id}`, 'undefined');
 	}
+	const key = `_el$${bind.id}`;
+	if (!bag.host(key, elVar)) return null;
 	return inheritOriginLoc(
-		b.stmt(b.assignment('=', b.id(bag.local(`_el$${bind.id}`)), hostVarNode(elVar))),
+		b.stmt(b.assignment('=', b.id(bag.local(key)), hostVarNode(elVar))),
 		bindingOrigin(bind),
 	);
 }
@@ -19306,6 +19928,9 @@ function emitBindingMount(bind, elVar, bag) {
 	const st = (node) => inheritOriginLoc(node, org);
 	const el = () => hostVarNode(elVar);
 	const local = (key) => b.id(bag.local(key));
+	const hostKey = `_el$${bind.id}`;
+	const mountHost = () =>
+		bag.host(hostKey, elVar) ? [b.stmt(b.assignment('=', local(hostKey), el()))] : [];
 	const V = () => b.id('_v');
 	// The tokens that NAME this binding's lowering carry the authored attribute
 	// name; everything else in the call maps to the value expression.
@@ -19323,10 +19948,7 @@ function emitBindingMount(bind, elVar, bag) {
 		return st(b.stmt(b.call('_$markNativeChangeDiagnosticStatic', el())));
 	}
 	if (bind.kind === 'nativeChangeRuntime') {
-		return [
-			st(b.stmt(b.assignment('=', local(`_el$${bind.id}`), el()))),
-			st(b.stmt(b.call('_$queueNativeChangeDiagnostic', el()))),
-		];
+		return [...mountHost().map(st), st(b.stmt(b.call('_$queueNativeChangeDiagnostic', el())))];
 	}
 	switch (bind.kind) {
 		case 'textOnlyChild': {
@@ -19348,7 +19970,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.block([
 					b.const('_v', bind.expr),
 					b.stmt(b.call('_$setDangerouslySetInnerHTML', el(), V())),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
+					...mountHost(),
 					b.stmt(b.assignment('=', local(`_prev$${bind.id}`), V())),
 				]),
 			);
@@ -19377,7 +19999,7 @@ function emitBindingMount(bind, elVar, bag) {
 			return st(
 				b.block([
 					b.stmt(b.call('_$setDangerouslySetInnerHTMLSources', el(), sources)),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
+					...mountHost(),
 				]),
 			);
 		}
@@ -19386,14 +20008,11 @@ function emitBindingMount(bind, elVar, bag) {
 				b.id(bag.local(`${spread ? '_sp' : '_prev'}$${binding.id}`)),
 			);
 			return st(
-				b.block([
-					b.stmt(b.call('_$setFormControlSources', el(), sources)),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
-				]),
+				b.block([b.stmt(b.call('_$setFormControlSources', el(), sources)), ...mountHost()]),
 			);
 		}
 		case 'hostCommit': {
-			const elLocal = local(`_el$${bind.id}`);
+			const hostMount = mountHost();
 			const propsLocal = local(`_host$${bind.id}`);
 			const sources = commitSourceRows(bind.sources, (binding, spread) =>
 				b.id(bag.local(`${spread ? '_sp' : '_prev'}$${binding.id}`)),
@@ -19424,7 +20043,7 @@ function emitBindingMount(bind, elVar, bag) {
 			);
 			return st(
 				b.block([
-					b.stmt(b.assignment('=', elLocal, el())),
+					...hostMount,
 					b.stmt(
 						b.assignment(
 							'=',
@@ -19467,7 +20086,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.block([
 					b.const('_v', bind.expr),
 					b.stmt(b.call(callee(), el(), nameLit(), V())),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
+					...mountHost(),
 					b.stmt(b.assignment('=', local(`_prev$${bind.id}`), V())),
 				]),
 			);
@@ -19484,12 +20103,7 @@ function emitBindingMount(bind, elVar, bag) {
 			// update must re-run every render to reassert drift (React's
 			// controlled contract). Not in DEFERRABLE_MOUNT_KINDS: the mount
 			// runs inside the hydration window and arms the element.
-			return st(
-				b.block([
-					b.stmt(b.call(callee(), el(), bind.expr)),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
-				]),
-			);
+			return st(b.block([b.stmt(b.call(callee(), el(), bind.expr)), ...mountHost()]));
 		}
 		case 'autoFocus': {
 			// Mount-only (React ignores later autoFocus changes); the focus
@@ -19499,11 +20113,7 @@ function emitBindingMount(bind, elVar, bag) {
 		case 'class': {
 			// On SVG/MathML hosts the `className` property is read-only — fall back
 			// to setAttribute. Compile-time choice, zero runtime branching.
-			const body = [
-				b.const('_v', bind.expr),
-				b.stmt(b.call(callee(), el(), V())),
-				b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
-			];
+			const body = [b.const('_v', bind.expr), b.stmt(b.call(callee(), el(), V())), ...mountHost()];
 			if (!bind.fresh) body.push(b.stmt(b.assignment('=', local(`_prev$${bind.id}`), V())));
 			return st(b.block(body));
 		}
@@ -19512,7 +20122,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.block([
 					b.const('_v', bind.expr),
 					b.stmt(b.call(callee(), el(), V(), undefinedNode())),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
+					...mountHost(),
 					b.stmt(b.assignment('=', local(`_sty$${bind.id}`), V())),
 				]),
 			);
@@ -19535,7 +20145,7 @@ function emitBindingMount(bind, elVar, bag) {
 					: [];
 			// Register the mount locals BEFORE the cleanup closure resolves their
 			// bag letters (letter() throws for a never-mounted field).
-			const elLocal = local(`_el$${bind.id}`);
+			const hostMount = mountHost();
 			const spLocal = local(`_sp$${bind.id}`);
 			const cleanup = b.arrow(
 				[],
@@ -19562,7 +20172,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.block([
 					b.const('_v', bind.expr),
 					b.stmt(b.call('_$setSpread', el(), V(), undefinedNode(), b.id('__s'), ...flags)),
-					b.stmt(b.assignment('=', elLocal, el())),
+					...hostMount,
 					b.stmt(b.assignment('=', spLocal, V())),
 					cleanupsPush(cleanup),
 				]),
@@ -19576,7 +20186,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.assignment('=', b.member(el(), slotKeyLiteral(bind), true), value),
 			);
 			if (bind.mountOnly) return st(slotAssign);
-			return [st(b.stmt(b.assignment('=', local(`_el$${bind.id}`), el()))), st(slotAssign)];
+			return [...mountHost().map(st), st(slotAssign)];
 		}
 		case 'formAction': {
 			// <form action={fn}> / <button formAction={fn}>: wire the submit handler
@@ -19586,7 +20196,7 @@ function emitBindingMount(bind, elVar, bag) {
 				b.block([
 					b.const('_v', bind.expr),
 					b.stmt(b.call(callee(), el(), nameLit(), V(), undefinedNode())),
-					b.stmt(b.assignment('=', local(`_el$${bind.id}`), el())),
+					...mountHost(),
 					b.stmt(b.assignment('=', local(`_prev$${bind.id}`), V())),
 				]),
 			);
@@ -19626,6 +20236,7 @@ function emitBindingMount(bind, elVar, bag) {
 			// cleanup read because updates re-point it. Assigning both bag locals inside
 			// the queue call evaluates each mount value once while avoiding throwaway
 			// temporaries; Suspense still receives the exact ref/target pair.
+			const initializeHost = bag.host(hostKey, elVar);
 			return st(
 				b.block([
 					b.stmt(
@@ -19633,7 +20244,7 @@ function emitBindingMount(bind, elVar, bag) {
 							'_$queueRefAttach',
 							b.id('__s'),
 							b.assignment('=', local(`_ref$${bind.id}`), bind.expr),
-							b.assignment('=', local(`_el$${bind.id}`), el()),
+							initializeHost ? b.assignment('=', local(hostKey), el()) : local(hostKey),
 						),
 					),
 					cleanupsPush(
@@ -20952,8 +21563,21 @@ function emitElementHtml(
 			// is unreachable from the output: the key's map position resolves to
 			// the HANDLER expression, and the name itself emits nothing.
 			registerExactOrigin(ctx, attr.name, attr.name?.end, [`'${slotKey}'`, `"${slotKey}"`]);
-			if (capture) ctx.capturedEvents.add(eventName);
-			else ctx.delegatedEvents.add(eventName);
+			if (capture) {
+				ctx.capturedEvents.add(eventName);
+				if (ctx.currentComponentOwner !== null) {
+					ctx.currentComponentOwner.capturedEvents.add(eventName);
+				} else {
+					ctx.unownedCapturedEvents.add(eventName);
+				}
+			} else {
+				ctx.delegatedEvents.add(eventName);
+				if (ctx.currentComponentOwner !== null) {
+					ctx.currentComponentOwner.delegatedEvents.add(eventName);
+				} else {
+					ctx.unownedDelegatedEvents.add(eventName);
+				}
+			}
 			// Hot-path optimisation: `() => fn(arg, …)` arrows with zero params get
 			// compiled to a `{ fn, args }` bundle so the runtime can identity-diff
 			// fn + each arg and skip the property reassignment when nothing
@@ -22394,7 +23018,13 @@ function makeCompCall(
 					}
 					for (const name of free) {
 						if (name === compName) continue;
-						if (ctx.importNamespaceNames.has(name)) {
+						if (
+							ctx.importNamespaceNames.has(name) ||
+							// A local laundering a ref or live-import member read (see
+							// collectAutoMemoLocalHazards) — its per-render value is not a
+							// complete witness, so the site keeps ordinary entry semantics.
+							ctx.currentAutoMemoLocalHazards?.has(name) === true
+						) {
 							depsSafe = false;
 						} else if (ctx.currentComponentLocals.has(name) || ctx.importedNames.has(name)) {
 							if (!callsiteDeps.coveredRoots.has(name)) deps.add(name);
@@ -23079,7 +23709,7 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 		// survivor shortcut has no compiler-cache epoch cell to consult).
 		if (itemMemoContextAware && autoMemoDeps === null) itemMemo = false;
 		const hostPure = !hasParentClosure && !hasHook && !hasNestedComp && !hasRenderCall;
-		const conditionalHostDepEligible =
+		const structuredHostDepEligible =
 			ctx.autoMemo === true &&
 			hasNestedComp &&
 			hasParentClosure &&
@@ -23087,14 +23717,24 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 			!hasRenderCall &&
 			node.nativeArrayMap === undefined &&
 			autoMemoDeps !== null &&
-			autoMemoDeps.every((name) => seenDeps.has(name)) &&
+			autoMemoDeps.every((name) => seenDeps.has(name) || ctx.importedNames.has(name)) &&
 			!containsAutoMemoContextRead(bodyAst, ctx) &&
 			hasOnlyHostConditionalItemBodies(subStmts);
+		if (structuredHostDepEligible) {
+			// The whole-list cache already witnesses imported projections. A row
+			// survivor now makes the same decision independently, so its existing
+			// dependency tuple must witness those live bindings as well.
+			for (const name of autoMemoDeps) {
+				if (seenDeps.has(name)) continue;
+				seenDeps.add(name);
+				depNames.push(name);
+			}
+		}
 		const hostDepEligible =
 			!hostPure &&
 			!hasHook &&
 			hasParentClosure &&
-			(!hasNestedComp || conditionalHostDepEligible) &&
+			(!hasNestedComp || structuredHostDepEligible) &&
 			!hasRenderCall;
 		if (itemMemo && itemMemoWitnesses.length > 0) {
 			pure = hostPure;
@@ -23104,7 +23744,7 @@ function makeForCall(node, ctx, inlinedSubs, parentNs = 'html', cssHash = null) 
 			pure = hostPure || (itemMemo && depNames.length === 0);
 			depEligible = !pure && !hasHook && (hostDepEligible || (itemMemo && depNames.length > 0));
 		}
-		requiresScope = depEligible && conditionalHostDepEligible;
+		requiresScope = depEligible && structuredHostDepEligible;
 		depNames.sort();
 	}
 
@@ -23950,10 +24590,41 @@ function bodyContainsJsx(node) {
 
 /** @param {TemplateIR} ast */
 function allocTemplate(ctx, ast, ns = 0, frag = 0) {
+	const { html, origins } = serializeTemplateIr(ast);
+	const intern = !ctx.hmr && !ctx.dev && !ctx.profile;
+	const bucket = intern ? ctx.internedTemplates.get(html) : undefined;
+	const existing = Array.isArray(bucket)
+		? bucket.find((template) => template.ns === ns && template.frag === frag)
+		: bucket?.ns === ns && bucket.frag === frag
+			? bucket
+			: undefined;
+	if (existing !== undefined) {
+		if (ctx.inspect && origins !== null && existing.origins !== null) {
+			for (const origin of origins) {
+				const canonical = existing.origins.find(
+					(entry) =>
+						entry.kind === origin.kind && entry.start === origin.start && entry.end === origin.end,
+				);
+				if (canonical !== undefined) {
+					registerOriginAlias(
+						ctx,
+						{ start: origin.srcStart, end: origin.srcEnd },
+						{ start: canonical.srcStart },
+					);
+				}
+			}
+		}
+		return existing.name;
+	}
 	const id = ctx.nextTemplateId++;
 	const name = `_t$${id}`;
-	const { html, origins } = serializeTemplateIr(ast);
-	ctx.hoistedTemplates.push({ name, ast, html, ns, frag, origins });
+	const template = { name, ast, html, ns, frag, origins };
+	ctx.hoistedTemplates.push(template);
+	if (intern) {
+		if (bucket === undefined) ctx.internedTemplates.set(html, template);
+		else if (Array.isArray(bucket)) bucket.push(template);
+		else ctx.internedTemplates.set(html, [bucket, template]);
+	}
 	return name;
 }
 
