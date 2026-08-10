@@ -37,6 +37,7 @@ surface and evidence.
 | `@octanejs/mantine-hooks` | 0 |
 | `@octanejs/mdx` | 0 |
 | `@octanejs/mobx` | 0 |
+| `@octanejs/monaco-editor` | 0 |
 | `@octanejs/motion` | 0 |
 | `@octanejs/nuqs` | 0 |
 | `@octanejs/phosphor-icons` | 0 |
