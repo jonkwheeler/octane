@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -253,18 +254,26 @@ describe('CI workflow aggregation', () => {
 		]);
 		assert.equal(baseProjects.get('react-resizable-panels-browser').testExecution, undefined);
 		assert.equal(baseProjects.get('react-resizable-panels-server').testExecution, undefined);
-		const rrpBrowserGlob = 'packages/react-resizable-panels/tests/browser/**/*.browser.test.ts';
-		assert.ok(jobSource('test_shard').includes(`--exclude "${rrpBrowserGlob}"`));
+		assert.ok(jobSource('test_shard').includes('--exclude "packages/*/tests/browser/**"'));
 		const heavyBrowserLane = jobSource('heavy_integration');
-		const browserLaneStart = heavyBrowserLane.indexOf('- lane: browser');
-		const browserLaneEnd = heavyBrowserLane.indexOf('- lane: astro', browserLaneStart);
-		assert.notEqual(browserLaneStart, -1);
-		assert.notEqual(browserLaneEnd, -1);
-		assert.ok(
-			heavyBrowserLane
-				.slice(browserLaneStart, browserLaneEnd)
-				.includes('packages/react-resizable-panels/tests/browser'),
+		assert.match(heavyBrowserLane, /specs: discovered/);
+		assert.match(
+			heavyBrowserLane,
+			/SPECS="\$\(node scripts\/discover-heavy-browser-specs\.mjs\)"/,
 		);
+		assert.equal(
+			(heavyBrowserLane.match(/packages\/react-resizable-panels\/tests\/browser/g) ?? []).length,
+			0,
+		);
+		const discovered = execFileSync('node', ['scripts/discover-heavy-browser-specs.mjs'], {
+			encoding: 'utf8',
+			cwd: REPO,
+		})
+			.trim()
+			.split(/\s+/);
+		assert.ok(discovered.includes('packages/react-resizable-panels/tests/browser'));
+		assert.ok(discovered.includes('packages/octane/tests/browser'));
+		assert.equal(discovered.includes('packages/rspeedy-plugin-octane/tests/browser'), false);
 		for (const project of [
 			'react-resizable-panels-pristine',
 			'react-resizable-panels-differential',

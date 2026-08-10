@@ -583,7 +583,8 @@ export function renderReactResizablePanelsAdaptedInventory(repoRoot) {
 /**
  * Support fixtures under tests/upstream that are not case-ledger artifacts.
  * Mapped files are compared to upstream after declared import rewrites; the
- * authored user-event helper is checked for its pointer/type export contract.
+ * authored user-event helper is checked for its pointer/type export contract
+ * plus the PointerEvent/KeyboardEvent dispatch behavioral contract.
  */
 const SUPPORT_FILE_CONTRACTS = [
 	{
@@ -717,6 +718,60 @@ function authoredUserEventExports(source, fileName) {
 	return [...names].sort();
 }
 
+/**
+ * Behavioral contract for the authored user-event substitute that
+ * moveSeparator uses in place of @testing-library/user-event. Tokens are
+ * derived from the helper AST (constructors + call targets), not from a
+ * refreshable whole-file hash, so blessing a weakened helper cannot satisfy
+ * this check.
+ */
+export const AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR = [
+	'pointer:call act',
+	'pointer:call document.dispatchEvent',
+	'pointer:new MouseEvent',
+	'pointer:new PointerEvent',
+	'type:call act',
+	'type:new KeyboardEvent',
+];
+
+function callTargetText(node, sourceFile) {
+	if (ts.isIdentifier(node)) return node.text;
+	if (ts.isPropertyAccessExpression(node)) {
+		return `${callTargetText(node.expression, sourceFile)}.${node.name.text}`;
+	}
+	return null;
+}
+
+export function authoredUserEventBehavior(source, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TS,
+	);
+	const behaviors = new Set();
+	function visit(fnName, node) {
+		if (ts.isNewExpression(node) && ts.isIdentifier(node.expression)) {
+			behaviors.add(`${fnName}:new ${node.expression.text}`);
+		}
+		if (ts.isCallExpression(node)) {
+			const target = callTargetText(node.expression, sourceFile);
+			if (target) behaviors.add(`${fnName}:call ${target}`);
+		}
+		ts.forEachChild(node, function eachChild(child) {
+			visit(fnName, child);
+		});
+	}
+	for (const statement of sourceFile.statements) {
+		if (!ts.isFunctionDeclaration(statement) || !statement.name || !statement.body) continue;
+		const fnName = statement.name.text;
+		if (fnName !== 'pointer' && fnName !== 'type') continue;
+		visit(fnName, statement.body);
+	}
+	return [...behaviors].sort();
+}
+
 export function verifyReactResizablePanelsSupportFiles(repoRoot) {
 	const upstreamRoot = resolve(repoRoot, UPSTREAM_TEST_ROOT);
 	const portedRoot = resolve(repoRoot, PORTED_TEST_ROOT);
@@ -731,6 +786,14 @@ export function verifyReactResizablePanelsSupportFiles(repoRoot) {
 				throw new Error(
 					`${contract.adaptedRelative}: authored user-event helper must export pointer and type`,
 				);
+			}
+			const behavior = authoredUserEventBehavior(adaptedSource, contract.adaptedRelative);
+			for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
+				if (!behavior.includes(required)) {
+					throw new Error(
+						`${contract.adaptedRelative}: authored user-event helper missing behavioral contract ${required}`,
+					);
+				}
 			}
 			const structural = structuralSupportSource(adaptedSource, contract.adaptedRelative, {});
 			const digest = createHash('sha256').update(structural).digest('hex');

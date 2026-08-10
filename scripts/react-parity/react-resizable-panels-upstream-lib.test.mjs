@@ -7,6 +7,8 @@ import test from 'node:test';
 
 import {
 	applyUseIdFallbackDivergence,
+	authoredUserEventBehavior,
+	AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR,
 	compareRuntimeIdentityMultisets,
 	expectedAdaptedAssertionGroups,
 	expectedAdaptedCaseLedger,
@@ -60,6 +62,14 @@ test('support fixtures map to upstream after declared helper transforms', functi
 			normalizeAssertImport: true,
 		}),
 	);
+	const userEvent = readRepo('packages/react-resizable-panels/tests/upstream/test/userEvent.ts');
+	const behavior = authoredUserEventBehavior(userEvent, 'test/userEvent.ts');
+	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
+		assert.ok(behavior.includes(required), `missing ${required}`);
+	}
+	const weakened = userEvent.replace(/new PointerEvent/g, 'null /* weakened */');
+	const weakenedBehavior = authoredUserEventBehavior(weakened, 'test/userEvent.ts');
+	assert.equal(weakenedBehavior.includes('pointer:new PointerEvent'), false);
 });
 
 test('runtime inventories match one-for-one after explicit path mapping', function crosswalk() {

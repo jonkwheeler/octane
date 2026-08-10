@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
 	renderReactResizablePanelsAdaptedInventory,
+	structuralSupportSource,
 	verifyReactResizablePanelsUpstream,
 } from '../../../scripts/react-parity/react-resizable-panels-upstream-lib.mjs';
 import { verifyReactResizablePanelsTestClassifications } from '../../../scripts/react-parity/react-resizable-panels-classifications-lib.mjs';
@@ -179,24 +180,41 @@ if (process.argv.includes('--negative-controls')) {
 	}
 	const userEventPath = join(packageRoot, 'tests/upstream/test/userEvent.ts');
 	const originalUserEvent = readFileSync(userEventPath);
+	const runtimeParityPath = join(packageRoot, 'audit/runtime-parity.json');
+	const originalRuntimeParity = readFileSync(runtimeParityPath, 'utf8');
 	const weakenedUserEvent = originalUserEvent
 		.toString('utf8')
-		.replace(
-			'async function pointer(steps: PointerStep[]): Promise<void> {',
-			'async function pointer(_steps: PointerStep[]): Promise<void> { return;',
-		);
+		.replace(/new PointerEvent/g, 'null /* weakened */')
+		.replace(/new MouseEvent/g, 'null /* weakened */')
+		.replace(/new KeyboardEvent/g, 'null /* weakened */');
 	try {
 		writeFileSync(userEventPath, weakenedUserEvent);
 		writeFileSync(adaptedSumsPath, renderReactResizablePanelsAdaptedInventory(repoRoot));
+		// Refreshing the structural lock must not hide a weakened helper: the
+		// PointerEvent/KeyboardEvent behavioral contract stays fail-closed.
+		const weakenedStructural = structuralSupportSource(
+			weakenedUserEvent,
+			'test/userEvent.ts',
+			{},
+		);
+		const weakenedDigest = createHash('sha256').update(weakenedStructural).digest('hex');
+		const runtimeParity = JSON.parse(originalRuntimeParity);
+		const lock = (runtimeParity.authoredSupportLocks ?? []).find(function findLock(entry) {
+			return entry.path === 'test/userEvent.ts';
+		});
+		if (!lock) fail('Missing authoredSupportLocks entry for test/userEvent.ts');
+		lock.structuralSha256 = weakenedDigest;
+		writeFileSync(runtimeParityPath, `${JSON.stringify(runtimeParity, null, 2)}\n`);
 		expectFailure(
-			'weakened authored user-event helper after regenerating adapted SHA list',
-			function weakenedHelperAfterHashBlessing() {
+			'weakened authored user-event helper after regenerating adapted SHA list and structural lock',
+			function weakenedHelperAfterHashAndLockBlessing() {
 				verifyReactResizablePanelsUpstream(repoRoot);
 			},
 		);
 	} finally {
 		writeFileSync(userEventPath, originalUserEvent);
 		writeFileSync(adaptedSumsPath, adaptedSums);
+		writeFileSync(runtimeParityPath, originalRuntimeParity);
 	}
 }
 

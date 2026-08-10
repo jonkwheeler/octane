@@ -47,9 +47,9 @@
       "kind": "support-import-root",
       "rule": "Adapted support fixtures may remap relative type imports to Octane package sources under src/."
     },
-    {
+	{
       "kind": "support-user-event",
-      "rule": "global/test/moveSeparator.ts substitutes @testing-library/user-event and node:assert with tests/upstream/test/userEvent.ts plus the package assert helper; the authored user-event adapter must keep pointer and type exports.",
+      "rule": "global/test/moveSeparator.ts substitutes @testing-library/user-event and node:assert with tests/upstream/test/userEvent.ts plus the package assert helper; the authored adapter must keep pointer/type exports and the PointerEvent/KeyboardEvent dispatch behavioral contract (not only a refreshable structural hash).",
       "files": ["global/test/moveSeparator.ts", "test/userEvent.ts"]
     }
   ],

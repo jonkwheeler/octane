@@ -453,11 +453,7 @@ jobs:
           --exclude "packages/rspeedy-plugin-octane/tests/browser/**/*.test.ts"
           --exclude "packages/rsbuild-plugin-octane/tests/rsbuild.integration.test.ts"
           --exclude "packages/vite-plugin-octane/tests/production.test.ts"
-          --exclude "packages/octane/tests/browser/**/*.test.ts"
-          --exclude "packages/dexie/tests/browser/**/*.test.ts"
-          --exclude "packages/tiptap/tests/browser/**/*.test.ts"
-          --exclude "packages/three/tests/browser/**/*.test.ts"
-          --exclude "packages/react-resizable-panels/tests/browser/**/*.browser.test.ts"
+          --exclude "packages/*/tests/browser/**"
           --exclude "$ASTRO_E2E_SPEC"
 
   react_parity_checks:
@@ -604,12 +600,9 @@ jobs:
             specs: packages/octane-evals/tests/user-app-corpus.test.ts
           - lane: browser
             chromium: true
-            specs: >-
-              packages/octane/tests/browser
-              packages/dexie/tests/browser
-              packages/tiptap/tests/browser
-              packages/three/tests/browser
-              packages/react-resizable-panels/tests/browser
+            # Specs are discovered by scripts/discover-heavy-browser-specs.mjs so
+            # new package browser suites need no workflow enumeration.
+            specs: discovered
           - lane: astro
             chromium: true
             specs: packages/astro/tests/astro.e2e.test.ts
@@ -653,7 +646,13 @@ jobs:
         run: pnpm --filter @octanejs/astro exec playwright install --with-deps chromium
 
       - name: Run ${{ matrix.lane }} integration tests
-        run: pnpm vitest run ${{ matrix.specs }} --maxWorkers=1
+        run: |
+          if [ "${{ matrix.lane }}" = "browser" ]; then
+            SPECS="$(node scripts/discover-heavy-browser-specs.mjs)"
+            pnpm vitest run ${SPECS} --maxWorkers=1
+          else
+            pnpm vitest run ${{ matrix.specs }} --maxWorkers=1
+          fi
 
       - name: Run Bun compiler-preload integration test
         if: ${{ matrix.bun }}
