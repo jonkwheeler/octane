@@ -25,7 +25,7 @@ compile lanes still run.
 `audit/upstream-crosswalk.json` accounts for all 16 published entrypoints and every adapter
 value/type export plus each core `export *` re-export, with a disposition and evidence pointer per
 row. The binding reuses the exact framework-neutral core. With absent upstream runtime tests,
-provenance is `verified` via a repo-authored adapted-octane suite plus a React/Octane differential.
+provenance is `recorded-unverified`: a repo-authored adapted-octane suite plus a React/Octane differential cover a representative scheduler lifecycle, while nearly every export remains `surface-present-unverified`.
 
 ## Type lanes
 

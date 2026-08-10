@@ -9,7 +9,7 @@
     "testRoot": "packages/react-pacer (no runtime test artifacts)",
     "license": "MIT",
     "integrity": "sha256:d4055dcec785b5eac078a2c2acde90b80e84e70c0262a174a5065ed92a9be2f0",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
     "runtime": "absent",

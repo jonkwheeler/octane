@@ -17,7 +17,7 @@ describe('@octanejs/tanstack-pacer parity audit contracts', () => {
 		expect(manifest.provenance).toMatchObject({
 			version: '0.22.1',
 			commit: 'a894009100aeb373965d4121eb92a1af634af012',
-			verification: 'verified',
+			verification: 'recorded-unverified',
 		});
 		expect(() =>
 			execFileSync(
