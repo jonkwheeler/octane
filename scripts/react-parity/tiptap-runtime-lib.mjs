@@ -323,10 +323,39 @@ export function crosswalkRuntimePair(root, pair, config) {
 	};
 }
 
-export function verifyTiptapRuntimeScenarios(root, { configPath = RUNTIME_PARITY_CONFIG } = {}) {
+function assertScenarioPairCoverage(pristine, adapted, config, configPath) {
+	const pairedPristine = new Set(
+		(config.pairs ?? []).map(function pathOf(pair) {
+			return pair.pristine;
+		}),
+	);
+	const pairedAdapted = new Set(
+		(config.pairs ?? []).map(function pathOf(pair) {
+			return pair.adapted;
+		}),
+	);
+	for (const file of pristine.files ?? []) {
+		if (!pairedPristine.has(file)) {
+			throw new Error(`${configPath}: pairs omit pristine inventory file ${file}`);
+		}
+	}
+	for (const file of adapted.files ?? []) {
+		if (!pairedAdapted.has(file)) {
+			throw new Error(`${configPath}: pairs omit adapted inventory file ${file}`);
+		}
+	}
+}
+
+export function verifyTiptapRuntimeScenarios(
+	root,
+	{ configPath = RUNTIME_PARITY_CONFIG, pristine = null, adapted = null } = {},
+) {
 	const config = readJson(root, configPath);
 	if (!Array.isArray(config.pairs) || config.pairs.length === 0) {
 		throw new Error(`${configPath}: pairs must be a non-empty array`);
+	}
+	if (pristine && adapted) {
+		assertScenarioPairCoverage(pristine, adapted, config, configPath);
 	}
 	let scenarios = 0;
 	let assertions = 0;
@@ -452,7 +481,7 @@ export function verifyTiptapRuntimeCrosswalk(root) {
 		}
 	}
 
-	const scenarios = verifyTiptapRuntimeScenarios(root);
+	const scenarios = verifyTiptapRuntimeScenarios(root, { pristine, adapted });
 
 	return {
 		identities: pristine.tests.length,

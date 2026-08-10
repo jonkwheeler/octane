@@ -177,3 +177,19 @@ test('drifting a Per citation to another case fails the scenario crosswalk', asy
 		verifyTiptapRuntimeScenarios(root);
 	}, /citation .* drifted|does not match/);
 });
+
+test('omitting a scenario pair fails inventory coverage', async function omitsPair(t) {
+	const root = await fixtureRoot();
+	t.after(function cleanup() {
+		return rm(root, { recursive: true, force: true });
+	});
+	const configPath = join(root, 'packages/tiptap/audit/runtime-parity.json');
+	const config = JSON.parse(await readFile(configPath, 'utf8'));
+	config.pairs = config.pairs.filter(function keep(pair) {
+		return !pair.adapted.endsWith('EditorContent.test.ts');
+	});
+	await writeFile(configPath, `${JSON.stringify(config, null, '\t')}\n`);
+	assert.throws(function run() {
+		verifyTiptapRuntimeCrosswalk(root);
+	}, /pairs omit .*EditorContent/);
+});

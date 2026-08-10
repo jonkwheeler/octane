@@ -51,7 +51,7 @@
       "environment": "workspace-node",
       "project": "tiptap-pristine",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the byte-exact @tiptap/react@3.28.0 Vitest suite from the vendored npm pin against upstream's own React binding after verifyTiptapUpstream checks SHA256SUMS.",
+      "notes": "Runs the byte-exact @tiptap/react@3.28.0 Vitest suite from the vendored npm pin against upstream's own React binding after verifyTiptapUpstream checks SHA256SUMS. Source-level scenario pairs and permitted transformations are pinned in audit/runtime-parity.json.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tiptap/audit/pristine-runtime.json"
@@ -106,6 +106,16 @@
           "path": "packages/tiptap/upstream/src/use-client.spec.ts",
           "role": "support",
           "sha256": "d4e2c3db1a642276358d27f138b7f7f35e4c3a02368d8525d7573ec143f36f7e"
+        },
+        {
+          "path": "packages/tiptap/audit/runtime-parity.json",
+          "role": "support",
+          "sha256": "5d675cd756289835f5028d60d567cf3690b079260d2724cf383b8bc273bea5a3"
+        },
+        {
+          "path": "packages/tiptap/tests/upstream/assertions.md",
+          "role": "support",
+          "sha256": "1bd1acf855ab715331a68eccb0acf9b9da6d6983bacead35ccaad72753acc5e3"
         }
       ]
     },
@@ -116,7 +126,7 @@
       "environment": "workspace-node",
       "project": "tiptap-upstream",
       "evidenceOrigin": "upstream-suite",
-      "notes": "One-for-one Octane adaptation of every upstream React runtime case, including the native-event menu divergence.",
+      "notes": "One-for-one Octane adaptation of every upstream React runtime case, including the native-event menu divergence. Permitted transformations are listed in tests/upstream/assertions.md and verified by scripts/react-parity/tiptap-runtime-lib.mjs.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/tiptap/audit/adapted-runtime.json"
@@ -146,6 +156,16 @@
           "path": "packages/tiptap/tests/upstream/use-client.test.ts",
           "role": "support",
           "sha256": "71b09effe85a54c1af02eb46bc4f7480ed62d1744049f218f97dc905ceaabc8e"
+        },
+        {
+          "path": "packages/tiptap/audit/runtime-parity.json",
+          "role": "support",
+          "sha256": "5d675cd756289835f5028d60d567cf3690b079260d2724cf383b8bc273bea5a3"
+        },
+        {
+          "path": "packages/tiptap/tests/upstream/assertions.md",
+          "role": "support",
+          "sha256": "1bd1acf855ab715331a68eccb0acf9b9da6d6983bacead35ccaad72753acc5e3"
         }
       ]
     },
