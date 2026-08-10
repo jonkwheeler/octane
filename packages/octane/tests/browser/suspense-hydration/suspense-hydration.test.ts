@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import type { Browser, Page } from 'playwright';
-import { browserName, launchBrowser } from '../../../../../test-utils/playwright-browser.js';
+import { launchBrowser } from '../../../../../test-utils/playwright-browser.js';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import * as ServerRuntime from 'octane/server';
