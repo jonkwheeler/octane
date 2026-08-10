@@ -311,3 +311,43 @@ export function TransitionGroupCountProbe(props: GroupChildProbeProps) @{
 	}
 	<TransitionGroup appear={true} enter={true} exit={true} children={children} />
 }
+
+export type ReAddOnExitedGroupProbeProps = {
+	show: boolean;
+	log: string[];
+	onShowChange: (show: boolean) => void;
+};
+
+export function ReAddOnExitedGroupProbe(props: ReAddOnExitedGroupProbeProps) @{
+	const nodeRef = useRef<HTMLSpanElement | null>(null);
+	const child =
+		props.show
+			? <Transition
+					key="child"
+					nodeRef={nodeRef}
+					timeout={0}
+					onEnter={function onEnter(isAppearing?: Element | boolean) {
+						props.log.push(isAppearing === true ? 'appear' : 'enter');
+					}}
+					onEntering={function onEntering(isAppearing?: Element | boolean) {
+						props.log.push(isAppearing === true ? 'appearing' : 'entering');
+					}}
+					onEntered={function onEntered(isAppearing?: Element | boolean) {
+						props.log.push(isAppearing === true ? 'appeared' : 'entered');
+					}}
+					onExit={function onExit() {
+						props.log.push('exit');
+					}}
+					onExiting={function onExiting() {
+						props.log.push('exiting');
+					}}
+					onExited={function onExited() {
+						props.log.push('exited');
+						props.onShowChange(true);
+					}}
+				>
+					<span ref={nodeRef} id="readd-child" />
+				</Transition>
+			: null;
+	<TransitionGroup appear={true} enter={true} exit={true} children={child} />
+}

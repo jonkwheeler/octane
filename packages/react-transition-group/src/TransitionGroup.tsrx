@@ -11,29 +11,33 @@ import {
 export function TransitionGroup(props: TransitionGroupProps) @{
 	const mounted = useRef(false);
 	const first = useRef(true);
-	const previousChildren = useRef<ChildMapping>({});
 	const mapping = useRef<ChildMapping>({});
 	const children = useRef(props.children);
 	const [isMounting, setIsMounting] = useState(true);
 	const [, rerender] = useState(0);
 
-	const handleExited = (child: ElementDescriptor, node?: Element) => {
-		if (String(child.key) in previousChildren.current) return;
+	// Match upstream TransitionGroup.handleExited: read live children, forward
+	// onExited, then delete only if the key was not synchronously re-added.
+	// A sync re-add re-renders and rebuilds mapping; deleting afterward would
+	// drop that survivor and force a second enter on the next pass.
+	const handleExited = function handleExited(child: ElementDescriptor, node?: Element) {
+		if (String(child.key) in getChildMapping(children.current)) return;
 		(child.props.onExited as ((node?: Element) => void) | undefined)?.(node);
+		if (String(child.key) in getChildMapping(children.current)) return;
 		if (mounted.current) {
 			delete mapping.current[String(child.key)];
-			rerender((value) => value + 1);
+			rerender(function bump(value: number) {
+				return value + 1;
+			});
 		}
 	};
 
 	if (first.current) {
 		mapping.current = getInitialChildMapping(props, handleExited);
-		previousChildren.current = getChildMapping(props.children);
 		children.current = props.children;
 		first.current = false;
 	} else {
 		mapping.current = getNextChildMapping(props, mapping.current, handleExited);
-		previousChildren.current = getChildMapping(props.children);
 		children.current = props.children;
 	}
 

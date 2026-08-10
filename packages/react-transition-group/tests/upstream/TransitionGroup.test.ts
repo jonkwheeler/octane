@@ -9,6 +9,7 @@ import {
 	ConditionalHostGroupProbe,
 	CSSTransitionGroupProbe,
 	NullRenderGroupProbe,
+	ReAddOnExitedGroupProbe,
 	TransitionGroupCountProbe,
 } from '../_fixtures/upstream-probes.tsrx';
 
@@ -77,6 +78,43 @@ describe('TransitionGroup', function transitionGroupSuite() {
 			vi.runAllTimers();
 		});
 		expect(log).toEqual(['exit', 'exiting', 'exited']);
+		view.unmount();
+	});
+
+	// Regression: onExited that synchronously re-adds the same key must not be
+	// undone by handleExited's mapping delete (upstream defers via setState +
+	// getDerivedStateFromProps re-deriving from live props).
+	it('should keep a child that onExited synchronously re-adds', async function reAddOnExited() {
+		const log: string[] = [];
+		let show = true;
+		function onShowChange(next: boolean) {
+			show = next;
+			view.update(ReAddOnExitedGroupProbe, { show, log, onShowChange });
+		}
+		const view = mount(ReAddOnExitedGroupProbe, { show, log, onShowChange });
+		await act(function flushAppear() {
+			vi.runAllTimers();
+		});
+		expect(log).toEqual(['appear', 'appearing', 'appeared']);
+		log.length = 0;
+		await act(function remove() {
+			show = false;
+			view.update(ReAddOnExitedGroupProbe, { show, log, onShowChange });
+		});
+		await act(function flushExitAndReadd() {
+			vi.runAllTimers();
+		});
+		expect(view.container.querySelector('#readd-child')).not.toBeNull();
+		expect(
+			log.filter(function onlyEnter(event) {
+				return event === 'enter';
+			}),
+		).toHaveLength(1);
+		expect(
+			log.filter(function onlyExited(event) {
+				return event === 'exited';
+			}),
+		).toHaveLength(1);
 		view.unmount();
 	});
 });
