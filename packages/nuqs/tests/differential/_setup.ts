@@ -9,6 +9,7 @@ import {
 	mkdirSync,
 	readFileSync,
 	readdirSync,
+	rmSync,
 	statSync,
 	writeFileSync,
 } from 'node:fs';
@@ -31,7 +32,9 @@ function walk(directory) {
 }
 
 export async function setup() {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	// Fail closed: drop stale renamed/removed fixture outputs before recompiling.
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	if (!existsSync(FIXTURE_DIR)) return;
 	const dependencies = {
 		readFile: readFileSync,
