@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 59 `@octanejs/*` framework bindings.
+The central status table for the 61 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -44,6 +44,8 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/phosphor-icons`](#octanejsphosphor-icons) | `@phosphor-icons/react@2.1.10` | All 1,512 canonical icons from @phosphor-icons/core@2.1.1, including the upstream deprecated Icon-suffixed aliases, six weights, IconContext, IconBase, root exports, and per-icon imports. | Icon refs are normal Octane ref props rather than React forwardRef components; Event callbacks receive native DOM events rather than React synthetic events; The React package's SSR namespace is unnecessary because Octane icons use the same components on client and server | Supported and tested against @phosphor-icons/react/ssr for every weight; hydration adopts and updates server-rendered SVG hosts. | 2026-08-02 |
 | [`@octanejs/radix`](#octanejsradix) | `radix-ui@1.6.4` | Complete against the unified `radix-ui@1.6.4` component surface — all primitives (incl. Dialog, the Menu/DropdownMenu/ContextMenu family, Popover, Tooltip, Select, NavigationMenu, Toast, Menubar, Slider, the form controls, and OneTimePasswordField/PasswordToggleField) plus the composition/state/overlay foundations — verified by a differential suite (same fixtures through octane and the real radix-ui, byte-identical DOM). | `Slot`/`asChild` compose element descriptors (prop-position JSX, `createElement`, `.map()` returns), not children-position JSX; `forwardRef` becomes octane's ref-as-prop | SSR/hydration coverage for the overlay/portal components is still open (tracked in the migration plan). | 2026-07-21 |
 | [`@octanejs/rainbowkit`](#octanejsrainbowkit) | `@rainbow-me/rainbowkit@2.2.11` | Octane-native RainbowKitProvider, ConnectButton and ConnectButton.Custom, WalletButton, connect/account/chain modal hooks, connector selection, account/chain actions, native accessible dialogs, and light/dark/midnight themes. | IMPORTANT: upstream RainbowKit 2.2.11 declares wagmi ^2.9.0. This adapter intentionally consumes @octanejs/wagmi v3 and is not drop-in dependency or peer-range parity; The React DOM and vanilla-extract implementation is replaced by native Octane TSRX, DOM events, focus/scroll containment, and CSS custom properties; The wallet list merges optional configured descriptors with the enclosing Wagmi v3 connector list, deduplicated by canonical connector uid with explicit id/name fallback. Unavailable configured entries remain visible with a reason. RainbowKit wallet factories, vendor SDKs, and WalletConnect project configuration remain application-owned; Authentication, recent transactions, ENS/avatar resolution, localization, cool mode, account avatars/balances, chain icons, and pixel-identical upstream themes are unsupported and their upstream props are not accepted; rainbowTheme is an explicitly documented Octane-only purple/rounded preset; it is not an upstream RainbowKit export | The provider and controls emit deterministic disconnected markup without browser wallet access. Connector discovery and live Wagmi state become authoritative after hydration; no hydrated UI state authorizes wallet actions. | 2026-08-02 |
+| [`@octanejs/react-email`](#octanejsreact-email) | `react-email@6.9.2` | Email component surface: Body, Button, CodeBlock, CodeInline, Column, Container, Font, Head, Heading, Hr, Html, Img, Link, Markdown, Preview, Row, Section, Tailwind, Text, Prism themes, the pixel-based Tailwind preset, and an Octane-native static render helper. | render accepts an Octane component plus props rather than a pre-created React node, matching octane/server's entry-point API; Preview accepts its inspectable preview copy through the text prop; natural .tsrx children are opaque render blocks; Refs are ordinary Octane ref props rather than forwardRef components; Head uses Octane's metadata-hoisting channel; render reconstructs the consumer-visible document head around hoisted tags; Tailwind transforms fully rendered static HTML rather than cloning a React element tree, allowing natural .tsrx children and nested compiled components | Supported and tested through renderToStaticMarkup: output has the React Email XHTML Transitional doctype and no hydration markers. | 2026-08-10 |
+| [`@octanejs/react-email-cli`](#octanejsreact-email-cli) | `react-email@6.9.2` | Octane-native `export` and `dev` commands: recursive .tsrx template discovery, static HTML export, nested output paths, static assets, development template index and previews, Vite live reload, and compile/render error pages. | The preview application is a lightweight Octane/Vite server rather than upstream's bundled React/Next application; The executable is named octane-email to avoid colliding with upstream's email binary | Templates compile with the Octane Vite plugin in SSR mode and render through @octanejs/react-email. | 2026-08-10 |
 | [`@octanejs/react-error-boundary`](#octanejsreact-error-boundary) | `react-error-boundary@6.1.2` | Complete against the published react-error-boundary 6.1.2 function/type surface adapted to Octane: ErrorBoundary, ErrorBoundaryContext, getErrorMessage, fallback variants, onError/onReset callbacks, resetKeys, useErrorBoundary (including error), withErrorBoundary, OnErrorCallback, and UseErrorBoundaryApi. | Component stack information is currently an empty string because Octane does not expose a public component-stack formatter; Event-handler and asynchronous errors must be passed to useErrorBoundary().showBoundary(), matching upstream's explicit forwarding requirement; Server rendering that must match upstream error propagation uses the explicit @octanejs/react-error-boundary/server entry | The explicit server entry renders children without a boundary so descendant errors propagate, matching react-error-boundary 6.1.2. | 2026-08-02 |
 | [`@octanejs/react-map-gl`](#octanejsreact-map-gl) | `@vis.gl/react-mapbox@8.1.2 (b1e46fcf)` | Complete against the pinned @vis.gl/react-mapbox 8.1.2 public surface — the package react-map-gl/mapbox re-exports: Map (and default), Marker, Popup, Source, Layer, AttributionControl, FullscreenControl, GeolocateControl, NavigationControl, ScaleControl, useControl, MapProvider, useMap, and every published type. The framework-neutral half of upstream (the Mapbox engine, proxy transform, map ref, and six utils) is reused byte-for-byte and validated by upstream's own specs run against both source trees. | <Source> delivers its generated id to child layers through context rather than cloneElement, so the id reaches any descendant <Layer> rather than only direct children. It still overrides an explicitly set source, as cloneElement did; Map, Marker, Popup and GeolocateControl take their ref as an ordinary prop; Octane has no forwardRef. `<Map ref={mapRef} />` is unchanged; Effect cleanups run on the passive drain after root.unmount() rather than inside it, so the map's WebGL context and worker pool are released one drain later; Marker picks between its own element and Mapbox's default pin from what its children actually rendered, because a compiled children block cannot be inspected the way React.Children.forEach inspects descriptors. Children that render something, render nothing, or first render after mount all match upstream; a child that stays truthy while rendering nothing forever gets the default pin here and an empty, invisible element upstream; react-map-gl/mapbox-legacy (mapbox-gl v1) and @vis.gl/react-maplibre are out of scope | Supported and tested: Map server-renders its container with the merged style and omits every child, because mapbox-gl is only imported inside an effect. Nothing in the tree reads a browser global on the server. hydrateRoot adopts that container rather than replacing it, and the map is created inside the server's own node once the library resolves. | 2026-08-06 |
 | [`@octanejs/recharts`](#octanejsrecharts) | `recharts@3.9.2` | Broad runtime support across cartesian, polar, hierarchical, tooltip, legend, responsive-container, shape, and chart-state surfaces. `Brush` and `Treemap` remain intentionally unsupported. | Chart events coordinate through octane's native delegated events rather than React's synthetic layer | Untested; text measurement (`getStringSize`) returns 0×0 under SSR. | 2026-08-02 |
@@ -541,6 +543,46 @@ Known divergences:
 SSR / hydration: The provider and controls emit deterministic disconnected markup without browser wallet access. Connector discovery and live Wagmi state become authoritative after hydration; no hydrated UI state authorizes wallet actions.
 
 Scope/evidence last checked: 2026-08-02.
+
+## @octanejs/react-email
+
+[`packages/react-email`](../packages/react-email) `0.0.1` — ports `react-email@6.9.2`. Status data: [`packages/react-email/status.json`](../packages/react-email/status.json).
+
+Email component surface: Body, Button, CodeBlock, CodeInline, Column, Container, Font, Head, Heading, Hr, Html, Img, Link, Markdown, Preview, Row, Section, Tailwind, Text, Prism themes, the pixel-based Tailwind preset, and an Octane-native static render helper.
+
+Known divergences:
+
+- render accepts an Octane component plus props rather than a pre-created React node, matching octane/server's entry-point API.
+- Preview accepts its inspectable preview copy through the text prop; natural .tsrx children are opaque render blocks.
+- Refs are ordinary Octane ref props rather than forwardRef components.
+- Head uses Octane's metadata-hoisting channel; render reconstructs the consumer-visible document head around hoisted tags.
+- Tailwind transforms fully rendered static HTML rather than cloning a React element tree, allowing natural .tsrx children and nested compiled components.
+
+SSR / hydration: Supported and tested through renderToStaticMarkup: output has the React Email XHTML Transitional doctype and no hydration markers.
+
+Scope/evidence last checked: 2026-08-10.
+
+- Ported from upstream commit ffe605819782b31d7f946e30f938b1b63e6b239c under the MIT license.
+- The two primary Prism themes, vscDarkPlus and xonokai, are included; upstream's full generated theme catalog is not yet copied.
+- Export/preview tooling and editor serialization are published as separate Octane packages.
+
+## @octanejs/react-email-cli
+
+[`packages/react-email-cli`](../packages/react-email-cli) `0.0.1` — ports `react-email@6.9.2`. Status data: [`packages/react-email-cli/status.json`](../packages/react-email-cli/status.json).
+
+Octane-native `export` and `dev` commands: recursive .tsrx template discovery, static HTML export, nested output paths, static assets, development template index and previews, Vite live reload, and compile/render error pages.
+
+Known divergences:
+
+- The preview application is a lightweight Octane/Vite server rather than upstream's bundled React/Next application.
+- The executable is named octane-email to avoid colliding with upstream's email binary.
+
+SSR / hydration: Templates compile with the Octane Vite plugin in SSR mode and render through @octanejs/react-email.
+
+Scope/evidence last checked: 2026-08-10.
+
+- Ported from the workflow contract of React Email commit ffe605819782b31d7f946e30f938b1b63e6b239c under the MIT license.
+- The React-specific generated .react-email Next application is intentionally replaced by native Octane tooling.
 
 ## @octanejs/react-error-boundary
 

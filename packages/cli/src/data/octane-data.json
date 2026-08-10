@@ -383,7 +383,7 @@
     {
       "name": "@octanejs/react-email",
       "version": "0.0.1",
-      "category": "Uncategorized",
+      "category": "Forms and content",
       "upstream": { "package": "react-email", "version": "6.9.2" },
       "surface": "Email component surface: Body, Button, CodeBlock, CodeInline, Column, Container, Font, Head, Heading, Hr, Html, Img, Link, Markdown, Preview, Row, Section, Tailwind, Text, Prism themes, the pixel-based Tailwind preset, and an Octane-native static render helper.",
       "divergences": [
@@ -399,7 +399,7 @@
     {
       "name": "@octanejs/react-email-cli",
       "version": "0.0.1",
-      "category": "Uncategorized",
+      "category": "Forms and content",
       "upstream": { "package": "react-email", "version": "6.9.2" },
       "surface": "Octane-native `export` and `dev` commands: recursive .tsrx template discovery, static HTML export, nested output paths, static assets, development template index and previews, Vite live reload, and compile/render error pages.",
       "divergences": [
@@ -919,6 +919,7 @@
     "@mdx-js/react": "@octanejs/mdx",
     "@phosphor-icons/react": "@octanejs/phosphor-icons",
     "@rainbow-me/rainbowkit": "@octanejs/rainbowkit",
+    "@react-email/components": "@octanejs/react-email",
     "@react-rxjs/core": "@octanejs/rxjs",
     "@react-rxjs/utils": "@octanejs/rxjs",
     "@react-three/fiber": "@octanejs/three",
@@ -1005,6 +1006,7 @@
     "radix-ui": "@octanejs/radix",
     "react-aria": "@octanejs/aria",
     "react-aria-components": "@octanejs/aria",
+    "react-email": "@octanejs/react-email",
     "react-error-boundary": "@octanejs/react-error-boundary",
     "react-hook-form": "@octanejs/hook-form",
     "react-i18next": "@octanejs/i18next",

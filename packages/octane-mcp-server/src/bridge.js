@@ -52,6 +52,8 @@ export const KNOWN_BINDINGS = {
 	'@dnd-kit/react': '@octanejs/dnd-kit',
 	sonner: '@octanejs/sonner',
 	'react-error-boundary': '@octanejs/react-error-boundary',
+	'react-email': '@octanejs/react-email',
+	'@react-email/components': '@octanejs/react-email',
 	streamdown: '@octanejs/streamdown',
 	// The official plugins are consolidated as subpaths of the same package.
 	// The bundled bridge skill documents each exact import rewrite.
@@ -134,6 +136,7 @@ export const KNOWN_BINDINGS = {
 export const KNOWN_NATIVE_BINDINGS = new Set([
 	'@octanejs/devtools',
 	'@octanejs/electron',
+	'@octanejs/react-email-cli',
 	'@octanejs/tauri',
 ]);
 
