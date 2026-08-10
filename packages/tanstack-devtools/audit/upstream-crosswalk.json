@@ -63,7 +63,9 @@
   },
   "upstreamTests": [],
   "typeSuite": {
-    "disposition": "absent",
-    "reason": "Upstream test:types only compiles adapter source with no expectType fixtures; repo-authored pristine/adapted declaration probes supply required type evidence instead."
+    "disposition": "present",
+    "pristineProject": "packages/tanstack-devtools/typetests/pristine/tsconfig.json",
+    "adaptedProject": "packages/tanstack-devtools/typetests/adapted/tsconfig.json",
+    "reason": "Upstream test:types compiles the complete React adapter source with the package config; no dedicated expectType fixtures. The pristine lane runs that tsc compile; the adapted lane mirrors it with tsrx-tsc over the one-for-one mapped Octane source program. Repo-authored declaration probes are supplementary."
   }
 }
