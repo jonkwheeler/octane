@@ -1,10 +1,30 @@
-import { Children, cloneElement, createElement, isValidElement, useEffect, useState } from 'octane';
+import {
+	Children,
+	cloneElement,
+	createElement,
+	Fragment,
+	isValidElement,
+	useEffect,
+	useState,
+} from 'octane';
 import { TransitionGroup } from '@octanejs/react-transition-group';
 import type { ValueContainerProps } from '../components.tsrx';
 import { markInspectableValueChildren } from '../animated-registry.ts';
 import { asComponentElement } from './component-element';
 
 type ValueContainerComponent = typeof import('../components.tsrx').ValueContainer;
+
+function flattenKeyedChildren(children: unknown): unknown[] {
+	const flattened: unknown[] = [];
+	for (const child of Children.toArray(children)) {
+		if (isValidElement(child) && child.type === Fragment) {
+			flattened.push(...Children.toArray(child.props.children));
+			continue;
+		}
+		flattened.push(child);
+	}
+	return flattened;
+}
 
 export function animatedValueContainer(
 	WrappedComponent: ValueContainerComponent,
@@ -14,6 +34,7 @@ export function animatedValueContainer(
 			createElement(props.isMulti ? MultiValueContainer : TransitionGroup, {
 				component: WrappedComponent,
 				...props,
+				children: flattenKeyedChildren(props.children),
 			}),
 		);
 	}
