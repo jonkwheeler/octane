@@ -24,26 +24,31 @@ describe('@octanejs/shadcn — Toaster (sonner wrapper)', () => {
 	it('renders a toast with the cn-toast class, custom success icon, and theme/style wiring', async () => {
 		vi.stubGlobal(
 			'matchMedia',
-			vi.fn(() => ({
-				matches: true,
-				addEventListener: vi.fn(),
-				removeEventListener: vi.fn(),
-				addListener: vi.fn(),
-				removeListener: vi.fn(),
-			})),
+			vi.fn(function () {
+				return {
+					matches: true,
+					addEventListener: vi.fn(),
+					removeEventListener: vi.fn(),
+					addListener: vi.fn(),
+					removeListener: vi.fn(),
+				};
+			}),
 		);
-		const defaultMount = mount(DefaultToasterFixture);
-		await settle();
-		toast.info('Default theme', { id: 'shadcn-default-theme', duration: Infinity });
-		await settle();
-		const defaultToaster = document.querySelector('[data-sonner-toaster]') as HTMLElement;
-		expect(defaultToaster).not.toBeNull();
-		// A system-default toaster follows the simulated dark OS preference.
-		expect(defaultToaster.getAttribute('data-sonner-theme')).toBe('dark');
-		toast.dismiss('shadcn-default-theme');
-		defaultMount.unmount();
-		await settle();
-		vi.unstubAllGlobals();
+		try {
+			const defaultMount = mount(DefaultToasterFixture);
+			await settle();
+			toast.info('Default theme', { id: 'shadcn-default-theme', duration: Infinity });
+			await settle();
+			const defaultToaster = document.querySelector('[data-sonner-toaster]') as HTMLElement;
+			expect(defaultToaster).not.toBeNull();
+			// A system-default toaster follows the simulated dark OS preference.
+			expect(defaultToaster.getAttribute('data-sonner-theme')).toBe('dark');
+			toast.dismiss('shadcn-default-theme');
+			defaultMount.unmount();
+			await settle();
+		} finally {
+			vi.unstubAllGlobals();
+		}
 
 		const { container, unmount } = mount(ToasterFixture);
 		await settle();
