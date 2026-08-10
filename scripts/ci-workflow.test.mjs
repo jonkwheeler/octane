@@ -286,8 +286,11 @@ describe('CI workflow aggregation', () => {
 		// reports prove exact identities, so only explicit validation collects.
 		assert.match(
 			reactParityCheck,
-			/manifest\.provenance\.verification === 'verified' \? 'run-required' : 'validate'/,
+			/manifest\.provenance\.verification === 'verified' \|\|/,
 		);
+		assert.match(reactParityCheck, /requiredExecutableLanes\(manifest\)\.length > 0/);
+		assert.match(reactParityCheck, /'run-required'/);
+		assert.match(reactParityCheck, /: 'validate'/);
 		assert.match(
 			reactParityCheck,
 			/if \(!validateOnly\) \{\s+const action =[^;]+;\s+execFileSync\(process\.execPath, \[HARNESS_PATH, action, '--manifest', relativeFile\]/,

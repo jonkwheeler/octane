@@ -12,7 +12,7 @@
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "present",
     "types": "absent"
   },
   "adaptedRoots": {
@@ -57,11 +57,11 @@
     {
       "id": "tanstack-virtual-runtime-differential",
       "type": "differential",
-      "oracle": "optional",
+      "oracle": "required",
       "environment": "workspace-node",
       "project": "tanstack-virtual-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "Documents four same-fixture React/Octane windowing scenarios. Optional while provenance is recorded-unverified (react-parity:check validates metadata only until pristine/adapted full-suite verification lands). Vitest project is wholly react-parity-owned via testExecution.",
+      "notes": "Required same-fixture React/Octane windowing scenarios. Provenance stays recorded-unverified until pristine upstream and one-for-one adapted full-suite lanes exist; react-parity:check still executes this required lane. Vitest project is wholly react-parity-owned via testExecution.",
       "files": [
         {
           "path": "packages/tanstack-virtual/tests/differential/parity.test.ts",
