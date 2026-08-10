@@ -379,12 +379,26 @@ function isUnconditionalTerminator(statement) {
 }
 
 /**
+ * `Promise.resolve(...)` — the only thenable the suite uses whose fulfillment
+ * callback is statically known to run. A bare `.then` property (lookalike
+ * sink, rejected Promise, arbitrary thenable) does not authenticate.
+ */
+function isPromiseResolveCall(node) {
+	if (!ts.isCallExpression(node)) return false;
+	if (!ts.isPropertyAccessExpression(node.expression)) return false;
+	if (!ts.isIdentifier(node.expression.expression)) return false;
+	if (!ts.isIdentifier(node.expression.name)) return false;
+	return node.expression.expression.text === 'Promise' && node.expression.name.text === 'resolve';
+}
+
+/**
  * Argument indexes whose function-valued callbacks are always executed for a
- * modeled callee. Unlisted callees (e.g. a no-op `sink(fn)`) never enter
- * callback bodies — only IIFEs and these forms authenticate nested writes.
+ * modeled callee. Unlisted callees (e.g. a no-op `sink(fn)` or
+ * `{ then(_cb) {} }.then(fn)`) never enter callback bodies — only IIFEs and
+ * these forms authenticate nested writes.
  *
- * - `.then(onFulfilled, onRejected?)` — fulfillment only (rejection is not
- *   always-executed).
+ * - `Promise.resolve(...).then(onFulfilled, onRejected?)` — fulfillment only
+ *   (rejection and non-resolve receivers are not always-executed).
  * - `act(callback)` — React Testing Library / ReactDOM act runs the callback
  *   synchronously (or awaits an async callback); pristine hook-surface writes
  *   live inside these.
@@ -393,7 +407,8 @@ function alwaysExecutedCallbackArgIndexes(call) {
 	if (
 		ts.isPropertyAccessExpression(call.expression) &&
 		ts.isIdentifier(call.expression.name) &&
-		call.expression.name.text === 'then'
+		call.expression.name.text === 'then' &&
+		isPromiseResolveCall(call.expression.expression)
 	) {
 		return [0];
 	}
@@ -409,8 +424,9 @@ function alwaysExecutedCallbackArgIndexes(call) {
  * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
  * loop / switch / catch bodies (not proven to run), for-loop incrementors
  * (post-body only), and nested function bodies that are not IIFEs or explicitly
- * modeled callees (`act(fn)`, `Promise.then(fn)`). Arbitrary `sink(fn)` /
- * `map(fn)` arguments are not treated as always executed. A nested function's
+ * modeled callees (`act(fn)`, `Promise.resolve(...).then(fn)`). Arbitrary
+ * `sink(fn)` / `map(fn)` / lookalike `.then(fn)` arguments are not treated as
+ * always executed. A nested function's
  * `return`/`throw` only stops that function body. Unknown statement shapes
  * authenticate nothing rather than recursively crediting every child.
  */
