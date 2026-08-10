@@ -192,6 +192,9 @@ export function DoomDemo() @{
 	useEffect(() => {
 		const setKey = (event: KeyboardEvent, down: boolean) => {
 			if (phaseRef.current !== 'playing') return;
+			// Ignore presses while paused (mouse look already does); still honor
+			// keyup so held keys from before pause do not stick after resume.
+			if (pausedRef.current && down) return;
 			const key = event.code;
 			if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(key)) event.preventDefault();
 			if (key === 'KeyW') inputRef.current.forward = down;
@@ -284,7 +287,9 @@ export function DoomDemo() @{
 	function togglePaused(): void {
 		unlockAim();
 		setPaused(function nextPaused(value) {
-			return !value;
+			const next = !value;
+			if (next) inputRef.current = emptyInput();
+			return next;
 		});
 	}
 
