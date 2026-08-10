@@ -583,6 +583,62 @@ test('rejects dead case clicks paired with live direct source writes', function 
 	}, /bypasses .* hook-surface transition/);
 });
 
+test('rejects dead while-loop fixture record of the setter', function rejectsDeadWhileLoopFixtureRecord() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const mutated = fixtureSource.replace(
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(setValue);',
+		'const [value, setValue] = useSignal(props.source);\n\tprops.record(props.source);\n\twhile (false) props.record(setValue);',
+	);
+	assert.notEqual(mutated, fixtureSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource,
+			fixtureSource: mutated,
+			expectedFixtureSha256: fixtureFileFingerprint(mutated),
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
+test('rejects catch-only record-callback param pushes', function rejectsCatchOnlyRecordParamPush() {
+	const pristineSource = readFileSync(
+		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),
+		'utf8',
+	);
+	const adaptedSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/upstream-adapted.test.ts'),
+		'utf8',
+	);
+	const fixtureSource = readFileSync(
+		resolve(root, 'packages/alien-signals/tests/_fixtures/hooks.tsrx'),
+		'utf8',
+	);
+	const substituted = adaptedSource.replace(
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(setter);\n\t\t};',
+		'const record = function recordSetter(\n\t\t\tsetter: (value: number | ((previous: number) => number)) => void,\n\t\t) {\n\t\t\tsetters.push(signal);\n\t\t\ttry {\n\t\t\t\t/* live path */\n\t\t\t} catch {\n\t\t\t\tsetters.push(setter);\n\t\t\t}\n\t\t};',
+	);
+	assert.notEqual(substituted, adaptedSource);
+	assert.throws(function run() {
+		assertRuntimeStructureCrosswalk({
+			pristineSource,
+			adaptedSource: substituted,
+			fixtureSource,
+			repoRoot: root,
+		});
+	}, /bypasses .* hook-surface transition/);
+});
+
 test('rejects post-return setter padding in authenticated handlers', function rejectsPostReturnSetterPadding() {
 	const pristineSource = readFileSync(
 		resolve(root, 'packages/alien-signals/upstream/src/index.test.ts'),

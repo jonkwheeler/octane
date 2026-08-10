@@ -175,6 +175,7 @@ const supportPaths = [
 	'packages/alien-signals/audit/type-probes/tsconfig.pristine.json',
 	'packages/alien-signals/typetests/upstream-typecheck.test-d.ts',
 	'packages/alien-signals/typetests/public-api.test-d.ts',
+	'packages/alien-signals/typetests/tsconfig.adapted.json',
 	'packages/alien-signals/typetests/tsconfig.json',
 ];
 for (const path of supportPaths) {

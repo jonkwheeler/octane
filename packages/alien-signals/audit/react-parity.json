@@ -128,17 +128,17 @@
         {
           "path": "scripts/react-parity/alien-signals-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "f935148f8c9baf51cb8dac3286eed726614ad14238ac5e4c08849dfc23e71f66"
+          "sha256": "8de5b2020afb4b7ce14e373643a1047912e220c0cd8ec93fe1356621fff8d4ee"
         },
         {
           "path": "scripts/react-parity/alien-signals-runtime-lib.mjs",
           "role": "support",
-          "sha256": "89d8d6d33ac49c92a1cf8c1906f9398d71ac6a293392646c8ee9f5861e7691db"
+          "sha256": "5b7c7ec9d8f7be17df9250fbc524a9c1d26d969625a7bafa03ddf5bc4dfa5166"
         },
         {
           "path": "scripts/react-parity/alien-signals-types-lib.mjs",
           "role": "support",
-          "sha256": "89edc0f93cc73ddc38324599b02b425fc3c30fc170a4a534de644650fe6de804"
+          "sha256": "7e90f5b5ae3efd0890dafc0aeef74b06e50f73f4c8d15e6ed324deb389852514"
         },
         {
           "path": "packages/alien-signals/audit/runtime-transformation-ledger.json",
@@ -179,7 +179,7 @@
         {
           "path": "packages/alien-signals/audit/pristine-types.json",
           "role": "test",
-          "sha256": "6c2a8f4ce1bfa801d5eb8399f86de0996c849e1ec9b1f1ff3914125720137176",
+          "sha256": "6a656f52b4d7f0061e1fe37f5c9fe416d9ac9ab99c59c65ce42ab5e1ed8abdd5",
           "cases": [
             {
               "id": "types:alien-signals-pristine",
@@ -206,7 +206,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
+          "sha256": "ea5dc84434e455db6573183ab5337449276a53d4d6983da673995ff1d11c11b7"
         }
       ]
     },
@@ -249,7 +249,7 @@
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
+          "sha256": "ea5dc84434e455db6573183ab5337449276a53d4d6983da673995ff1d11c11b7"
         }
       ]
     },
@@ -260,17 +260,17 @@
       "environment": "workspace-node",
       "project": "alien-signals-adapted-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Adapted upstream typecheck assertion groups plus supplemental Octane public-api probes and the readable-computed divergence typetest.",
+      "notes": "Adapted upstream typecheck assertion groups plus supplemental Octane public-api probes. The readable-computed Octane-only divergence typetest stays outside this parity compiler project.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
-        "project": "packages/alien-signals/typetests/tsconfig.json"
+        "project": "packages/alien-signals/typetests/tsconfig.adapted.json"
       },
       "files": [
         {
           "path": "packages/alien-signals/audit/adapted-types.json",
           "role": "test",
-          "sha256": "c8708f71937fe78341b7beffed1854937890e8f21d94f80ea2ec6a0e6e9f587d",
+          "sha256": "0309f404189fc7d460337cc22a01e6ea784f5929f9d25490d437bdc29ac554e9",
           "cases": [
             {
               "id": "types:alien-signals-adapted",
@@ -282,7 +282,7 @@
         {
           "path": "packages/alien-signals/typetests/upstream-typecheck.test-d.ts",
           "role": "support",
-          "sha256": "41f30ce121ad82df54f9b28831ec666ffdf0884851f1e52eb6d3eefadf687ace"
+          "sha256": "6fffb3e110f4a96c680c9dc5365642b59fa7780aaf4aac50bea8996b4f06ab0e"
         },
         {
           "path": "packages/alien-signals/typetests/public-api.test-d.ts",
@@ -290,26 +290,14 @@
           "sha256": "01fe9ee4df486a82f7f3be99c357d1c18a9afbd1e0748ec9a274da5fb50ea72b"
         },
         {
-          "path": "packages/alien-signals/typetests/readable-computed.test-d.ts",
-          "role": "test",
-          "sha256": "ae8ebc77f122daf5507fd6970f042f78cff1528d23272248d902bb874d3ad913",
-          "cases": [
-            {
-              "id": "types:alien-signals-readable-computed",
-              "testName": "useSignalValue accepts readable computed signals",
-              "fullName": "useSignalValue accepts readable computed signals"
-            }
-          ]
-        },
-        {
-          "path": "packages/alien-signals/typetests/tsconfig.json",
+          "path": "packages/alien-signals/typetests/tsconfig.adapted.json",
           "role": "support",
-          "sha256": "a88892465f9bbb2d4427b1a26278e00e17708b9c7117c9645a673ef471b978c2"
+          "sha256": "f8d91ead828008bb08a65614ec0808e5e2b0e2ba32bf0147713daa7d25b12e06"
         },
         {
           "path": "packages/alien-signals/audit/type-parity.json",
           "role": "support",
-          "sha256": "1d89f0520d3cc2f472c3bcb8e31eea51a9301b33fd91b7afd6aa11c030f93e5f"
+          "sha256": "ea5dc84434e455db6573183ab5337449276a53d4d6983da673995ff1d11c11b7"
         }
       ]
     }
@@ -318,16 +306,30 @@
     {
       "id": "alien-signals-readable-computed",
       "caseIds": [
-        "types:alien-signals-readable-computed"
+        "types:alien-signals-adapted"
       ],
       "upstreamResult": "Pinned react-alien-signals declarations narrow useSignalValue to WritableSignal, so readable computed probes are rejected.",
       "octaneResult": "useSignalValue accepts ReadableSignal, including createComputed results, matching the documented Octane surface.",
       "rationale": "Upstream docs and runtime treat computed signals as readable; the published React declaration is narrower than that contract. Octane corrects the accept surface without weakening the read-only computed negative control.",
       "classification": "type-surface",
       "consumerImpact": "Octane callers may pass createComputed results to useSignalValue; React declaration consumers cannot without casts.",
-      "migrationGuidance": "Prefer ReadableSignal-typed values with useSignalValue on Octane. Keep paired type probes on writable count; use the Octane-only readable-computed typetest for computed acceptance.",
+      "migrationGuidance": "Prefer ReadableSignal-typed values with useSignalValue on Octane. Keep paired type probes on writable count; use the Octane-only readable-computed typetest (ordinary package typecheck) for computed acceptance.",
       "owner": "@octanejs/alien-signals",
       "reviewCondition": "Review if upstream widens useSignalValue to ReadableSignal or Octane reintroduces a writable-only overload."
+    },
+    {
+      "id": "alien-signals-use-signal-scope",
+      "caseIds": [
+        "runtime:5189801c40af28d9"
+      ],
+      "upstreamResult": "useSignalScope starts createSignalScope during React render via useMemo and returns that stop handle; pre-commit cancellation is not modeled.",
+      "octaneResult": "useSignalScope allocates a cancellation-safe controller during render, starts the scope after client commit via useEffect, and returns a stop that can cancel before commit.",
+      "rationale": "Octane forbids render-phase effects. Deferring scope start to commit preserves SSR/hydration safety and makes pre-commit stop a no-op instead of racing a render-created scope.",
+      "classification": "lifecycle",
+      "consumerImpact": "Scope callbacks and nested effects do not run until after commit; calling stop before commit cancels startup rather than disposing an already-running scope.",
+      "migrationGuidance": "Do not rely on scope work during the render that calls useSignalScope. Prefer post-commit observations; use the returned stop for cancellation-safe teardown including pre-commit abort.",
+      "owner": "@octanejs/alien-signals",
+      "reviewCondition": "Review if Octane gains a safe render-phase effect primitive or upstream moves scope creation out of useMemo."
     }
   ]
 }

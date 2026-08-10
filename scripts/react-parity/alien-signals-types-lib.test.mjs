@@ -56,7 +56,7 @@ async function fixture() {
 				},
 				adapted: {
 					compiler: 'tsrx-tsc',
-					project: 'adapted/tsconfig.json',
+					project: 'adapted/tsconfig.adapted.json',
 				},
 			},
 		},
@@ -149,6 +149,24 @@ test('rejects removing an accepted upstream typecheck API call', async function 
 	const source = await readFile(file, 'utf8');
 	assert.match(source, /useSignalValue\(countSignal\)/, 'fixture must contain an accepted call');
 	await writeFile(file, source.replace(/\n\tuseSignalValue\(countSignal\);/, ''));
+	assert.throws(function run() {
+		buildTypeInventory(value.root, value.config);
+	}, /accepted API call inventory differs/);
+});
+
+test('rejects removing one duplicate accepted call while another remains', async function rejectsRemovedDuplicateAcceptedCall(t) {
+	const value = await fixture();
+	t.after(function cleanup() {
+		return rm(value.root, { recursive: true, force: true });
+	});
+	const file = join(value.adaptedRoot, 'upstream-typecheck.test-d.ts');
+	const source = await readFile(file, 'utf8');
+	const matches = source.match(/\n\tconst countSignal = createSignal\(0\);/g) ?? [];
+	assert.ok(
+		matches.length >= 2,
+		'fixture must contain duplicate createSignal(0) scenario occurrences',
+	);
+	await writeFile(file, source.replace(/\n\tconst countSignal = createSignal\(0\);/, ''));
 	assert.throws(function run() {
 		buildTypeInventory(value.root, value.config);
 	}, /accepted API call inventory differs/);

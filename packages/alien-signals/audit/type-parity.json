@@ -30,7 +30,7 @@
     },
     "adapted": {
       "compiler": "tsrx-tsc",
-      "project": "packages/alien-signals/typetests/tsconfig.json",
+      "project": "packages/alien-signals/typetests/tsconfig.adapted.json",
       "sourcePolicy": "One-for-one adapted assertion groups for the upstream typecheck artifact plus supplemental public-api probes after permitted import-root transforms."
     }
   },
@@ -49,14 +49,14 @@
     },
     {
       "kind": "accepted-api-calls",
-      "rule": "upstreamTypecheck assertion-groups pairs also inventory every accepted public-API call from the pinned upstream type suite; adapted must match one-for-one so an Octane signature cannot reject an upstream-accepted call while both lanes stay green"
+      "rule": "upstreamTypecheck assertion-groups pairs also inventory every accepted public-API call occurrence from the pinned upstream type suite as a multiset; adapted must match one-for-one so dropping a duplicate accepted call while another remains is rejected"
     }
   ],
-  "notes": "Upstream ships an executable typecheck suite via package.json typecheck → tsc --noEmit and the pinned tsconfig (src/index.ts + src/index.test.ts). The adapted upstream-typecheck counterpart pins the @ts-expect-error group plus the full accepted public-API call inventory from that suite. Repo-authored public-api probes are a required pristine type lane (audit/type-probes/tsconfig.pristine.json) and are mechanically required to belong to that compiler program; adapted counterparts compile under typetests/tsconfig.json. Computed-signal acceptance for useSignalValue is an Octane-only divergence (alien-signals-readable-computed).",
+  "notes": "Upstream ships an executable typecheck suite via package.json typecheck → tsc --noEmit and the pinned tsconfig (src/index.ts + src/index.test.ts). The adapted upstream-typecheck counterpart pins the @ts-expect-error group plus the full accepted public-API call multiset from that suite. Repo-authored public-api probes are a required pristine type lane (audit/type-probes/tsconfig.pristine.json) and are mechanically required to belong to that compiler program; adapted counterparts compile under typetests/tsconfig.adapted.json. Computed-signal acceptance for useSignalValue is an Octane-only divergence (alien-signals-readable-computed) compiled by the ordinary package typecheck, not the adapted-types parity project.",
   "divergences": [
     {
       "id": "alien-signals-readable-computed",
-      "rule": "Paired probes keep useSignalValue(count); readable computed acceptance lives in typetests/readable-computed.test-d.ts"
+      "rule": "Paired probes keep useSignalValue(count); readable computed acceptance lives in typetests/readable-computed.test-d.ts under ordinary package typecheck"
     }
   ]
 }

@@ -116,8 +116,10 @@ export function assertionGroups(source, fileName) {
 }
 
 /**
- * Unique public-API call sites that must typecheck (not covered by @ts-expect-error).
- * Pins the positive type surface of the upstream typecheck suite one-for-one.
+ * Public-API call sites that must typecheck (not covered by @ts-expect-error).
+ * Pins the positive type surface of the upstream typecheck suite one-for-one as
+ * a multiset: repeated accepted shapes in distinct scenarios stay distinct, so
+ * dropping one duplicate while another remains is rejected.
  */
 export function acceptedApiCalls(source, fileName) {
 	const sourceFile = ts.createSourceFile(
@@ -133,7 +135,7 @@ export function acceptedApiCalls(source, fileName) {
 		const nextLine = source.slice(0, match.index + match[0].length).split('\n').length;
 		expectErrorLines.add(nextLine);
 	}
-	const calls = new Set();
+	const calls = [];
 	function visit(node) {
 		if (
 			ts.isCallExpression(node) &&
@@ -142,7 +144,7 @@ export function acceptedApiCalls(source, fileName) {
 		) {
 			const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
 			if (!expectErrorLines.has(line)) {
-				calls.add(
+				calls.push(
 					printer.printNode(ts.EmitHint.Unspecified, node, sourceFile).replace(/\s+/g, ' ').trim(),
 				);
 			}
@@ -150,7 +152,7 @@ export function acceptedApiCalls(source, fileName) {
 		ts.forEachChild(node, visit);
 	}
 	visit(sourceFile);
-	return [...calls].sort();
+	return calls.sort();
 }
 
 function normalizeSpecifier(specifier) {

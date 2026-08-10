@@ -52,7 +52,7 @@ export function useSignal<T>(
 	];
 }
 
-// OCTANE DIVERGENCE[alien-signals-readable-computed][types:alien-signals-readable-computed]
+// OCTANE DIVERGENCE[alien-signals-readable-computed][types:alien-signals-adapted]
 export function useSignalValue<T>(signal: ReadableSignal<T>): T;
 export function useSignalValue<T>(signal: ReadableSignal<T>, ...rest: [slot?: symbol]): T {
 	const [, slot] = splitSlot(rest);
@@ -132,6 +132,7 @@ interface ScopeController {
 }
 
 export function useSignalScope<T>(callback: () => T): () => void;
+// OCTANE DIVERGENCE[alien-signals-use-signal-scope][runtime:5189801c40af28d9]
 export function useSignalScope<T>(callback: () => T, ...rest: [slot?: symbol]): () => void {
 	const [, slot] = splitSlot(rest);
 	const controller = useMemo<ScopeController>(

@@ -382,9 +382,11 @@ function isUnconditionalTerminator(statement) {
  * Visit nodes on the always-executed entry path of `root`.
  *
  * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
- * and nested function bodies that are not call arguments (or IIFEs). Callbacks
- * passed to calls on the executed path (e.g. `Promise.then(fn)`) are entered.
- * A nested function's `return`/`throw` only stops that function body.
+ * loop / switch / catch bodies (not proven to run), and nested function bodies
+ * that are not call arguments (or IIFEs). Callbacks passed to calls on the
+ * executed path (e.g. `Promise.then(fn)`) are entered. A nested function's
+ * `return`/`throw` only stops that function body. Unknown statement shapes
+ * authenticate nothing rather than recursively crediting every child.
  */
 function forEachAlwaysExecutedNode(root, visitNode) {
 	function visitFunctionBody(fn) {
@@ -500,15 +502,59 @@ function forEachAlwaysExecutedNode(root, visitNode) {
 			return false;
 		}
 
-		ts.forEachChild(statement, function visitChild(child) {
-			if (ts.isStatement(child)) {
-				visitStatement(child);
-				return;
+		if (ts.isLabeledStatement(statement)) {
+			return visitStatement(statement.statement);
+		}
+
+		if (ts.isWhileStatement(statement) || ts.isDoStatement(statement)) {
+			visitExpression(statement.expression, 'value');
+			return false;
+		}
+
+		if (ts.isForStatement(statement)) {
+			if (statement.initializer !== undefined) {
+				if (ts.isVariableDeclarationList(statement.initializer)) {
+					for (const declaration of statement.initializer.declarations) {
+						visitNode(declaration);
+						if (declaration.initializer !== undefined) {
+							visitExpression(declaration.initializer, 'value');
+						}
+					}
+				} else {
+					visitExpression(statement.initializer, 'value');
+				}
 			}
-			if (functionLikeOf(child) !== null) return;
-			visitExpression(child, 'value');
-		});
-		return isUnconditionalTerminator(statement);
+			if (statement.condition !== undefined) visitExpression(statement.condition, 'value');
+			if (statement.incrementor !== undefined) visitExpression(statement.incrementor, 'value');
+			return false;
+		}
+
+		if (ts.isForInStatement(statement) || ts.isForOfStatement(statement)) {
+			if (ts.isVariableDeclarationList(statement.initializer)) {
+				for (const declaration of statement.initializer.declarations) {
+					visitNode(declaration);
+				}
+			} else {
+				visitExpression(statement.initializer, 'value');
+			}
+			visitExpression(statement.expression, 'value');
+			return false;
+		}
+
+		if (ts.isSwitchStatement(statement)) {
+			visitExpression(statement.expression, 'value');
+			return false;
+		}
+
+		if (ts.isTryStatement(statement)) {
+			visitStatement(statement.tryBlock);
+			if (statement.finallyBlock !== undefined) visitStatement(statement.finallyBlock);
+			return false;
+		}
+
+		// Conservatively authenticate nothing for unknown statement shapes
+		// (including catch-only paths already skipped above).
+		return false;
 	}
 
 	function visitStatementList(statements) {
