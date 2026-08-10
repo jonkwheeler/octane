@@ -6,6 +6,12 @@ port-authored. The two files assert the SAME public-surface claims, one against
 the published React binding compiled with `tsc`, one against
 `@octanejs/tanstack-table` compiled with `tsrx-tsc`.
 
+`scripts/react-parity/tanstack-table-types-lib.mjs` hashes per-file assertion
+groups (numbered headings, `Expect` pins, and `@ts-expect-error` controls),
+enforces the permitted transformations structurally, and rejects a skipped
+file, deleted group, or removed negative control. Regenerate inventories with
+`node scripts/react-parity/tanstack-table-types.mjs --write`.
+
 Permitted differences between the two files, and nothing else:
 
 | # | Transformation | Why |

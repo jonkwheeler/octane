@@ -9,10 +9,10 @@
     "testRoot": "packages/react-table",
     "license": "MIT",
     "integrity": "sha256:924a64009738996f1a2f32ef950aed338a6aafb0dbf85af548c7c98388deb559",
-    "verification": "verified"
+    "verification": "recorded-unverified"
   },
   "upstreamSuites": {
-    "runtime": "absent",
+    "runtime": "present",
     "types": "insufficient"
   },
   "adaptedRoots": {
@@ -150,7 +150,7 @@
       "environment": "workspace-node",
       "project": "tanstack-table-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Type assertions for the public surface, compiled against @tanstack/react-table@9.0.0-beta.58 with tsc and pinned React types.",
+      "notes": "Type assertions for the public surface, compiled against @tanstack/react-table@9.0.0-beta.58 with tsc; per-file/per-group inventories and negative controls are enforced by tanstack-table-types-lib.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -160,7 +160,7 @@
         {
           "path": "packages/tanstack-table/audit/pristine-types.json",
           "role": "test",
-          "sha256": "3bd2d947906f1e98414fb279cbcbd61fb6a5b3cc60d25231453f4796c4ac0ecb",
+          "sha256": "6e5230a56079f5d5e25c4366d491943b9cff784c9103dfa6f45ec8ea861ea7b5",
           "cases": [
             {
               "id": "types:tanstack-table-pristine",
@@ -182,7 +182,17 @@
         {
           "path": "packages/tanstack-table/typetests/assertions.md",
           "role": "support",
-          "sha256": "0be1e5b74618d8bb89538745afa8c2f4c4a9529da958e654f9a6e5b1f29c930d"
+          "sha256": "55aea06b2218bab26c7e8ddb7f47fdcc075b4ae20aaa4524641cc0b63c85399c"
+        },
+        {
+          "path": "packages/tanstack-table/audit/type-parity.json",
+          "role": "support",
+          "sha256": "73d82ea6996541d7b4b931af7b078b5f63fa62a88503ab77b9c8e499529a44af"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-table-types-lib.mjs",
+          "role": "support",
+          "sha256": "6da105d5ade5db790439261a1ff528bbd1c1a8f52dbba6cb420fef3d354a94e6"
         }
       ]
     },
@@ -194,7 +204,7 @@
       "environment": "workspace-node",
       "project": "tanstack-table-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "The same assertion groups against @octanejs/tanstack-table with tsrx-tsc. Permitted transformations are listed in typetests/assertions.md.",
+      "notes": "The same assertion groups against @octanejs/tanstack-table with tsrx-tsc; structural comparison and negative controls are enforced by tanstack-table-types-lib.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -204,7 +214,7 @@
         {
           "path": "packages/tanstack-table/audit/adapted-types.json",
           "role": "test",
-          "sha256": "10909c897bdfb5a824317c8fd3d4f52574933a0cc1c3f83bed72b25bb6f887a2",
+          "sha256": "5a329aff48a049662cc9a61dbad3a9ae38671631da2c440d5f91afa6ed64bfa7",
           "cases": [
             {
               "id": "types:tanstack-table-adapted",
@@ -226,7 +236,17 @@
         {
           "path": "packages/tanstack-table/typetests/assertions.md",
           "role": "support",
-          "sha256": "0be1e5b74618d8bb89538745afa8c2f4c4a9529da958e654f9a6e5b1f29c930d"
+          "sha256": "55aea06b2218bab26c7e8ddb7f47fdcc075b4ae20aaa4524641cc0b63c85399c"
+        },
+        {
+          "path": "packages/tanstack-table/audit/type-parity.json",
+          "role": "support",
+          "sha256": "73d82ea6996541d7b4b931af7b078b5f63fa62a88503ab77b9c8e499529a44af"
+        },
+        {
+          "path": "scripts/react-parity/tanstack-table-types-lib.mjs",
+          "role": "support",
+          "sha256": "6da105d5ade5db790439261a1ff528bbd1c1a8f52dbba6cb420fef3d354a94e6"
         }
       ]
     }
