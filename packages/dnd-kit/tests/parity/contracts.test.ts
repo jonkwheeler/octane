@@ -24,26 +24,28 @@ describe('@octanejs/dnd-kit parity audit contracts', () => {
 		).not.toThrow();
 	});
 
-	// OCTANE DIVERGENCE[dnd-kit-drag-overlay-compiled-children][differential:dnd-kit-drag-overlay-compiled-children]
+	// OCTANE DIVERGENCE[dnd-kit-drag-overlay-compiled-children][adapted:dnd-kit-drag-overlay-compiled-children]
+	// @parity-case adapted:dnd-kit-drag-overlay-compiled-children
 	it('keeps DragOverlay compiled-child handling explicit', () => {
 		const divergence = manifest.divergences.find(function (entry: { id: string }) {
 			return entry.id === 'dnd-kit-drag-overlay-compiled-children';
 		});
 		expect(divergence).toMatchObject({
 			id: 'dnd-kit-drag-overlay-compiled-children',
-			caseIds: ['differential:dnd-kit-drag-overlay-compiled-children'],
+			caseIds: ['adapted:dnd-kit-drag-overlay-compiled-children'],
 		});
 		expect(status.divergences.join(' ')).toContain('compiled children');
 	});
 
-	// OCTANE DIVERGENCE[dnd-kit-sortable-omit-optimistic-sorting][differential:dnd-kit-sortable-omit-optimistic-sorting]
+	// OCTANE DIVERGENCE[dnd-kit-sortable-omit-optimistic-sorting][adapted:dnd-kit-sortable-omit-optimistic-sorting]
+	// @parity-case adapted:dnd-kit-sortable-omit-optimistic-sorting
 	it('keeps OptimisticSortingPlugin omission explicit', () => {
 		const divergence = manifest.divergences.find(function (entry: { id: string }) {
 			return entry.id === 'dnd-kit-sortable-omit-optimistic-sorting';
 		});
 		expect(divergence).toMatchObject({
 			id: 'dnd-kit-sortable-omit-optimistic-sorting',
-			caseIds: ['differential:dnd-kit-sortable-omit-optimistic-sorting'],
+			caseIds: ['adapted:dnd-kit-sortable-omit-optimistic-sorting'],
 		});
 		expect(status.divergences.join(' ')).toContain('OptimisticSortingPlugin');
 	});
