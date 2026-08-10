@@ -104,6 +104,7 @@ import {
 	isRendererStreamToken,
 	rendererRangeClose,
 } from './stream-protocol.js';
+import { isRendererContext, registerClientRendererBridge } from './renderer-bridge.js';
 
 export { EXTERNAL_HYDRATION_PROMISE, HYDRATION_RANGE_BOUNDARY };
 
@@ -577,6 +578,14 @@ export interface Block extends Scope {
 	 * (the host-element-with-component-children renderer). Null for every other Block.
 	 */
 	deoptNode: Node | null;
+	/**
+	 * True when a de-opt descriptor carrying a `ref` was stamped anywhere in this
+	 * block's subtree. Set at stamp time and propagated up the parentBlock chain
+	 * (monotone — never cleared). Gates the teardown ref-detach walk over
+	 * `deoptNode`: a region that never stamped a ref has nothing to detach, so
+	 * the per-DOM-node descriptor scan is skipped entirely.
+	 */
+	deoptRefs: boolean;
 	/** Set on item Blocks: pointer to the enclosing for-block's slot. */
 	forSlot: ForSlot | null;
 	/** Item position within the enclosing for-block. 0 for non-item blocks. */
@@ -4369,6 +4378,8 @@ class BlockImpl {
 	// De-opt host node managed by this Block (deoptItemBody / hostElementBody), reused
 	// across renders. Null for all other blocks; declared so the shape stays monomorphic.
 	deoptNode: Node | null;
+	// A de-opt descriptor with a `ref` was stamped in this subtree (see Block).
+	deoptRefs: boolean;
 	// Per-scope dense slot array (binding bag + control-flow/component/child slots),
 	// indexed by compile-time slot index. Keeps the scope shape monomorphic.
 	slots: any[];
@@ -4441,6 +4452,7 @@ class BlockImpl {
 		this.effectEventRenderVersion = 0;
 		this.effectEventCompletedVersion = 0;
 		this.deoptNode = null;
+		this.deoptRefs = false;
 		this.slots = [];
 		this.forSlot = null;
 		this.prevSibling = null;
@@ -5078,10 +5090,28 @@ function unmountBlockInner(block: Block, detachDom: boolean): void {
 	// (batchClearItems, clearChildContent) remove the DOM themselves, but the
 	// teardown is just as permanent. Before unmountScope: a deleted host's ref
 	// detaches before its component descendants' cleanups (React's pre-order
-	// deletion walk).
-	if (block.deoptNode !== null) detachDeoptTreeRefs(block.deoptNode, null);
+	// deletion walk). `deoptRefs` gates the walk: it is set (and propagated up
+	// the parentBlock chain) whenever a descriptor carrying a ref is stamped
+	// anywhere in this block's subtree, so a ref-free region skips the
+	// whole-DOM descriptor scan.
+	if (block.deoptNode !== null && block.deoptRefs) detachDeoptTreeRefs(block.deoptNode, null);
+	// When THIS call removes the block's entire DOM range below, descendants must
+	// not detach their own ranges first: every non-portal descendant's DOM lies
+	// inside this range (portals always self-detach — unmountScopeChildrenAndSlotsOnly
+	// forces their flag), so one wholesale removal replaces O(nodes) removeChild
+	// calls, and every deletion cleanup observes the subtree still attached —
+	// React's commitDeletionEffects order, which runs all destroys before it
+	// detaches the single host. A cleanup that itself moves or removes the
+	// block's markers forfeits the removal (the loop below guards on the live
+	// parent), exactly as it would have forfeited its own range before.
+	const removesOwnDom =
+		detachDom &&
+		(block.kind === 'root' ||
+			(block.startMarker !== null &&
+				block.endMarker !== null &&
+				block.startMarker.parentNode !== null));
 	// Depth-first cleanup of all scopes reachable from this block.
-	unmountScope(block, detachDom);
+	unmountScope(block, detachDom && !removesOwnDom);
 	if (!detachDom) return;
 	// Remove DOM range.
 	if (block.startMarker && block.endMarker) {
@@ -6473,63 +6503,74 @@ export function createContext<T>(defaultValue: T): Context<T> {
 	// provider the context object, then retain `.Provider` as an identity alias
 	// for existing code and React 18-shaped libraries.
 	const ctx = function ProviderBody(props, scope) {
-		// Stash on the scope (not block) so siblings of the Provider don't see it.
-		// $$ctxValues is pre-initialised to null on every Scope/Block so this
-		// assignment is a hidden-class-stable update (not a late stamp).
-		if (scope.$$ctxValues === null) scope.$$ctxValues = new Map();
-		// Bump the context version when an EXISTING value actually changes. This
-		// runs before children() below, so the memo bailout downstream already
-		// sees the new version when the cascade reaches it. First-set is NOT a
-		// change: adding a Provider always creates a fresh scope for its
-		// descendants, so a memoized consumer can't carry pre-Provider state — it's
-		// always freshly mounted within the Provider's scope and reads the value
-		// directly (no memo bailout to invalidate). (Bumping on first-set would
-		// over-invalidate every memo'd consumer of this context elsewhere.)
-		if (scope.$$ctxValues.has(ctx) && !Object.is(scope.$$ctxValues.get(ctx), props.value)) {
-			ctx.$$version++;
-			COMPILER_CACHE_CONTEXT_EPOCH++;
-		}
-		scope.$$ctxValues.set(ctx, props.value);
-		// Children between the Provider tags reach us in one of two shapes:
-		//   - a compiled render-body FUNCTION — the `.tsrx` `{props.children}` lowering;
-		//   - an element descriptor / renderable — a React-style `.tsx` parent, where
-		//     `<Ctx.Provider>…</Ctx.Provider>` lowers to `createElement(Ctx.Provider,
-		//     { value }, …children)` and `createElement` mirrors the positional children
-		//     into `props.children` (a descriptor, an array, or text — never a function).
-		// `childrenAsBody` normalizes either shape to a callable body, so both dialects
-		// render their children inside the Provider's scope (and thus under its context).
-		//
-		// The two dialects both claim `scope.slots[0]` — a compiled body stores its binding
-		// bag there, while the descriptor path's `childSlot(scope, 0, …)` stores a childSlot
-		// record. A parent that wraps its children conditionally (common in ported React
-		// bindings) flips between them across renders, so the incoming dialect would read the
-		// outgoing one's record as its own and corrupt the tree. Remount the children on a
-		// flip instead: the two sides are structurally different code, which is the same
-		// contract React gives an element-type change.
-		if (props.children != null) {
-			// Steady state is one map read and an integer compare — the write happens only on the
-			// first render and on an actual flip.
-			const dialect = typeof props.children === 'function' ? 1 : 2;
-			const previous = scope.hooks?.get(CHILDREN_DIALECT_SLOT);
-			if (previous !== dialect) {
-				if (previous !== undefined) {
-					resetScopeChildren(scope);
-					// The reset runs user cleanups, so it can throw into the enclosing boundary and
-					// switch it to its catch arm — which disposes this block. Rendering children
-					// into a disposed block writes into the catch range, so bail out here, as every
-					// other mid-render teardown site does after `unmountBlock`.
-					if (scope.block.disposed) return;
-				}
-				ensureHooks(scope).set(CHILDREN_DIALECT_SLOT, dialect);
-			}
-			childrenAsBody(props.children)(undefined, scope, undefined);
-		}
+		return renderClientContextProvider(ctx, props, scope);
 	} as Context<T>;
 	ctx.$$kind = CONTEXT_TAG;
 	ctx.defaultValue = defaultValue;
 	ctx.$$version = 0;
 	ctx.Provider = ctx;
 	return ctx;
+}
+
+/** Renderer-boundary adapter; ordinary DOM roots never retain this by themselves. */
+export function renderClientContextProvider<T>(
+	context: unknown,
+	props: { value: unknown; children?: unknown },
+	renderScope: object,
+): void {
+	const ctx = context as Context<T>;
+	const scope = renderScope as Scope;
+	// Stash on the scope (not block) so siblings of the Provider don't see it.
+	// $$ctxValues is pre-initialised to null on every Scope/Block so this
+	// assignment is a hidden-class-stable update (not a late stamp).
+	if (scope.$$ctxValues === null) scope.$$ctxValues = new Map();
+	// Bump the context version when an EXISTING value actually changes. This
+	// runs before children() below, so the memo bailout downstream already
+	// sees the new version when the cascade reaches it. First-set is NOT a
+	// change: adding a Provider always creates a fresh scope for its
+	// descendants, so a memoized consumer can't carry pre-Provider state — it's
+	// always freshly mounted within the Provider's scope and reads the value
+	// directly (no memo bailout to invalidate). (Bumping on first-set would
+	// over-invalidate every memo'd consumer of this context elsewhere.)
+	if (scope.$$ctxValues.has(ctx) && !Object.is(scope.$$ctxValues.get(ctx), props.value)) {
+		ctx.$$version++;
+		COMPILER_CACHE_CONTEXT_EPOCH++;
+	}
+	scope.$$ctxValues.set(ctx, props.value);
+	// Children between the Provider tags reach us in one of two shapes:
+	//   - a compiled render-body FUNCTION — the `.tsrx` `{props.children}` lowering;
+	//   - an element descriptor / renderable — a React-style `.tsx` parent, where
+	//     `<Ctx.Provider>…</Ctx.Provider>` lowers to `createElement(Ctx.Provider,
+	//     { value }, …children)` and `createElement` mirrors the positional children
+	//     into `props.children` (a descriptor, an array, or text — never a function).
+	// `childrenAsBody` normalizes either shape to a callable body, so both dialects
+	// render their children inside the Provider's scope (and thus under its context).
+	//
+	// The two dialects both claim `scope.slots[0]` — a compiled body stores its binding
+	// bag there, while the descriptor path's `childSlot(scope, 0, …)` stores a childSlot
+	// record. A parent that wraps its children conditionally (common in ported React
+	// bindings) flips between them across renders, so the incoming dialect would read the
+	// outgoing one's record as its own and corrupt the tree. Remount the children on a
+	// flip instead: the two sides are structurally different code, which is the same
+	// contract React gives an element-type change.
+	if (props.children != null) {
+		// Steady state is one map read and an integer compare — the write happens only on the
+		// first render and on an actual flip.
+		const dialect = typeof props.children === 'function' ? 1 : 2;
+		const previous = scope.hooks?.get(CHILDREN_DIALECT_SLOT);
+		if (previous !== dialect) {
+			if (previous !== undefined) {
+				resetScopeChildren(scope);
+				// The reset runs user cleanups, so it can throw into the enclosing boundary and
+				// switch it to its catch arm — which disposes this block. Rendering children
+				// into a disposed block writes into the catch range, so bail out here, as every
+				// other mid-render teardown site does after `unmountBlock`.
+				if (scope.block.disposed) return;
+			}
+			ensureHooks(scope).set(CHILDREN_DIALECT_SLOT, dialect);
+		}
+		childrenAsBody(props.children)(undefined, scope, undefined);
+	}
 }
 
 /**
@@ -15006,6 +15047,9 @@ export function createElement<P>(
 	props?: P,
 	...children: any[]
 ): ElementDescriptor<P> {
+	if (typeof type === 'function' && isRendererContext(type)) {
+		registerClientRendererBridge(renderClientContextProvider, flushSync);
+	}
 	const src = (props ?? null) as any;
 	const hasKey = hasElementConfigKey(src);
 	const key = hasKey ? '' + src.key : null;
@@ -16371,11 +16415,32 @@ export function positionalChildren(children: any[]): any[] {
 	return children;
 }
 
+// Whether ANY de-opt descriptor carrying a `ref` was ever stamped (monotone).
+// Gates every detachDeoptTreeRefs walk: an app that never puts a ref on a
+// de-opt element never pays the per-DOM-node descriptor scan on teardown.
+let DEOPT_REFS_STAMPED = false;
+
+// Record a stamped de-opt ref on its owner block and every ancestor, so the
+// teardown walk over any enclosing `deoptNode` region knows refs may be below.
+// The early exit bounds repeat stamping: the chain above the first flagged
+// block is already flagged.
+function noteDeoptRef(block: Block): void {
+	DEOPT_REFS_STAMPED = true;
+	let b: Block | null = block;
+	while (b !== null && !b.deoptRefs) {
+		b.deoptRefs = true;
+		b = b.parentBlock;
+	}
+}
+
 // Apply ONE host prop, reusing the same helpers the compiler emits (className/style/
 // setAttribute + `$$type` delegated-event slots + deferred ref attach).
 function applyDeoptProp(el: Element, name: string, v: any, ownerBlock: Block): void {
 	if (name === 'ref') {
-		if (v != null) queueRefAttach(ownerBlock, v, el);
+		if (v != null) {
+			noteDeoptRef(ownerBlock);
+			queueRefAttach(ownerBlock, v, el);
+		}
 	} else if (name === 'className' || name === 'class') {
 		setDeoptClass(el, v);
 	} else if (name === 'style') {
@@ -19411,9 +19476,14 @@ export function hmr<P>(fn: ComponentBody<P>): ComponentBody<P> {
 		},
 	};
 	function wrapper(props: P, scope: Scope, extra: any): unknown {
-		const block = scope.block;
-		// Register on first call; cleared lazily during update() if disposed.
-		meta.liveBlocks.add(block);
+		// Register on first call; cleared lazily during update() if disposed. A
+		// plain direct call (`Row({ … })` inside another component's render) has
+		// no scope of its own — stay transparent and register nothing. The call
+		// site's output still refreshes on edit: its owner's update() re-renders
+		// the owning block, which re-runs the direct call against the swapped-in
+		// body. Registering the AMBIENT block instead would let update() repoint
+		// that block's body at this wrapper, miswiring the caller.
+		if (scope !== undefined) meta.liveBlocks.add(scope.block);
 		// Propagate the wrapped body's return — a return-based (folded) component
 		// hands back a renderable descriptor that renderBlock must still mount.
 		return meta.fn(props as any, scope, extra);
@@ -23212,6 +23282,9 @@ function detachDeoptTreeRefs(
 	ownerScope?: Scope,
 	uncommitted: UncommittedRefAttaches | null = null,
 ): void {
+	// No de-opt descriptor ref was ever stamped → nothing to detach or collect
+	// anywhere; skip the subtree scan. (Monotone flag — see noteDeoptRef.)
+	if (!DEOPT_REFS_STAMPED) return;
 	const ref = getDeoptDesc(node)?.props?.ref;
 	if (ref != null) {
 		if (out !== null) {
@@ -24819,8 +24892,9 @@ function batchClearItems(state: ForSlot, oldItems: Map<any, Block>): void {
 			// Pure-host de-opt item (deoptItemBody with no component descendants):
 			// nothing to unmount scope-wise, but its subtree may carry stamped refs
 			// that must not keep pointing at the batch-removed DOM. Guarded so the
-			// common template-row clear stays a single null check.
-			if (b.deoptNode !== null) detachDeoptTreeRefs(b.deoptNode, null);
+			// common template-row clear stays a single null check; `deoptRefs`
+			// additionally skips the subtree scan for ref-free items.
+			if (b.deoptNode !== null && b.deoptRefs) detachDeoptTreeRefs(b.deoptNode, null);
 			b.disposed = true;
 		}
 	}
