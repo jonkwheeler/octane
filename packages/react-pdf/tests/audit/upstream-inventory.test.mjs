@@ -102,3 +102,33 @@ test('fails closed when adapted evidence changes a fixture', () => {
 		});
 	}, /diverges from upstream/);
 });
+
+test('fails closed when adapted evidence rewrites the exercised call subject', () => {
+	const upstream =
+		"it('case', () => { const result = isDataURI(input); expect(result).toBe(true); });";
+	const adapted =
+		"it('case', function () { const result = alwaysTrue(input); expect(result).toBe(true); });";
+	assert.throws(function changedSubject() {
+		compareAdaptedEvidence({
+			upstreamSource: upstream,
+			upstreamTitle: 'case',
+			adaptedSource: adapted,
+			adaptedTitle: 'case',
+		});
+	}, /diverges from upstream/);
+});
+
+test('fails closed when adapted evidence changes a numeric input', () => {
+	const upstream =
+		"it('case', () => { const ref = new Ref({ num: 1, gen: 2 }); expect(ref.toString()).toBe('1R2'); });";
+	const adapted =
+		"it('case', function () { const ref = new Ref({ num: 9, gen: 2 }); expect(ref.toString()).toBe('1R2'); });";
+	assert.throws(function changedNumeric() {
+		compareAdaptedEvidence({
+			upstreamSource: upstream,
+			upstreamTitle: 'case',
+			adaptedSource: adapted,
+			adaptedTitle: 'case',
+		});
+	}, /diverges from upstream/);
+});

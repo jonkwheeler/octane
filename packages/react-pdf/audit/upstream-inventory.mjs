@@ -90,12 +90,18 @@ function caseBody(source, title) {
 }
 
 function normalizeCaseStructure(body) {
-	return body
+	let normalized = body
 		.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
 		.replace(/\bfunction\s*\(([^)]*)\)\s*\{/g, '($1)=>{')
-		.replace(/\s+/g, '')
-		.replace(/(\([^)]*\)=>)\{([^{}]+)\}/g, '$1$2')
-		.replace(/;(?=\})/g, '');
+		.replace(/\s+/g, '');
+	// Collapse single-statement arrow blocks and drop statement terminators so
+	// `() => expr` and `function () { expr; }` normalize identically.
+	for (let pass = 0; pass < 4; pass++) {
+		const next = normalized.replace(/(\([^)]*\)=>)\{([^{};]+);?\}/g, '$1$2').replace(/;/g, '');
+		if (next === normalized) break;
+		normalized = next;
+	}
+	return normalized;
 }
 
 export function caseStructuralDigest(source, title) {
@@ -104,19 +110,10 @@ export function caseStructuralDigest(source, title) {
 	if (!/\bexpect\s*\(/.test(body)) throw new Error(`test case has no expectations: ${title}`);
 	if (!/\.to(?:Be|Throw)\s*\(/.test(body))
 		throw new Error(`test case has no assertion target: ${title}`);
-	const normalized = normalizeCaseStructure(body);
-	const expectCalls = normalized.match(/expect\(/g);
-	const assertionTargets = normalized.match(/\.to(?:Be|Throw)\([^)]*\)/g);
-	const strings = normalized.match(/(?:'[^']*'|"[^"]*"|`[^`]*`)/g);
-	const eachTable = normalized.match(/\.each`[^`]*`/g);
-	return sha256(
-		JSON.stringify({
-			expectCalls,
-			assertionTargets,
-			strings,
-			eachTable,
-		}),
-	);
+	// Hash the full normalized callback (and it.each table when present), not a
+	// selective projection of expects/strings. Call subjects, numeric inputs,
+	// constructors, and other body structure must participate in the digest.
+	return sha256(normalizeCaseStructure(body));
 }
 
 export function compareAdaptedEvidence({

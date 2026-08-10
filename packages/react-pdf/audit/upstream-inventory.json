@@ -2744,15 +2744,15 @@
       "upstream": "tag/src/Ref.spec.ts:6::returns proper reference for given num and gen",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen",
-      "adaptedDigest": "f39a91ebbfb1a5665ffa1125b2313bdc05fba0a158ef217f9b131645ff16ebff",
-      "upstreamDigest": "f39a91ebbfb1a5665ffa1125b2313bdc05fba0a158ef217f9b131645ff16ebff"
+      "adaptedDigest": "71b59fd899fa7e4d4048d0e459bb328570fce217f1ef5d6186aa5504f029b0ef",
+      "upstreamDigest": "71b59fd899fa7e4d4048d0e459bb328570fce217f1ef5d6186aa5504f029b0ef"
     },
     {
       "upstream": "tag/src/Ref.spec.ts:12::returns proper reference for given num and gen when gen = 0",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns proper reference for given num and gen when gen = 0",
-      "adaptedDigest": "f3b7bb639696d4d65918644c95389111f3867da0c1c0978abaef643f2b40b1e1",
-      "upstreamDigest": "f3b7bb639696d4d65918644c95389111f3867da0c1c0978abaef643f2b40b1e1"
+      "adaptedDigest": "c2b294d576f5b93dd62f3f4396d5080f1b79504df38159799b1bda6240f245bd",
+      "upstreamDigest": "c2b294d576f5b93dd62f3f4396d5080f1b79504df38159799b1bda6240f245bd"
     },
     {
       "upstream": "tag/src/StructTree.spec.tsx:57::loads structure tree and calls onGetStructTreeSuccess callback properly",
@@ -2993,43 +2993,43 @@
       "upstream": "tag/src/shared/utils.spec.ts:6::returns $expectedResult given $input",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns $expectedResult given $input",
-      "adaptedDigest": "f245ea67cc1e299ac7187846261107f47015b9da35995477f58047c2dffba4e8",
-      "upstreamDigest": "f245ea67cc1e299ac7187846261107f47015b9da35995477f58047c2dffba4e8"
+      "adaptedDigest": "169e6e2164953f2fbbb142f270e6b04c2796963428fd96aee9cd517be8bae069",
+      "upstreamDigest": "169e6e2164953f2fbbb142f270e6b04c2796963428fd96aee9cd517be8bae069"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:19::throws given invalid data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::throws given invalid data URI",
-      "adaptedDigest": "e153df3f3dcacba8016330be634e5beec4eff76388a0296d53bbfb0021367a3a",
-      "upstreamDigest": "e153df3f3dcacba8016330be634e5beec4eff76388a0296d53bbfb0021367a3a"
+      "adaptedDigest": "57d22781887d2b5993fa780ce4511f643421e16ed63b2e09cf8b10add1639701",
+      "upstreamDigest": "57d22781887d2b5993fa780ce4511f643421e16ed63b2e09cf8b10add1639701"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:22::returns a byte string given plain text data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given plain text data URI",
-      "adaptedDigest": "a7e32af6a7ea732aee323cb7c0288a5a396cfbed3c333fb90736d43a4bc19503",
-      "upstreamDigest": "a7e32af6a7ea732aee323cb7c0288a5a396cfbed3c333fb90736d43a4bc19503"
+      "adaptedDigest": "b7102c24651de373f811b890fbd3dac2996672225f664e85e7da9741814d8444",
+      "upstreamDigest": "b7102c24651de373f811b890fbd3dac2996672225f664e85e7da9741814d8444"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:28::returns a byte string given base64 data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 data URI",
-      "adaptedDigest": "b62d98ba68af27bd31a4e62147adb8ccfab565b1ff2193606c02a6aceab59dff",
-      "upstreamDigest": "b62d98ba68af27bd31a4e62147adb8ccfab565b1ff2193606c02a6aceab59dff"
+      "adaptedDigest": "1779ff77fbbabe55f28c258966c29689ba5aa514a5ad275d5111a786b2da483d",
+      "upstreamDigest": "1779ff77fbbabe55f28c258966c29689ba5aa514a5ad275d5111a786b2da483d"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:34::returns a byte string given base64 PDF data URI",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI",
-      "adaptedDigest": "905833008565a81d76f27f8527eb0ca89aba63c899572ef4d1bcbd1f6c0ea14a",
-      "upstreamDigest": "905833008565a81d76f27f8527eb0ca89aba63c899572ef4d1bcbd1f6c0ea14a"
+      "adaptedDigest": "2281f14a9c554ca96dadc5966555ebb25f574c71f54ff058c56527756ef556d9",
+      "upstreamDigest": "2281f14a9c554ca96dadc5966555ebb25f574c71f54ff058c56527756ef556d9"
     },
     {
       "upstream": "tag/src/shared/utils.spec.ts:42::returns a byte string given base64 PDF data URI with filename",
       "disposition": "adapted-and-executable",
       "evidence": "tests/runtime/private-evidence.test.ts::returns a byte string given base64 PDF data URI with filename",
-      "adaptedDigest": "8a58fcf3ecb1efaa6eb52623b490a00d6fbce6711f7c82109cfd4c7245956bb5",
-      "upstreamDigest": "8a58fcf3ecb1efaa6eb52623b490a00d6fbce6711f7c82109cfd4c7245956bb5"
+      "adaptedDigest": "3d381ae09ead61cfd95ae70479c358a56f1dd598bf975c2b0f557b3007738693",
+      "upstreamDigest": "3d381ae09ead61cfd95ae70479c358a56f1dd598bf975c2b0f557b3007738693"
     }
   ],
   "authoredTests": [
