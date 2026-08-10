@@ -76,6 +76,7 @@ import {
 	markComponentFlags,
 } from './component-flags.js';
 import { formatServerError } from './error-codes.server.generated.js';
+import { isRendererContext, registerServerRendererContextProvider } from './renderer-bridge.js';
 export { EXTERNAL_HYDRATION_PROMISE, HYDRATION_RANGE_BOUNDARY, normalizeClass };
 
 const NATIVE_ARRAY_MAP = Array.prototype.map;
@@ -616,6 +617,9 @@ export function createElement(
 	props?: any,
 	...children: any[]
 ): ElementDescriptor {
+	if (typeof type === 'function' && isRendererContext(type)) {
+		registerServerRendererContextProvider(renderServerContextProvider);
+	}
 	const src = (props ?? null) as any;
 	const key = hasElementConfigKey(src) ? '' + src.key : null;
 	let kids = children.length > 0 ? (children.length === 1 ? children[0] : children) : src?.children;
@@ -1743,6 +1747,11 @@ export function ssrAttr(
 	// setAttribute writes (hydration parity). Custom elements get their props
 	// VERBATIM (no alias tables) — React parity.
 	if (!isCustomTag) {
+		// Server markup carries browser-native autofocus even though client mounts
+		// perform focus at commit without writing this attribute.
+		if (name === 'autoFocus') {
+			return v && typeof v !== 'function' && typeof v !== 'symbol' ? ' autofocus=""' : '';
+		}
 		const alias = ATTRIBUTE_ALIASES.get(name);
 		if (alias !== undefined) name = alias;
 	}
@@ -1966,9 +1975,6 @@ function ssrAttrEntry(
 	)
 		return '';
 	if (k.length > 2 && k[0] === 'o' && k[1] === 'n' && k[2] >= 'A' && k[2] <= 'Z') return '';
-	// `autoFocus` never serializes (client focuses at its mount commit).
-	if (k === 'autoFocus' && (namespace !== 'html' || tag === undefined || tag.indexOf('-') === -1))
-		return '';
 	if (k === 'style') return ssrStyle(v);
 	if (k === 'className' || k === 'class') return ssrAttr('class', v, tag, namespace);
 	if (VALID_ATTR_NAME.test(k)) return ssrAttr(k, v, tag, namespace);
@@ -2069,11 +2075,6 @@ export function ssrAttrs(
 			const c = rawName.charCodeAt(2);
 			if (c >= 65 && c <= 90) continue;
 		}
-		if (
-			rawName === 'autoFocus' &&
-			(namespace !== 'html' || tag === undefined || tag.indexOf('-') === -1)
-		)
-			continue;
 		const name = normalizeSsrAttributeName(rawName, tag, namespace);
 		if (!VALID_ATTR_NAME.test(name)) continue;
 		// Attribute identity is ASCII-case-insensitive in the HTML namespace.
@@ -3658,23 +3659,29 @@ export interface Context<T> {
 
 export function createContext<T>(defaultValue: T): Context<T> {
 	const ctx = function ProviderBody(props, scope) {
-		if (scope.$$ctxValues === null) scope.$$ctxValues = new Map();
-		scope.$$ctxValues.set(ctx, props.value);
-		const children = props.children;
-		if (children == null) return '';
-		// `.tsrx` threads children as a render function (call it directly). `.tsx`
-		// `<Ctx.Provider>…</Ctx.Provider>` lowers to `createElement(Provider, {}, …)`,
-		// so children arrive as a descriptor / array / primitive — render whichever
-		// shape through the generic child serializer (the same path every other
-		// descriptor child uses), or direct-JSX provider SSR would drop its content.
-		return typeof children === 'function'
-			? (children(undefined, scope) ?? '')
-			: ssrChild(children, scope);
+		return renderServerContextProvider(ctx, props, scope);
 	} as Context<T>;
 	ctx.$$kind = CONTEXT_TAG;
 	ctx.defaultValue = defaultValue;
 	ctx.Provider = ctx;
 	return ctx;
+}
+
+function renderServerContextProvider(
+	context: unknown,
+	props: { value: unknown; children?: unknown },
+	renderScope: object,
+): string {
+	const scope = renderScope as SSRScope;
+	if (scope.$$ctxValues === null) scope.$$ctxValues = new Map();
+	scope.$$ctxValues.set(context, props.value);
+	const children = props.children;
+	if (children == null) return '';
+	// `.tsrx` children are render functions; `.tsx` children are descriptors,
+	// arrays, or primitives and must keep the ordinary server serializer.
+	return typeof children === 'function'
+		? (children(undefined, scope) ?? '')
+		: ssrChild(children, scope);
 }
 
 function readContext<T>(ctx: Context<T>): T {
