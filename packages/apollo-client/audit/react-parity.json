@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "020d961de0259148568495859fdd4e7698645d16b52cd0853e5a74b182db07a3"
+      "lockfileSha256": "9bfa66384d7cd40cb59b589c777f176cc5f8dc6a3f17a865039e902402bea226"
     }
   },
   "lanes": [
@@ -110,7 +110,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "dbb6219f2a2a373fda216cf8f953f124591fc9789b34bf5ae9be4159f6c42162"
+          "sha256": "22270530e881b4664083d76b2986943e9e469047966c51db4f409bac146b779a"
         },
         {
           "path": "packages/apollo-client/audit/test-classifications.json",
