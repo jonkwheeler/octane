@@ -197,7 +197,7 @@ describe('packed TSRX source consumers', () => {
 		assert.match(source, /from '@octanejs\/cmdk'/);
 		assert.match(source, /from '@octanejs\/sonner'/);
 		assert.match(source, /from '@octanejs\/tiptap'/);
-		assert.match(source, /from '@octanejs\/react-textarea-autosize'/);
+		assert.match(source, /from '@octanejs\/textarea-autosize'/);
 		assert.match(source, /<Command\b/);
 		assert.match(source, /<Toaster\b/);
 		assert.match(source, /<TextareaAutosize\b/);
