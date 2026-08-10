@@ -51,6 +51,7 @@
     "@testing-library/jest-dom": "catalog:default",
     "@tsrx/react": "catalog:default",
     "@wagmi/connectors": "catalog:default",
+    "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
     "react-dom": "catalog:default",
