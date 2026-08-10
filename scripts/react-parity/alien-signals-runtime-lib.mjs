@@ -443,12 +443,12 @@ function hasHoistedNameBinding(root, name) {
  * True when `identifier` resolves to a local binding rather than the unshadowed
  * global of the same spelling. Lexical `let`/`const`/`class`/imports are read
  * from enclosing scopes via parent pointers; function-scoped `var`/`function`
- * bindings are deep-scanned in the enclosing function (or script) so a nested
- * `if`/`for`/`switch`/`try` `var Promise` still counts.
+ * bindings are deep-scanned in every enclosing function (or the script),
+ * stopping once the name resolves — so a nested-block `var Promise` and an
+ * outer-function `var Promise` seen from an inner callback both count.
  */
 function identifierHasLocalBinding(identifier) {
 	const name = identifier.text;
-	let functionScope = null;
 	let scriptScope = null;
 	let current = identifier.parent;
 	while (current !== undefined && current !== null) {
@@ -459,7 +459,8 @@ function identifierHasLocalBinding(identifier) {
 			for (const parameter of current.parameters) {
 				if (bindingNameDeclares(parameter.name, name)) return true;
 			}
-			if (functionScope === null) functionScope = current;
+			const hoistedRoot = current.body !== undefined ? current.body : current;
+			if (hasHoistedNameBinding(hoistedRoot, name)) return true;
 		}
 
 		if (ts.isSourceFile(current)) scriptScope = current;
@@ -484,7 +485,7 @@ function identifierHasLocalBinding(identifier) {
 		if (ts.isBlock(current) || ts.isSourceFile(current) || ts.isModuleBlock(current)) {
 			for (const statement of current.statements) {
 				if (ts.isVariableStatement(statement)) {
-					// `var` is handled by the hoisted deep-scan below.
+					// `var` is handled by the per-function hoisted deep-scan.
 					if (!isVarDeclarationList(statement.declarationList)) {
 						for (const declaration of statement.declarationList.declarations) {
 							if (bindingNameDeclares(declaration.name, name)) return true;
@@ -526,13 +527,7 @@ function identifierHasLocalBinding(identifier) {
 		current = current.parent;
 	}
 
-	const hoistedRoot =
-		functionScope !== null
-			? functionScope.body !== undefined
-				? functionScope.body
-				: functionScope
-			: scriptScope;
-	return hoistedRoot !== null && hasHoistedNameBinding(hoistedRoot, name);
+	return scriptScope !== null && hasHoistedNameBinding(scriptScope, name);
 }
 
 /**
