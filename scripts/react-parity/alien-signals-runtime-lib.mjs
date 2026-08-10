@@ -379,15 +379,40 @@ function isUnconditionalTerminator(statement) {
 }
 
 /**
+ * Argument indexes whose function-valued callbacks are always executed for a
+ * modeled callee. Unlisted callees (e.g. a no-op `sink(fn)`) never enter
+ * callback bodies — only IIFEs and these forms authenticate nested writes.
+ *
+ * - `.then(onFulfilled, onRejected?)` — fulfillment only (rejection is not
+ *   always-executed).
+ * - `act(callback)` — React Testing Library / ReactDOM act runs the callback
+ *   synchronously (or awaits an async callback); pristine hook-surface writes
+ *   live inside these.
+ */
+function alwaysExecutedCallbackArgIndexes(call) {
+	if (
+		ts.isPropertyAccessExpression(call.expression) &&
+		ts.isIdentifier(call.expression.name) &&
+		call.expression.name.text === 'then'
+	) {
+		return [0];
+	}
+	if (ts.isIdentifier(call.expression) && call.expression.text === 'act') {
+		return [0];
+	}
+	return null;
+}
+
+/**
  * Visit nodes on the always-executed entry path of `root`.
  *
  * Skips dead `if (false)` / `false &&` arms, statements after `return`/`throw`,
  * loop / switch / catch bodies (not proven to run), for-loop incrementors
- * (post-body only), and nested function bodies that are not call arguments (or
- * IIFEs). Callbacks passed to calls on the executed path (e.g. `Promise.then(fn)`)
- * are entered. A nested function's `return`/`throw` only stops that function
- * body. Unknown statement shapes authenticate nothing rather than recursively
- * crediting every child.
+ * (post-body only), and nested function bodies that are not IIFEs or explicitly
+ * modeled callees (`act(fn)`, `Promise.then(fn)`). Arbitrary `sink(fn)` /
+ * `map(fn)` arguments are not treated as always executed. A nested function's
+ * `return`/`throw` only stops that function body. Unknown statement shapes
+ * authenticate nothing rather than recursively crediting every child.
  */
 function forEachAlwaysExecutedNode(root, visitNode) {
 	function visitFunctionBody(fn) {
@@ -447,8 +472,11 @@ function forEachAlwaysExecutedNode(root, visitNode) {
 			} else {
 				visitExpression(call.expression, 'value');
 			}
-			for (const argument of call.arguments) {
-				visitExpression(argument, 'call-arg');
+			const callbackIndexes = alwaysExecutedCallbackArgIndexes(call);
+			for (let index = 0; index < call.arguments.length; index += 1) {
+				const enterCallback =
+					callbackIndexes !== null && callbackIndexes.indexOf(index) !== -1;
+				visitExpression(call.arguments[index], enterCallback ? 'call-arg' : 'value');
 			}
 			return;
 		}
