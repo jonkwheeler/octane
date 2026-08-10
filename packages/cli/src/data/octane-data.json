@@ -351,6 +351,19 @@
       "verified": "2026-07-20"
     },
     {
+      "name": "@octanejs/pdf",
+      "version": "0.0.1",
+      "category": "Forms and content",
+      "upstream": { "package": "react-pdf", "version": "10.4.1" },
+      "surface": "Complete against the documented react-pdf 10.4.1 root contract: Document, Page, Thumbnail, Outline, all three context hooks, PasswordResponses, pdfjs, all ten root types, both documented layer styles, and the unchanged PDF.js worker import.",
+      "divergences": [
+        "React nodes, refs, DOM events, and CSS property types are represented by Octane nodes, refs-as-props, native DOM events, and Octane class/style values while preserving observable behavior.",
+        "The permissive upstream ./* export exposes React implementation and source artifacts; these are pinned framework-private evidence rather than supported Octane entry points. Root imports and the two documented CSS paths are exact public support."
+      ],
+      "ssr": "Document renders deterministic loading, no-data, and error shells without browser globals or workers. The browser build adopts the server shell before starting PDF.js and uses the modern worker-backed build; Node resolves the legacy PDF.js build.",
+      "verified": "2026-08-04"
+    },
+    {
       "name": "@octanejs/phosphor-icons",
       "version": "0.0.13",
       "category": "UI and interaction",
@@ -422,19 +435,6 @@
       ],
       "ssr": "Supported and tested: Map server-renders its container with the merged style and omits every child, because mapbox-gl is only imported inside an effect. Nothing in the tree reads a browser global on the server. hydrateRoot adopts that container rather than replacing it, and the map is created inside the server's own node once the library resolves.",
       "verified": "2026-08-06"
-    },
-    {
-      "name": "@octanejs/react-pdf",
-      "version": "0.0.1",
-      "category": "Forms and content",
-      "upstream": { "package": "react-pdf", "version": "10.4.1" },
-      "surface": "Complete against the documented react-pdf 10.4.1 root contract: Document, Page, Thumbnail, Outline, all three context hooks, PasswordResponses, pdfjs, all ten root types, both documented layer styles, and the unchanged PDF.js worker import.",
-      "divergences": [
-        "React nodes, refs, DOM events, and CSS property types are represented by Octane nodes, refs-as-props, native DOM events, and Octane class/style values while preserving observable behavior.",
-        "The permissive upstream ./* export exposes React implementation and source artifacts; these are pinned framework-private evidence rather than supported Octane entry points. Root imports and the two documented CSS paths are exact public support."
-      ],
-      "ssr": "Document renders deterministic loading, no-data, and error shells without browser globals or workers. The browser build adopts the server shell before starting PDF.js and uses the modern worker-backed build; Node resolves the legacy PDF.js build.",
-      "verified": "2026-08-04"
     },
     {
       "name": "@octanejs/recharts",
@@ -1008,7 +1008,7 @@
     "react-i18next": "@octanejs/i18next",
     "react-map-gl": "@octanejs/react-map-gl",
     "react-map-gl/mapbox": "@octanejs/react-map-gl",
-    "react-pdf": "@octanejs/react-pdf",
+    "react-pdf": "@octanejs/pdf",
     "react-redux": "@octanejs/redux",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",

@@ -260,12 +260,12 @@ export default defineConfig({
 		projects: [
 			{
 				test: {
-					name: 'react-pdf-feasibility',
-					include: ['packages/react-pdf/tests/feasibility/**/*.test.ts'],
+					name: 'pdf-feasibility',
+					include: ['packages/pdf/tests/feasibility/**/*.test.ts'],
 					exclude: [
 						...configDefaults.exclude,
-						'packages/react-pdf/tests/feasibility/*.server.test.ts',
-						'packages/react-pdf/tests/feasibility/*.hydration.test.ts',
+						'packages/pdf/tests/feasibility/*.server.test.ts',
+						'packages/pdf/tests/feasibility/*.hydration.test.ts',
 					],
 					environment: 'node',
 					globals: false,
@@ -275,8 +275,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-pdf-feasibility-ssr',
-					include: ['packages/react-pdf/tests/feasibility/*.server.test.ts'],
+					name: 'pdf-feasibility-ssr',
+					include: ['packages/pdf/tests/feasibility/*.server.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -296,8 +296,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-pdf-feasibility-hydration',
-					include: ['packages/react-pdf/tests/feasibility/*.hydration.test.ts'],
+					name: 'pdf-feasibility-hydration',
+					include: ['packages/pdf/tests/feasibility/*.hydration.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 					testTimeout: 30_000,
@@ -307,8 +307,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-pdf-browser',
-					include: ['packages/react-pdf/tests/browser/**/*.test.ts'],
+					name: 'pdf-browser',
+					include: ['packages/pdf/tests/browser/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -318,13 +318,13 @@ export default defineConfig({
 			{
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-pdf/tests/runtime/private-evidence.test.ts'],
+					include: ['packages/pdf/tests/runtime/private-evidence.test.ts'],
 				},
 				test: {
-					name: 'react-pdf',
+					name: 'pdf',
 					include: [
-						'packages/react-pdf/tests/runtime/**/*.test.ts',
-						'packages/react-pdf/tests/contracts/**/*.test.ts',
+						'packages/pdf/tests/runtime/**/*.test.ts',
+						'packages/pdf/tests/contracts/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -334,8 +334,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-pdf-pristine',
-					include: ['packages/react-pdf/tests/upstream-original.test.ts'],
+					name: 'pdf-pristine',
+					include: ['packages/pdf/tests/upstream-original.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -345,8 +345,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-pdf-packed',
-					include: ['packages/react-pdf/tests/packed/**/*.test.ts'],
+					name: 'pdf-packed',
+					include: ['packages/pdf/tests/packed/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -358,8 +358,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-pdf-parity',
-					include: ['packages/react-pdf/tests/parity/**/*.test.ts'],
+					name: 'pdf-parity',
+					include: ['packages/pdf/tests/parity/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 					fileParallelism: false,
@@ -368,8 +368,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-pdf-ssr',
-					include: ['packages/react-pdf/tests/ssr/**/*.test.ts'],
+					name: 'pdf-ssr',
+					include: ['packages/pdf/tests/ssr/**/*.test.ts'],
 					environment: 'node',
 					globals: false,
 				},
@@ -385,8 +385,8 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/octane/src/server/index.ts'),
 						},
 						{
-							find: /^@octanejs\/react-pdf$/,
-							replacement: resolve(import.meta.dirname, 'packages/react-pdf/src/index.server.ts'),
+							find: /^@octanejs\/pdf$/,
+							replacement: resolve(import.meta.dirname, 'packages/pdf/src/index.server.ts'),
 						},
 					],
 				},

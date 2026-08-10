@@ -14,7 +14,7 @@ import { GSAPDemo } from './demos/GSAP.tsrx';
 import { KeyedList } from './demos/KeyedList.tsrx';
 import { ErrorBoundaryDemo } from './demos/ErrorBoundary.tsrx';
 import { LiveStoreDemo } from './demos/LiveStore.tsrx';
-import { ReactPdfDemo } from './demos/ReactPdf.tsrx';
+import { PdfDemo } from './demos/Pdf.tsrx';
 import { MantineHooksDemo } from './demos/MantineHooks.tsrx';
 import { MobxDemo } from './demos/Mobx.tsrx';
 import { PhosphorIconsDemo } from './demos/PhosphorIcons.tsrx';
@@ -36,7 +36,7 @@ import gsapSource from './demos/GSAP.tsrx?raw';
 import keyedListSource from './demos/KeyedList.tsrx?raw';
 import errorBoundarySource from './demos/ErrorBoundary.tsrx?raw';
 import liveStoreSource from './demos/LiveStore.tsrx?raw';
-import reactPdfSource from './demos/ReactPdf.tsrx?raw';
+import pdfSource from './demos/Pdf.tsrx?raw';
 import mantineHooksSource from './demos/MantineHooks.tsrx?raw';
 import mobxSource from './demos/Mobx.tsrx?raw';
 import phosphorIconsSource from './demos/PhosphorIcons.tsrx?raw';
@@ -194,10 +194,10 @@ export const GROUPS: readonly DemoGroup[] = [
 				source: errorBoundarySource,
 			},
 			{
-				id: 'react-pdf',
+				id: 'pdf',
 				title: 'React PDF',
-				Component: ReactPdfDemo,
-				source: reactPdfSource,
+				Component: PdfDemo,
+				source: pdfSource,
 			},
 		],
 	},

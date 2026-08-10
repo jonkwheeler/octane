@@ -932,6 +932,19 @@ catalogs:
     typescript:
       specifier: 5.9.3
       version: 5.9.3
+  react-pdf-react-oracle:
+    '@types/react':
+      specifier: 19.2.7
+      version: 19.2.7
+    '@types/react-dom':
+      specifier: 19.2.3
+      version: 19.2.3
+    react:
+      specifier: 19.2.3
+      version: 19.2.3
+    react-dom:
+      specifier: 19.2.3
+      version: 19.2.3
 
 overrides:
   esrap: ^2.3.0
@@ -5085,7 +5098,7 @@ importers:
         version: link:../octane
       vitest:
         specifier: catalog:default
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
 
   packages/motion:
     dependencies:
@@ -5216,6 +5229,70 @@ importers:
       vitest:
         specifier: catalog:default
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+
+  packages/pdf:
+    dependencies:
+      make-event-props:
+        specifier: 2.0.0
+        version: 2.0.0
+      pdfjs-dist:
+        specifier: 5.4.296
+        version: 5.4.296
+    devDependencies:
+      '@types/react':
+        specifier: catalog:react-pdf-react-oracle
+        version: 19.2.7
+      '@types/react-dom':
+        specifier: catalog:react-pdf-react-oracle
+        version: 19.2.3(@types/react@19.2.7)
+      '@types/warning':
+        specifier: ^3.0.4
+        version: 3.0.4
+      '@vitest/browser-playwright':
+        specifier: 4.1.10
+        version: 4.1.10(bufferutil@4.1.0)(playwright@1.61.1)(utf-8-validate@5.0.10)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))(vitest@4.1.10)
+      clsx:
+        specifier: 'catalog:'
+        version: 2.1.1
+      dequal:
+        specifier: ^2.0.3
+        version: 2.0.3
+      make-cancellable-promise:
+        specifier: ^2.0.0
+        version: 2.0.0
+      merge-refs:
+        specifier: ^2.0.0
+        version: 2.0.0(@types/react@19.2.7)
+      octane:
+        specifier: workspace:*
+        version: link:../octane
+      playwright:
+        specifier: catalog:default
+        version: 1.61.1
+      react:
+        specifier: catalog:react-pdf-react-oracle
+        version: 19.2.3
+      react-dom:
+        specifier: catalog:react-pdf-react-oracle
+        version: 19.2.3(react@19.2.3)
+      react-pdf:
+        specifier: 10.4.1
+        version: 10.4.1(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      tiny-invariant:
+        specifier: 'catalog:'
+        version: 1.3.3
+      vite:
+        specifier: catalog:default
+        version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
+      vitest:
+        specifier: catalog:default
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
+      vitest-browser-react:
+        specifier: 2.0.0
+        version: 2.0.0(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vitest@4.1.10)
+      warning:
+        specifier: ^4.0.3
+        version: 4.0.3
 
   packages/phosphor-icons:
     devDependencies:
@@ -5377,70 +5454,6 @@ importers:
       vitest:
         specifier: catalog:default
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
-
-  packages/react-pdf:
-    dependencies:
-      make-event-props:
-        specifier: 2.0.0
-        version: 2.0.0
-      pdfjs-dist:
-        specifier: 5.4.296
-        version: 5.4.296
-    devDependencies:
-      '@types/react':
-        specifier: catalog:default
-        version: 19.2.17
-      '@types/react-dom':
-        specifier: catalog:default
-        version: 19.2.3(@types/react@19.2.17)
-      '@types/warning':
-        specifier: ^3.0.4
-        version: 3.0.4
-      '@vitest/browser-playwright':
-        specifier: 4.1.10
-        version: 4.1.10(bufferutil@4.1.0)(playwright@1.61.1)(utf-8-validate@5.0.10)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))(vitest@4.1.10)
-      clsx:
-        specifier: 'catalog:'
-        version: 2.1.1
-      dequal:
-        specifier: ^2.0.3
-        version: 2.0.3
-      make-cancellable-promise:
-        specifier: ^2.0.0
-        version: 2.0.0
-      merge-refs:
-        specifier: ^2.0.0
-        version: 2.0.0(@types/react@19.2.17)
-      octane:
-        specifier: workspace:*
-        version: link:../octane
-      playwright:
-        specifier: catalog:default
-        version: 1.61.1
-      react:
-        specifier: catalog:default
-        version: 19.2.7
-      react-dom:
-        specifier: catalog:default
-        version: 19.2.7(react@19.2.7)
-      react-pdf:
-        specifier: 10.4.1
-        version: 10.4.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      tiny-invariant:
-        specifier: 'catalog:'
-        version: 1.3.3
-      vite:
-        specifier: catalog:default
-        version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
-      vitest:
-        specifier: catalog:default
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
-      vitest-browser-react:
-        specifier: 2.0.0
-        version: 2.0.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.10)
-      warning:
-        specifier: ^4.0.3
-        version: 4.0.3
 
   packages/recharts:
     dependencies:
@@ -7090,6 +7103,9 @@ importers:
       '@octanejs/mobx':
         specifier: workspace:*
         version: link:../../packages/mobx
+      '@octanejs/pdf':
+        specifier: workspace:*
+        version: link:../../packages/pdf
       '@octanejs/phosphor-icons':
         specifier: workspace:*
         version: link:../../packages/phosphor-icons
@@ -7102,9 +7118,6 @@ importers:
       '@octanejs/react-error-boundary':
         specifier: workspace:*
         version: link:../../packages/react-error-boundary
-      '@octanejs/react-pdf':
-        specifier: workspace:*
-        version: link:../../packages/react-pdf
       '@octanejs/rxjs':
         specifier: workspace:*
         version: link:../../packages/rxjs
@@ -43817,9 +43830,9 @@ snapshots:
 
   merge-descriptors@2.0.0: {}
 
-  merge-refs@2.0.0(@types/react@19.2.17):
+  merge-refs@2.0.0(@types/react@19.2.7):
     optionalDependencies:
-      '@types/react': 19.2.17
+      '@types/react': 19.2.7
 
   merge-stream@2.0.0: {}
 
@@ -46452,20 +46465,20 @@ snapshots:
       react-loadable: '@docusaurus/react-loadable@6.0.0(react@19.2.7)'
       webpack: 5.108.4(@swc/core@1.15.41(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.20))(csso@5.0.5)(esbuild@0.28.1)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.20)
 
-  react-pdf@10.4.1(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  react-pdf@10.4.1(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:
       clsx: 2.1.1
       dequal: 2.0.3
       make-cancellable-promise: 2.0.0
       make-event-props: 2.0.0
-      merge-refs: 2.0.0(@types/react@19.2.17)
+      merge-refs: 2.0.0(@types/react@19.2.7)
       pdfjs-dist: 5.4.296
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
       tiny-invariant: 1.3.3
       warning: 4.0.3
     optionalDependencies:
-      '@types/react': 19.2.17
+      '@types/react': 19.2.7
 
   react-redux@9.3.0(@types/react@19.2.17)(react@19.2.7)(redux@5.0.1):
     dependencies:
@@ -49155,14 +49168,14 @@ snapshots:
     optionalDependencies:
       vite: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)
 
-  vitest-browser-react@2.0.0(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.10):
+  vitest-browser-react@2.0.0(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vitest@4.1.10):
     dependencies:
-      react: 19.2.7
-      react-dom: 19.2.7(react@19.2.7)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
       vitest: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@30.0.1(@noble/hashes@2.2.0))(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0))
     optionalDependencies:
-      '@types/react': 19.2.17
-      '@types/react-dom': 19.2.3(@types/react@19.2.17)
+      '@types/react': 19.2.7
+      '@types/react-dom': 19.2.3(@types/react@19.2.7)
 
   vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.1)(@vitest/browser-playwright@4.1.10)(@vitest/coverage-istanbul@4.1.10)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))(jsdom@26.1.0(bufferutil@4.1.0)(supports-color@10.2.2)(utf-8-validate@5.0.10))(vite@7.3.1(@types/node@26.1.1)(jiti@2.7.0)(lightningcss@1.33.0)(terser@5.49.0)(tsx@4.23.1)(yaml@2.9.0)):
     dependencies:
