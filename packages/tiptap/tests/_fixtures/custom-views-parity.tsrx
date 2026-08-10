@@ -101,6 +101,13 @@ const ParityPanel = Node.create({
 
 function ParityBadgeView(props) @{
 	const theme = useContext(ParityTheme);
+	const onMarkLifecycle = props.extension.options.onMarkLifecycle;
+
+	useEffect(() => {
+		onMarkLifecycle('mark:mount');
+
+		return () => onMarkLifecycle('mark:cleanup');
+	}, [onMarkLifecycle]);
 
 	<span data-parity-mark-view="true">
 		<output data-parity-mark-theme="true">{theme}</output>
@@ -119,6 +126,12 @@ function ParityBadgeView(props) @{
 
 const ParityBadge = Mark.create({
 	name: 'parityBadge',
+
+	addOptions() {
+		return {
+			onMarkLifecycle: () => {},
+		};
+	},
 
 	addAttributes() {
 		return {
@@ -216,7 +229,9 @@ export function CustomViewsParity(props) @{
 		extensions: [
 			StarterKit,
 			ParityPanel.configure({ onLifecycle: props.onLifecycle }),
-			ParityBadge,
+			ParityBadge.configure({
+				onMarkLifecycle: props.onMarkLifecycle ?? (() => {}),
+			}),
 		],
 		content: initialContent,
 		immediatelyRender: true,

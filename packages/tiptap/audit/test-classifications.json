@@ -53,9 +53,8 @@
     },
     {
       "path": "packages/tiptap/tests/differential/mark-view-portal-cleanup.test.ts",
-      "disposition": "octane-only-divergence",
-      "divergenceId": "tiptap-mark-view-portal-cleanup",
-      "reason": "Authenticates destroy-driven mark-view portal teardown via lifecycle cleanup; the required differential case binds the divergence ledger."
+      "disposition": "react-octane-differential",
+      "oracle": "Compares destroy-driven mark-view portal teardown against @tiptap/react@3.28.0, which retains the React tree after ProseMirror detaches the host."
     },
     {
       "path": "packages/tiptap/tests/unit/menus.test.ts",

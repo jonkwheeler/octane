@@ -1,96 +1,58 @@
 /**
- * Adapted divergence: ReactMarkView tears down its portal when ProseMirror
- * destroys the mark view, closing a renderer leak present in @tiptap/react 3.28.0.
+ * Differential divergence evidence: Octane ReactMarkView.destroy tears down the
+ * portal (effect cleanup runs). Upstream @tiptap/react 3.28.0 leaves the React
+ * mark-view tree mounted after ProseMirror detaches the host, so cleanup does
+ * not run.
  */
-import type { Editor } from '@tiptap/core';
-import { flushSync } from 'octane';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { CustomViewsEditor } from '../_fixtures/custom-views.tsrx';
-import { flushEffects, mount, nextPaint } from '../_helpers';
+import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import { flushEffects } from '../_helpers';
 
-function settle(): void {
-	flushEffects();
-	flushSync(function () {});
-	flushEffects();
-}
+const customViewsFixture = resolve(__dirname, '../_fixtures/custom-views-parity.tsrx');
+const cache = resolve(__dirname, '.react-cache');
 
-async function settlePortals(): Promise<void> {
-	await Promise.resolve();
-	settle();
-	await Promise.resolve();
-	settle();
-}
-
-function findMarkedRange(editor: Editor): { from: number; to: number } {
-	let range: { from: number; to: number } | undefined;
-
-	editor.state.doc.descendants(function walk(node, position) {
-		if (
-			node.isText &&
-			node.marks.some(function hasBadge(mark) {
-				return mark.type.name === 'badgeMark';
-			})
-		) {
-			range = { from: position, to: position + node.nodeSize };
-		}
-	});
-
-	if (!range) {
-		throw new Error('Expected the fixture to contain badge-marked text.');
-	}
-
-	return range;
-}
-
-describe('@octanejs/tiptap ReactMarkView portal cleanup', function () {
-	// Authenticates destroy-driven portal teardown (lifecycle cleanup), not mere
-	// ProseMirror host detachment. Required divergence marker is on
-	// src/ReactMarkViewRenderer.ts.
+describe('differential: @octanejs/tiptap vs @tiptap/react', function () {
 	// @parity-case differential:tiptap-mark-view-portal-cleanup
-	it('tears down the mark-view portal when ProseMirror destroys the mark', async function () {
-		let editor: Editor | undefined;
-		const markLifecycle: string[] = [];
-		const markRefs: Array<HTMLElement | null> = [];
-		const fixtureProps = {
-			theme: 'day',
-			onEditor: function onEditor(currentEditor: Editor) {
-				editor = currentEditor;
+	it('runs mark-view portal teardown on Octane while React retains the tree', async function () {
+		const lifecycle: string[] = [];
+		const differential = await mountDifferential(
+			customViewsFixture,
+			'CustomViewsParity',
+			{
+				onLifecycle: function onLifecycle() {},
+				onMarkLifecycle: function onMarkLifecycle(phase: string) {
+					lifecycle.push(phase);
+				},
 			},
-			onRenderer: function onRenderer() {},
-			onDirectLifecycle: function onDirectLifecycle() {},
-			onNodeLifecycle: function onNodeLifecycle() {},
-			onNodeRef: function onNodeRef() {},
-			onMarkLifecycle: function onMarkLifecycle(phase: string) {
-				markLifecycle.push(phase);
-			},
-			onMarkRef: function onMarkRef(element: HTMLElement | null) {
-				markRefs.push(element);
-			},
-		};
-		const result = mount(CustomViewsEditor as any, fixtureProps);
-		await settlePortals();
+			cache,
+		);
 
-		if (!editor) {
-			throw new Error('Expected useEditor to create the custom-view editor.');
-		}
-
-		expect(result.find('[data-badge-mark-view]')).toBeTruthy();
-		expect(markLifecycle).toEqual(['mount']);
-
-		const markedRange = findMarkedRange(editor);
-		editor.chain().setTextSelection(markedRange).unsetMark('badgeMark').run();
-		await nextPaint();
-		await settlePortals();
-
-		expect(result.container.querySelector('[data-badge-mark-view]')).toBe(null);
-		expect(result.container.querySelector('[data-mark-view-content]')).toBe(null);
-		expect(editor.getText()).toContain('Marked text');
-		expect(markLifecycle).toEqual(['mount', 'cleanup']);
-		expect(markRefs.at(-1)).toBe(null);
-
-		result.unmount();
+		await differential.observe('mount mark portals with lifecycle probes', function () {});
 		flushEffects();
-		editor.destroy();
+		const mounts = lifecycle.filter(function isMount(phase) {
+			return phase === 'mark:mount';
+		});
+		expect(mounts.length).toBeGreaterThanOrEqual(2);
+
+		await differential.observe(
+			'remove the mark and compare destroy-driven teardown',
+			async function (octane, react) {
+				await octane.click('[data-parity-mark-remove]');
+				await react.click('[data-parity-mark-remove]');
+			},
+		);
+		flushEffects();
+
+		const cleanups = lifecycle.filter(function isCleanup(phase) {
+			return phase === 'mark:cleanup';
+		});
+		// Octane destroy runs effect cleanup; React retains the mounted tree.
+		expect(cleanups).toEqual(['mark:cleanup']);
+		expect(differential.octane.container.querySelector('[data-parity-mark-view]')).toBe(null);
+		expect(differential.react.container.querySelector('[data-parity-mark-view]')).toBe(null);
+
+		differential.unmount();
 	});
 });

@@ -208,22 +208,22 @@
 				{
 					"path": "packages/tiptap/tests/_fixtures/custom-views-parity.tsrx",
 					"role": "support",
-					"sha256": "335c358464ef8cdf396eee577010b790740b7defd48742479ea770effc93216c"
+					"sha256": "629e0b1245b631f9a06e412b426bf8546d069343857d407c5399b34f56f81041"
 				},
 				{
 					"path": "packages/tiptap/tests/_fixtures/custom-views-as-prop-parity.tsrx",
 					"role": "support",
-					"sha256": "a2642672fd79f9fa4caa9df2d51b2b56fd0898219f775227d286faf7a9210b93"
+					"sha256": "d364e2444a2d7e85abd7a7f8cbccc9f8b9a5f2e6cce9af95b4717b2853704c56"
 				},
 				{
 					"path": "packages/tiptap/tests/differential/mark-view-portal-cleanup.test.ts",
 					"role": "test",
-					"sha256": "3730a8068bc5d8255d9bbce3cc2d587508a9e1e2fdc8698645b66ace4c5d7f7b",
+					"sha256": "1d4863f701d99fb79986db828c51dd6f50180d6a45d55b95ca4b55ae6fd1acc4",
 					"cases": [
 						{
 							"id": "differential:tiptap-mark-view-portal-cleanup",
-							"testName": "tears down the mark-view portal when ProseMirror destroys the mark",
-							"fullName": "@octanejs/tiptap ReactMarkView portal cleanup tears down the mark-view portal when ProseMirror destroys the mark"
+							"testName": "runs mark-view portal teardown on Octane while React retains the tree",
+							"fullName": "differential: @octanejs/tiptap vs @tiptap/react runs mark-view portal teardown on Octane while React retains the tree"
 						}
 					]
 				}
