@@ -224,7 +224,7 @@
 				{
 					"path": "packages/tiptap/audit/pristine-types.json",
 					"role": "test",
-					"sha256": "866ebe7e1aa60cfbcc6471496ab9a9ac74fc52bee1d359869a4c81b9bdcb064f",
+					"sha256": "cf6a8a0b1143ee83e70870ce6eec8a568b68fa58762c125aba1517aec6d17007",
 					"cases": [
 						{
 							"id": "types:tiptap-pristine",
@@ -272,7 +272,7 @@
 				{
 					"path": "packages/tiptap/audit/adapted-types.json",
 					"role": "test",
-					"sha256": "3228bf76e503a6e65c9c8271487ae987ecf2238ffd7bd241298ff573b2adb520",
+					"sha256": "412acb14e0d94e668e12ef9d2ea78dabc0e6b248104e6e0f0e783e65b90261f9",
 					"cases": [
 						{
 							"id": "types:tiptap-adapted",
