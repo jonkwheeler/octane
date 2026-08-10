@@ -169,12 +169,16 @@ export function buildTypeInventory(root, config) {
 	const file = config.file;
 	const upstreamSource = readFileSync(resolve(upstreamRoot, file), 'utf8');
 	const adaptedSource = readFileSync(resolve(adaptedRoot, file), 'utf8');
-	const upstreamGroups = assertionGroups(upstreamSource, file);
+	// Apply the intentional-omission ledger before comparing assertion groups so
+	// pristine-only `_useStore` blocks (and any `@ts-expect-error` inside them)
+	// are not required to appear on the adapted side.
+	const comparableUpstreamSource = stripPristineOnlyTests(upstreamSource);
+	const upstreamGroups = assertionGroups(comparableUpstreamSource, file);
 	const adaptedGroups = assertionGroups(adaptedSource, file);
 	if (JSON.stringify(upstreamGroups) !== JSON.stringify(adaptedGroups)) {
 		throw new Error(`${file}: assertion groups differ between pristine and adapted type suites`);
 	}
-	const normalizedUpstream = structuralSource(stripPristineOnlyTests(upstreamSource), file);
+	const normalizedUpstream = structuralSource(comparableUpstreamSource, file);
 	const normalizedAdapted = structuralSource(adaptedSource, file);
 	if (normalizedUpstream !== normalizedAdapted) {
 		throw new Error(
