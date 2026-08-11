@@ -1,5 +1,5 @@
 ---
-name: react-library-port
+name: octane-react-library-port
 description: >-
   Port, assess, or extend one or more React libraries from npm or GitHub into
   @octanejs bindings. Use for a library name, link, list, new binding,

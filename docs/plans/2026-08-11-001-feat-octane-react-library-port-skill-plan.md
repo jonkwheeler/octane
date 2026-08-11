@@ -1,8 +1,8 @@
 ---
-title: "React Library Port Skill - Plan"
+title: "Octane React Library Port Skill - Plan"
 type: feat
 date: 2026-08-11
-topic: react-library-port-skill
+topic: octane-react-library-port-skill
 artifact_contract: ce-unified-plan/v1
 artifact_readiness: implementation-ready
 product_contract_source: ce-plan-bootstrap
@@ -10,11 +10,11 @@ execution: code
 deepened: 2026-08-11
 ---
 
-# React Library Port Skill - Plan
+# Octane React Library Port Skill - Plan
 
 ## Goal Capsule
 
-- **Objective:** Turn the existing `react-library-port` repository skill into a deterministic, dependency-aware workflow that can accept one or more React library names or links and produce correctly licensed, evidence-backed Octane bindings.
+- **Objective:** Turn the existing `octane-react-library-port` repository skill into a deterministic, dependency-aware workflow that can accept one or more React library names or links and produce correctly licensed, evidence-backed Octane bindings.
 - **Product authority:** The skill orchestrates; repository scripts, package manifests, source checkouts, binding status, Octane's public API, and the upstream artifacts at an immutable revision remain the sources of truth.
 - **Success signal:** Given the same repository state and resolved upstream revisions, a fresh agent reaches the same license verdict, prerequisite graph, execution order, blockers, and validation report without inventing policy or duplicating an existing binding.
 - **Open blockers:** None. Support for non-MIT source adaptation is deliberately outside this version.
@@ -31,7 +31,7 @@ The workflow must fail closed on licensing and provenance while allowing unrelat
 
 ### Problem Frame
 
-The current `.rulesync/skills/react-library-port/SKILL.md` is a useful 79-line checklist, but the difficult decisions still depend on an agent reconstructing repository state and upstream facts by hand. That is fragile for ambiguous URLs, monorepo subpackages, mixed license metadata, shared prerequisites, existing-but-incomplete bindings, and multi-library batches.
+The current `.rulesync/skills/octane-react-library-port/SKILL.md` is a useful 79-line checklist, but the difficult decisions still depend on an agent reconstructing repository state and upstream facts by hand. That is fragile for ambiguous URLs, monorepo subpackages, mixed license metadata, shared prerequisites, existing-but-incomplete bindings, and multi-library batches.
 
 Octane already has most of the raw authority needed to make those decisions reproducible: the MCP bridge's binding and React-API inventory, binding `status.json` files, the generated package inventory, the React test scaffolder, the divergence contract, and package validation scripts. The missing layer is a fail-closed preflight and a skill that consumes its results instead of restating mutable tables in prose.
 
@@ -78,7 +78,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 - R18. Upstream test registrations are inventoried with `scripts/scaffold-react-port.mjs`; no case is silently discarded. Evidence combines upstream-derived tests with differential, conformance, identity/effect/focus, type, SSR/hydration, browser, and package-pack checks as applicable to the binding's behavior.
 - R19. New or extended bindings update the website binding catalog, generated binding status, package inventory, parity gaps, CLI data, and a patch changeset when user-facing package behavior changes.
 - R20. The skill loads path-specific repository workflows when triggered: `authoring-tsrx` before new `.tsrx`, `octane-core-extend` and `performance-audit` before core/runtime/compiler work, and `create-a-pr` before changeset/branch/commit/PR actions.
-- R21. The canonical skill remains under `.rulesync/skills/react-library-port/`, uses progressive-disclosure references, stays below the context budget, and is generated to Claude Code, Copilot, Cursor, Gemini CLI, and Codex/Agents consumers through RuleSync.
+- R21. The canonical skill lives under `.rulesync/skills/octane-react-library-port/`, uses progressive-disclosure references, stays below the context budget, and is generated to Claude Code, Copilot, Cursor, Gemini CLI, and Codex/Agents consumers through RuleSync.
 - R22. The final report is both human-readable and machine-readable and lists, per requested target, the resolved revision, license evidence, reused capabilities, prerequisites, blockers, changed packages, verification commands/results, attribution files, and whether it is ready for an explicitly authorized commit/PR.
 - R23. Remote intake is constrained to recognized npm registry and GitHub URL shapes, bounds response/archive/tree sizes and redirect behavior, confines extraction to the batch work directory, rejects traversal/symlink escapes, treats fetched text as untrusted data, and never persists credentials or tokens in manifests or reports.
 - R24. Pre-existing worktree changes and partial binding packages are treated as shared user state: the workflow inventories and preserves them, adopts them only when provenance is explicit, and blocks colliding writes without preventing independent graph branches.
@@ -107,7 +107,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 **Active**
 
 - A deterministic preflight CLI/library for identity, license provenance, capability inventory, dependency graph construction, resumable state, and reports.
-- A rewritten, progressive-disclosure `react-library-port` skill that invokes the preflight and existing repository gates.
+- A rewritten, progressive-disclosure `octane-react-library-port` skill that invokes the preflight and existing repository gates.
 - RuleSync Codex/Agents distribution and tests that prove every generated skill includes its references.
 - Fixture-driven and fresh-agent-forward validation of the workflow's high-risk decisions.
 
@@ -128,7 +128,9 @@ Octane already has most of the raw authority needed to make those decisions repr
 ### Key Technical Decisions
 
 - **Keep the skill thin and put policy in tested scripts.** (session-settled: user-approved — chosen over expanding the existing checklist into a large prose-only skill: license, graph, and resume outcomes must be deterministic and regression-testable.) The skill owns sequencing and judgment checkpoints; `scripts/react-port/` owns normalization, evidence, state, and report generation.
-- **Extend the current canonical skill in place.** (session-settled: user-approved — chosen over introducing `octane-binding-port` or another overlapping name: current AGENTS routing and MCP `octane_skill` consumers already point to `react-library-port`.)
+- **Rename and extend the canonical skill as `octane-react-library-port`.**
+  (session-settled: user-approved — AGENTS routing, MCP `octane_skill`
+  consumers, and generated host copies migrate together.)
 - **Use one union graph with branch-local failure.** (session-settled: user-approved — chosen over one isolated workflow per target or global batch failure: it exposes shared prerequisites without preventing unrelated progress.) The graph uses stable node identities and strongly connected components.
 - **Persist resumable work outside committed product artifacts.** A gitignored `.react-port-work/<batch-id>/manifest.json` stores machine state; durable provenance moves into each completed package's `UPSTREAM.md`, license/notice files, tests, manifest, and `status.json`.
 - **Reuse repository authorities rather than duplicating them.** The preflight imports or adapts exported bridge analysis from `packages/octane-mcp-server/src/bridge.js`, calls canonical workspace discovery, and reads generated binding status/public exports. If reuse requires a small bridge extraction, preserve existing MCP behavior and its parity tests.
@@ -179,7 +181,7 @@ stateDiagram-v2
 ### Output Structure
 
 ```text
-.rulesync/skills/react-library-port/
+.rulesync/skills/octane-react-library-port/
 ├── SKILL.md
 └── references/
     ├── intake-and-license.md
@@ -193,11 +195,11 @@ scripts/react-port/
     ├── licenses/
     ├── packages/
     └── repositories/
-.agents/skills/react-library-port/        # generated by RuleSync
-.claude/skills/react-library-port/        # generated by RuleSync
-.cursor/skills/react-library-port/        # generated by RuleSync
-.gemini/skills/react-library-port/        # generated by RuleSync
-.github/skills/react-library-port/        # generated by RuleSync
+.agents/skills/octane-react-library-port/        # generated by RuleSync
+.claude/skills/octane-react-library-port/        # generated by RuleSync
+.cursor/skills/octane-react-library-port/        # generated by RuleSync
+.gemini/skills/octane-react-library-port/        # generated by RuleSync
+.github/skills/octane-react-library-port/        # generated by RuleSync
 ```
 
 Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.gitignore`, and generated consumer skill directories. A real port run will also touch its owning `packages/<binding>/`, `website/src/content/bindings.json`, generated docs/data, and `.changeset/`; those are outputs of the finished skill, not fixtures committed while building it.
@@ -265,7 +267,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 
 - **Goal:** Make the tested preflight the mandatory entry gate and give agents concise, context-specific implementation instructions.
 - **Requirements:** R17-R22, R24.
-- **Files:** `.rulesync/skills/react-library-port/SKILL.md`, `.rulesync/skills/react-library-port/references/intake-and-license.md`, `.rulesync/skills/react-library-port/references/dependencies-and-feasibility.md`, `.rulesync/skills/react-library-port/references/implementation-and-evidence.md`, `rulesync.jsonc`, `scripts/check-context-budget.mjs` if the existing routing assertion needs generalization, generated `.agents/skills/`, `.claude/skills/`, `.cursor/skills/`, `.gemini/skills/`, and `.github/skills/` outputs.
+- **Files:** `.rulesync/skills/octane-react-library-port/SKILL.md`, `.rulesync/skills/octane-react-library-port/references/intake-and-license.md`, `.rulesync/skills/octane-react-library-port/references/dependencies-and-feasibility.md`, `.rulesync/skills/octane-react-library-port/references/implementation-and-evidence.md`, `rulesync.jsonc`, `scripts/check-context-budget.mjs` if the existing routing assertion needs generalization, generated `.agents/skills/`, `.claude/skills/`, `.cursor/skills/`, `.gemini/skills/`, and `.github/skills/` outputs.
 - **Implementation:** Rewrite `SKILL.md` as the imperative orchestration path: inventory the worktree, normalize inputs, run preflight, stop writes for unlicensed or colliding nodes, review the graph, implement ready nodes in order, invoke path-triggered repository skills, collect evidence, update package provenance/status/catalog/generated data, and produce the final report. Put license interpretation, dependency classification, worktree adoption, and implementation/evidence detail in one-level references loaded only at their stage. Add `codexcli` to RuleSync targets and regenerate all consumers. Keep frontmatter triggers broad enough for a package name, link, list, “port”, “binding”, or “React library” request and the description within the 400-character budget.
 - **Tests:** Extend context-budget/routing assertions to verify the canonical skill is routed and its generated reference set is complete for every configured consumer. Add a check that generated files match `.rulesync` and contain no hand-edited drift.
 - **Validation:** `pnpm rules:generate`; `pnpm rules:check`; `pnpm context:budget:check`; inspect `rulesync generate --check` output for every target.
@@ -275,7 +277,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 
 - **Goal:** Ensure every binding produced by the skill carries enough upstream, behavioral, and packaging evidence to review independently.
 - **Requirements:** R7, R17-R20, R22.
-- **Files:** `.rulesync/skills/react-library-port/references/implementation-and-evidence.md`, `scripts/scaffold-react-port.mjs` and `scripts/scaffold-react-port.test.mjs` only for missing report hooks, `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`.
+- **Files:** `.rulesync/skills/octane-react-library-port/references/implementation-and-evidence.md`, `scripts/scaffold-react-port.mjs` and `scripts/scaffold-react-port.test.mjs` only for missing report hooks, `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`.
 - **Implementation:** Define a per-node evidence matrix derived from the binding category and upstream surface. Require an upstream test-registration crosswalk, focused identity/effect/focus assertions where behavior needs them, type checks with `tsrx-tsc` for `.tsrx`, SSR/hydration/browser gates where the public surface crosses those boundaries, pack checks, and durable `UPSTREAM.md` plus license/notice content. Have the report distinguish required, passed, failed, blocked, and inapplicable evidence with a reason; never let “not run” appear as success.
 - **Tests:** Use representative thin-core, DOM component, provider/hook, SSR-sensitive, and unsupported-internal fixtures. Prove every upstream registration remains visible, missing required evidence blocks `verified`, inapplicable gates require a rationale, and the final report links each verdict to an artifact or command result.
 - **Validation:** `pnpm react-parity:test`; `pnpm packages:pack:check`; targeted package test/typecheck commands generated by fixture category.
@@ -348,7 +350,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 - [ ] Exact MIT licensing is verified from both published and source-scoped evidence before implementation writes; ambiguous and non-MIT branches demonstrably stop.
 - [ ] The union graph reuses adequate Octane bindings/vanilla cores, identifies extensions and missing prerequisites, deduplicates shared work, and isolates blocked branches.
 - [ ] `.react-port-work/` state resumes safely and invalidates on changed upstream or repository evidence.
-- [ ] The existing `react-library-port` skill is rewritten with progressive-disclosure references and no duplicate mutable catalogs.
+- [ ] The `octane-react-library-port` skill is rewritten with progressive-disclosure references and no duplicate mutable catalogs.
 - [ ] RuleSync generates the full multi-file skill for Codex/Agents and all existing configured consumers, with context-budget and drift checks passing.
 - [ ] Completed fixture ports include upstream provenance, retained MIT notices, complete test crosswalks, package/status/catalog/generated artifacts, and truthful evidence reports.
 - [ ] AE1-AE12 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
@@ -361,7 +363,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 
 ### Repository authority
 
-- `.rulesync/skills/react-library-port/SKILL.md` — current canonical workflow and trigger.
+- `.rulesync/skills/octane-react-library-port/SKILL.md` — current canonical workflow and trigger.
 - `docs/react-library-compat-plan.md` and `docs/differences-from-react.md` — compatibility strategy and divergence contract.
 - `packages/octane-mcp-server/src/bridge.js` and `packages/octane-mcp-server/src/bridge.test.js` — binding/core/API inventory and parity checks.
 - `scripts/workspace-packages.mjs`, `scripts/generate-bindings-status.mjs`, and `scripts/check-context-budget.mjs` — package, binding, and skill-routing invariants.

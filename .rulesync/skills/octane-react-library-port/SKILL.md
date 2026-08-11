@@ -1,12 +1,9 @@
 ---
-name: react-library-port
-description: >-
-  Port, assess, or extend one or more React libraries from npm or GitHub into
-  @octanejs bindings. Use for a library name, link, list, new binding,
-  prerequisite audit, license check, or parity gap. Enforces immutable
-  provenance, exact-MIT policy, live Octane capability reuse, dependency
-  ordering, guarded implementation, and evidence-backed readiness.
+targets: ['*']
+name: octane-react-library-port
+description: Port, assess, or extend one or more React libraries from npm or GitHub into @octanejs bindings. Use for a library name, link, list, new binding, prerequisite audit, license check, or parity gap. Enforces immutable provenance, exact-MIT policy, live Octane capability reuse, dependency ordering, guarded implementation, and evidence-backed readiness.
 ---
+
 # Port React libraries into Octane
 
 Use the repository preflight as the authority for identity, exact-MIT policy,

@@ -5,7 +5,8 @@ import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const SKILL_PATH = 'skills/react-library-port';
+const SKILL_NAME = 'octane-react-library-port';
+const SKILL_PATH = `skills/${SKILL_NAME}`;
 const CANONICAL_ROOT = path.join(REPO_ROOT, '.rulesync', SKILL_PATH);
 const GENERATED_ROOTS = ['.agents', '.claude', '.cursor', '.gemini', '.github'].map((root) =>
 	path.join(REPO_ROOT, root, SKILL_PATH),
@@ -20,9 +21,10 @@ function body(markdown) {
 	return markdown.replace(/^---\n[\s\S]*?\n---\n?/, '').replace(/^\n/, '');
 }
 
-describe('react-library-port skill distribution', () => {
+describe('octane-react-library-port skill distribution', () => {
 	test('keeps the canonical entry point thin and makes preflight mandatory', () => {
 		const skill = readFileSync(path.join(CANONICAL_ROOT, 'SKILL.md'), 'utf8');
+		assert.match(skill, new RegExp(`^name: ${SKILL_NAME}$`, 'm'));
 		assert.match(skill, /pnpm react-port:preflight/);
 		assert.match(skill, /Do not (?:create|edit).*binding/i);
 		for (const reference of REFERENCES) {
