@@ -177,6 +177,42 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.nodes['pkg:target-a'].dependsOn, ['pkg:react-helper']);
 		assert.equal(graph.nodes['pkg:blocked-target'].state, 'blocked');
 		assert.equal(graph.nodes['pkg:independent'].state, 'ready');
+		assert.equal(graph.nodes['pkg:blocked-target'].disposition, 'hard-blocked');
+		assert.equal(graph.nodes['pkg:independent'].disposition, 'actionable');
+		assert.deepEqual(graph.actionableExecutionUnits, [
+			['pkg:independent'],
+			['pkg:react-helper'],
+			['pkg:target-a'],
+			['pkg:target-b'],
+		]);
+		assert.deepEqual(graph.requestedSummary.actionable, [
+			'pkg:independent',
+			'pkg:target-a',
+			'pkg:target-b',
+		]);
+		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:blocked-target']);
+	});
+
+	test('distinguishes recursive intake work from hard blockers', () => {
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('ready-target', '1.0.0'),
+				licensedTarget('pending-target', '1.0.0', { 'unknown-helper': '^1.0.0' }),
+				{ input: 'policy-blocked', status: 'blocked', blockers: ['license conflict'] },
+			],
+			inventory: fixtureInventory(),
+		});
+
+		assert.equal(graph.nodes['pkg:unknown-helper'].disposition, 'pending-intake');
+		assert.equal(graph.nodes['pkg:pending-target'].disposition, 'pending-intake');
+		assert.equal(graph.nodes['pkg:policy-blocked'].disposition, 'hard-blocked');
+		assert.deepEqual(graph.requestedSummary, {
+			actionable: ['pkg:ready-target'],
+			pendingIntake: ['pkg:pending-target'],
+			hardBlocked: ['pkg:policy-blocked'],
+			satisfied: [],
+		});
+		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:ready-target']]);
 	});
 
 	test('names new bindings by removing a leading react segment', () => {

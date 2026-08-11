@@ -213,14 +213,17 @@ async function main() {
 	};
 	report.graph = graph;
 	report.preflightStatus = report.status;
-	const requestedNodes = Object.values(graph.nodes).filter((node) => node.requested);
-	const blockedRequestedNodes = requestedNodes.filter((node) => node.state === 'blocked').length;
+	const { actionable, hardBlocked, pendingIntake, satisfied } = graph.requestedSummary;
+	const requestedCount =
+		actionable.length + hardBlocked.length + pendingIntake.length + satisfied.length;
 	report.status =
-		blockedRequestedNodes === requestedNodes.length
+		hardBlocked.length === requestedCount
 			? 'blocked'
-			: blockedRequestedNodes > 0
-				? 'partial'
-				: 'passed';
+			: pendingIntake.length === requestedCount
+				? 'pending-intake'
+				: hardBlocked.length > 0 || pendingIntake.length > 0
+					? 'partial'
+					: 'passed';
 
 	if (!parsedArguments.noState) {
 		const batchId = parsedArguments.batchId ?? `port-${graph.fingerprint.slice(0, 12)}`;

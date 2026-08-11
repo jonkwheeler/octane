@@ -164,6 +164,41 @@ function blockBindingName(node, reason) {
 		'Resolve the binding name or package-directory ownership collision explicitly, then rerun the union graph.';
 }
 
+const PENDING_INTAKE_ACTIONS = new Set([
+	'audit-dependency',
+	'preflight-prerequisite',
+	'extend-binding',
+]);
+
+function blockedDisposition(nodeId, nodes, visiting = new Set()) {
+	const node = nodes[nodeId];
+	if (!node || node.state !== 'blocked') return null;
+	if (PENDING_INTAKE_ACTIONS.has(node.action)) return 'pending-intake';
+	if (
+		[
+			'binding-name-conflict',
+			'feasibility-blocker',
+			'repair-preflight',
+			'resolve-version-conflict',
+		].includes(node.action)
+	) {
+		return 'hard-blocked';
+	}
+	if (visiting.has(nodeId)) return null;
+	const nextVisiting = new Set(visiting).add(nodeId);
+	const dependencyDispositions = node.dependsOn
+		.filter((dependencyId) => nodes[dependencyId]?.state === 'blocked')
+		.map((dependencyId) => blockedDisposition(dependencyId, nodes, nextVisiting))
+		.filter(Boolean);
+	if (
+		dependencyDispositions.length > 0 &&
+		dependencyDispositions.every((disposition) => disposition === 'pending-intake')
+	) {
+		return 'pending-intake';
+	}
+	return 'hard-blocked';
+}
+
 function requiredSubpathsForDependency(imports, dependencyName) {
 	return imports.flatMap((specifier) => {
 		if (specifier === dependencyName) return ['.'];
@@ -522,6 +557,15 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 	}
 
 	for (const node of Object.values(nodes)) {
+		node.disposition =
+			node.state === 'ready'
+				? 'actionable'
+				: node.state === 'verified'
+					? 'satisfied'
+					: blockedDisposition(node.id, nodes);
+	}
+
+	for (const node of Object.values(nodes)) {
 		const bindingCapability = node.binding ? (inventory.bindings[node.binding] ?? null) : null;
 		node.nodeFingerprint = fingerprint({
 			packageName: node.packageName,
@@ -549,12 +593,30 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		Object.entries(nodes).sort(([left], [right]) => left.localeCompare(right)),
 	);
 	const executionUnits = orderComponents(orderedNodes, stronglyConnectedComponents(orderedNodes));
+	const actionableExecutionUnits = executionUnits.filter((unit) =>
+		unit.every((nodeId) => orderedNodes[nodeId].disposition === 'actionable'),
+	);
+	const requestedSummary = {
+		actionable: [],
+		pendingIntake: [],
+		hardBlocked: [],
+		satisfied: [],
+	};
+	for (const node of Object.values(orderedNodes)) {
+		if (!node.requested) continue;
+		if (node.disposition === 'actionable') requestedSummary.actionable.push(node.id);
+		if (node.disposition === 'pending-intake') requestedSummary.pendingIntake.push(node.id);
+		if (node.disposition === 'hard-blocked') requestedSummary.hardBlocked.push(node.id);
+		if (node.disposition === 'satisfied') requestedSummary.satisfied.push(node.id);
+	}
 	return {
 		schemaVersion: 1,
 		inventoryFingerprint: inventory.fingerprint,
 		nodes: orderedNodes,
 		executionUnits,
+		actionableExecutionUnits,
 		executionOrder: executionUnits.flat(),
+		requestedSummary,
 		fingerprint: fingerprint({
 			inventoryFingerprint: inventory.fingerprint,
 			nodes: orderedNodes,

@@ -81,6 +81,18 @@ points, and partial descriptor APIs according to the live bridge notes and
 Each node names its constraints, `dependsOn`, action, state, blockers, repair,
 and evidence/plan fingerprints. A ready node may set
 `feasibility.requiresAdaptation` and carry a mandatory `feasibility.plan`.
+The graph also assigns a disposition:
+
+- `actionable`: implement now in an `actionableExecutionUnit`;
+- `pending-intake`: recursively classify or preflight prerequisites, then rerun;
+- `hard-blocked`: stop only this branch for proved policy/identity, collision,
+  version, or true feasibility evidence;
+- `satisfied`: reuse the already verified capability.
+
+A top-level `pending-intake` status means preflight itself completed without a
+hard failure but every requested branch still needs recursive dependency work.
+It is not a portability verdict and is not local implementation readiness.
+
 Actions mean:
 
 - `reuse-package`: consume a proven framework-neutral dependency directly;
@@ -99,6 +111,10 @@ work, not terminal outcomes. Inspect and classify them without asking the user
 to substitute or drop the requested target. Escalate to the user only if the
 completed evidence exposes a real policy block, incompatible version choice, or
 scope decision.
+
+Use `actionableExecutionUnits`, not whole-batch status, as the implementation
+queue. A large dependency graph, high rewrite count, or another target's hard
+block never prevents an independent actionable unit from starting.
 
 Shared prerequisites appear once. Incompatible lanes name every dependent path;
 never choose a version silently. Strongly connected nodes appear in one

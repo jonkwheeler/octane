@@ -20,6 +20,9 @@ and upstream type test with executable evidence or an explicit disposition.
   install, build, test, prepare, or repository scripts during intake.
 - Do not create or edit binding implementation files until that graph node is
   `ready`. A `blocked` node also blocks its dependents, not unrelated branches.
+- Never require the entire batch to be ready. Implement every reported
+  `actionableExecutionUnit` even when another requested branch is pending intake
+  or hard-blocked.
 - Require the repository's approved-license verdict for every copied, adapted,
   or newly ported prerequisite. The allowlist is exact `MIT` and exact
   `Unlicense`; ambiguous, mixed, conflicting, missing, or other license evidence
@@ -78,13 +81,18 @@ and upstream type test with executable evidence or an explicit disposition.
    deterministic `executionUnits`.
    An unresolved dependency audit is unfinished intake, not evidence that the
    requested library is infeasible.
+   Read `requestedSummary`: `pendingIntake` means continue the workflow;
+   `hardBlocked` means a proved policy, identity, collision, version, or true
+   feasibility stop. Never call a `pendingIntake` target unportable.
    Ask the user only when a real product choice remains, such as trimming a
    blocked target or selecting between incompatible version lanes.
 
-5. **Guard each implementation unit.** Follow `executionUnits` in order. Before
-   touching planned paths, compare them with the manifest's captured `baseline`
-   and current `git status`. Block a collision or explicitly adopt the partial
-   work with recorded provenance. Never overwrite or reformat unrelated changes.
+5. **Guard each implementation unit.** Start every
+   `actionableExecutionUnit`; whole-batch readiness is not a gate. Follow their
+   dependency order. Before touching planned paths, compare them with the
+   manifest's captured `baseline` and current `git status`. Block a collision or
+   explicitly adopt the partial work with recorded provenance. Never overwrite
+   or reformat unrelated changes.
 
 6. **Implement only ready nodes.** Execute every ready node's
    `feasibility.plan`; `bridgeable-with-rewrites`, class components,
@@ -96,6 +104,8 @@ and upstream type test with executable evidence or an explicit disposition.
    `performance-audit` before changing `packages/octane/src`. A runtime,
    compiler, scheduler, SSR, hydration, or tooling defect belongs to its owning
    package with a regression test, not a binding workaround.
+   Rewrite count, dependency-graph size, and implementation effort are never
+   feasibility blockers; the parity and evidence gates decide correctness.
 
 7. **Prove the full pinned port.** Inventory upstream tests with
    `scripts/scaffold-react-port.mjs`; keep every source export, runtime test, and
@@ -117,10 +127,12 @@ and upstream type test with executable evidence or an explicit disposition.
    patch changeset when user-facing package behavior changes. Rerun the targeted
    gates and repository generators from the implementation reference.
 
-9. **Report local readiness.** List each target's immutable version/commit,
-   approved SPDX identifier, evidence, retention requirements, reused
-   capabilities, graph prerequisites, blockers, changed packages, evidence
-   results, provenance files, worktree
+9. **Report local readiness per branch.** Never summarize a partially ready
+   batch as globally unactionable. Label every requested target `actionable`,
+   `pending-intake`, `hard-blocked`, or `satisfied`, then list its immutable
+   version/commit, approved SPDX identifier, evidence, retention requirements,
+   reused capabilities, graph prerequisites, blockers, changed packages,
+   evidence results, provenance files, worktree
    collisions/adoptions, and whether the node is `verified`. Name commit/PR work
    only as an optional separately authorized next action.
 

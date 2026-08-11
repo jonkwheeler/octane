@@ -71,6 +71,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 - R14. The workflow persists a gitignored, machine-readable batch manifest under a single dedicated work directory, with per-node input identity, evidence checksums, dependency edges, state, blockers, completed gates, and output paths.
 - R15. A rerun resumes completed nodes only when their inputs and evidence remain unchanged; changed revisions, manifests, license files, dependency classifications, or repository capability inventories invalidate the affected node and its dependents.
 - R16. Each graph node moves through explicit states: `resolved`, `licensed`, `classified`, `ready`, `implementing`, `verified`, or `blocked`. State transitions are monotonic within one evidence fingerprint and every block records a repair action.
+- R16a. Every requested node also has an explicit `actionable`, `pending-intake`, `hard-blocked`, or `satisfied` disposition. The planner emits branch-local `actionableExecutionUnits`; whole-batch readiness, rewrite volume, and dependency-graph size never gate an independent ready branch.
 
 **Port evidence and repository integration**
 
@@ -99,6 +100,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 - **AE12 — Shared worktree collision:** Given unrelated user edits plus a partially authored target package, the workflow preserves unrelated edits and blocks or explicitly adopts overlapping files; an independent ready target may continue.
 - **AE13 — Unlicense acceptance:** Given `react-use@17.6.1`, whose compact npm packument omits repository/license/`gitHead` fields but whose exact-version metadata and published manifest declare `Unlicense` and whose tarball/source LICENSE bytes match at the published `gitHead`, the node reaches `licensed` with SPDX `Unlicense` and retained-license provenance requirements.
 - **AE14 — Rewrite-heavy port:** Given a licensed library whose shipped source uses class components, `createElement`, and `Children` without private internals, a custom renderer, or truncated evidence, the graph keeps the node `ready`, records `requiresAdaptation` plus the scanner's rewrite plan, and requires the full public surface to be re-authored rather than blocking or trimming it.
+- **AE15 — Mixed batch progress:** Given one ready target, one target waiting on recursive dependency intake, and one hard-blocked target, the graph reports all three dispositions separately and emits the ready target in `actionableExecutionUnits`; the workflow begins that unit and continues the intake branch without declaring the union unactionable.
 
 ---
 
@@ -288,10 +290,10 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ### U5 — Forward scenarios and repository-wide gates
 
 - **Goal:** Demonstrate that a fresh agent can use the shipped skill correctly across the dangerous paths, then leave generated repository state clean.
-- **Requirements:** R1-R24 and AE1-AE14.
+- **Requirements:** R1-R24 and AE1-AE15.
 - **Files:** `scripts/react-port/__fixtures__/`, `scripts/react-port/preflight-lib.test.mjs`, canonical/generated skill files, `package.json`, generated `docs/bindings-status.md`, `docs/packages.md`, binding parity/CLI data only when the implementation changes their inputs.
 - **Implementation:** Run the skill from clean fixture scenarios using natural prompts for one package, a URL, and a mixed batch. Inspect the manifest, graph, blockers, generated package artifacts, evidence matrix, and no-write behavior rather than asking an agent to critique the prose. Normalize volatile values and compare semantic outputs. Regenerate repository-derived artifacts and correct only source inputs, never generated files.
-- **Tests:** AE1-AE14 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
+- **Tests:** AE1-AE15 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
 - **Validation:** `pnpm react-port:test` (new aggregate); `pnpm react-parity:test`; `pnpm rules:check`; `pnpm context:budget:check`; `pnpm bindings:status:check`; `pnpm packages:inventory:check`; `pnpm binding-parity:gaps:check`; `pnpm cli:data:check`; `pnpm changeset:check`; `pnpm typecheck`; `pnpm format:check`. Run the full root `pnpm test` when fixture and targeted checks are green.
 - **Dependencies:** U1-U4.
 
@@ -356,7 +358,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 - [ ] The `octane-react-library-port` skill is rewritten with progressive-disclosure references and no duplicate mutable catalogs.
 - [ ] RuleSync generates the full multi-file skill for Codex/Agents and all existing configured consumers, with context-budget and drift checks passing.
 - [ ] Completed fixture ports include upstream provenance, retained license/notice evidence, complete test crosswalks, package/status/catalog/generated artifacts, and truthful evidence reports.
-- [ ] AE1-AE14 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
+- [ ] AE1-AE15 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
 - [ ] Targeted checks, `pnpm react-parity:test`, RuleSync/context checks, binding/package/data checks, typecheck, format, and the full test suite pass.
 - [ ] The workflow stops at verified local readiness unless the user separately authorizes the repository's commit/PR workflow.
 

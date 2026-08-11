@@ -656,6 +656,26 @@ describe('preflight CLI', () => {
 		assert.equal(report.graph.nodes['pkg:fixture-widget'].state, 'ready');
 	});
 
+	test('reports unresolved dependency classification as pending intake, not a failed port', () => {
+		const result = spawnSync(
+			process.execPath,
+			[
+				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				'--no-state',
+				'--fixture-evidence',
+				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
+				'fixture-widget@1.0.0',
+			],
+			{ encoding: 'utf8' },
+		);
+
+		assert.equal(result.status, 0, result.stderr);
+		const report = JSON.parse(result.stdout);
+		assert.equal(report.status, 'pending-intake');
+		assert.equal(report.graph.nodes['pkg:fixture-widget'].disposition, 'pending-intake');
+		assert.deepEqual(report.graph.requestedSummary.pendingIntake, ['pkg:fixture-widget']);
+	});
+
 	test('persists and resumes a one-writer batch manifest', () => {
 		const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-cli-'));
 		const arguments_ = [

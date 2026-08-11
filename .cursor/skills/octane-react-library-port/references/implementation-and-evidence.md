@@ -27,6 +27,9 @@ and traversal as authored `.tsrx` components. A `needs-rework` verdict means the
 scan found a public API with no implementation or documented rewrite; route that
 primitive before implementation. If implementation discovers another such
 public behavior, stop that node and route the primitive to its owning package.
+Do not estimate portability from rewrite volume. Re-author the complete pinned
+surface, then use the pristine/adapted runtime and type lanes plus the upstream
+crosswalk to prove one-for-one observable functionality.
 
 ## Pin and mirror the upstream boundary
 
