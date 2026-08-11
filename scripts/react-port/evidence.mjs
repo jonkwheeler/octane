@@ -303,7 +303,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	setAutomatedGate(node.evidenceMatrix, 'closure-audit', closureReport, {
 		artifact: path.resolve(options.closure),
 		passedObserved: 'Actual runtime imports and adapted sources match the licensed graph.',
-		repair: 'Return new runtime/adapted edges to classification and exact-MIT preflight.',
+		repair: 'Return new runtime/adapted edges to classification and approved-license preflight.',
 	});
 	const readiness = evaluateVerificationReadiness({
 		matrix: node.evidenceMatrix,

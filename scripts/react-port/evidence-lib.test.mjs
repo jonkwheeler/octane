@@ -194,15 +194,15 @@ describe('package and closure completion', () => {
 		assert.match(escaped.issues.join('\n'), /export target.*escapes/i);
 	});
 
-	test('blocks unplanned runtime imports and adapted sources without exact-MIT evidence', () => {
+	test('blocks unplanned runtime imports and adapted sources without approved-license evidence', () => {
 		const graphNodes = {
 			'pkg:widget': {
 				packageName: 'widget',
 				dependsOn: ['pkg:widget-core'],
 				license: {
-					policy: 'exact-mit-v1',
-					published: { status: 'passed' },
-					source: { status: 'passed' },
+					policy: 'approved-license-v2',
+					published: { status: 'passed', spdx: 'MIT' },
+					source: { status: 'passed', spdx: 'MIT' },
 				},
 			},
 			'pkg:widget-core': { packageName: 'widget-core', dependsOn: [], action: 'reuse-package' },
@@ -217,7 +217,7 @@ describe('package and closure completion', () => {
 
 		assert.equal(result.status, 'blocked');
 		assert.match(result.issues.join('\n'), /surprise-runtime/);
-		assert.match(result.issues.join('\n'), /copied-helper.*exact-MIT/i);
+		assert.match(result.issues.join('\n'), /copied-helper.*approved-license/i);
 	});
 
 	test('cannot report verified while a required gate or completion report is missing', () => {

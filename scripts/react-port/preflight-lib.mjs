@@ -38,6 +38,8 @@ const SOURCE_SKIP_PARTS = new Set([
 const MAX_SOURCE_FILES = 400;
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
 
+export const APPROVED_LICENSE_IDENTIFIERS = Object.freeze(['MIT', 'Unlicense']);
+
 export { fingerprint, parseInput, sanitizeForReport, stableStringify };
 
 function normalizeLicenseText(content) {
@@ -60,6 +62,24 @@ export function isRecognizableMitText(content) {
 	].every((phrase) => text.includes(phrase));
 }
 
+export function isRecognizableUnlicenseText(content) {
+	if (typeof content !== 'string') return false;
+	const text = normalizeLicenseText(content);
+	return [
+		'this is free and unencumbered software released into the public domain',
+		'anyone is free to copy, modify, publish, use, compile, sell, or distribute this software',
+		'the author or authors of this software dedicate any and all copyright interest in the software to the public domain',
+		'the software is provided "as is", without warranty of any kind',
+		'in no event shall the authors be liable for any claim, damages or other liability',
+	].every((phrase) => text.includes(phrase));
+}
+
+export function classifyApprovedLicenseText(content) {
+	if (isRecognizableMitText(content)) return 'MIT';
+	if (isRecognizableUnlicenseText(content)) return 'Unlicense';
+	return 'unrecognized';
+}
+
 function sha256(content) {
 	return createHash('sha256').update(content).digest('hex');
 }
@@ -75,12 +95,12 @@ function blockLicense(reasons, evidence, notices) {
 	};
 }
 
-export function evaluateMitLicense({ manifestLicense, licenseFiles = [], noticeFiles = [] }) {
+export function evaluateApprovedLicense({ manifestLicense, licenseFiles = [], noticeFiles = [] }) {
 	const evidence = licenseFiles
 		.map((file) => ({
 			path: file.path,
 			scope: file.scope ?? 'unspecified',
-			classification: isRecognizableMitText(file.content) ? 'MIT' : 'unrecognized',
+			classification: classifyApprovedLicenseText(file.content),
 			sha256: sha256(file.content ?? ''),
 		}))
 		.sort((left, right) => left.path.localeCompare(right.path));
@@ -92,15 +112,19 @@ export function evaluateMitLicense({ manifestLicense, licenseFiles = [], noticeF
 		}))
 		.sort((left, right) => left.path.localeCompare(right.path));
 	const reasons = [];
+	let approvedSpdx = null;
 
 	if (typeof manifestLicense !== 'string' || !manifestLicense.trim()) {
 		reasons.push('The package manifest does not declare a license.');
-	} else if (manifestLicense === 'MIT') {
-		// Exact SPDX metadata is required; expressions and aliases fail closed.
+	} else if (APPROVED_LICENSE_IDENTIFIERS.includes(manifestLicense)) {
+		approvedSpdx = manifestLicense;
+		// Exact SPDX metadata is required; compound expressions and aliases fail closed.
 	} else {
 		const referencedFile = /^SEE LICENSE IN (.+)$/i.exec(manifestLicense)?.[1];
 		if (!referencedFile) {
-			reasons.push(`The package manifest license is not exact MIT: ${manifestLicense}`);
+			reasons.push(
+				`The package manifest license is not approved by Octane policy: ${manifestLicense}`,
+			);
 		} else {
 			const normalizedReference = path.posix.normalize(referencedFile).toLowerCase();
 			const match = licenseFiles.find((file) => {
@@ -110,10 +134,13 @@ export function evaluateMitLicense({ manifestLicense, licenseFiles = [], noticeF
 					(file.scope === 'package' && normalizedPath.endsWith(`/${normalizedReference}`))
 				);
 			});
-			if (!match || !isRecognizableMitText(match.content)) {
+			const classification = match ? classifyApprovedLicenseText(match.content) : 'unrecognized';
+			if (!match || classification === 'unrecognized') {
 				reasons.push(
-					`The referenced license file ${referencedFile} is missing or is not recognizable MIT text.`,
+					`The referenced license file ${referencedFile} is missing or is not recognizable approved-license text.`,
 				);
+			} else {
+				approvedSpdx = classification;
 			}
 		}
 	}
@@ -122,8 +149,12 @@ export function evaluateMitLicense({ manifestLicense, licenseFiles = [], noticeF
 		reasons.push('No license file was found in the applicable package scope.');
 	} else {
 		for (const item of evidence) {
-			if (item.classification !== 'MIT') {
-				reasons.push(`License evidence ${item.path} is not recognizable MIT text.`);
+			if (item.classification === 'unrecognized') {
+				reasons.push(`License evidence ${item.path} is not recognizable approved-license text.`);
+			} else if (approvedSpdx && item.classification !== approvedSpdx) {
+				reasons.push(
+					`License evidence ${item.path} is ${item.classification}, which conflicts with ${approvedSpdx}.`,
+				);
 			}
 		}
 	}
@@ -131,12 +162,14 @@ export function evaluateMitLicense({ manifestLicense, licenseFiles = [], noticeF
 	if (reasons.length > 0) return blockLicense(reasons, evidence, notices);
 	return {
 		status: 'passed',
-		spdx: 'MIT',
+		spdx: approvedSpdx,
 		reasons: [],
 		evidence,
 		notices,
 		obligations: [
-			'Retain the upstream copyright and permission notice in all copies or substantial portions of the software.',
+			approvedSpdx === 'MIT'
+				? 'Retain the upstream copyright and permission notice in all copies or substantial portions of the software.'
+				: 'Retain the upstream Unlicense text with copied or adapted source to preserve provenance and its warranty disclaimer.',
 			...(notices.length > 0
 				? ['Retain every applicable upstream NOTICE file and attribution in the completed binding.']
 				: []),
@@ -195,8 +228,8 @@ export function assessResolvedEvidence({ input, registry, source }) {
 		blockers.push('Published package artifact has no verified integrity identifier.');
 	}
 
-	const publishedLicense = evaluateMitLicense(registry);
-	const sourceLicense = evaluateMitLicense(source);
+	const publishedLicense = evaluateApprovedLicense(registry);
+	const sourceLicense = evaluateApprovedLicense(source);
 	for (const [label, verdict] of [
 		['Published artifact', publishedLicense],
 		['Immutable source', sourceLicense],
@@ -204,6 +237,15 @@ export function assessResolvedEvidence({ input, registry, source }) {
 		if (verdict.status !== 'passed') {
 			blockers.push(...verdict.reasons.map((reason) => `${label}: ${reason}`));
 		}
+	}
+	if (
+		publishedLicense.status === 'passed' &&
+		sourceLicense.status === 'passed' &&
+		publishedLicense.spdx !== sourceLicense.spdx
+	) {
+		blockers.push(
+			`Published artifact license ${publishedLicense.spdx} does not match immutable source license ${sourceLicense.spdx}.`,
+		);
 	}
 
 	const identity = {
@@ -232,7 +274,7 @@ export function assessResolvedEvidence({ input, registry, source }) {
 		status: blockers.length === 0 ? 'licensed' : 'blocked',
 		identity,
 		license: {
-			policy: 'exact-mit-v1',
+			policy: 'approved-license-v2',
 			published: publishedLicense,
 			source: sourceLicense,
 			obligations:
@@ -245,7 +287,7 @@ export function assessResolvedEvidence({ input, registry, source }) {
 		repair:
 			blockers.length === 0
 				? null
-				: 'Resolve every identity conflict and supply exact MIT evidence without overriding the policy gate.',
+				: 'Resolve every identity conflict and supply matching MIT or Unlicense evidence without overriding the policy gate.',
 		evidenceFingerprint: fingerprint(fingerprintInput),
 	});
 }
@@ -692,12 +734,27 @@ async function resolveRegistryArtifact(packageName, selector, options) {
 	if (!exactVersion || !packument.versions?.[exactVersion]) {
 		throw new Error(`Selector ${requestedSelector} did not resolve to one exact published version`);
 	}
-	const metadata = packument.versions[exactVersion];
-	if (metadata.name !== packageName || metadata.version !== exactVersion) {
+	const compactMetadata = packument.versions[exactVersion];
+	if (compactMetadata.name !== packageName || compactMetadata.version !== exactVersion) {
 		throw new Error('Registry package identity contradicts the requested package');
 	}
-	if (!metadata.dist?.tarball || !metadata.dist?.integrity) {
+	if (!compactMetadata.dist?.tarball || !compactMetadata.dist?.integrity) {
 		throw new Error('Registry metadata lacks tarball integrity evidence');
+	}
+	const metadata = await fetchJson(`${packumentUrl}/${encodeURIComponent(exactVersion)}`, {
+		fetchImpl: options.fetchImpl,
+		allowedHosts: new Set(['registry.npmjs.org']),
+		headers: { ...registryHeaders, accept: 'application/json' },
+		requestTimeoutMs: options.requestTimeoutMs,
+	});
+	if (metadata.name !== packageName || metadata.version !== exactVersion) {
+		throw new Error('Exact-version registry metadata contradicts the requested package');
+	}
+	if (
+		metadata.dist?.tarball !== compactMetadata.dist.tarball ||
+		metadata.dist?.integrity !== compactMetadata.dist.integrity
+	) {
+		throw new Error('Exact-version registry metadata contradicts packument artifact evidence');
 	}
 	const artifact = await fetchBounded(metadata.dist.tarball, {
 		fetchImpl: options.fetchImpl,

@@ -10,7 +10,7 @@ import { gzipSync } from 'node:zlib';
 import {
 	assessResolvedEvidence,
 	collectArchiveEvidence,
-	evaluateMitLicense,
+	evaluateApprovedLicense,
 	parseTarArchive,
 	parseInput,
 	resolveRemoteInput,
@@ -41,6 +41,27 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.`;
+const UNLICENSE_TEXT = `This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this
+software, either in source code form or as a compiled binary, for any purpose,
+commercial or non-commercial, and by any means.
+
+In jurisdictions that recognize copyright laws, the author or authors of this
+software dedicate any and all copyright interest in the software to the public
+domain. We make this dedication for the benefit of the public at large and to
+the detriment of our heirs and successors. We intend this dedication to be an
+overt act of relinquishment in perpetuity of all present and future rights to
+this software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>`;
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
 
 function gitBlobSha(bytes) {
@@ -88,9 +109,9 @@ describe('parseInput', () => {
 	});
 });
 
-describe('evaluateMitLicense', () => {
+describe('evaluateApprovedLicense', () => {
 	test('passes exact MIT metadata with matching source evidence', () => {
-		const result = evaluateMitLicense({
+		const result = evaluateApprovedLicense({
 			manifestLicense: 'MIT',
 			licenseFiles: [{ path: 'LICENSE', scope: 'package', content: MIT_TEXT }],
 			noticeFiles: [{ path: 'NOTICE', scope: 'package', content: 'Third-party attribution' }],
@@ -103,16 +124,34 @@ describe('evaluateMitLicense', () => {
 		assert.match(result.obligations[0], /copyright and permission notice/i);
 	});
 
-	test('accepts a referenced file only when that file is recognizable MIT text', () => {
+	test('passes exact Unlicense metadata with matching public-domain evidence', () => {
+		const result = evaluateApprovedLicense({
+			manifestLicense: 'Unlicense',
+			licenseFiles: [{ path: 'LICENSE', scope: 'package', content: UNLICENSE_TEXT }],
+		});
+
+		assert.equal(result.status, 'passed');
+		assert.equal(result.spdx, 'Unlicense');
+		assert.match(result.obligations[0], /Unlicense/i);
+	});
+
+	test('accepts a referenced file only when it contains an approved license', () => {
 		assert.equal(
-			evaluateMitLicense({
+			evaluateApprovedLicense({
 				manifestLicense: 'SEE LICENSE IN LICENSE',
 				licenseFiles: [{ path: 'LICENSE', scope: 'package', content: MIT_TEXT }],
 			}).status,
 			'passed',
 		);
 		assert.equal(
-			evaluateMitLicense({
+			evaluateApprovedLicense({
+				manifestLicense: 'SEE LICENSE IN LICENSE',
+				licenseFiles: [{ path: 'LICENSE', scope: 'package', content: UNLICENSE_TEXT }],
+			}).spdx,
+			'Unlicense',
+		);
+		assert.equal(
+			evaluateApprovedLicense({
 				manifestLicense: 'SEE LICENSE IN LICENSE',
 				licenseFiles: [{ path: 'LICENSE', scope: 'package', content: 'Custom terms' }],
 			}).status,
@@ -120,7 +159,7 @@ describe('evaluateMitLicense', () => {
 		);
 	});
 
-	test('fails closed for missing, mixed, non-MIT, or conflicting evidence', () => {
+	test('fails closed for missing, mixed, unapproved, or conflicting evidence', () => {
 		for (const input of [
 			{ manifestLicense: null, licenseFiles: [] },
 			{ manifestLicense: 'MIT', licenseFiles: [] },
@@ -137,7 +176,7 @@ describe('evaluateMitLicense', () => {
 				],
 			},
 		]) {
-			const result = evaluateMitLicense(input);
+			const result = evaluateApprovedLicense(input);
 			assert.equal(result.status, 'blocked', JSON.stringify(input));
 			assert.ok(result.reasons.length > 0);
 		}
@@ -184,11 +223,19 @@ describe('remote artifact safety', () => {
 				url: 'https://token-user:secret@example.com/path?token=abc&plain=yes',
 				headers: { authorization: 'Bearer secret', accept: 'application/json' },
 				nested: ['ghp_secret', { password: 'secret' }],
+				runtimeDependencies: {
+					'@types/js-cookie': '~3.0.2',
+					'js-cookie': '^3.0.5',
+				},
 			}),
 			{
 				url: 'https://example.com/path?plain=yes&token=%5BREDACTED%5D',
 				headers: { authorization: '[REDACTED]', accept: 'application/json' },
 				nested: ['[REDACTED]', { password: '[REDACTED]' }],
+				runtimeDependencies: {
+					'@types/js-cookie': '~3.0.2',
+					'js-cookie': '^3.0.5',
+				},
 			},
 		);
 	});
@@ -269,6 +316,60 @@ describe('resolved evidence', () => {
 		assert.equal(result.status, 'licensed');
 		assert.equal(result.identity.commit, 'a'.repeat(40));
 		assert.equal(result.evidenceFingerprint.length, 64);
+	});
+
+	test('licenses matching Unlicense evidence across the package and source revision', () => {
+		const result = assessResolvedEvidence({
+			input: 'react-use@17.6.1',
+			registry: {
+				name: 'react-use',
+				version: '17.6.1',
+				repository: { owner: 'streamich', repo: 'react-use', subdirectory: null },
+				gitHead: 'a'.repeat(40),
+				integrity: 'sha512-example',
+				manifestLicense: 'Unlicense',
+				licenseFiles: [{ path: 'package/LICENSE', scope: 'package', content: UNLICENSE_TEXT }],
+			},
+			source: {
+				name: 'react-use',
+				version: '17.6.1',
+				repository: { owner: 'streamich', repo: 'react-use', subdirectory: null },
+				commit: 'a'.repeat(40),
+				manifestLicense: 'Unlicense',
+				licenseFiles: [{ path: 'LICENSE', scope: 'root', content: UNLICENSE_TEXT }],
+			},
+		});
+
+		assert.equal(result.status, 'licensed');
+		assert.equal(result.license.policy, 'approved-license-v2');
+		assert.equal(result.license.published.spdx, 'Unlicense');
+		assert.equal(result.license.source.spdx, 'Unlicense');
+	});
+
+	test('blocks disagreement between separately approved package and source licenses', () => {
+		const result = assessResolvedEvidence({
+			input: 'react-widget@1.2.3',
+			registry: {
+				name: 'react-widget',
+				version: '1.2.3',
+				repository: { owner: 'example', repo: 'react-widget', subdirectory: null },
+				gitHead: 'a'.repeat(40),
+				integrity: 'sha512-example',
+				manifestLicense: 'MIT',
+				licenseFiles: [{ path: 'package/LICENSE', scope: 'package', content: MIT_TEXT }],
+			},
+			source: {
+				name: 'react-widget',
+				version: '1.2.3',
+				repository: { owner: 'example', repo: 'react-widget', subdirectory: null },
+				commit: 'a'.repeat(40),
+				manifestLicense: 'Unlicense',
+				licenseFiles: [{ path: 'LICENSE', scope: 'root', content: UNLICENSE_TEXT }],
+			},
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.blockers.join('\n'), /MIT.*does not match.*Unlicense/i);
 	});
 
 	test('blocks identity disagreement and scoped source license conflicts', () => {
@@ -387,7 +488,9 @@ describe('resolved evidence', () => {
 			'dist-tags': { latest: manifest.version },
 			versions: {
 				[manifest.version]: {
-					...manifest,
+					name: manifest.name,
+					version: manifest.version,
+					dependencies: manifest.dependencies,
 					dist: {
 						tarball: 'https://registry.npmjs.org/react-widget/-/react-widget-1.2.3.tgz',
 						integrity,
@@ -395,12 +498,17 @@ describe('resolved evidence', () => {
 				},
 			},
 		};
+		const fullVersionMetadata = {
+			...manifest,
+			dist: packument.versions[manifest.version].dist,
+		};
 		const sourceManifestBytes = Buffer.from(JSON.stringify(manifest));
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
 		const responses = new Map([
 			['https://registry.npmjs.org/react-widget', Response.json(packument)],
+			['https://registry.npmjs.org/react-widget/1.2.3', Response.json(fullVersionMetadata)],
 			['https://registry.npmjs.org/react-widget/-/react-widget-1.2.3.tgz', new Response(tarball)],
 			[
 				`https://api.github.com/repos/example/widgets/commits/${commit}`,
@@ -487,6 +595,24 @@ describe('resolved evidence', () => {
 		});
 		assert.equal(fromGitHub.identity.packageName, 'react-widget');
 		assert.equal(fromGitHub.identity.commit, commit);
+
+		responses.set(
+			'https://registry.npmjs.org/react-widget/1.2.3',
+			Response.json({
+				...fullVersionMetadata,
+				dist: { ...fullVersionMetadata.dist, integrity: 'sha512-conflicting' },
+			}),
+		);
+		await assert.rejects(
+			resolveRemoteInput(parseInput('react-widget@1.2.3'), 'react-widget@1.2.3', {
+				fetchImpl,
+			}),
+			/exact-version registry metadata contradicts packument/i,
+		);
+		responses.set(
+			'https://registry.npmjs.org/react-widget/1.2.3',
+			Response.json(fullVersionMetadata),
+		);
 
 		const tamperedManifest = Buffer.from(sourceManifestBytes);
 		tamperedManifest[0] ^= 1;

@@ -17,7 +17,7 @@ deepened: 2026-08-11
 - **Objective:** Turn the existing `octane-react-library-port` repository skill into a deterministic, dependency-aware workflow that can accept one or more React library names or links and produce correctly licensed, evidence-backed Octane bindings.
 - **Product authority:** The skill orchestrates; repository scripts, package manifests, source checkouts, binding status, Octane's public API, and the upstream artifacts at an immutable revision remain the sources of truth.
 - **Success signal:** Given the same repository state and resolved upstream revisions, a fresh agent reaches the same license verdict, prerequisite graph, execution order, blockers, and validation report without inventing policy or duplicating an existing binding.
-- **Open blockers:** None. Support for non-MIT source adaptation is deliberately outside this version.
+- **Open blockers:** None. Source adaptation under licenses outside the exact `MIT`/`Unlicense` allowlist is deliberately outside this version.
 
 ---
 
@@ -25,7 +25,7 @@ deepened: 2026-08-11
 
 ### Summary
 
-The workflow accepts an npm package name/specifier, npm package URL, GitHub repository/subdirectory URL, or a list containing any combination of those inputs. It resolves each target to a published package version and immutable upstream commit, verifies that every source-adaptation node is MIT-licensed, inventories what Octane and its bindings already provide, builds a union prerequisite graph, and then guides implementation in dependency order.
+The workflow accepts an npm package name/specifier, npm package URL, GitHub repository/subdirectory URL, or a list containing any combination of those inputs. It resolves each target to a published package version and immutable upstream commit, verifies that every source-adaptation node uses exact `MIT` or exact `Unlicense` with matching evidence, inventories what Octane and its bindings already provide, builds a union prerequisite graph, and then guides implementation in dependency order.
 
 The workflow must fail closed on licensing and provenance while allowing unrelated targets in a batch to continue. Its output is a local, resumable batch manifest plus repository changes and an evidence report; commits, pushes, issues, and pull requests remain explicit follow-up actions.
 
@@ -38,7 +38,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 ### Product Decisions
 
 - **Strengthen the existing repository workflow.** (session-settled: user-approved — chosen over adding a competing port skill: one canonical trigger avoids routing ambiguity and preserves the existing maintainer workflow.)
-- **Require verified MIT permission for adapted or copied source.** (session-settled: user-approved — chosen over accepting any permissive license or relying on repository badges/metadata alone: the first version should have one auditable policy and stop affected nodes when evidence is ambiguous, mixed, conflicting, custom, or non-MIT.)
+- **Require verified `MIT` or `Unlicense` permission for adapted or copied source.** (session-settled: user-approved — chosen over a generic “permissive” test or repository badges/metadata alone: the allowlist is explicit, and affected nodes stop when evidence is ambiguous, mixed, conflicting, custom, or outside it.)
 - **Treat a multi-library request as a dependency graph, not an all-or-nothing queue.** (session-settled: user-approved — chosen over sequential independent ports: shared prerequisites should be deduplicated and an unrelated licensed branch should continue when another branch is blocked.)
 - **Finish at verified local changes and a readiness report.** (session-settled: user-approved — chosen over automatically committing or opening a pull request: external publication remains an explicit follow-up authorization.)
 
@@ -47,15 +47,15 @@ Octane already has most of the raw authority needed to make those decisions repr
 **Input resolution and provenance**
 
 - R1. The workflow accepts one or more npm package names/specifiers, npm URLs, GitHub repository URLs, and GitHub monorepo subdirectory URLs in a single invocation.
-- R2. Every input resolves to a canonical package identity, exact package version, upstream repository, immutable commit, package subdirectory when applicable, and the relationship between the registry artifact and source revision; unresolved or contradictory identity data blocks that target before repository writes.
+- R2. Every input resolves to a canonical package identity, exact package version, upstream repository, immutable commit, package subdirectory when applicable, and the relationship between the registry artifact and source revision. The resolver fetches full exact-version npm metadata after selecting from the compact packument because the compact representation may omit repository, license, and `gitHead`; unresolved or contradictory identity data blocks that target before repository writes.
 - R3. The preflight records checksums or equivalent immutable identifiers for every inspected manifest, license/notice file, package artifact, and source tree so a resumed run can detect changed evidence.
 
 **License gate**
 
-- R4. Every requested target, ported prerequisite, vendored/adapted source, and newly introduced framework-neutral runtime core must have an exact MIT verdict supported by the published manifest's SPDX expression and the applicable source-tree license files at the resolved revision.
+- R4. Every requested target, ported prerequisite, vendored/adapted source, and newly introduced framework-neutral runtime core must have an exact `MIT` or exact `Unlicense` verdict supported by the published manifest's SPDX identifier and matching applicable source-tree license files at the resolved revision.
 - R5. Root-repository license detection is insufficient for a monorepo subpackage; the workflow inspects package-scoped manifests and `LICENSE`, `COPYING`, `NOTICE`, or referenced custom-license files and reports conflicts across those sources.
-- R6. A missing, custom, ambiguous, mixed, conflicting, or non-MIT verdict blocks the affected node and every dependent node without modifying their package implementation. Independent licensed graph branches may continue.
-- R7. The workflow is explicitly a repository policy check, not legal advice, and emits the exact attribution/notice obligations that the completed binding must retain.
+- R6. A missing, custom, ambiguous, mixed, conflicting, or non-allowlisted verdict blocks the affected node and every dependent node without modifying their package implementation. Independent licensed graph branches may continue.
+- R7. The workflow is explicitly a repository policy check, not legal advice, and emits the exact license/notice retention requirements that the completed binding must satisfy.
 
 **Capability and prerequisite planning**
 
@@ -74,7 +74,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 
 **Port evidence and repository integration**
 
-- R17. Each completed binding has the repository-required package manifest, exact Octane peer/dev dependency relationship, source and public exports, README, `status.json`, tests, and applicable `.tsrx` declarations; it also has `UPSTREAM.md` and retained MIT license/notice material identifying the upstream package, version/tag, commit, source boundary, and copied/adapted paths.
+- R17. Each completed binding has the repository-required package manifest, exact Octane peer/dev dependency relationship, source and public exports, README, `status.json`, tests, and applicable `.tsrx` declarations; it also has `UPSTREAM.md` and retained upstream license/notice material identifying the upstream package, version/tag, commit, source boundary, and copied/adapted paths.
 - R18. Upstream test registrations are inventoried with `scripts/scaffold-react-port.mjs`; no case is silently discarded. Evidence combines upstream-derived tests with differential, conformance, identity/effect/focus, type, SSR/hydration, browser, and package-pack checks as applicable to the binding's behavior.
 - R19. New or extended bindings update the website binding catalog, generated binding status, package inventory, parity gaps, CLI data, and a patch changeset when user-facing package behavior changes.
 - R20. The skill loads path-specific repository workflows when triggered: `authoring-tsrx` before new `.tsrx`, `octane-core-extend` and `performance-audit` before core/runtime/compiler work, and `create-a-pr` before changeset/branch/commit/PR actions.
@@ -89,8 +89,9 @@ Octane already has most of the raw authority needed to make those decisions repr
 - **AE2 — Adequate existing binding:** Given a target that depends on a React library already covered by a compatible `@octanejs/*` binding, the graph points to that binding and creates no duplicate package.
 - **AE3 — Binding extension prerequisite:** Given an existing binding whose status/version/exports omit a required surface, the graph schedules a tested extension before the dependent target.
 - **AE4 — Shared prerequisite:** Given two targets that require the same missing MIT React-coupled dependency, the union graph contains one prerequisite node and both targets depend on it.
-- **AE5 — Partial batch block:** Given one verified-MIT target and one target with conflicting manifest and source-tree licenses, the latter and its dependents are blocked before writes while the independent MIT target can reach `verified`.
-- **AE6 — Monorepo scope:** Given a repository with a root MIT license but a subpackage-specific non-MIT license, the subpackage is blocked; a root-level GitHub license classification does not override package-scoped evidence.
+- **AE5 — Partial batch block:** Given one approved-license target and one target with conflicting manifest and source-tree licenses, the latter and its dependents are blocked before writes while the independent target can reach `verified`.
+- **AE6 — Monorepo scope:** Given a repository with a root MIT license but a subpackage-specific license outside the allowlist, the subpackage is blocked; a root-level GitHub license classification does not override package-scoped evidence.
+- **AE13 — Unlicense acceptance:** Given `react-use@17.6.1`, whose compact npm packument omits repository/license/`gitHead` fields but whose exact-version metadata and published manifest declare `Unlicense` and whose tarball/source LICENSE bytes match at the published `gitHead`, the node reaches `licensed` with SPDX `Unlicense` and retained-license provenance requirements.
 - **AE7 — Identity mismatch:** Given an npm version whose repository metadata cannot be tied to the requested Git tag/commit or whose package contents disagree with source metadata, the target remains blocked with the conflicting fields and repair action.
 - **AE8 — Resume invalidation:** Given a verified node in a saved batch, an unchanged rerun skips completed work; changing its resolved commit or applicable license checksum invalidates it and downstream nodes.
 - **AE9 — Unsupported primitive:** Given source that relies on a React internal or custom reconciler absent from Octane, the workflow emits a feasibility blocker or an owning-package core task rather than producing a compatibility shim in the binding.
@@ -114,13 +115,13 @@ Octane already has most of the raw authority needed to make those decisions repr
 **Deferred**
 
 - Backfilling `UPSTREAM.md` and complete license provenance across every pre-existing binding not touched by this workflow.
-- Supporting Apache-2.0, BSD, ISC, dual-license, commercial, or other non-exact-MIT adaptation policies.
+- Supporting Apache-2.0, BSD, ISC, dual-license, commercial, or any adaptation policy outside exact `MIT` and exact `Unlicense`.
 - A repository-wide maintainer skill evaluation framework beyond the focused forward tests in this plan.
 - Automated issue, branch, commit, push, or pull-request creation.
 
 **Non-goals**
 
-- Legal advice or a conclusion about licenses other than the exact MIT policy gate.
+- Legal advice or a conclusion about licenses other than the repository's exact `MIT`/`Unlicense` policy gate.
 - Blind source-to-source conversion of an entire upstream repository.
 - Reimplementing framework-neutral dependencies that Octane can consume directly.
 - Maintaining static copies of the Octane API or binding catalog in skill prose.
@@ -144,7 +145,7 @@ Octane already has most of the raw authority needed to make those decisions repr
 ```mermaid
 flowchart LR
   Input[Package names and links] --> Resolve[Identity and immutable revision resolver]
-  Resolve --> License[MIT provenance gate]
+  Resolve --> License[MIT or Unlicense provenance gate]
   License -->|pass| Inventory[Live Octane and binding inventory]
   License -->|block| Blocked[Node-local blocker]
   Inventory --> Graph[Union dependency and feasibility graph]
@@ -165,7 +166,7 @@ flowchart LR
 ```mermaid
 stateDiagram-v2
   [*] --> resolved
-  resolved --> licensed: exact MIT evidence
+  resolved --> licensed: approved license evidence
   resolved --> blocked: identity or license conflict
   licensed --> classified
   classified --> ready: prerequisites verified
@@ -243,13 +244,13 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 
 ## Implementation Units
 
-### U1 — Deterministic identity and MIT provenance preflight
+### U1 — Deterministic identity and approved-license provenance preflight
 
 - **Goal:** Convert heterogeneous user inputs into immutable upstream identities and a fail-closed license verdict before implementation writes.
 - **Requirements:** R1-R7, R13, R23.
-- **Files:** `scripts/react-port/preflight.mjs`, `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`, `scripts/react-port/__fixtures__/licenses/`, `scripts/react-port/__fixtures__/packages/`, `scripts/react-port/__fixtures__/repositories/`, `package.json`.
-- **Implementation:** Define a versioned manifest schema and pure adapters for npm metadata/package contents and GitHub repository/tree contents. Normalize package names, npm URLs, repository URLs, subdirectories, versions, tags, and commits. Cross-check registry repository metadata with the exact source revision and verify the downloaded package against registry integrity. Evaluate SPDX `MIT`, `SEE LICENSE IN`, package-scoped license files, root files, notices, and conflicts; record content fingerprints and retained-notice requirements. Bound and confine all remote content before parsing. The CLI exits nonzero for a wholly blocked request but still emits the structured report needed by batch orchestration.
-- **Tests:** Cover exact MIT manifests; valid referenced license files; missing/custom/non-MIT/mixed expressions; root/subpackage disagreement; npm/GitHub identity mismatch; tag-to-commit normalization; integrity mismatch; absent or truncated source evidence; unsupported host/redirect; archive traversal and symlink escape; size/depth limits; credential redaction; deterministic output normalization; and proof that failed preflight does not call the write-stage adapter.
+- **Files:** `scripts/react-port/preflight.mjs`, `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`, `scripts/react-port/report-lib.mjs`, `scripts/react-port/__fixtures__/licenses/`, `scripts/react-port/__fixtures__/packages/`, `scripts/react-port/__fixtures__/repositories/`, `package.json`.
+- **Implementation:** Define a versioned manifest schema and pure adapters for npm metadata/package contents and GitHub repository/tree contents. Normalize package names, npm URLs, repository URLs, subdirectories, versions, tags, and commits. Select a version from npm's bounded compact packument, then fetch and cross-check the full exact-version metadata before using repository/license/`gitHead`; verify that both metadata forms identify the same artifact and that its bytes match registry integrity. Cross-check registry repository metadata with the exact source revision. Evaluate exact SPDX `MIT`, exact SPDX `Unlicense`, `SEE LICENSE IN`, package-scoped license files, root files, notices, and conflicts; record content fingerprints and retained-notice requirements. Bound and confine all remote content before parsing. The CLI exits nonzero for a wholly blocked request but still emits the structured report needed by batch orchestration.
+- **Tests:** Cover compact packuments that omit repository/license/`gitHead`; exact-version/packument contradictions; exact MIT and Unlicense manifests; valid referenced license files; missing/custom/unapproved/mixed expressions; root/subpackage and package/source disagreement; npm/GitHub identity mismatch; tag-to-commit normalization; integrity mismatch; absent or truncated source evidence; unsupported host/redirect; archive traversal and symlink escape; size/depth limits; credential redaction without redacting dependency names such as `js-cookie`; deterministic output normalization; and proof that failed preflight does not call the write-stage adapter.
 - **Validation:** `node --test scripts/react-port/preflight-lib.test.mjs`; invoke the CLI against local fixtures with network adapters disabled.
 - **Dependencies:** None.
 
@@ -286,10 +287,10 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ### U5 — Forward scenarios and repository-wide gates
 
 - **Goal:** Demonstrate that a fresh agent can use the shipped skill correctly across the dangerous paths, then leave generated repository state clean.
-- **Requirements:** R1-R24 and AE1-AE12.
+- **Requirements:** R1-R24 and AE1-AE13.
 - **Files:** `scripts/react-port/__fixtures__/`, `scripts/react-port/preflight-lib.test.mjs`, canonical/generated skill files, `package.json`, generated `docs/bindings-status.md`, `docs/packages.md`, binding parity/CLI data only when the implementation changes their inputs.
 - **Implementation:** Run the skill from clean fixture scenarios using natural prompts for one package, a URL, and a mixed batch. Inspect the manifest, graph, blockers, generated package artifacts, evidence matrix, and no-write behavior rather than asking an agent to critique the prose. Normalize volatile values and compare semantic outputs. Regenerate repository-derived artifacts and correct only source inputs, never generated files.
-- **Tests:** AE1-AE12 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
+- **Tests:** AE1-AE13 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
 - **Validation:** `pnpm react-port:test` (new aggregate); `pnpm react-parity:test`; `pnpm rules:check`; `pnpm context:budget:check`; `pnpm bindings:status:check`; `pnpm packages:inventory:check`; `pnpm binding-parity:gaps:check`; `pnpm cli:data:check`; `pnpm changeset:check`; `pnpm typecheck`; `pnpm format:check`. Run the full root `pnpm test` when fixture and targeted checks are green.
 - **Dependencies:** U1-U4.
 
@@ -302,7 +303,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 | Concern | Automated evidence | Human/agent evidence | Failure behavior |
 | --- | --- | --- | --- |
 | Input identity | Fixture tests for npm/GitHub/version/tag/subdirectory normalization and cross-source mismatch | Report shows canonical identity and immutable revision | Target remains `blocked`; no implementation write stage |
-| MIT permission | SPDX and license-file fixtures, scoped monorepo conflicts, notice retention checks | Exact evidence paths/checksums and obligations in report | Affected node and dependents blocked |
+| Approved license | MIT/Unlicense SPDX and license-file fixtures, scoped monorepo conflicts, notice retention checks | Exact identifier, evidence paths/checksums, and retention requirements in report | Affected node and dependents blocked |
 | Existing capabilities | Workspace/bridge/status parity tests and public-export inspection | Reuse/extend/create rationale per graph node | Duplicate binding or unsupported assumption fails planning |
 | Dependency order | Graph, SCC, dedupe, partial-failure, and deterministic-order tests | Mermaid/JSON graph is inspectable before implementation | Only dependent subgraph blocks |
 | Resume safety | Fingerprint and targeted-invalidation tests | Manifest records state history and repair action | Changed evidence reopens affected nodes |
@@ -320,7 +321,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 - **Discoverability:** RuleSync generates the skill for every supported agent surface, and context-budget tests keep the root routing description visible.
 - **Now:** Resolve, inspect, plan, resume, implement locally, verify, and report are agent-accessible through the skill and CLI.
 - **Later/explicit follow-up:** Issue, branch, commit, push, and PR actions use their existing repository workflows only after user authorization.
-- **Human policy boundary:** An agent may supply missing evidence but may not override a non-MIT/ambiguous verdict or broaden the repository's license policy during a run.
+- **Human policy boundary:** An agent may supply missing evidence but may not override an unapproved/ambiguous verdict or broaden the repository's `MIT`/`Unlicense` allowlist during a run.
 
 ### Test Quality Gates
 
@@ -335,11 +336,11 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ## Risks and Mitigations
 
 - **License false positives:** Package metadata can be stale or overbroad. Mitigate by cross-checking the published artifact, exact source revision, package scope, referenced license files, and notices; ambiguity blocks rather than guesses.
-- **License false negatives:** SPDX text matching allows harmless textual variation. Use SPDX identifiers/matching guidance and retain an evidence trail; keep a narrow explicit manual-repair path that supplies missing evidence without weakening the MIT rule.
+- **License false negatives:** SPDX text matching allows harmless textual variation. Use SPDX identifiers/matching guidance and retain an evidence trail; keep a narrow explicit manual-repair path that supplies missing evidence without weakening the allowlist.
 - **Dependency explosion:** Large UI systems can pull in many React-coupled packages. Bound each graph before implementation, expose SCCs/unsupported primitives early, and allow the user to trim targets without losing completed evidence.
 - **Stale repository inventories:** Import/read canonical bridge, workspace, status, and public-export sources and include their fingerprints in resume invalidation.
 - **Skill drift:** Keep mutable facts in code/data, distribute from `.rulesync`, and make generation/reference parity a test.
-- **Legal overclaiming:** Phrase results as conformance with the repository's exact-MIT intake policy, preserve notices, cite evidence, and never describe the tool as legal counsel.
+- **Legal overclaiming:** Phrase results as conformance with the repository's exact `MIT`/`Unlicense` intake policy, preserve license and notice evidence, cite sources, and never describe the tool as legal counsel.
 - **Agent prompt injection from upstream text:** Treat registry, README, source, issue, and license contents strictly as data; only repository skill instructions may control execution.
 
 ---
@@ -347,13 +348,13 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ## Definition of Done
 
 - [ ] One invocation accepts a package name, npm link, GitHub link/subdirectory, or mixed list and resolves every target to an immutable, auditable identity.
-- [ ] Exact MIT licensing is verified from both published and source-scoped evidence before implementation writes; ambiguous and non-MIT branches demonstrably stop.
+- [ ] Exact MIT or Unlicense licensing is verified from both published and source-scoped evidence before implementation writes; ambiguous and unapproved branches demonstrably stop.
 - [ ] The union graph reuses adequate Octane bindings/vanilla cores, identifies extensions and missing prerequisites, deduplicates shared work, and isolates blocked branches.
 - [ ] `.react-port-work/` state resumes safely and invalidates on changed upstream or repository evidence.
 - [ ] The `octane-react-library-port` skill is rewritten with progressive-disclosure references and no duplicate mutable catalogs.
 - [ ] RuleSync generates the full multi-file skill for Codex/Agents and all existing configured consumers, with context-budget and drift checks passing.
-- [ ] Completed fixture ports include upstream provenance, retained MIT notices, complete test crosswalks, package/status/catalog/generated artifacts, and truthful evidence reports.
-- [ ] AE1-AE12 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
+- [ ] Completed fixture ports include upstream provenance, retained license/notice evidence, complete test crosswalks, package/status/catalog/generated artifacts, and truthful evidence reports.
+- [ ] AE1-AE13 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
 - [ ] Targeted checks, `pnpm react-parity:test`, RuleSync/context checks, binding/package/data checks, typecheck, format, and the full test suite pass.
 - [ ] The workflow stops at verified local readiness unless the user separately authorizes the repository's commit/PR workflow.
 
@@ -374,6 +375,10 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ### External primary sources
 
 - [SPDX MIT license](https://spdx.org/licenses/MIT) — exact license identifier, permissions, and notice-retention condition.
+- [SPDX Unlicense](https://spdx.org/licenses/Unlicense.html) — exact `Unlicense` identifier, public-domain dedication text, and matching guidance.
+- [OSI Unlicense](https://opensource.org/license/unlicense) — OSI approval and canonical license text.
+- [react-use@17.6.1 license](https://github.com/streamich/react-use/blob/fbe99c6327e6af94df03bc8bd6ecc5e3ff04fbcc/LICENSE) — immutable upstream Unlicense text matching the published tarball.
+- [react-use@17.6.1 npm metadata](https://registry.npmjs.org/react-use/17.6.1) — published `Unlicense` identifier, repository, integrity, and immutable `gitHead`.
 - [SPDX License List](https://spdx.org/licenses/) — current identifiers and machine-readable matching authority.
 - [npm package.json license field](https://docs.npmjs.com/cli/configuring-npm/package-json/#license) — SPDX expressions, `SEE LICENSE IN`, and `UNLICENSED` conventions.
 - [npm view](https://docs.npmjs.com/cli/v8/commands/npm-view/) — registry metadata lookup used during identity resolution.

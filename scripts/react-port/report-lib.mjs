@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
-const SENSITIVE_KEY_PATTERN = /(?:authorization|cookie|password|secret|token|api[-_]?key)/i;
+const SENSITIVE_KEY_PATTERN =
+	/^(?:authorization|cookie|set-cookie|password|secret|token|(?:api|access|refresh|github|npm|client)[-_]?(?:key|secret|token))$/i;
 const SENSITIVE_VALUE_PATTERN = /\b(?:gh[oprsu]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b/g;
 
 function sanitizeUrl(value) {

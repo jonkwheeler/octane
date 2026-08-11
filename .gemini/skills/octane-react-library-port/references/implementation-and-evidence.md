@@ -28,7 +28,7 @@ configuration; record which immutable artifact supplies each boundary.
 
 For a new or upgraded port:
 
-- vendor the MIT-licensed React-facing source and tests byte-exact under
+- vendor the approved-license React-facing source and tests byte-exact under
   `packages/<binding>/upstream/`, preserving paths, license, and copyright
   headers; keep it prettier-ignored and outside published `files`;
 - mirror the upstream module layout in `src/` so source-to-port review and the
@@ -39,16 +39,17 @@ For a new or upgraded port:
   reused from a framework-neutral core, intentional divergence, inapplicable,
   or an explicit gap with evidence.
 
-Do not vendor bytes outside the exact-MIT boundary. If immutable source or test
-evidence cannot be retained, block the port instead of silently reducing its
-claimed surface.
+Do not vendor bytes outside the approved-license boundary. If immutable source
+or test evidence cannot be retained, block the port instead of silently reducing
+its claimed surface.
 
 ## Package contract
 
 A completed publishable binding normally has:
 
 - `package.json` with `@octanejs/*` name, Node baseline, public publish config,
-  repository directory, truthful files/exports, and package scripts;
+  repository directory, truthful files/exports, package scripts, and the
+  repository's MIT license for binding-authored work;
 - exact workspace `octane` peer and dev dependencies, never a regular runtime
   `octane` dependency;
 - source and public type exports with no published `declare module '*.tsrx'`;
@@ -57,7 +58,10 @@ A completed publishable binding normally has:
   tests when those bytes are adapted or used as parity evidence;
 - `UPSTREAM.md` naming package, version/tag, immutable commit, source boundary,
   adapted/copied paths, excluded React shell, and behavioral oracle;
-- retained upstream MIT license and every applicable notice/attribution;
+- the binding's primary MIT `LICENSE`, plus a separately named, byte-exact root
+  attribution artifact such as `LICENSE.upstream` when the upstream license is
+  different (including Unlicense), with both included in published `files`;
+- every applicable upstream notice/attribution;
 - website binding catalog/generated status, package inventory, parity-gap/CLI
   data, and a patch changeset for user-facing package behavior.
 

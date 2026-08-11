@@ -22,7 +22,7 @@ function usage() {
 	return `Usage: node scripts/react-port/preflight.mjs [options] <package-or-url> [...]
 
 Resolve one or more public npm/GitHub inputs, verify immutable provenance, and
-enforce Octane's exact-MIT source-adaptation policy before binding writes.
+enforce Octane's approved MIT-or-Unlicense policy before binding writes.
 
 Options:
   --fixture-evidence <file>  Read deterministic local evidence; disables networking

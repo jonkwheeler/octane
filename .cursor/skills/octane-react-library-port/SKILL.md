@@ -1,12 +1,13 @@
 ---
 name: octane-react-library-port
-description: Port, assess, or extend one or more React libraries from npm or GitHub into @octanejs bindings. Use for a library name, link, list, new binding, prerequisite audit, license check, or parity gap. Enforces immutable provenance, exact-MIT policy, live Octane capability reuse, dependency ordering, guarded implementation, and evidence-backed readiness.
+description: Port, assess, or extend one or more React libraries from npm or GitHub into @octanejs bindings. Use for a library name, link, list, new binding, prerequisite audit, license check, or parity gap. Enforces immutable provenance, approved MIT-or-Unlicense policy, live Octane capability reuse, dependency ordering, guarded implementation, and evidence-backed readiness.
 ---
 # Port React libraries into Octane
 
-Use the repository preflight as the authority for identity, exact-MIT policy,
-live capability inventory, dependency planning, and resumable state. Use judgment
-for source classification and implementation, but never override a failed gate.
+Use the repository preflight as the authority for identity, approved-license
+policy, live capability inventory, dependency planning, and resumable state. Use
+judgment for source classification and implementation, but never override a
+failed gate.
 
 A binding is a port of one pinned upstream release, not an Octane-flavored subset
 or demo-path rewrite. Account for every published export, upstream runtime test,
@@ -19,9 +20,10 @@ and upstream type test with executable evidence or an explicit disposition.
   install, build, test, prepare, or repository scripts during intake.
 - Do not create or edit binding implementation files until that graph node is
   `ready`. A `blocked` node also blocks its dependents, not unrelated branches.
-- Require the repository's exact-MIT verdict for every copied, adapted, or
-  newly ported prerequisite. Ambiguous, mixed, conflicting, missing, or non-MIT
-  evidence is not overridable within this workflow.
+- Require the repository's approved-license verdict for every copied, adapted,
+  or newly ported prerequisite. The allowlist is exact `MIT` and exact
+  `Unlicense`; ambiguous, mixed, conflicting, missing, or other license evidence
+  is not overridable within this workflow.
 - Reuse a framework-neutral core or adequate existing `@octanejs/*` binding.
   Extend an incomplete binding in place; never create a competing package.
 - Preserve pre-existing worktree changes. A partial package is user state unless
@@ -63,7 +65,8 @@ and upstream type test with executable evidence or an explicit disposition.
    ```
 
    Add every React-coupled prerequisite with `--prerequisite` so it receives its
-   own immutable identity and MIT gate without becoming a user-requested target.
+   own immutable identity and approved-license gate without becoming a
+   user-requested target.
    Do not classify by package name, README, or repository badge alone. Treat an
    unsupported internal as `unsupported`.
 
@@ -106,8 +109,9 @@ and upstream type test with executable evidence or an explicit disposition.
    gates and repository generators from the implementation reference.
 
 9. **Report local readiness.** List each target's immutable version/commit,
-   exact-MIT evidence and obligations, reused capabilities, graph prerequisites,
-   blockers, changed packages, evidence results, provenance files, worktree
+   approved SPDX identifier, evidence, retention requirements, reused
+   capabilities, graph prerequisites, blockers, changed packages, evidence
+   results, provenance files, worktree
    collisions/adoptions, and whether the node is `verified`. Name commit/PR work
    only as an optional separately authorized next action.
 

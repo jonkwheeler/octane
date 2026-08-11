@@ -55,8 +55,8 @@
         {
           "input": "blocked-license@1.0.0",
           "status": "blocked",
-          "blockers": ["Immutable source license is not exact MIT."],
-          "repair": "Remove this target or obtain a corrected exact-MIT release."
+          "blockers": ["Immutable source license is not approved by repository policy."],
+          "repair": "Remove this target or obtain a release with matching MIT or Unlicense evidence."
         },
         {
           "input": "independent@1.0.0",

@@ -35,14 +35,16 @@ function createReadyBatch() {
 				nodeFingerprint: 'plan',
 				identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
 				license: {
-					policy: 'exact-mit-v1',
+					policy: 'approved-license-v2',
 					published: {
 						status: 'passed',
+						spdx: 'MIT',
 						evidence: [{ path: 'package/LICENSE', sha256: sha256(MIT_TEXT) }],
 						notices: [],
 					},
 					source: {
 						status: 'passed',
+						spdx: 'MIT',
 						evidence: [{ path: 'LICENSE', sha256: sha256(MIT_TEXT) }],
 						notices: [],
 					},

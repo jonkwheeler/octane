@@ -1,7 +1,11 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { fingerprint, isRecognizableMitText } from './preflight-lib.mjs';
+import {
+	APPROVED_LICENSE_IDENTIFIERS,
+	fingerprint,
+	isRecognizableMitText,
+} from './preflight-lib.mjs';
 
 const EVIDENCE_STATUSES = new Set(['required', 'passed', 'failed', 'blocked', 'inapplicable']);
 const CROSSWALK_CLASSIFICATIONS = new Set([
@@ -15,7 +19,7 @@ const LICENSE_ARTIFACT_PATTERN = /^(?:licen[cs]e|copying)(?:[._-].*)?$/i;
 const NOTICE_ARTIFACT_PATTERN = /^notice(?:[._-].*)?$/i;
 
 const COMMON_GATES = [
-	['identity-license', 'Immutable identity and exact-MIT preflight', false],
+	['identity-license', 'Immutable identity and approved-license preflight', false],
 	['upstream-crosswalk', 'Complete upstream test-registration crosswalk', false],
 	['package-tests', 'Focused package behavior tests', false],
 	['typecheck', 'Public and authored-source typecheck', false],
@@ -78,7 +82,7 @@ export function createEvidenceMatrix({ categories, preflightArtifact }) {
 		...gates['identity-license'],
 		status: 'passed',
 		artifact: preflightArtifact,
-		observed: 'Node reached ready through immutable identity and exact-MIT preflight.',
+		observed: 'Node reached ready through immutable identity and approved-license preflight.',
 	};
 	return { schemaVersion: 1, categories: normalizedCategories, gates };
 }
@@ -355,11 +359,13 @@ function packageRoot(specifier) {
 	return specifier.split('/')[0];
 }
 
-function hasExactMitEvidence(node) {
+function hasApprovedLicenseEvidence(node) {
 	return (
-		node?.license?.policy === 'exact-mit-v1' &&
+		node?.license?.policy === 'approved-license-v2' &&
 		node.license.published?.status === 'passed' &&
-		node.license.source?.status === 'passed'
+		node.license.source?.status === 'passed' &&
+		node.license.published.spdx === node.license.source.spdx &&
+		APPROVED_LICENSE_IDENTIFIERS.includes(node.license.published.spdx)
 	);
 }
 
@@ -386,8 +392,10 @@ export function auditShippedClosure({ nodeId, graphNodes, runtimeDependencies, a
 	}
 	for (const adaptedSource of adaptedSources) {
 		const adaptedNode = graphNodes[`pkg:${adaptedSource.packageName}`];
-		if (!hasExactMitEvidence(adaptedNode)) {
-			issues.push(`Adapted source ${adaptedSource.packageName} has no exact-MIT graph evidence.`);
+		if (!hasApprovedLicenseEvidence(adaptedNode)) {
+			issues.push(
+				`Adapted source ${adaptedSource.packageName} has no approved-license graph evidence.`,
+			);
 		}
 		if (!Array.isArray(adaptedSource.paths) || adaptedSource.paths.length === 0) {
 			issues.push(

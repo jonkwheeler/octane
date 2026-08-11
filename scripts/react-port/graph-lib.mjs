@@ -345,7 +345,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			node.state = 'blocked';
 			node.action = 'repair-preflight';
 			node.blockers.push(...(target.blockers ?? ['Target did not pass preflight.']));
-			node.repair = target.repair ?? 'Repair identity or exact-MIT evidence.';
+			node.repair = target.repair ?? 'Repair identity or approved-license evidence.';
 		}
 	}
 
@@ -423,7 +423,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 				node.blockers.push(
 					existing?.reason ?? 'Existing binding requires evidence-backed extension.',
 				);
-				node.repair = `Run exact-MIT preflight for ${node.packageName}, then extend ${node.binding}.`;
+				node.repair = `Run approved-license preflight for ${node.packageName}, then extend ${node.binding}.`;
 			}
 			continue;
 		}
@@ -471,7 +471,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			classification === 'react-coupled' ? 'preflight-prerequisite' : 'audit-dependency';
 		node.blockers.push(
 			classification === 'react-coupled'
-				? 'React-coupled prerequisite has not passed identity and exact-MIT preflight.'
+				? 'React-coupled prerequisite has not passed identity and approved-license preflight.'
 				: 'Runtime dependency has not been classified from its shipped surface.',
 		);
 		node.repair =
