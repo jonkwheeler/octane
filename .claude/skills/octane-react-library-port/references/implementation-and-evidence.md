@@ -128,6 +128,12 @@ a project from `vitest.config.js`; mixed projects put only parity-owned patterns
 in `testExecution.include`, leaving Octane-only conformance tests to the normal
 shards. Never create a binding-specific CI job or exclusion variable.
 
+Confirm discovery by running the registered project and observing the expected
+files and test count. If Vitest reports no matching project or no test files,
+repair `vitest.config.js`, the parity manifest, or the package's include pattern
+as appropriate and rerun. Test discovery is implementation work; it cannot be
+recorded as blocked, inapplicable, or a reason to return an unfinished port.
+
 ## Evidence matrix
 
 Record every row as `required`, `passed`, `failed`, `blocked`, or `inapplicable`.
@@ -201,6 +207,14 @@ pnpm tsrx-decls:check
 pnpm typecheck
 pnpm format:check
 ```
+
+Treat every red gate as the start of a diagnose–repair–rerun loop. Fix owning
+source, test registration, package metadata, generated inputs, or evidence; do
+not merely list the failing command in a progress report. For install-state
+failures, use the repository-supported non-interactive CI install mode when it
+is safe, inspect lockfile changes before retaining them, and fall back to direct
+available repository executables for unaffected gates. Preserve unrelated dirty
+files throughout.
 
 For a mixed parity project, run both its local project and the sharded
 non-parity complement. Confirm every required parity lane executes rather than
