@@ -66,3 +66,6 @@ website/public/lynx-runtime
 
 # Pristine vitest cache for tanstack-hotkeys upstream suite
 packages/tanstack-hotkeys/.vite-pristine/
+
+# Resumable React-library port evidence and one-writer batch state.
+.react-port-work/

@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
+import { bridgeReportFromSource } from '../../packages/octane-mcp-server/src/bridge.js';
 
 const PACKAGE_NAME_PATTERN =
 	/^(?:@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*|[a-z0-9][a-z0-9._-]*)$/;
@@ -24,6 +25,17 @@ const REMOTE_LIMITS = Object.freeze({
 });
 const LICENSE_NAME_PATTERN = /^(?:licen[cs]e|copying)(?:\..*)?$/i;
 const NOTICE_NAME_PATTERN = /^notice(?:\..*)?$/i;
+const SOURCE_FILE_PATTERN = /\.(?:[cm]?[jt]sx?)$/i;
+const SOURCE_SKIP_PARTS = new Set([
+	'__tests__',
+	'docs',
+	'examples',
+	'fixtures',
+	'node_modules',
+	'test',
+	'tests',
+]);
+const MAX_SOURCE_FILES = 400;
 
 function assertPackageName(packageName) {
 	if (!PACKAGE_NAME_PATTERN.test(packageName)) {
@@ -620,6 +632,26 @@ function isStandardEvidencePath(entryPath) {
 	);
 }
 
+function isScannableSourcePath(entryPath) {
+	if (!entryPath.startsWith('package/') || !SOURCE_FILE_PATTERN.test(entryPath)) return false;
+	const parts = entryPath.slice('package/'.length).split('/');
+	return !parts.some((part) => SOURCE_SKIP_PARTS.has(part.toLowerCase()));
+}
+
+function scanFeasibilityHazards(source) {
+	const hazards = [];
+	if (/\b(?:from\s*|require\s*\()['"]react-reconciler(?:\/[^'"]*)?['"]/.test(source)) {
+		hazards.push('Uses react-reconciler or a custom renderer boundary.');
+	}
+	if (/\b(?:__SECRET_INTERNALS|__CLIENT_INTERNALS|ReactSharedInternals)\b/.test(source)) {
+		hazards.push('Uses React private internals.');
+	}
+	if (/['"]react\/(?!jsx(?:-dev)?-runtime['"])[^'"]+['"]/.test(source)) {
+		hazards.push('Imports a non-public or unclassified React subpath.');
+	}
+	return hazards;
+}
+
 function collectArchiveEvidence(archiveBytes) {
 	const uncompressed = gunzipSync(archiveBytes, {
 		maxOutputLength: REMOTE_LIMITS.expandedArtifactBytes,
@@ -654,14 +686,42 @@ function collectArchiveEvidence(archiveBytes) {
 		if (NOTICE_NAME_PATTERN.test(path.posix.basename(entryPath))) noticeFiles.push(file);
 		else licenseFiles.push(file);
 	}
-	return { manifest, manifestBytes, licenseFiles, noticeFiles };
+
+	let sourceFileCount = 0;
+	let sourceTruncated = false;
+	const sourceFiles = parseTarArchive(uncompressed, {
+		select: (entryPath, entry) => {
+			if (!isScannableSourcePath(entryPath) || entry.size > REMOTE_LIMITS.licenseBytes)
+				return false;
+			if (sourceFileCount >= MAX_SOURCE_FILES) {
+				sourceTruncated = true;
+				return false;
+			}
+			sourceFileCount += 1;
+			return true;
+		},
+	}).files;
+	const source = [...sourceFiles.entries()]
+		.sort(([left], [right]) => left.localeCompare(right))
+		.map(([entryPath, bytes]) => `/* ${entryPath} */\n${bytes.toString('utf8')}`)
+		.join('\n');
+	const sourceAnalysis = {
+		...bridgeReportFromSource(source, { packageName: manifest.name }),
+		filesScanned: sourceFiles.size,
+		truncated: sourceTruncated,
+		hazards: scanFeasibilityHazards(source),
+	};
+	return { manifest, manifestBytes, licenseFiles, noticeFiles, sourceAnalysis };
 }
 
 function mergeRuntimeDependencies(manifest) {
+	const dependencies = {
+		...(manifest.peerDependencies ?? {}),
+		...(manifest.optionalDependencies ?? {}),
+		...(manifest.dependencies ?? {}),
+	};
 	return Object.fromEntries(
-		Object.entries(manifest.dependencies ?? {}).sort(([left], [right]) =>
-			left.localeCompare(right),
-		),
+		Object.entries(dependencies).sort(([left], [right]) => left.localeCompare(right)),
 	);
 }
 
@@ -720,6 +780,7 @@ async function resolveRegistryArtifact(packageName, selector, options) {
 		manifestSha256: sha256(contents.manifestBytes),
 		artifactUrl: artifact.finalUrl,
 		runtimeDependencies: mergeRuntimeDependencies(contents.manifest),
+		sourceAnalysis: contents.sourceAnalysis,
 	};
 }
 
@@ -891,6 +952,7 @@ export async function resolveRemoteInput(parsedInput, rawInput, options = {}) {
 	return {
 		...result,
 		runtimeDependencies: registry.runtimeDependencies,
+		sourceAnalysis: registry.sourceAnalysis,
 		provenance: sanitizeForReport({
 			registryManifestSha256: registry.manifestSha256,
 			sourceManifestSha256: source.manifestSha256,

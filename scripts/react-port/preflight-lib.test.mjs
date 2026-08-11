@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { mkdtempSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -314,6 +316,7 @@ describe('resolved evidence', () => {
 			makeTar({
 				'package/package.json': JSON.stringify(manifest),
 				'package/LICENSE': MIT_TEXT,
+				'package/index.js': `import { useState } from 'react'; export function useWidget() { return useState(0); }`,
 			}),
 		);
 		const integrity = `sha512-${createHash('sha512').update(tarball).digest('base64')}`;
@@ -395,6 +398,8 @@ describe('resolved evidence', () => {
 		assert.equal(result.status, 'licensed');
 		assert.deepEqual(result.runtimeDependencies, { 'react-helper': '^1.0.0' });
 		assert.equal(result.identity.commit, commit);
+		assert.equal(result.sourceAnalysis.verdict, 'bridgeable');
+		assert.equal(result.sourceAnalysis.apis[0].name, 'useState');
 	});
 });
 
@@ -404,6 +409,9 @@ describe('preflight CLI', () => {
 			process.execPath,
 			[
 				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				'--no-state',
+				'--classify',
+				'fixture-core=framework-neutral',
 				'--fixture-evidence',
 				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
 				'fixture-widget@1.0.0',
@@ -416,12 +424,41 @@ describe('preflight CLI', () => {
 		assert.equal(report.schemaVersion, 1);
 		assert.equal(report.status, 'passed');
 		assert.equal(report.targets[0].status, 'licensed');
+		assert.equal(report.graph.nodes['pkg:fixture-core'].action, 'reuse-package');
+		assert.equal(report.graph.nodes['pkg:fixture-widget'].state, 'ready');
+	});
+
+	test('persists and resumes a one-writer batch manifest', () => {
+		const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-cli-'));
+		const arguments_ = [
+			path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+			'--work-root',
+			workRoot,
+			'--batch',
+			'fixture-batch',
+			'--classify',
+			'fixture-core=framework-neutral',
+			'--fixture-evidence',
+			path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
+			'fixture-widget@1.0.0',
+		];
+		const first = spawnSync(process.execPath, arguments_, { encoding: 'utf8' });
+		assert.equal(first.status, 0, first.stderr);
+		const manifestPath = path.join(workRoot, 'fixture-batch', 'manifest.json');
+		const firstManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		assert.equal(firstManifest.nodes['pkg:fixture-widget'].state, 'ready');
+
+		const second = spawnSync(process.execPath, arguments_, { encoding: 'utf8' });
+		assert.equal(second.status, 0, second.stderr);
+		const secondReport = JSON.parse(second.stdout);
+		assert.deepEqual(secondReport.batch.resume.invalidated, []);
+		assert.ok(secondReport.batch.resume.preserved.includes('pkg:fixture-widget'));
 	});
 
 	test('returns structured evidence and a nonzero status when every input is blocked', () => {
 		const result = spawnSync(
 			process.execPath,
-			[path.join(SCRIPT_DIRECTORY, 'preflight.mjs'), '../bad'],
+			[path.join(SCRIPT_DIRECTORY, 'preflight.mjs'), '--no-state', '../bad'],
 			{
 				encoding: 'utf8',
 			},
