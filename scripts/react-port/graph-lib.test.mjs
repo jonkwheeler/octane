@@ -256,23 +256,51 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:ready-target']]);
 	});
 
-	test('keeps transient remote intake failures pending instead of hard-blocking the port', () => {
+	for (const blocker of [
+		'Remote request timed out after 30000ms',
+		'Remote request failed with HTTP 403',
+		'Remote request failed with HTTP 429',
+		'Remote request failed with HTTP 500',
+		'Remote request failed with HTTP 503',
+		'Remote request failed with HTTP 599',
+	]) {
+		test(`keeps retryable remote intake failure pending: ${blocker}`, () => {
+			const graph = planPortGraph({
+				targets: [
+					{
+						input: 'retry-target',
+						status: 'blocked',
+						blockers: [blocker],
+						repair: 'Retry immutable evidence resolution.',
+					},
+				],
+				inventory: fixtureInventory(),
+			});
+
+			assert.equal(graph.nodes['pkg:retry-target'].action, 'repair-preflight');
+			assert.equal(graph.nodes['pkg:retry-target'].disposition, 'pending-intake');
+			assert.deepEqual(graph.requestedSummary.pendingIntake, ['pkg:retry-target']);
+			assert.deepEqual(graph.requestedSummary.hardBlocked, []);
+		});
+	}
+
+	test('keeps permanent remote failures hard-blocked', () => {
 		const graph = planPortGraph({
 			targets: [
 				{
-					input: 'retry-target',
+					input: 'missing-target',
 					status: 'blocked',
-					blockers: ['Remote request failed with HTTP 403'],
-					repair: 'Retry immutable evidence resolution.',
+					blockers: ['Remote request failed with HTTP 404'],
+					repair: 'Correct the immutable source location.',
 				},
 			],
 			inventory: fixtureInventory(),
 		});
 
-		assert.equal(graph.nodes['pkg:retry-target'].action, 'repair-preflight');
-		assert.equal(graph.nodes['pkg:retry-target'].disposition, 'pending-intake');
-		assert.deepEqual(graph.requestedSummary.pendingIntake, ['pkg:retry-target']);
-		assert.deepEqual(graph.requestedSummary.hardBlocked, []);
+		assert.equal(graph.nodes['pkg:missing-target'].action, 'repair-preflight');
+		assert.equal(graph.nodes['pkg:missing-target'].disposition, 'hard-blocked');
+		assert.deepEqual(graph.requestedSummary.pendingIntake, []);
+		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:missing-target']);
 	});
 
 	test('names new bindings by removing a leading react segment', () => {

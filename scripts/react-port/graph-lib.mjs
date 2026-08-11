@@ -170,13 +170,18 @@ const PENDING_INTAKE_ACTIONS = new Set([
 	'extend-binding',
 ]);
 
+function isRetryableRemoteFailure(blocker) {
+	if (/^Remote request timed out after \d+ms$/.test(blocker)) return true;
+	const status = /^Remote request failed with HTTP (\d{3})$/.exec(blocker)?.[1];
+	if (!status) return false;
+	const statusCode = Number(status);
+	return statusCode === 403 || statusCode === 429 || (statusCode >= 500 && statusCode <= 599);
+}
+
 function blockedDisposition(nodeId, nodes, visiting = new Set()) {
 	const node = nodes[nodeId];
 	if (!node || node.state !== 'blocked') return null;
-	if (
-		node.action === 'repair-preflight' &&
-		node.blockers.some((blocker) => /^Remote request failed\b/.test(blocker))
-	) {
+	if (node.action === 'repair-preflight' && node.blockers.some(isRetryableRemoteFailure)) {
 		return 'pending-intake';
 	}
 	if (
