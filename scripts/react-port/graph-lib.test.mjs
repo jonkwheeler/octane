@@ -57,6 +57,7 @@ describe('repository capability inventory', () => {
 		assert.equal(inventory.sourceBindings.zustand, '@octanejs/zustand');
 		assert.equal(inventory.vanillaCores.zustand, 'zustand/vanilla');
 		assert.equal(inventory.reactApis.useState.status, 'same');
+		assert.equal(inventory.workspacePackages.includes('@octanejs/cli'), true);
 		assert.equal(inventory.bindings['@octanejs/zustand'].status.upstream.package, 'zustand');
 		assert.equal(inventory.bindings['@octanejs/zustand'].tested, true);
 		assert.equal(inventory.fingerprint.length, 64);
@@ -224,6 +225,19 @@ describe('union prerequisite graph', () => {
 			graph.nodes['pkg:react-existing'].blockers.join('\n'),
 			/@octanejs\/existing.*existing/i,
 		);
+	});
+
+	test('blocks a derived binding name owned by a non-binding workspace package', () => {
+		const inventory = fixtureInventory();
+		inventory.workspacePackages = [...Object.keys(inventory.bindings), '@octanejs/cli'];
+		const graph = planPortGraph({
+			targets: [licensedTarget('react-cli', '1.0.0')],
+			inventory,
+		});
+
+		assert.equal(graph.nodes['pkg:react-cli'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-cli'].action, 'binding-name-conflict');
+		assert.match(graph.nodes['pkg:react-cli'].blockers.join('\n'), /@octanejs\/cli.*workspace/i);
 	});
 
 	test('blocks incompatible version paths and names both dependents', () => {

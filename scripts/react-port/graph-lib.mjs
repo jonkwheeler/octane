@@ -6,7 +6,7 @@ import {
 	KNOWN_VANILLA_CORES,
 	REACT_API_MAP,
 } from '../../packages/octane-mcp-server/src/bridge.js';
-import { getBindingPackages, REPO_ROOT } from '../workspace-packages.mjs';
+import { getWorkspacePackages, REPO_ROOT } from '../workspace-packages.mjs';
 import { fingerprint } from './preflight-lib.mjs';
 import { rangesOverlap, satisfiesRange } from './version-lib.mjs';
 
@@ -36,6 +36,7 @@ function manifestExports(manifest) {
 
 export function buildCapabilityInventory({
 	bindings,
+	workspacePackages = bindings,
 	knownBindings,
 	knownNativeBindings = [],
 	knownVanillaCores,
@@ -59,6 +60,9 @@ export function buildCapabilityInventory({
 	);
 	const inventory = {
 		schemaVersion: 1,
+		workspacePackages: [
+			...new Set(workspacePackages.map((workspacePackage) => workspacePackage.name)),
+		].sort(),
 		sourceBindings: sortedRecord(knownBindings),
 		nativeBindings: [...knownNativeBindings].sort(),
 		vanillaCores: sortedRecord(knownVanillaCores),
@@ -83,21 +87,29 @@ function hasObservableTests(directory) {
 }
 
 export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
-	const bindings = getBindingPackages().map((binding) => {
-		if (!existsSync(binding.statusPath)) {
-			throw new Error(`Binding ${binding.name} has no status.json`);
-		}
-		return {
-			name: binding.name,
-			version: binding.version,
-			exports: manifestExports(binding.manifest),
-			tested:
-				typeof binding.manifest.scripts?.test === 'string' && hasObservableTests(binding.directory),
-			status: JSON.parse(readFileSync(binding.statusPath, 'utf8')),
-		};
-	});
+	const workspacePackages = getWorkspacePackages();
+	const bindings = workspacePackages
+		.filter(
+			(workspacePackage) =>
+				!workspacePackage.private && workspacePackage.role === 'framework binding',
+		)
+		.map((binding) => {
+			if (!existsSync(binding.statusPath)) {
+				throw new Error(`Binding ${binding.name} has no status.json`);
+			}
+			return {
+				name: binding.name,
+				version: binding.version,
+				exports: manifestExports(binding.manifest),
+				tested:
+					typeof binding.manifest.scripts?.test === 'string' &&
+					hasObservableTests(binding.directory),
+				status: JSON.parse(readFileSync(binding.statusPath, 'utf8')),
+			};
+		});
 	return buildCapabilityInventory({
 		bindings,
+		workspacePackages,
 		knownBindings: KNOWN_BINDINGS,
 		knownNativeBindings: KNOWN_NATIVE_BINDINGS,
 		knownVanillaCores: KNOWN_VANILLA_CORES,
@@ -275,6 +287,9 @@ function orderComponents(nodes, components) {
 export function planPortGraph({ targets, inventory, dependencyClassifications = {} }) {
 	const nodes = {};
 	const targetByPackage = new Map();
+	const workspacePackageNames = new Set(
+		inventory.workspacePackages ?? Object.keys(inventory.bindings),
+	);
 
 	function ensureNode(packageName) {
 		const id = `pkg:${packageName}`;
@@ -424,10 +439,12 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		if (target?.status === 'licensed') {
 			assignProposedBinding(node);
 			const occupiedBinding = inventory.bindings[node.binding];
-			if (occupiedBinding) {
+			if (occupiedBinding || workspacePackageNames.has(node.binding)) {
 				blockBindingName(
 					node,
-					`${node.binding} already exists for ${occupiedBinding.status?.upstream?.package ?? 'another workspace package'}; ${node.packageName} cannot overwrite it.`,
+					occupiedBinding
+						? `${node.binding} already exists for ${occupiedBinding.status?.upstream?.package ?? 'another workspace package'}; ${node.packageName} cannot overwrite it.`
+						: `${node.binding} already exists as a workspace package; ${node.packageName} cannot overwrite it.`,
 				);
 				continue;
 			}
