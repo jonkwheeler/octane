@@ -58,6 +58,7 @@ describe('repository capability inventory', () => {
 		assert.equal(inventory.vanillaCores.zustand, 'zustand/vanilla');
 		assert.equal(inventory.reactApis.useState.status, 'same');
 		assert.equal(inventory.workspacePackages.includes('@octanejs/cli'), true);
+		assert.equal(inventory.workspaceDirectories.includes('packages/octane'), true);
 		assert.equal(inventory.bindings['@octanejs/zustand'].status.upstream.package, 'zustand');
 		assert.equal(inventory.bindings['@octanejs/zustand'].tested, true);
 		assert.equal(inventory.fingerprint.length, 64);
@@ -238,6 +239,23 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-cli'].state, 'blocked');
 		assert.equal(graph.nodes['pkg:react-cli'].action, 'binding-name-conflict');
 		assert.match(graph.nodes['pkg:react-cli'].blockers.join('\n'), /@octanejs\/cli.*workspace/i);
+	});
+
+	test('blocks a derived binding directory owned by a differently named workspace package', () => {
+		const inventory = fixtureInventory();
+		inventory.workspacePackages = [...Object.keys(inventory.bindings), 'octane'];
+		inventory.workspaceDirectories = ['packages/octane'];
+		const graph = planPortGraph({
+			targets: [licensedTarget('react-octane', '1.0.0')],
+			inventory,
+		});
+
+		assert.equal(graph.nodes['pkg:react-octane'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-octane'].action, 'binding-name-conflict');
+		assert.match(
+			graph.nodes['pkg:react-octane'].blockers.join('\n'),
+			/packages\/octane.*workspace/i,
+		);
 	});
 
 	test('blocks incompatible version paths and names both dependents', () => {

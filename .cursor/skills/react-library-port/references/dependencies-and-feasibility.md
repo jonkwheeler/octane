@@ -29,10 +29,11 @@ removing the same segment prefix, so `@tanstack/react-widget` becomes
 `@octanejs/tanstack-widget` in `packages/tanstack-widget`. Names without that
 leading segment remain intact.
 
-A derived name already owned by a workspace package, or shared by two batch
-nodes, is a `binding-name-conflict` blocker. Resolve ownership explicitly and
-rerun the graph; never restore `react-`, append an arbitrary suffix, or overwrite
-the existing package to escape the collision.
+A derived name already owned by a workspace package, a derived
+`bindingDirectory` already occupied by any workspace package, or a name shared
+by two batch nodes is a `binding-name-conflict` blocker. Resolve ownership
+explicitly and rerun the graph; never restore `react-`, append an arbitrary
+suffix, or overwrite the existing package to escape the collision.
 
 ## Classify from the shipped surface
 

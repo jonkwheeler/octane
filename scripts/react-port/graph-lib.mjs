@@ -63,6 +63,13 @@ export function buildCapabilityInventory({
 		workspacePackages: [
 			...new Set(workspacePackages.map((workspacePackage) => workspacePackage.name)),
 		].sort(),
+		workspaceDirectories: [
+			...new Set(
+				workspacePackages.flatMap((workspacePackage) =>
+					workspacePackage.dir ? [`packages/${workspacePackage.dir}`] : [],
+				),
+			),
+		].sort(),
 		sourceBindings: sortedRecord(knownBindings),
 		nativeBindings: [...knownNativeBindings].sort(),
 		vanillaCores: sortedRecord(knownVanillaCores),
@@ -154,7 +161,7 @@ function blockBindingName(node, reason) {
 	node.action = 'binding-name-conflict';
 	node.blockers.push(reason);
 	node.repair =
-		'Resolve the binding ownership or naming collision explicitly, then rerun the union graph.';
+		'Resolve the binding name or package-directory ownership collision explicitly, then rerun the union graph.';
 }
 
 function requiredSubpathsForDependency(imports, dependencyName) {
@@ -290,6 +297,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 	const workspacePackageNames = new Set(
 		inventory.workspacePackages ?? Object.keys(inventory.bindings),
 	);
+	const workspaceDirectories = new Set(inventory.workspaceDirectories ?? []);
 
 	function ensureNode(packageName) {
 		const id = `pkg:${packageName}`;
@@ -439,12 +447,16 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		if (target?.status === 'licensed') {
 			assignProposedBinding(node);
 			const occupiedBinding = inventory.bindings[node.binding];
-			if (occupiedBinding || workspacePackageNames.has(node.binding)) {
+			const occupiedPackageName = workspacePackageNames.has(node.binding);
+			const occupiedDirectory = workspaceDirectories.has(node.bindingDirectory);
+			if (occupiedBinding || occupiedPackageName || occupiedDirectory) {
 				blockBindingName(
 					node,
 					occupiedBinding
 						? `${node.binding} already exists for ${occupiedBinding.status?.upstream?.package ?? 'another workspace package'}; ${node.packageName} cannot overwrite it.`
-						: `${node.binding} already exists as a workspace package; ${node.packageName} cannot overwrite it.`,
+						: occupiedPackageName
+							? `${node.binding} already exists as a workspace package; ${node.packageName} cannot overwrite it.`
+							: `${node.bindingDirectory} already exists as a workspace package directory; ${node.packageName} cannot overwrite it.`,
 				);
 				continue;
 			}
