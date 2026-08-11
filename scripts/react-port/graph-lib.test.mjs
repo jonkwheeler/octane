@@ -28,6 +28,7 @@ function fixtureInventory() {
 				name: '@octanejs/covered',
 				version: '0.1.0',
 				exports: ['.', './server'],
+				tested: true,
 				status: {
 					upstream: { package: 'react-covered', version: '2.4.0' },
 					verified: '2026-08-01',
@@ -37,6 +38,7 @@ function fixtureInventory() {
 				name: '@octanejs/partial',
 				version: '0.1.0',
 				exports: ['.'],
+				tested: true,
 				status: {
 					upstream: { package: 'react-partial', version: '1.0.0' },
 					verified: 'partial',
@@ -56,6 +58,7 @@ describe('repository capability inventory', () => {
 		assert.equal(inventory.vanillaCores.zustand, 'zustand/vanilla');
 		assert.equal(inventory.reactApis.useState.status, 'same');
 		assert.equal(inventory.bindings['@octanejs/zustand'].status.upstream.package, 'zustand');
+		assert.equal(inventory.bindings['@octanejs/zustand'].tested, true);
 		assert.equal(inventory.fingerprint.length, 64);
 	});
 
@@ -64,12 +67,25 @@ describe('repository capability inventory', () => {
 		assert.equal(satisfiesRange('2.4.0', '^3.0.0'), false);
 		assert.equal(satisfiesRange('0.4.3', '^0.4.0'), true);
 		assert.equal(satisfiesRange('0.5.0', '^0.4.0'), false);
+		assert.equal(satisfiesRange('0.9.0', '^0'), true);
+		assert.equal(satisfiesRange('0.2.0', '^0.1'), false);
 		assert.equal(satisfiesRange('2.4.0', '2'), true);
 		assert.equal(satisfiesRange('2.4.0', '2.4'), true);
+		assert.equal(satisfiesRange('2.4.0', '>=2.0.0 <3.0.0'), true);
+		assert.equal(satisfiesRange('2.4.0', '^1.0.0 || >=2.0.0 <3.0.0'), true);
+		assert.equal(satisfiesRange('1.0.0', '>1.0.0 >=1.0.0'), false);
+		assert.equal(satisfiesRange('2.0.0', '<2.0.0 <=2.0.0'), false);
 		assert.equal(satisfiesRange('2.4.0', 'workspace:*'), false);
 		assert.equal(
 			selectHighestSatisfyingVersion(['1.0.0', '1.9.0', '2.0.0', '1.10.0-beta.1'], '^1.0.0'),
 			'1.9.0',
+		);
+		assert.equal(
+			selectHighestSatisfyingVersion(
+				['1.0.0', '1.9.0', '2.0.0', '2.4.0', '3.0.0'],
+				'^1.0.0 || >=2.0.0 <3.0.0',
+			),
+			'2.4.0',
 		);
 	});
 });
@@ -105,6 +121,37 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-partial'].state, 'blocked');
 		assert.match(graph.nodes['pkg:react-partial'].repair, /extend @octanejs\/partial/);
 		assert.equal(graph.nodes['pkg:consumer'].state, 'blocked');
+	});
+
+	test('does not reuse an existing binding without executable test evidence', () => {
+		const inventory = fixtureInventory();
+		inventory.bindings['@octanejs/covered'].tested = false;
+		const graph = planPortGraph({
+			targets: [licensedTarget('consumer', '1.0.0', { 'react-covered': '^2.0.0' })],
+			inventory,
+		});
+
+		assert.equal(graph.nodes['pkg:react-covered'].action, 'extend-binding');
+		assert.equal(graph.nodes['pkg:react-covered'].state, 'blocked');
+		assert.match(graph.nodes['pkg:react-covered'].blockers.join('\n'), /test evidence/i);
+	});
+
+	test('extends an existing binding when shipped code needs an unexported subpath', () => {
+		const target = licensedTarget('consumer', '1.0.0', { 'react-covered': '^2.0.0' });
+		target.sourceAnalysis = {
+			verdict: 'bridgeable',
+			filesScanned: 1,
+			truncated: false,
+			hazards: [],
+			apis: [],
+			imports: ['react-covered/advanced'],
+		};
+		const graph = planPortGraph({ targets: [target], inventory: fixtureInventory() });
+
+		assert.deepEqual(graph.nodes['pkg:react-covered'].requiredSubpaths, ['./advanced']);
+		assert.equal(graph.nodes['pkg:react-covered'].action, 'extend-binding');
+		assert.equal(graph.nodes['pkg:react-covered'].state, 'blocked');
+		assert.match(graph.nodes['pkg:react-covered'].blockers.join('\n'), /required subpath/i);
 	});
 
 	test('deduplicates a shared prerequisite and isolates an unrelated blocked branch', () => {

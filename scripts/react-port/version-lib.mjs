@@ -14,7 +14,7 @@ export function compareVersions(leftValue, rightValue) {
 	return 0;
 }
 
-function rangeInterval(range) {
+function singleRangeInterval(range) {
 	if (typeof range !== 'string') return null;
 	const value = range.trim();
 	if (value === '*' || value.toLowerCase() === 'latest') {
@@ -47,8 +47,8 @@ function rangeInterval(range) {
 		let upper;
 		if (simple[1] === '~') {
 			upper = parts.length === 1 ? [lower[0] + 1, 0, 0] : [lower[0], lower[1] + 1, 0];
-		} else if (lower[0] > 0) upper = [lower[0] + 1, 0, 0];
-		else if (lower[1] > 0) upper = [0, lower[1] + 1, 0];
+		} else if (parts.length === 1 || lower[0] > 0) upper = [lower[0] + 1, 0, 0];
+		else if (parts.length === 2 || lower[1] > 0) upper = [0, lower[1] + 1, 0];
 		else upper = [0, 0, lower[2] + 1];
 		return { lower, lowerInclusive: true, upper, upperInclusive: false };
 	}
@@ -83,18 +83,35 @@ function rangeInterval(range) {
 		for (const [, operator, versionText] of comparators) {
 			const version = parseStableVersion(versionText);
 			if (operator.startsWith('>')) {
-				if (compareVersions(version, interval.lower) >= 0) {
+				const comparison = compareVersions(version, interval.lower);
+				if (comparison > 0) {
 					interval.lower = version;
 					interval.lowerInclusive = operator === '>=';
+				} else if (comparison === 0) {
+					interval.lowerInclusive &&= operator === '>=';
 				}
-			} else if (!interval.upper || compareVersions(version, interval.upper) <= 0) {
+			} else if (!interval.upper) {
 				interval.upper = version;
 				interval.upperInclusive = operator === '<=';
+			} else {
+				const comparison = compareVersions(version, interval.upper);
+				if (comparison < 0) {
+					interval.upper = version;
+					interval.upperInclusive = operator === '<=';
+				} else if (comparison === 0) {
+					interval.upperInclusive &&= operator === '<=';
+				}
 			}
 		}
 		return interval;
 	}
 	return null;
+}
+
+function rangeIntervals(range) {
+	if (typeof range !== 'string') return null;
+	const intervals = range.split('||').map((part) => singleRangeInterval(part));
+	return intervals.every(Boolean) ? intervals : null;
 }
 
 function intervalContains(interval, version) {
@@ -108,15 +125,15 @@ function intervalContains(interval, version) {
 export function satisfiesRange(version, range) {
 	if (version === range) return true;
 	const parsedVersion = parseStableVersion(version);
-	const interval = rangeInterval(range);
-	return Boolean(parsedVersion && interval && intervalContains(interval, parsedVersion));
+	const intervals = rangeIntervals(range);
+	return Boolean(
+		parsedVersion &&
+		intervals &&
+		intervals.some((interval) => intervalContains(interval, parsedVersion)),
+	);
 }
 
-export function rangesOverlap(leftRange, rightRange) {
-	if (leftRange === rightRange) return true;
-	const left = rangeInterval(leftRange);
-	const right = rangeInterval(rightRange);
-	if (!left || !right) return false;
+function intervalsOverlap(left, right) {
 	const lower = compareVersions(left.lower, right.lower) >= 0 ? left.lower : right.lower;
 	const upperCandidates = [left.upper, right.upper].filter(Boolean);
 	if (upperCandidates.length === 0) return true;
@@ -128,6 +145,16 @@ export function rangesOverlap(leftRange, rightRange) {
 	if (comparison < 0) return true;
 	if (comparison > 0) return false;
 	return intervalContains(left, lower) && intervalContains(right, lower);
+}
+
+export function rangesOverlap(leftRange, rightRange) {
+	if (leftRange === rightRange) return true;
+	const leftIntervals = rangeIntervals(leftRange);
+	const rightIntervals = rangeIntervals(rightRange);
+	if (!leftIntervals || !rightIntervals) return false;
+	return leftIntervals.some((left) =>
+		rightIntervals.some((right) => intervalsOverlap(left, right)),
+	);
 }
 
 export function selectHighestSatisfyingVersion(versions, range) {

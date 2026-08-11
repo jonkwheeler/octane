@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
+import { execFile } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { promisify } from 'node:util';
 import {
 	auditShippedClosure,
 	createEvidenceMatrix,
@@ -19,10 +21,16 @@ import {
 	writeManifestAtomically,
 } from './state-lib.mjs';
 
+const execFileAsync = promisify(execFile);
+const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
+const MAX_COMMAND_TIMEOUT_MS = 30 * 60 * 1_000;
+const MAX_COMMAND_OUTPUT_BYTES = 1024 * 1024;
+
 function usage() {
 	return `Usage:
   node scripts/react-port/evidence.mjs init --batch <id> --node <pkg:id> --category <kind> [...]
   node scripts/react-port/evidence.mjs record --batch <id> --node <pkg:id> --gate <id> --status <status> [evidence]
+  node scripts/react-port/evidence.mjs run --batch <id> --node <pkg:id> --gate <id> -- <executable> [args...]
   node scripts/react-port/evidence.mjs verify --batch <id> --node <pkg:id> --package-dir <path> \
     --expected-directory <repo-path> --registrations <json> --crosswalk <json> --closure <json>
 
@@ -30,25 +38,29 @@ Common options:
   --work-root <directory>  Batch root (default: .react-port-work)
   --recover-stale-lock     Explicitly recover a lock older than 30 minutes
 
-Record evidence with --command and/or --artifact plus --observed. Blocked rows
-need --reason and --repair; inapplicable rows need --reason.
+Use run for command-backed passed/failed evidence; commands execute directly
+without a shell. Record accepts existing --artifact evidence, blocked rows with
+--reason and --repair, or inapplicable rows with --reason.
 `;
 }
 
 function parseArguments(arguments_) {
-	const command = arguments_[0];
-	if (!['init', 'record', 'verify'].includes(command))
-		throw new Error('Expected init, record, or verify');
+	const separatorIndex = arguments_.indexOf('--');
+	const optionArguments = separatorIndex === -1 ? arguments_ : arguments_.slice(0, separatorIndex);
+	const commandArguments = separatorIndex === -1 ? [] : arguments_.slice(separatorIndex + 1);
+	const command = optionArguments[0];
+	if (!['init', 'record', 'run', 'verify'].includes(command))
+		throw new Error('Expected init, record, run, or verify');
 	const options = { category: [], workRoot: path.join(process.cwd(), '.react-port-work') };
-	for (let index = 1; index < arguments_.length; index += 1) {
-		const argument = arguments_[index];
+	for (let index = 1; index < optionArguments.length; index += 1) {
+		const argument = optionArguments[index];
 		if (argument === '--recover-stale-lock') {
 			options.recoverStaleLock = true;
 			continue;
 		}
 		if (!argument.startsWith('--')) throw new Error(`Unexpected argument: ${argument}`);
 		const name = argument.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-		const value = arguments_[index + 1];
+		const value = optionArguments[index + 1];
 		if (!value) throw new Error(`${argument} requires a value`);
 		if (name === 'category') options.category.push(value);
 		else if (name === 'workRoot') options.workRoot = path.resolve(value);
@@ -61,7 +73,10 @@ function parseArguments(arguments_) {
 	if (!options.node || !/^pkg:[@a-z0-9][@a-z0-9._/-]*$/i.test(options.node)) {
 		throw new Error('--node requires a pkg:<package-name> graph id');
 	}
-	return { command, options };
+	if (command !== 'run' && commandArguments.length > 0) {
+		throw new Error('Only run accepts command arguments after --');
+	}
+	return { command, options, commandArguments };
 }
 
 function readJson(filePath, label) {
@@ -74,12 +89,20 @@ function readJson(filePath, label) {
 	}
 }
 
-function noticePaths(node) {
-	const paths = [
-		...(node.license?.published?.notices ?? []),
-		...(node.license?.source?.notices ?? []),
-	].map((notice) => path.posix.basename(notice.path));
-	return [...new Set(paths)].sort();
+function attributionHashes(node) {
+	const verdicts = [node.license?.published, node.license?.source];
+	return {
+		licenses: [
+			...new Set(verdicts.flatMap((verdict) => verdict?.evidence ?? []).map((item) => item.sha256)),
+		]
+			.filter(Boolean)
+			.sort(),
+		notices: [
+			...new Set(verdicts.flatMap((verdict) => verdict?.notices ?? []).map((item) => item.sha256)),
+		]
+			.filter(Boolean)
+			.sort(),
+	};
 }
 
 function setAutomatedGate(matrix, gateId, report, { artifact, passedObserved, repair }) {
@@ -98,7 +121,21 @@ function setAutomatedGate(matrix, gateId, report, { artifact, passedObserved, re
 	}
 }
 
-async function operate(command, options, manifest, batchDirectory) {
+function commandTimeout(options) {
+	if (options.timeoutMs === undefined) return DEFAULT_COMMAND_TIMEOUT_MS;
+	const timeout = Number(options.timeoutMs);
+	if (!Number.isSafeInteger(timeout) || timeout < 1 || timeout > MAX_COMMAND_TIMEOUT_MS) {
+		throw new Error(`--timeout-ms must be an integer from 1 to ${MAX_COMMAND_TIMEOUT_MS}`);
+	}
+	return timeout;
+}
+
+function commandObservation(stdout, stderr, fallback) {
+	const output = [stdout, stderr].filter(Boolean).join('\n').trim();
+	return sanitizeForReport(output || fallback);
+}
+
+async function operate(command, options, manifest, batchDirectory, commandArguments) {
 	const node = manifest.nodes[options.node];
 	if (!node) throw new Error(`Batch has no node ${options.node}`);
 
@@ -132,6 +169,18 @@ async function operate(command, options, manifest, batchDirectory) {
 	}
 	if (command === 'record') {
 		if (!options.gate || !options.status) throw new Error('record requires --gate and --status');
+		if (options.command) {
+			throw new Error('record cannot claim command evidence; use run -- <executable> [args...]');
+		}
+		if (['passed', 'failed'].includes(options.status)) {
+			if (!options.artifact) {
+				throw new Error('record passed/failed evidence requires an existing --artifact');
+			}
+			options.artifact = path.resolve(options.artifact);
+			if (!existsSync(options.artifact)) {
+				throw new Error(`record artifact does not exist: ${options.artifact}`);
+			}
+		}
 		const evidence = sanitizeForReport({
 			status: options.status,
 			command: options.command,
@@ -145,6 +194,50 @@ async function operate(command, options, manifest, batchDirectory) {
 			schemaVersion: 1,
 			command,
 			status: 'passed',
+			nodeId: options.node,
+			gate: node.evidenceMatrix.gates[options.gate],
+		};
+	}
+	if (command === 'run') {
+		if (!options.gate) throw new Error('run requires --gate');
+		if (commandArguments.length === 0) {
+			throw new Error('run requires an executable and arguments after --');
+		}
+		const commandDisplay = JSON.stringify(commandArguments);
+		let evidence;
+		try {
+			const { stdout, stderr } = await execFileAsync(
+				commandArguments[0],
+				commandArguments.slice(1),
+				{
+					cwd: process.cwd(),
+					encoding: 'utf8',
+					maxBuffer: MAX_COMMAND_OUTPUT_BYTES,
+					timeout: commandTimeout(options),
+					windowsHide: true,
+				},
+			);
+			evidence = {
+				status: 'passed',
+				command: commandDisplay,
+				observed: commandObservation(stdout, stderr, 'Exited with status 0.'),
+			};
+		} catch (error) {
+			evidence = {
+				status: 'failed',
+				command: commandDisplay,
+				observed: commandObservation(
+					error?.stdout,
+					error?.stderr,
+					error instanceof Error ? error.message : String(error),
+				),
+			};
+		}
+		recordEvidence(node.evidenceMatrix, options.gate, evidence);
+		return {
+			schemaVersion: 1,
+			command,
+			status: evidence.status === 'passed' ? 'passed' : 'blocked',
 			nodeId: options.node,
 			gate: node.evidenceMatrix.gates[options.gate],
 		};
@@ -175,10 +268,12 @@ async function operate(command, options, manifest, batchDirectory) {
 			cases: [],
 		};
 	}
+	const attribution = attributionHashes(node);
 	const packageReport = inspectBindingPackage(path.resolve(options.packageDir), {
 		expectedDirectory: options.expectedDirectory,
 		identity: node.identity,
-		expectedNoticePaths: noticePaths(node),
+		expectedLicenseHashes: attribution.licenses,
+		expectedNoticeHashes: attribution.notices,
 	});
 	const closureReport = auditShippedClosure({
 		nodeId: options.node,
@@ -251,7 +346,13 @@ async function main() {
 			allowStaleRecovery: parsed.options.recoverStaleLock,
 		});
 		const manifest = validateBatchManifest(JSON.parse(readFileSync(manifestPath, 'utf8')));
-		const report = await operate(parsed.command, parsed.options, manifest, batchDirectory);
+		const report = await operate(
+			parsed.command,
+			parsed.options,
+			manifest,
+			batchDirectory,
+			parsed.commandArguments,
+		);
 		await writeManifestAtomically(batchDirectory, manifest, { owner: lock.owner });
 		process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 		if (report.status === 'blocked') process.exitCode = 2;

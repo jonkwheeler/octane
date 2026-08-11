@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import {
 	KNOWN_BINDINGS,
@@ -51,6 +51,7 @@ export function buildCapabilityInventory({
 					name: binding.name,
 					version: binding.version,
 					exports: [...(binding.exports ?? [])].sort(),
+					tested: binding.tested === true,
 					status: binding.status,
 				},
 			])
@@ -73,6 +74,14 @@ function hashFile(filePath) {
 	return fingerprint(readFileSync(filePath, 'utf8'));
 }
 
+function hasObservableTests(directory) {
+	const testsDirectory = path.join(directory, 'tests');
+	if (!existsSync(testsDirectory)) return false;
+	return readdirSync(testsDirectory, { recursive: true, withFileTypes: true }).some(
+		(entry) => entry.isFile() && /\.test\.[cm]?[jt]sx?$/.test(entry.name),
+	);
+}
+
 export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
 	const bindings = getBindingPackages().map((binding) => {
 		if (!existsSync(binding.statusPath)) {
@@ -82,6 +91,8 @@ export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
 			name: binding.name,
 			version: binding.version,
 			exports: manifestExports(binding.manifest),
+			tested:
+				typeof binding.manifest.scripts?.test === 'string' && hasObservableTests(binding.directory),
 			status: JSON.parse(readFileSync(binding.statusPath, 'utf8')),
 		};
 	});
@@ -107,6 +118,16 @@ function packageNameFromBlockedTarget(target) {
 	return separator > 0 ? input.slice(0, separator) : input;
 }
 
+function requiredSubpathsForDependency(imports, dependencyName) {
+	return imports.flatMap((specifier) => {
+		if (specifier === dependencyName) return ['.'];
+		if (specifier.startsWith(`${dependencyName}/`)) {
+			return [`.${specifier.slice(dependencyName.length)}`];
+		}
+		return [];
+	});
+}
+
 function existingBindingAssessment(node, inventory) {
 	const bindingName = inventory.sourceBindings[node.packageName];
 	if (!bindingName) return null;
@@ -125,6 +146,12 @@ function existingBindingAssessment(node, inventory) {
 	}
 	if (!binding.status.verified || binding.status.verified === 'partial') {
 		return { adequate: false, reason: `${bindingName} has not recorded complete verification.` };
+	}
+	if (!binding.tested) {
+		return {
+			adequate: false,
+			reason: `${bindingName} has no executable observable test evidence.`,
+		};
 	}
 	if (
 		!node.constraints.every((constraint) =>
@@ -230,6 +257,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 				packageName,
 				constraints: [],
 				dependsOn: [],
+				requiredSubpaths: [],
 				requested: false,
 				state: 'classified',
 				action: 'audit-dependency',
@@ -260,6 +288,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 				truncated: target.sourceAnalysis.truncated,
 				hazards: target.sourceAnalysis.hazards ?? [],
 				apis: target.sourceAnalysis.apis ?? [],
+				imports: target.sourceAnalysis.imports ?? [],
 			};
 		}
 		if (target.status === 'blocked') {
@@ -277,6 +306,9 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			if (OCTANE_RUNTIME_PACKAGES.has(dependencyName)) continue;
 			const dependencyNode = ensureNode(dependencyName);
 			dependencyNode.constraints.push({ range, via: target.identity.packageName });
+			dependencyNode.requiredSubpaths.push(
+				...requiredSubpathsForDependency(target.sourceAnalysis?.imports ?? [], dependencyName),
+			);
 			targetNode.dependsOn.push(dependencyNode.id);
 		}
 	}
@@ -288,6 +320,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 				: left.via.localeCompare(right.via),
 		);
 		node.dependsOn = [...new Set(node.dependsOn)].sort();
+		node.requiredSubpaths = [...new Set(node.requiredSubpaths)].sort();
 		for (let left = 0; left < node.constraints.length; left += 1) {
 			for (let right = left + 1; right < node.constraints.length; right += 1) {
 				if (rangesOverlap(node.constraints[left].range, node.constraints[right].range)) continue;
@@ -407,6 +440,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			vanillaCore: node.vanillaCore ?? null,
 			octanePublicSourceSha256: inventory.octanePublicSourceSha256,
 			differencesSha256: inventory.differencesSha256,
+			requiredSubpaths: node.requiredSubpaths,
 			reactApis: node.action === 'reuse-package' ? null : inventory.reactApis,
 			feasibility: node.feasibility ?? null,
 			identity: node.identity ?? null,

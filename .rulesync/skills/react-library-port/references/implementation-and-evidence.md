@@ -126,14 +126,19 @@ pnpm react-port:evidence -- init --batch <id> --node pkg:<name> \
   --category <thin-core|hooks-store|dom-component|provider-portal|ssr-sensitive|async-suspense|performance-sensitive>
 ```
 
-Record observed results after running each command. A pass needs a command or
-artifact plus the observed result; blocked needs both reason and repair;
-inapplicable is accepted only for gates that allow it and needs a reason.
+Run every command-backed gate through the evidence runner. It executes an argv
+vector directly without a shell, captures bounded output, records the actual
+exit status, and cannot turn a failed command into a pass:
 
 ```bash
-pnpm react-port:evidence -- record --batch <id> --node pkg:<name> \
-  --gate <gate-id> --status passed --command '<command>' --observed '<result>'
+pnpm react-port:evidence -- run --batch <id> --node pkg:<name> \
+  --gate <gate-id> -- pnpm --dir packages/<binding> test
 ```
+
+Use `record` only for an existing `--artifact`, for a blocked row with both
+`--reason` and `--repair`, or for an allowed inapplicable row with `--reason`.
+It rejects passed/failed command claims that it did not execute. A skipped,
+unrun, or missing-output command is never `passed`.
 
 Always require:
 
@@ -200,10 +205,12 @@ pnpm react-port:evidence -- verify --batch <id> --node pkg:<name> \
 ```
 
 This command inspects package shape, exports, Octane singleton dependencies,
-status, `UPSTREAM.md`, MIT/notice files, forbidden ambient `.tsrx` declarations,
-the complete upstream crosswalk, and the final licensed graph closure. It alone
-advances an `implementing` node to `verified`; missing required evidence leaves
-the node implementing and exits nonzero.
+status, `UPSTREAM.md`, forbidden ambient `.tsrx` declarations, the complete
+upstream crosswalk, and the final licensed graph closure. It also requires every
+published/source license and NOTICE SHA-256 captured at preflight to appear as
+exact packaged bytes in a root attribution artifact included by `files`. It
+alone advances an `implementing` node to `verified`; missing required evidence
+leaves the node implementing and exits nonzero.
 
 The final machine/human report must name each command and observed result, link
 every required evidence row to a test/artifact, list attribution files and

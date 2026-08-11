@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fingerprint, isRecognizableMitText } from './preflight-lib.mjs';
 
@@ -11,6 +11,8 @@ const CROSSWALK_CLASSIFICATIONS = new Set([
 	'unsupported',
 	'inapplicable',
 ]);
+const LICENSE_ARTIFACT_PATTERN = /^(?:licen[cs]e|copying)(?:[._-].*)?$/i;
+const NOTICE_ARTIFACT_PATTERN = /^notice(?:[._-].*)?$/i;
 
 const COMMON_GATES = [
 	['identity-license', 'Immutable identity and exact-MIT preflight', false],
@@ -179,18 +181,64 @@ function sourceFiles(directory) {
 		.map((entry) => path.join(entry.parentPath, entry.name));
 }
 
+function attributionArtifacts(packageDirectory, pattern) {
+	if (!existsSync(packageDirectory)) return [];
+	return readdirSync(packageDirectory, { withFileTypes: true })
+		.filter((entry) => entry.isFile() && pattern.test(entry.name))
+		.map((entry) => ({
+			name: entry.name,
+			sha256: hashFile(path.join(packageDirectory, entry.name)),
+		}))
+		.sort((left, right) => left.name.localeCompare(right.name));
+}
+
+function isConfinedExportTarget(packageDirectory, target) {
+	if (!target.startsWith('./')) return false;
+	try {
+		const packageRoot = realpathSync(packageDirectory);
+		const resolvedTarget = realpathSync(path.resolve(packageDirectory, target));
+		const relativeTarget = path.relative(packageRoot, resolvedTarget);
+		return (
+			!relativeTarget.startsWith('..') &&
+			!path.isAbsolute(relativeTarget) &&
+			statSync(resolvedTarget).isFile()
+		);
+	} catch {
+		return false;
+	}
+}
+
 export function inspectBindingPackage(
 	packageDirectory,
-	{ expectedDirectory, identity, expectedNoticePaths = [] },
+	{ expectedDirectory, identity, expectedLicenseHashes = [], expectedNoticeHashes = [] },
 ) {
 	const issues = [];
 	const requiredFiles = ['package.json', 'README.md', 'status.json', 'UPSTREAM.md', 'LICENSE'];
-	for (const relativePath of [...requiredFiles, ...expectedNoticePaths]) {
+	for (const relativePath of requiredFiles) {
 		if (!existsSync(path.join(packageDirectory, relativePath)))
 			issues.push(`Missing ${relativePath}`);
 	}
 	const manifest = readJson(path.join(packageDirectory, 'package.json'), issues, 'package.json');
 	const status = readJson(path.join(packageDirectory, 'status.json'), issues, 'status.json');
+	const licenseArtifacts = attributionArtifacts(packageDirectory, LICENSE_ARTIFACT_PATTERN);
+	const noticeArtifacts = attributionArtifacts(packageDirectory, NOTICE_ARTIFACT_PATTERN);
+	if (expectedLicenseHashes.length === 0) {
+		issues.push('Preflight license evidence has no content hashes');
+	}
+	for (const expectedHash of new Set(expectedLicenseHashes)) {
+		if (!licenseArtifacts.some((artifact) => artifact.sha256 === expectedHash)) {
+			issues.push(
+				`No packaged LICENSE artifact retains exact upstream bytes for hash ${expectedHash}`,
+			);
+		}
+	}
+	for (const expectedHash of new Set(expectedNoticeHashes)) {
+		if (!noticeArtifacts.some((artifact) => artifact.sha256 === expectedHash)) {
+			issues.push(
+				`No packaged NOTICE artifact retains exact upstream bytes for hash ${expectedHash}`,
+			);
+		}
+	}
 	if (manifest) {
 		if (!manifest.name?.startsWith('@octanejs/')) issues.push('package name must use @octanejs/*');
 		if (manifest.license !== 'MIT') issues.push('package.json license must be exact MIT');
@@ -207,7 +255,13 @@ export function inspectBindingPackage(
 			issues.push('octane dev dependency must be workspace:*');
 		if (typeof manifest.scripts?.test !== 'string')
 			issues.push('package must define a test script');
-		for (const packagedPath of ['src', 'README.md', 'UPSTREAM.md', 'LICENSE']) {
+		for (const packagedPath of [
+			'src',
+			'README.md',
+			'UPSTREAM.md',
+			...licenseArtifacts.map((artifact) => artifact.name),
+			...noticeArtifacts.map((artifact) => artifact.name),
+		]) {
 			if (!Array.isArray(manifest.files) || !manifest.files.includes(packagedPath)) {
 				issues.push(`package files must include ${packagedPath}`);
 			}
@@ -215,14 +269,7 @@ export function inspectBindingPackage(
 		const exportTargets = collectExportTargets(manifest.exports);
 		if (exportTargets.length === 0) issues.push('package must declare public exports');
 		for (const target of exportTargets) {
-			const resolvedTarget = path.resolve(packageDirectory, target);
-			const relativeTarget = path.relative(packageDirectory, resolvedTarget);
-			if (
-				!target.startsWith('./') ||
-				relativeTarget.startsWith('..') ||
-				path.isAbsolute(relativeTarget) ||
-				!existsSync(resolvedTarget)
-			) {
+			if (!isConfinedExportTarget(packageDirectory, target)) {
 				issues.push(`package export target is missing or escapes the package: ${target}`);
 			}
 		}
@@ -268,9 +315,15 @@ export function inspectBindingPackage(
 			);
 		}
 	}
+	const artifactPaths = new Set([
+		...requiredFiles,
+		...licenseArtifacts.map((artifact) => artifact.name),
+		...noticeArtifacts.map((artifact) => artifact.name),
+	]);
 	const artifacts = Object.fromEntries(
-		requiredFiles
+		[...artifactPaths]
 			.filter((relativePath) => existsSync(path.join(packageDirectory, relativePath)))
+			.sort()
 			.map((relativePath) => [relativePath, hashFile(path.join(packageDirectory, relativePath))]),
 	);
 	return {

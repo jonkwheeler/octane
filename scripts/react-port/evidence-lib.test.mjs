@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, mkdtemp, readFile, symlink, unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
@@ -33,6 +34,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.`;
+
+function sha256(content) {
+	return createHash('sha256').update(content).digest('hex');
+}
 
 describe('evidence matrix', () => {
 	test('derives mandatory gates from the binding category', () => {
@@ -111,7 +116,7 @@ describe('package and closure completion', () => {
 				engines: { node: '>=22' },
 				publishConfig: { access: 'public' },
 				repository: { directory: 'packages/widget' },
-				files: ['src', 'README.md', 'UPSTREAM.md', 'LICENSE'],
+				files: ['src', 'README.md', 'UPSTREAM.md', 'LICENSE', 'NOTICE'],
 				exports: { '.': './src/index.ts' },
 				scripts: { test: 'vitest run' },
 				dependencies: { 'widget-core': '^1.0.0' },
@@ -123,6 +128,7 @@ describe('package and closure completion', () => {
 		await writeFile(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
 		await writeFile(path.join(packageDirectory, 'README.md'), '# Widget\n');
 		await writeFile(path.join(packageDirectory, 'LICENSE'), MIT_TEXT);
+		await writeFile(path.join(packageDirectory, 'NOTICE'), 'Fixture attribution\n');
 		await writeFile(
 			path.join(packageDirectory, 'UPSTREAM.md'),
 			'# Upstream\n\nwidget@1.0.0\n\ncommit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n\n## Source boundary\n\nAdapted src/index.ts.\n',
@@ -139,8 +145,44 @@ describe('package and closure completion', () => {
 		const result = inspectBindingPackage(packageDirectory, {
 			expectedDirectory: 'packages/widget',
 			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
 		});
 		assert.equal(result.status, 'passed', result.issues.join('\n'));
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+		manifest.files = manifest.files.filter((file) => file !== 'NOTICE');
+		await writeFile(manifestPath, JSON.stringify(manifest));
+		const noticeOmitted = inspectBindingPackage(packageDirectory, {
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.match(noticeOmitted.issues.join('\n'), /package files must include NOTICE/);
+		manifest.files.push('NOTICE');
+		await writeFile(manifestPath, JSON.stringify(manifest));
+		await writeFile(path.join(packageDirectory, 'NOTICE'), 'Incomplete attribution\n');
+		const changedNotice = inspectBindingPackage(packageDirectory, {
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.match(changedNotice.issues.join('\n'), /NOTICE.*exact upstream bytes/i);
+		await writeFile(path.join(packageDirectory, 'NOTICE'), 'Fixture attribution\n');
+
+		await writeFile(path.join(root, 'outside.ts'), 'export const escaped = true;\n');
+		await unlink(path.join(packageDirectory, 'src/index.ts'));
+		await symlink(path.join(root, 'outside.ts'), path.join(packageDirectory, 'src/index.ts'));
+		const escaped = inspectBindingPackage(packageDirectory, {
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.equal(escaped.status, 'blocked');
+		assert.match(escaped.issues.join('\n'), /export target.*escapes/i);
 	});
 
 	test('blocks unplanned runtime imports and adapted sources without exact-MIT evidence', () => {

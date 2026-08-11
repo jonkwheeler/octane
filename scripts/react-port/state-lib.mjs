@@ -84,9 +84,25 @@ export function transitionNodeState(
 	return node;
 }
 
+function includeDependentInvalidations(nodes, initialIds) {
+	const invalidated = new Set(initialIds);
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const [id, node] of Object.entries(nodes)) {
+			if (invalidated.has(id) || !node.dependsOn.some((dependency) => invalidated.has(dependency)))
+				continue;
+			invalidated.add(id);
+			changed = true;
+		}
+	}
+	return invalidated;
+}
+
 export function invalidateChangedEvidence(manifest, nextFingerprints) {
 	validateBatchManifest(manifest);
-	const invalidated = new Set(
+	const invalidated = includeDependentInvalidations(
+		manifest.nodes,
 		Object.entries(nextFingerprints)
 			.filter(
 				([id, nextFingerprint]) =>
@@ -94,16 +110,6 @@ export function invalidateChangedEvidence(manifest, nextFingerprints) {
 			)
 			.map(([id]) => id),
 	);
-	let changed = true;
-	while (changed) {
-		changed = false;
-		for (const [id, node] of Object.entries(manifest.nodes)) {
-			if (invalidated.has(id) || !node.dependsOn.some((dependency) => invalidated.has(dependency)))
-				continue;
-			invalidated.add(id);
-			changed = true;
-		}
-	}
 	for (const id of invalidated) {
 		const node = manifest.nodes[id];
 		node.state = 'resolved';
@@ -122,7 +128,7 @@ export function reconcileBatchManifest(previousManifest, nextManifest) {
 		throw new Error('Cannot resume a different batchId');
 	}
 
-	const invalidated = new Set();
+	const changedNodes = [];
 	for (const [id, nextNode] of Object.entries(nextManifest.nodes)) {
 		const previousNode = previousManifest.nodes[id];
 		if (
@@ -130,19 +136,10 @@ export function reconcileBatchManifest(previousManifest, nextManifest) {
 			previousNode.nodeFingerprint !== nextNode.nodeFingerprint ||
 			previousNode.evidenceFingerprint !== nextNode.evidenceFingerprint
 		) {
-			invalidated.add(id);
+			changedNodes.push(id);
 		}
 	}
-	let changed = true;
-	while (changed) {
-		changed = false;
-		for (const [id, node] of Object.entries(nextManifest.nodes)) {
-			if (invalidated.has(id) || !node.dependsOn.some((dependency) => invalidated.has(dependency)))
-				continue;
-			invalidated.add(id);
-			changed = true;
-		}
-	}
+	const invalidated = includeDependentInvalidations(nextManifest.nodes, changedNodes);
 
 	const merged = structuredClone(nextManifest);
 	for (const [id, nextNode] of Object.entries(merged.nodes)) {

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -9,6 +10,12 @@ import { recordEvidence } from './evidence-lib.mjs';
 import { createBatchManifest } from './state-lib.mjs';
 
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
+const MIT_TEXT =
+	'MIT License Copyright Fixture. Permission is hereby granted, free of charge, to any person obtaining a copy. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.';
+
+function sha256(content) {
+	return createHash('sha256').update(content).digest('hex');
+}
 
 function createReadyBatch() {
 	const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
@@ -27,8 +34,16 @@ function createReadyBatch() {
 				identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
 				license: {
 					policy: 'exact-mit-v1',
-					published: { status: 'passed' },
-					source: { status: 'passed' },
+					published: {
+						status: 'passed',
+						evidence: [{ path: 'package/LICENSE', sha256: sha256(MIT_TEXT) }],
+						notices: [],
+					},
+					source: {
+						status: 'passed',
+						evidence: [{ path: 'LICENSE', sha256: sha256(MIT_TEXT) }],
+						notices: [],
+					},
 				},
 			},
 		},
@@ -69,10 +84,7 @@ function createCompletePackage(root) {
 	writeFileSync(path.join(packageDirectory, 'src/index.ts'), 'export const widget = true;\n');
 	writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
 	writeFileSync(path.join(packageDirectory, 'README.md'), '# Widget\n');
-	writeFileSync(
-		path.join(packageDirectory, 'LICENSE'),
-		'MIT License Copyright Fixture. Permission is hereby granted, free of charge, to any person obtaining a copy. The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY.',
-	);
+	writeFileSync(path.join(packageDirectory, 'LICENSE'), MIT_TEXT);
 	writeFileSync(
 		path.join(packageDirectory, 'UPSTREAM.md'),
 		`# Upstream\n\nwidget@1.0.0\n\ncommit ${'a'.repeat(40)}\n\n## Source boundary\n\nAdapted public behavior.\n`,
@@ -96,16 +108,14 @@ describe('evidence CLI', () => {
 		assert.equal(initialized.status, 0, initialized.stderr);
 
 		const recorded = runEvidence([
-			'record',
+			'run',
 			...common,
 			'--gate',
 			'package-tests',
-			'--status',
-			'passed',
-			'--command',
-			'pnpm --dir packages/widget test',
-			'--observed',
-			'12 tests passed',
+			'--',
+			process.execPath,
+			'-e',
+			"process.stdout.write('12 tests passed')",
 		]);
 		assert.equal(recorded.status, 0, recorded.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
@@ -114,6 +124,74 @@ describe('evidence CLI', () => {
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
 			'passed',
 		);
+		assert.match(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
+			/12 tests passed/,
+		);
+	});
+
+	test('records command failures and rejects unexecuted command claims', () => {
+		const { workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+
+		const failed = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			process.execPath,
+			'-e',
+			"process.stderr.write('fixture failed'); process.exit(3)",
+		]);
+		assert.equal(failed.status, 2);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+			'failed',
+		);
+		assert.match(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
+			/fixture failed/,
+		);
+
+		const claimed = runEvidence([
+			'record',
+			...common,
+			'--gate',
+			'typecheck',
+			'--status',
+			'passed',
+			'--command',
+			'pnpm typecheck',
+			'--observed',
+			'claimed pass',
+		]);
+		assert.equal(claimed.status, 2);
+		assert.match(claimed.stderr, /cannot claim command evidence/i);
+	});
+
+	test('passes shell metacharacters as literal argv data', () => {
+		const { workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const literal = '$(printf injected); && | >';
+		const result = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'typecheck',
+			'--',
+			process.execPath,
+			'-e',
+			'process.stdout.write(process.argv[1])',
+			literal,
+		]);
+
+		assert.equal(result.status, 0, result.stderr);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(manifest.nodes['pkg:widget'].evidenceMatrix.gates.typecheck.observed, literal);
 	});
 
 	test('refuses verification while required evidence is missing', () => {

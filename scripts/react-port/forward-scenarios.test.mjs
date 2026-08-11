@@ -24,6 +24,7 @@ function inventory() {
 				name: '@octanejs/covered',
 				version: '0.1.0',
 				exports: ['.'],
+				tested: true,
 				status: {
 					upstream: { package: 'react-covered', version: '2.4.0' },
 					verified: '2026-08-01',
@@ -33,6 +34,7 @@ function inventory() {
 				name: '@octanejs/partial',
 				version: '0.1.0',
 				exports: ['.'],
+				tested: true,
 				status: {
 					upstream: { package: 'react-partial', version: '1.0.0' },
 					verified: 'partial',

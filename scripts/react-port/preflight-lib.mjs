@@ -1,14 +1,12 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
+import ts from 'typescript';
 import { bridgeReportFromSource } from '../../packages/octane-mcp-server/src/bridge.js';
+import { decodePathPart, parseGitHubUrl, parseInput } from './input-lib.mjs';
+import { fingerprint, sanitizeForReport, stableStringify } from './report-lib.mjs';
 import { selectHighestSatisfyingVersion } from './version-lib.mjs';
 
-const PACKAGE_NAME_PATTERN =
-	/^(?:@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*|[a-z0-9][a-z0-9._-]*)$/;
-const GITHUB_PART_PATTERN = /^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$/;
-const SENSITIVE_KEY_PATTERN = /(?:authorization|cookie|password|secret|token|api[-_]?key)/i;
-const SENSITIVE_VALUE_PATTERN = /\b(?:gh[oprsu]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b/g;
 const SUPPORTED_INTEGRITY_ALGORITHMS = ['sha512', 'sha384', 'sha256'];
 
 const DEFAULT_ARCHIVE_LIMITS = Object.freeze({
@@ -23,6 +21,7 @@ const REMOTE_LIMITS = Object.freeze({
 	expandedArtifactBytes: 300 * 1024 * 1024,
 	licenseBytes: 1024 * 1024,
 	redirects: 3,
+	requestTimeoutMs: 30_000,
 });
 const LICENSE_NAME_PATTERN = /^(?:licen[cs]e|copying)(?:\..*)?$/i;
 const NOTICE_NAME_PATTERN = /^notice(?:\..*)?$/i;
@@ -37,129 +36,9 @@ const SOURCE_SKIP_PARTS = new Set([
 	'tests',
 ]);
 const MAX_SOURCE_FILES = 400;
+const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
 
-function assertPackageName(packageName) {
-	if (!PACKAGE_NAME_PATTERN.test(packageName)) {
-		throw new Error(`Invalid package input: ${packageName}`);
-	}
-}
-
-function parsePackageSpecifier(input) {
-	let packageName;
-	let selector = null;
-
-	if (input.startsWith('@')) {
-		const slash = input.indexOf('/');
-		const selectorSeparator = slash === -1 ? -1 : input.indexOf('@', slash);
-		packageName = selectorSeparator === -1 ? input : input.slice(0, selectorSeparator);
-		selector = selectorSeparator === -1 ? null : input.slice(selectorSeparator + 1);
-	} else {
-		const selectorSeparator = input.lastIndexOf('@');
-		packageName = selectorSeparator <= 0 ? input : input.slice(0, selectorSeparator);
-		selector = selectorSeparator <= 0 ? null : input.slice(selectorSeparator + 1);
-	}
-
-	assertPackageName(packageName);
-	if (selector !== null && (!selector || /[\s\\/]/.test(selector))) {
-		throw new Error(`Invalid package input selector: ${input}`);
-	}
-
-	return { kind: 'npm', packageName, selector };
-}
-
-function decodePathPart(part, label) {
-	let decoded;
-	try {
-		decoded = decodeURIComponent(part);
-	} catch {
-		throw new Error(`Invalid ${label} encoding`);
-	}
-	if (
-		!decoded ||
-		decoded === '.' ||
-		decoded === '..' ||
-		decoded.includes('/') ||
-		decoded.includes('\\')
-	) {
-		throw new Error(`Invalid ${label}`);
-	}
-	return decoded;
-}
-
-function parseNpmUrl(url) {
-	const parts = url.pathname.split('/').filter(Boolean);
-	if (parts[0] !== 'package') {
-		throw new Error('Only supported npm package URLs may be used');
-	}
-
-	let packageName;
-	let cursor;
-	if (parts[1]?.startsWith('@')) {
-		if (!parts[2]) throw new Error('Invalid npm package URL');
-		packageName = `${decodePathPart(parts[1], 'npm scope')}/${decodePathPart(parts[2], 'npm package')}`;
-		cursor = 3;
-	} else {
-		packageName = decodePathPart(parts[1] ?? '', 'npm package');
-		cursor = 2;
-	}
-	assertPackageName(packageName);
-
-	let selector = null;
-	if (parts.length > cursor) {
-		if (parts[cursor] !== 'v' || parts.length !== cursor + 2) {
-			throw new Error('Only supported npm package version URLs may be used');
-		}
-		selector = decodePathPart(parts[cursor + 1], 'npm version');
-	}
-
-	return { kind: 'npm', packageName, selector };
-}
-
-function parseGitHubUrl(url) {
-	const parts = url.pathname.split('/').filter(Boolean);
-	if (parts.length < 2) throw new Error('Invalid GitHub repository URL');
-
-	const owner = decodePathPart(parts[0], 'GitHub owner');
-	const repo = decodePathPart(parts[1], 'GitHub repository').replace(/\.git$/, '');
-	if (!GITHUB_PART_PATTERN.test(owner) || !GITHUB_PART_PATTERN.test(repo)) {
-		throw new Error('Invalid GitHub repository URL');
-	}
-
-	let ref = null;
-	let subdirectory = null;
-	if (parts.length > 2) {
-		if (parts[2] !== 'tree' || !parts[3]) {
-			throw new Error('Only supported GitHub repository and tree URLs may be used');
-		}
-		ref = decodePathPart(parts[3], 'GitHub ref');
-		const subdirectoryParts = parts.slice(4).map((part) => decodePathPart(part, 'GitHub path'));
-		subdirectory = subdirectoryParts.length === 0 ? null : subdirectoryParts.join('/');
-	}
-
-	return { kind: 'github', owner, repo, ref, subdirectory };
-}
-
-export function parseInput(rawInput) {
-	if (typeof rawInput !== 'string' || !rawInput.trim()) {
-		throw new Error('A package input is required');
-	}
-	const input = rawInput.trim();
-
-	if (/^[a-z][a-z0-9+.-]*:\/\//i.test(input)) {
-		const url = new URL(input);
-		if (url.protocol !== 'https:') throw new Error('Remote inputs must use HTTPS');
-		if (url.username || url.password || url.search || url.hash) {
-			throw new Error(
-				'Remote input URLs must not contain credentials, query parameters, or fragments',
-			);
-		}
-		if (url.hostname === 'www.npmjs.com' || url.hostname === 'npmjs.com') return parseNpmUrl(url);
-		if (url.hostname === 'github.com') return parseGitHubUrl(url);
-		throw new Error(`The host ${url.hostname} is not supported`);
-	}
-
-	return parsePackageSpecifier(input);
-}
+export { fingerprint, parseInput, sanitizeForReport, stableStringify };
 
 function normalizeLicenseText(content) {
 	return content
@@ -426,9 +305,12 @@ export function validateArchiveEntries(entries, limits = {}) {
 	const resolvedLimits = { ...DEFAULT_ARCHIVE_LIMITS, ...limits };
 	let fileCount = 0;
 	let totalBytes = 0;
+	const paths = new Set();
 
 	for (const entry of entries) {
 		validateArchivePath(entry.path, resolvedLimits.maxDepth);
+		if (paths.has(entry.path)) throw new Error(`Duplicate archive path: ${entry.path}`);
+		paths.add(entry.path);
 		if (entry.type === 'directory') continue;
 		if (entry.type !== 'file') throw new Error(`Unsupported archive entry type: ${entry.type}`);
 		if (!Number.isSafeInteger(entry.size) || entry.size < 0) {
@@ -531,30 +413,50 @@ async function readBoundedBody(response, maxBytes) {
 
 async function fetchBounded(
 	initialUrl,
-	{ fetchImpl, allowedHosts, maxBytes, headers = {}, redirects = REMOTE_LIMITS.redirects },
+	{
+		fetchImpl,
+		allowedHosts,
+		maxBytes,
+		headers = {},
+		redirects = REMOTE_LIMITS.redirects,
+		requestTimeoutMs = REMOTE_LIMITS.requestTimeoutMs,
+	},
 ) {
 	let currentUrl = new URL(initialUrl);
 	for (let redirectCount = 0; redirectCount <= redirects; redirectCount += 1) {
 		if (currentUrl.protocol !== 'https:' || !allowedHosts.has(currentUrl.hostname)) {
 			throw new Error(`Remote URL is outside the allowed HTTPS hosts: ${currentUrl.hostname}`);
 		}
-		const response = await fetchImpl(currentUrl, {
-			method: 'GET',
-			redirect: 'manual',
-			headers: {
-				'user-agent': 'octane-react-port-preflight/1',
-				...headers,
-			},
-		});
-		if (response.status >= 300 && response.status < 400) {
-			const location = response.headers.get('location');
-			if (!location || redirectCount === redirects)
-				throw new Error('Remote redirect limit exceeded');
-			currentUrl = new URL(location, currentUrl);
-			continue;
+		const controller = new AbortController();
+		const timeout = setTimeout(
+			() => controller.abort(new Error(`Remote request timed out after ${requestTimeoutMs}ms`)),
+			requestTimeoutMs,
+		);
+		try {
+			const response = await fetchImpl(currentUrl, {
+				method: 'GET',
+				redirect: 'manual',
+				signal: controller.signal,
+				headers: {
+					'user-agent': 'octane-react-port-preflight/1',
+					...headers,
+				},
+			});
+			if (response.status >= 300 && response.status < 400) {
+				const location = response.headers.get('location');
+				if (!location || redirectCount === redirects)
+					throw new Error('Remote redirect limit exceeded');
+				currentUrl = new URL(location, currentUrl);
+				continue;
+			}
+			if (!response.ok) throw new Error(`Remote request failed with HTTP ${response.status}`);
+			return {
+				bytes: await readBoundedBody(response, maxBytes),
+				finalUrl: currentUrl.toString(),
+			};
+		} finally {
+			clearTimeout(timeout);
 		}
-		if (!response.ok) throw new Error(`Remote request failed with HTTP ${response.status}`);
-		return { bytes: await readBoundedBody(response, maxBytes), finalUrl: currentUrl.toString() };
 	}
 	throw new Error('Remote redirect limit exceeded');
 }
@@ -635,8 +537,48 @@ function isStandardEvidencePath(entryPath) {
 
 function isScannableSourcePath(entryPath) {
 	if (!entryPath.startsWith('package/') || !SOURCE_FILE_PATTERN.test(entryPath)) return false;
+	if (/\.d\.[cm]?ts$/i.test(entryPath)) return false;
 	const parts = entryPath.slice('package/'.length).split('/');
 	return !parts.some((part) => SOURCE_SKIP_PARTS.has(part.toLowerCase()));
+}
+
+function collectModuleSpecifiers(sourceFiles) {
+	const imports = new Set();
+	for (const [entryPath, bytes] of sourceFiles) {
+		const sourceFile = ts.createSourceFile(
+			entryPath,
+			bytes.toString('utf8'),
+			ts.ScriptTarget.Latest,
+			false,
+		);
+		function visit(node) {
+			if (
+				(ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+				node.moduleSpecifier &&
+				ts.isStringLiteralLike(node.moduleSpecifier)
+			) {
+				imports.add(node.moduleSpecifier.text);
+			} else if (
+				ts.isImportEqualsDeclaration(node) &&
+				ts.isExternalModuleReference(node.moduleReference) &&
+				node.moduleReference.expression &&
+				ts.isStringLiteralLike(node.moduleReference.expression)
+			) {
+				imports.add(node.moduleReference.expression.text);
+			} else if (
+				ts.isCallExpression(node) &&
+				node.arguments.length === 1 &&
+				ts.isStringLiteralLike(node.arguments[0]) &&
+				(node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+					(ts.isIdentifier(node.expression) && node.expression.text === 'require'))
+			) {
+				imports.add(node.arguments[0].text);
+			}
+			ts.forEachChild(node, visit);
+		}
+		visit(sourceFile);
+	}
+	return [...imports].sort();
 }
 
 function scanFeasibilityHazards(source) {
@@ -653,7 +595,7 @@ function scanFeasibilityHazards(source) {
 	return hazards;
 }
 
-function collectArchiveEvidence(archiveBytes) {
+export function collectArchiveEvidence(archiveBytes) {
 	const uncompressed = gunzipSync(archiveBytes, {
 		maxOutputLength: REMOTE_LIMITS.expandedArtifactBytes,
 	});
@@ -689,16 +631,21 @@ function collectArchiveEvidence(archiveBytes) {
 	}
 
 	let sourceFileCount = 0;
+	let sourceBytes = 0;
 	let sourceTruncated = false;
 	const sourceFiles = parseTarArchive(uncompressed, {
 		select: (entryPath, entry) => {
-			if (!isScannableSourcePath(entryPath) || entry.size > REMOTE_LIMITS.licenseBytes)
-				return false;
-			if (sourceFileCount >= MAX_SOURCE_FILES) {
+			if (!isScannableSourcePath(entryPath)) return false;
+			if (
+				entry.size > REMOTE_LIMITS.licenseBytes ||
+				sourceFileCount >= MAX_SOURCE_FILES ||
+				sourceBytes + entry.size > MAX_SOURCE_BYTES
+			) {
 				sourceTruncated = true;
 				return false;
 			}
 			sourceFileCount += 1;
+			sourceBytes += entry.size;
 			return true;
 		},
 	}).files;
@@ -711,6 +658,7 @@ function collectArchiveEvidence(archiveBytes) {
 		filesScanned: sourceFiles.size,
 		truncated: sourceTruncated,
 		hazards: scanFeasibilityHazards(source),
+		imports: collectModuleSpecifiers(sourceFiles),
 	};
 	return { manifest, manifestBytes, licenseFiles, noticeFiles, sourceAnalysis };
 }
@@ -734,6 +682,7 @@ async function resolveRegistryArtifact(packageName, selector, options) {
 		fetchImpl: options.fetchImpl,
 		allowedHosts: new Set(['registry.npmjs.org']),
 		headers: registryHeaders,
+		requestTimeoutMs: options.requestTimeoutMs,
 	});
 	const requestedSelector = selector ?? 'latest';
 	const exactVersion = packument.versions?.[requestedSelector]
@@ -755,6 +704,7 @@ async function resolveRegistryArtifact(packageName, selector, options) {
 		allowedHosts: new Set(['registry.npmjs.org']),
 		maxBytes: REMOTE_LIMITS.artifactBytes,
 		headers: registryHeaders,
+		requestTimeoutMs: options.requestTimeoutMs,
 	});
 	verifyIntegrity(artifact.bytes, metadata.dist.integrity);
 	const contents = collectArchiveEvidence(artifact.bytes);
@@ -800,6 +750,7 @@ async function fetchGitHubBlob(entry, options) {
 		allowedHosts: new Set(['api.github.com']),
 		maxBytes: Math.min(REMOTE_LIMITS.jsonBytes, REMOTE_LIMITS.licenseBytes * 2),
 		headers: githubHeaders(options),
+		requestTimeoutMs: options.requestTimeoutMs,
 	});
 	if (response.encoding !== 'base64' || typeof response.content !== 'string') {
 		throw new Error(`GitHub blob is not inline base64 evidence: ${entry.path}`);
@@ -810,6 +761,13 @@ async function fetchGitHubBlob(entry, options) {
 		(response.size !== undefined && response.size !== bytes.length)
 	) {
 		throw new Error(`GitHub blob size does not match tree evidence: ${entry.path}`);
+	}
+	const gitBlobSha = createHash('sha1')
+		.update(`blob ${bytes.length}\0`)
+		.update(bytes)
+		.digest('hex');
+	if (entry.sha?.toLowerCase() !== gitBlobSha) {
+		throw new Error(`GitHub blob bytes do not match tree evidence: ${entry.path}`);
 	}
 	return bytes;
 }
@@ -831,6 +789,7 @@ async function resolveGitHubSource(repository, ref, options) {
 			fetchImpl: options.fetchImpl,
 			allowedHosts: new Set(['api.github.com']),
 			headers: githubHeaders(options),
+			requestTimeoutMs: options.requestTimeoutMs,
 		},
 	);
 	if (!/^[0-9a-f]{40}$/i.test(commitResponse.sha ?? ''))
@@ -844,6 +803,7 @@ async function resolveGitHubSource(repository, ref, options) {
 		allowedHosts: new Set(['api.github.com']),
 		maxBytes: REMOTE_LIMITS.jsonBytes,
 		headers: githubHeaders(options),
+		requestTimeoutMs: options.requestTimeoutMs,
 	});
 	if (treeResponse.truncated) throw new Error('GitHub returned truncated source-tree evidence');
 	if (treeResponse.sha?.toLowerCase() !== treeSha || !Array.isArray(treeResponse.tree)) {
@@ -961,69 +921,6 @@ export async function resolveRemoteInput(parsedInput, rawInput, options = {}) {
 			artifactUrl: registry.artifactUrl,
 		}),
 	};
-}
-
-function sanitizeUrl(value) {
-	let url;
-	try {
-		url = new URL(value);
-	} catch {
-		return null;
-	}
-	if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
-	url.username = '';
-	url.password = '';
-	const parameters = [...url.searchParams.entries()]
-		.map(([key, parameterValue]) => [
-			key,
-			SENSITIVE_KEY_PATTERN.test(key) ? '[REDACTED]' : parameterValue,
-		])
-		.sort(([left], [right]) => left.localeCompare(right));
-	url.search = '';
-	for (const [key, parameterValue] of parameters) url.searchParams.append(key, parameterValue);
-	return url.toString();
-}
-
-export function sanitizeForReport(value, key = '') {
-	if (SENSITIVE_KEY_PATTERN.test(key)) return '[REDACTED]';
-	if (Array.isArray(value)) return value.map((item) => sanitizeForReport(item));
-	if (value && typeof value === 'object') {
-		return Object.fromEntries(
-			Object.entries(value).map(([entryKey, entryValue]) => [
-				entryKey,
-				sanitizeForReport(entryValue, entryKey),
-			]),
-		);
-	}
-	if (typeof value === 'string') {
-		const sanitizedUrl = sanitizeUrl(value);
-		if (sanitizedUrl) return sanitizedUrl;
-		SENSITIVE_VALUE_PATTERN.lastIndex = 0;
-		if (SENSITIVE_VALUE_PATTERN.test(value)) {
-			SENSITIVE_VALUE_PATTERN.lastIndex = 0;
-			return value.replace(SENSITIVE_VALUE_PATTERN, '[REDACTED]');
-		}
-	}
-	return value;
-}
-
-export function stableStringify(value) {
-	function sort(item) {
-		if (Array.isArray(item)) return item.map(sort);
-		if (item && typeof item === 'object') {
-			return Object.fromEntries(
-				Object.keys(item)
-					.sort()
-					.map((key) => [key, sort(item[key])]),
-			);
-		}
-		return item;
-	}
-	return JSON.stringify(sort(value));
-}
-
-export function fingerprint(value) {
-	return sha256(stableStringify(value));
 }
 
 export async function runPreflight({ inputs, resolve, onReady = async () => {} }) {
