@@ -10,8 +10,9 @@ package/output boundary and keep its evidence independently reviewable.
 - `reuse-binding`: change no binding code unless the consumer proves a gap.
 - `extend-binding`: work in the registered package and add regression/parity
   evidence for the missing surface.
-- `create-binding`: create one `packages/<binding>/` package following the
-  closest current binding shape and workspace conventions.
+- `create-binding`: create the exact graph-reported `binding` at its
+  `bindingDirectory`, following the closest current binding shape and workspace
+  conventions.
 - Core/compiler/scheduler/SSR/hydration/build defects belong to their owning
   Octane package. Load `octane-core-extend` and `performance-audit` before those
   edits and retain the real binding scenario as end-to-end evidence.

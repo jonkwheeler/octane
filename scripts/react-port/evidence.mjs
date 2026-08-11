@@ -255,6 +255,12 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 				`verify requires --${required.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
 			);
 	}
+	if (!node.binding || !node.bindingDirectory) {
+		throw new Error(`Node ${options.node} has no graph-planned binding name and directory`);
+	}
+	if (options.expectedDirectory !== node.bindingDirectory) {
+		throw new Error(`--expected-directory must match the graph plan: ${node.bindingDirectory}`);
+	}
 	const registrations = readJson(options.registrations, 'registrations');
 	const crosswalk = readJson(options.crosswalk, 'crosswalk');
 	const closure = readJson(options.closure, 'closure');
@@ -270,6 +276,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	}
 	const attribution = attributionHashes(node);
 	const packageReport = inspectBindingPackage(path.resolve(options.packageDir), {
+		expectedPackageName: node.binding,
 		expectedDirectory: options.expectedDirectory,
 		identity: node.identity,
 		expectedLicenseHashes: attribution.licenses,

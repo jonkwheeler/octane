@@ -117,6 +117,7 @@ describe('union prerequisite graph', () => {
 		});
 
 		assert.equal(graph.nodes['pkg:react-partial'].binding, '@octanejs/partial');
+		assert.equal(graph.nodes['pkg:react-partial'].bindingDirectory, 'packages/partial');
 		assert.equal(graph.nodes['pkg:react-partial'].action, 'extend-binding');
 		assert.equal(graph.nodes['pkg:react-partial'].state, 'blocked');
 		assert.match(graph.nodes['pkg:react-partial'].repair, /extend @octanejs\/partial/);
@@ -174,6 +175,55 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.nodes['pkg:target-a'].dependsOn, ['pkg:react-helper']);
 		assert.equal(graph.nodes['pkg:blocked-target'].state, 'blocked');
 		assert.equal(graph.nodes['pkg:independent'].state, 'ready');
+	});
+
+	test('names new bindings by removing a leading react segment', () => {
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('react-widget', '1.0.0'),
+				licensedTarget('@acme/react-tools', '1.0.0'),
+				licensedTarget('preact-widget', '1.0.0'),
+			],
+			inventory: fixtureInventory(),
+		});
+
+		assert.equal(graph.nodes['pkg:react-widget'].binding, '@octanejs/widget');
+		assert.equal(graph.nodes['pkg:react-widget'].bindingDirectory, 'packages/widget');
+		assert.equal(graph.nodes['pkg:@acme/react-tools'].binding, '@octanejs/acme-tools');
+		assert.equal(graph.nodes['pkg:@acme/react-tools'].bindingDirectory, 'packages/acme-tools');
+		assert.equal(graph.nodes['pkg:preact-widget'].binding, '@octanejs/preact-widget');
+	});
+
+	test('blocks derived binding names that collide with another target or workspace package', () => {
+		const inventory = fixtureInventory();
+		inventory.bindings['@octanejs/existing'] = {
+			name: '@octanejs/existing',
+			version: '0.1.0',
+			exports: ['.'],
+			tested: true,
+			status: { upstream: { package: 'existing', version: '1.0.0' }, verified: '2026-08-01' },
+		};
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('react-widget', '1.0.0'),
+				licensedTarget('widget', '1.0.0'),
+				licensedTarget('react-existing', '1.0.0'),
+			],
+			inventory,
+		});
+
+		for (const packageName of ['react-widget', 'widget', 'react-existing']) {
+			assert.equal(graph.nodes[`pkg:${packageName}`].state, 'blocked');
+			assert.equal(graph.nodes[`pkg:${packageName}`].action, 'binding-name-conflict');
+		}
+		assert.match(
+			graph.nodes['pkg:react-widget'].blockers.join('\n'),
+			/@octanejs\/widget.*react-widget.*widget/i,
+		);
+		assert.match(
+			graph.nodes['pkg:react-existing'].blockers.join('\n'),
+			/@octanejs\/existing.*existing/i,
+		);
 	});
 
 	test('blocks incompatible version paths and names both dependents', () => {

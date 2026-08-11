@@ -16,7 +16,12 @@
       ],
       "classifications": { "thin-core": "framework-neutral" },
       "expected": {
-        "pkg:react-thin": { "state": "ready", "action": "create-binding" },
+        "pkg:react-thin": {
+          "state": "ready",
+          "action": "create-binding",
+          "binding": "@octanejs/thin",
+          "bindingDirectory": "packages/thin"
+        },
         "pkg:thin-core": { "state": "verified", "action": "reuse-package" },
         "pkg:react-covered": { "state": "verified", "action": "reuse-binding" }
       }
@@ -63,7 +68,13 @@
       ],
       "classifications": { "react-helper": "react-coupled" },
       "expected": {
-        "pkg:react-helper": { "state": "ready", "action": "create-binding", "requested": false },
+        "pkg:react-helper": {
+          "state": "ready",
+          "action": "create-binding",
+          "requested": false,
+          "binding": "@octanejs/helper",
+          "bindingDirectory": "packages/helper"
+        },
         "pkg:target-a": { "state": "ready", "action": "create-binding" },
         "pkg:target-b": { "state": "ready", "action": "create-binding" },
         "pkg:blocked-license": { "state": "blocked", "action": "repair-preflight" },

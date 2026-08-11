@@ -143,12 +143,21 @@ describe('package and closure completion', () => {
 		);
 
 		const result = inspectBindingPackage(packageDirectory, {
+			expectedPackageName: '@octanejs/widget',
 			expectedDirectory: 'packages/widget',
 			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
 			expectedLicenseHashes: [sha256(MIT_TEXT)],
 			expectedNoticeHashes: [sha256('Fixture attribution\n')],
 		});
 		assert.equal(result.status, 'passed', result.issues.join('\n'));
+		const wrongName = inspectBindingPackage(packageDirectory, {
+			expectedPackageName: '@octanejs/other',
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.match(wrongName.issues.join('\n'), /package name must be @octanejs\/other/i);
 		const manifestPath = path.join(packageDirectory, 'package.json');
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 		manifest.files = manifest.files.filter((file) => file !== 'NOTICE');

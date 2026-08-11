@@ -210,7 +210,13 @@ function isConfinedExportTarget(packageDirectory, target) {
 
 export function inspectBindingPackage(
 	packageDirectory,
-	{ expectedDirectory, identity, expectedLicenseHashes = [], expectedNoticeHashes = [] },
+	{
+		expectedPackageName,
+		expectedDirectory,
+		identity,
+		expectedLicenseHashes = [],
+		expectedNoticeHashes = [],
+	},
 ) {
 	const issues = [];
 	const requiredFiles = ['package.json', 'README.md', 'status.json', 'UPSTREAM.md', 'LICENSE'];
@@ -240,7 +246,11 @@ export function inspectBindingPackage(
 		}
 	}
 	if (manifest) {
-		if (!manifest.name?.startsWith('@octanejs/')) issues.push('package name must use @octanejs/*');
+		if (expectedPackageName && manifest.name !== expectedPackageName) {
+			issues.push(`package name must be ${expectedPackageName}`);
+		} else if (!manifest.name?.startsWith('@octanejs/')) {
+			issues.push('package name must use @octanejs/*');
+		}
 		if (manifest.license !== 'MIT') issues.push('package.json license must be exact MIT');
 		if (manifest.engines?.node !== '>=22') issues.push('package.json engines.node must be >=22');
 		if (manifest.publishConfig?.access !== 'public') issues.push('package must publish publicly');
@@ -330,7 +340,13 @@ export function inspectBindingPackage(
 		status: issues.length === 0 ? 'passed' : 'blocked',
 		issues,
 		artifacts,
-		fingerprint: fingerprint({ identity, expectedDirectory, artifacts, issues }),
+		fingerprint: fingerprint({
+			identity,
+			expectedPackageName,
+			expectedDirectory,
+			artifacts,
+			issues,
+		}),
 	};
 }
 

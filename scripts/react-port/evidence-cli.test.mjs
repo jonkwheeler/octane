@@ -27,6 +27,8 @@ function createReadyBatch() {
 		nodes: {
 			'pkg:widget': {
 				packageName: 'widget',
+				binding: '@octanejs/widget',
+				bindingDirectory: 'packages/widget',
 				state: 'ready',
 				dependsOn: [],
 				evidenceFingerprint: 'evidence',
@@ -226,6 +228,38 @@ describe('evidence CLI', () => {
 		const report = JSON.parse(verified.stdout);
 		assert.equal(report.status, 'blocked');
 		assert.ok(report.issues.some((issue) => issue.includes('package-tests')));
+	});
+
+	test('refuses verification outside the graph-planned binding directory', () => {
+		const { workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-directory-'));
+		for (const [name, value] of Object.entries({
+			'registrations.json': [],
+			'crosswalk.json': [],
+			'closure.json': { runtimeDependencies: [], adaptedSources: [] },
+		})) {
+			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
+		}
+
+		const verified = runEvidence([
+			'verify',
+			...common,
+			'--package-dir',
+			path.join(inputRoot, 'package'),
+			'--expected-directory',
+			'packages/react-widget',
+			'--registrations',
+			path.join(inputRoot, 'registrations.json'),
+			'--crosswalk',
+			path.join(inputRoot, 'crosswalk.json'),
+			'--closure',
+			path.join(inputRoot, 'closure.json'),
+		]);
+
+		assert.equal(verified.status, 2);
+		assert.match(verified.stderr, /graph plan: packages\/widget/i);
 	});
 
 	test('advances implementing to verified only after every machine and recorded gate passes', () => {

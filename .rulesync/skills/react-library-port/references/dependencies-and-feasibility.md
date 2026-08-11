@@ -19,6 +19,21 @@ version lane, complete verification, and required package subpaths cover the
 consumer. Otherwise schedule an evidence-backed extension of that package. Never
 create a second binding under a different name.
 
+## Binding names
+
+Use each graph node's `binding` and `bindingDirectory` as the naming authority.
+Existing registered mappings win and are extended in place. For a new binding,
+remove a leading `react-` from the upstream package segment: `react-hookz`
+becomes `@octanejs/hookz` in `packages/hookz`. Preserve a scope as a slug while
+removing the same segment prefix, so `@tanstack/react-widget` becomes
+`@octanejs/tanstack-widget` in `packages/tanstack-widget`. Names without that
+leading segment remain intact.
+
+A derived name already owned by a workspace package, or shared by two batch
+nodes, is a `binding-name-conflict` blocker. Resolve ownership explicitly and
+rerun the graph; never restore `react-`, append an arbitrary suffix, or overwrite
+the existing package to escape the collision.
+
 ## Classify from the shipped surface
 
 Start with published runtime, optional, and peer dependencies. Inspect package
@@ -58,6 +73,8 @@ and evidence/plan fingerprints. Actions mean:
 - `reuse-binding`: use an adequate existing `@octanejs/*` package;
 - `extend-binding`: close a real gap in that existing package;
 - `create-binding`: implement one new binding after preflight;
+- `binding-name-conflict`: resolve a derived package-name collision before any
+  binding write;
 - `audit-dependency` or `preflight-prerequisite`: supply missing evidence;
 - `feasibility-blocker` or `resolve-version-conflict`: stop that branch.
 

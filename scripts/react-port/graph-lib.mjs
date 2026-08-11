@@ -118,6 +118,33 @@ function packageNameFromBlockedTarget(target) {
 	return separator > 0 ? input.slice(0, separator) : input;
 }
 
+function proposedBindingName(packageName) {
+	const slash = packageName.startsWith('@') ? packageName.indexOf('/') : -1;
+	const scope = slash === -1 ? null : packageName.slice(1, slash);
+	const unscopedName = slash === -1 ? packageName : packageName.slice(slash + 1);
+	const frameworkName = unscopedName.startsWith('react-')
+		? unscopedName.slice('react-'.length)
+		: unscopedName;
+	return `@octanejs/${scope ? `${scope}-` : ''}${frameworkName}`;
+}
+
+function assignBinding(node, bindingName) {
+	node.binding = bindingName;
+	node.bindingDirectory = `packages/${node.binding.slice('@octanejs/'.length)}`;
+}
+
+function assignProposedBinding(node) {
+	assignBinding(node, proposedBindingName(node.packageName));
+}
+
+function blockBindingName(node, reason) {
+	node.state = 'blocked';
+	node.action = 'binding-name-conflict';
+	node.blockers.push(reason);
+	node.repair =
+		'Resolve the binding ownership or naming collision explicitly, then rerun the union graph.';
+}
+
 function requiredSubpathsForDependency(imports, dependencyName) {
 	return imports.flatMap((specifier) => {
 		if (specifier === dependencyName) return ['.'];
@@ -339,7 +366,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		if (existing?.adequate) {
 			node.state = 'verified';
 			node.action = 'reuse-binding';
-			node.binding = existing.binding.name;
+			assignBinding(node, existing.binding.name);
 			continue;
 		}
 		if (
@@ -363,7 +390,7 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			continue;
 		}
 		if (inventory.sourceBindings[node.packageName]) {
-			node.binding = inventory.sourceBindings[node.packageName];
+			assignBinding(node, inventory.sourceBindings[node.packageName]);
 			node.action = 'extend-binding';
 			if (target?.status === 'licensed') {
 				node.state = 'ready';
@@ -395,6 +422,15 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			continue;
 		}
 		if (target?.status === 'licensed') {
+			assignProposedBinding(node);
+			const occupiedBinding = inventory.bindings[node.binding];
+			if (occupiedBinding) {
+				blockBindingName(
+					node,
+					`${node.binding} already exists for ${occupiedBinding.status?.upstream?.package ?? 'another workspace package'}; ${node.packageName} cannot overwrite it.`,
+				);
+				continue;
+			}
 			node.state = 'ready';
 			node.action = 'create-binding';
 			node.evidenceFingerprint = target.evidenceFingerprint;
@@ -415,6 +451,24 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 				: 'Inspect effective shipped imports, then classify this dependency as framework-neutral, React-coupled, or unsupported.';
 	}
 
+	const createBindings = new Map();
+	for (const node of Object.values(nodes)) {
+		if (node.state !== 'ready' || node.action !== 'create-binding') continue;
+		const owners = createBindings.get(node.binding) ?? [];
+		owners.push(node);
+		createBindings.set(node.binding, owners);
+	}
+	for (const [bindingName, owners] of createBindings) {
+		if (owners.length < 2) continue;
+		const packageNames = owners.map((node) => node.packageName).sort();
+		for (const node of owners) {
+			blockBindingName(
+				node,
+				`${bindingName} is the derived binding for multiple upstream packages: ${packageNames.join(', ')}.`,
+			);
+		}
+	}
+
 	let changed = true;
 	while (changed) {
 		changed = false;
@@ -433,6 +487,8 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		const bindingCapability = node.binding ? (inventory.bindings[node.binding] ?? null) : null;
 		node.nodeFingerprint = fingerprint({
 			packageName: node.packageName,
+			binding: node.binding ?? null,
+			bindingDirectory: node.bindingDirectory ?? null,
 			constraints: node.constraints,
 			dependsOn: node.dependsOn,
 			action: node.action,
