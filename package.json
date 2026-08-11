@@ -80,6 +80,7 @@
     "react-parity:harness:run": "node scripts/react-parity/harness.mjs run",
     "react-port:evidence": "node scripts/react-port/evidence.mjs",
     "react-port:preflight": "node scripts/react-port/preflight.mjs",
+    "react-port:terminal": "node scripts/react-port/terminal.mjs",
     "react-port:test": "node --test scripts/react-port/*.test.mjs",
     "redact-audit:generate": "node scripts/redact-audit/generate.mjs",
     "redact-audit:check": "node scripts/redact-audit/generate.mjs --check && node --test scripts/redact-audit/*.test.mjs",

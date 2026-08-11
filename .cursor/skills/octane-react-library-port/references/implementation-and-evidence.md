@@ -216,6 +216,13 @@ is safe, inspect lockfile changes before retaining them, and fall back to direct
 available repository executables for unaffected gates. Preserve unrelated dirty
 files throughout.
 
+For `ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY`, retry the required repository
+install exactly as `CI=true pnpm install --frozen-lockfile`. If the planned
+package legitimately changes the lockfile, use
+`CI=true pnpm install --no-frozen-lockfile`, inspect the resulting lockfile diff,
+and retain only entries explained by the port. Do not stop after the initial
+interactive-purge error.
+
 For a mixed parity project, run both its local project and the sharded
 non-parity complement. Confirm every required parity lane executes rather than
 only validating metadata. Run affected core tests and the full root `pnpm test`
