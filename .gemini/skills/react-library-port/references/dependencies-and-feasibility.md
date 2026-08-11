@@ -31,8 +31,10 @@ Classify every unresolved runtime edge as exactly one of:
 - `framework-neutral`: usable directly without React ownership. Confirm from
   shipped imports/API; then use `--classify package=framework-neutral`.
 - `react-coupled`: exposes hooks, components, providers, React-owned lifecycle,
-  or another React runtime dependency. Add it to the preflight inputs and use
-  `--classify package=react-coupled`.
+  or another React runtime dependency. Add it with `--prerequisite` at its
+  required range and use `--classify package=react-coupled`. Preflight resolves
+  a supported range to the highest exact stable published version and records it
+  as a prerequisite rather than a user-requested target.
 - `unsupported`: relies on React private internals, `react-reconciler`, a custom
   renderer, an absent Octane primitive, or an unbounded class-only design. Use
   `--classify package=unsupported` and record the owning repair action.

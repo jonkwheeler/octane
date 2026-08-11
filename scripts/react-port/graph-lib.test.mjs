@@ -6,6 +6,7 @@ import {
 	readRepositoryCapabilityInventory,
 	satisfiesRange,
 } from './graph-lib.mjs';
+import { selectHighestSatisfyingVersion } from './version-lib.mjs';
 
 function licensedTarget(packageName, version, runtimeDependencies = {}) {
 	return {
@@ -63,7 +64,13 @@ describe('repository capability inventory', () => {
 		assert.equal(satisfiesRange('2.4.0', '^3.0.0'), false);
 		assert.equal(satisfiesRange('0.4.3', '^0.4.0'), true);
 		assert.equal(satisfiesRange('0.5.0', '^0.4.0'), false);
+		assert.equal(satisfiesRange('2.4.0', '2'), true);
+		assert.equal(satisfiesRange('2.4.0', '2.4'), true);
 		assert.equal(satisfiesRange('2.4.0', 'workspace:*'), false);
+		assert.equal(
+			selectHighestSatisfyingVersion(['1.0.0', '1.9.0', '2.0.0', '1.10.0-beta.1'], '^1.0.0'),
+			'1.9.0',
+		);
 	});
 });
 
@@ -101,11 +108,13 @@ describe('union prerequisite graph', () => {
 	});
 
 	test('deduplicates a shared prerequisite and isolates an unrelated blocked branch', () => {
+		const sharedPrerequisite = licensedTarget('react-helper', '1.2.0');
+		sharedPrerequisite.requested = false;
 		const graph = planPortGraph({
 			targets: [
 				licensedTarget('target-a', '1.0.0', { 'react-helper': '^1.0.0' }),
 				licensedTarget('target-b', '1.0.0', { 'react-helper': '^1.0.0' }),
-				licensedTarget('react-helper', '1.2.0'),
+				sharedPrerequisite,
 				{ input: 'blocked-target', status: 'blocked', blockers: ['not MIT'] },
 				licensedTarget('independent', '1.0.0'),
 			],
@@ -114,6 +123,7 @@ describe('union prerequisite graph', () => {
 		});
 
 		assert.equal(Object.keys(graph.nodes).filter((id) => id === 'pkg:react-helper').length, 1);
+		assert.equal(graph.nodes['pkg:react-helper'].requested, false);
 		assert.deepEqual(graph.nodes['pkg:target-a'].dependsOn, ['pkg:react-helper']);
 		assert.equal(graph.nodes['pkg:blocked-target'].state, 'blocked');
 		assert.equal(graph.nodes['pkg:independent'].state, 'ready');

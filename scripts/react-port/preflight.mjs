@@ -26,6 +26,7 @@ enforce Octane's exact-MIT source-adaptation policy before binding writes.
 
 Options:
   --fixture-evidence <file>  Read deterministic local evidence; disables networking
+  --prerequisite <input>     Add a discovered prerequisite without marking it requested
   --classify <package=kind>  Classify a dependency as framework-neutral,
                              react-coupled, or unsupported (repeatable)
   --batch <id>               Use a stable batch identifier (derived by default)
@@ -38,6 +39,7 @@ Options:
 
 function parseArguments(arguments_) {
 	const inputs = [];
+	const prerequisiteInputs = [];
 	let fixtureEvidencePath = null;
 	let batchId = null;
 	let workRoot = path.join(process.cwd(), '.react-port-work');
@@ -50,6 +52,7 @@ function parseArguments(arguments_) {
 			return {
 				help: true,
 				inputs,
+				prerequisiteInputs,
 				fixtureEvidencePath,
 				batchId,
 				workRoot,
@@ -61,6 +64,13 @@ function parseArguments(arguments_) {
 		if (argument === '--fixture-evidence') {
 			fixtureEvidencePath = arguments_[index + 1];
 			if (!fixtureEvidencePath) throw new Error('--fixture-evidence requires a file path');
+			index += 1;
+			continue;
+		}
+		if (argument === '--prerequisite') {
+			const prerequisite = arguments_[index + 1];
+			if (!prerequisite) throw new Error('--prerequisite requires a package input');
+			prerequisiteInputs.push(prerequisite);
 			index += 1;
 			continue;
 		}
@@ -104,6 +114,7 @@ function parseArguments(arguments_) {
 	return {
 		help: false,
 		inputs,
+		prerequisiteInputs,
 		fixtureEvidencePath,
 		batchId,
 		workRoot,
@@ -156,7 +167,7 @@ async function main() {
 		const report = {
 			schemaVersion: 1,
 			status: 'blocked',
-			targets: parsedArguments.inputs.map((input) => ({
+			targets: [...parsedArguments.inputs, ...parsedArguments.prerequisiteInputs].map((input) => ({
 				input,
 				status: 'blocked',
 				blockers: [sanitizeForReport(error instanceof Error ? error.message : String(error))],
@@ -169,7 +180,7 @@ async function main() {
 	}
 
 	const report = await runPreflight({
-		inputs: parsedArguments.inputs,
+		inputs: [...parsedArguments.inputs, ...parsedArguments.prerequisiteInputs],
 		resolve: fixture
 			? async (_parsedInput, rawInput) => {
 					const evidence = fixture.targets[rawInput];
@@ -185,6 +196,8 @@ async function main() {
 						npmToken: process.env.NODE_AUTH_TOKEN ?? process.env.NPM_TOKEN,
 					}),
 	});
+	const requestedInputs = new Set(parsedArguments.inputs);
+	for (const target of report.targets) target.requested = requestedInputs.has(target.input);
 	const inventory = readRepositoryCapabilityInventory();
 	const graph = planPortGraph({
 		targets: report.targets,

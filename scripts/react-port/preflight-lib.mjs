@@ -2,6 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { bridgeReportFromSource } from '../../packages/octane-mcp-server/src/bridge.js';
+import { selectHighestSatisfyingVersion } from './version-lib.mjs';
 
 const PACKAGE_NAME_PATTERN =
 	/^(?:@[a-z0-9][a-z0-9._-]*\/[a-z0-9][a-z0-9._-]*|[a-z0-9][a-z0-9._-]*)$/;
@@ -737,7 +738,8 @@ async function resolveRegistryArtifact(packageName, selector, options) {
 	const requestedSelector = selector ?? 'latest';
 	const exactVersion = packument.versions?.[requestedSelector]
 		? requestedSelector
-		: packument['dist-tags']?.[requestedSelector];
+		: (packument['dist-tags']?.[requestedSelector] ??
+			selectHighestSatisfyingVersion(Object.keys(packument.versions ?? {}), requestedSelector));
 	if (!exactVersion || !packument.versions?.[exactVersion]) {
 		throw new Error(`Selector ${requestedSelector} did not resolve to one exact published version`);
 	}
