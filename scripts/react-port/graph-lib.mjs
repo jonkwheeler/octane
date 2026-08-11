@@ -173,7 +173,6 @@ const PENDING_INTAKE_ACTIONS = new Set([
 function blockedDisposition(nodeId, nodes, visiting = new Set()) {
 	const node = nodes[nodeId];
 	if (!node || node.state !== 'blocked') return null;
-	if (PENDING_INTAKE_ACTIONS.has(node.action)) return 'pending-intake';
 	if (
 		[
 			'binding-name-conflict',
@@ -190,12 +189,14 @@ function blockedDisposition(nodeId, nodes, visiting = new Set()) {
 		.filter((dependencyId) => nodes[dependencyId]?.state === 'blocked')
 		.map((dependencyId) => blockedDisposition(dependencyId, nodes, nextVisiting))
 		.filter(Boolean);
+	if (dependencyDispositions.includes('hard-blocked')) return 'hard-blocked';
 	if (
 		dependencyDispositions.length > 0 &&
 		dependencyDispositions.every((disposition) => disposition === 'pending-intake')
 	) {
 		return 'pending-intake';
 	}
+	if (PENDING_INTAKE_ACTIONS.has(node.action)) return 'pending-intake';
 	return 'hard-blocked';
 }
 

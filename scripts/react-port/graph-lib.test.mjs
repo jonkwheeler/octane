@@ -122,8 +122,49 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-partial'].bindingDirectory, 'packages/partial');
 		assert.equal(graph.nodes['pkg:react-partial'].action, 'extend-binding');
 		assert.equal(graph.nodes['pkg:react-partial'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-partial'].disposition, 'pending-intake');
 		assert.match(graph.nodes['pkg:react-partial'].repair, /extend @octanejs\/partial/);
 		assert.equal(graph.nodes['pkg:consumer'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:consumer'].disposition, 'pending-intake');
+	});
+
+	test('preserves a hard blocker through an existing binding extension', () => {
+		const extension = licensedTarget('react-partial', '1.0.0', {
+			'hard-helper': '^1.0.0',
+		});
+		extension.requested = false;
+		const hardHelper = licensedTarget('hard-helper', '1.0.0');
+		hardHelper.requested = false;
+		hardHelper.sourceAnalysis = {
+			verdict: 'needs-rework',
+			filesScanned: 1,
+			truncated: false,
+			hazards: [],
+			apis: [{ name: 'Profiler', count: 1, status: 'unsupported', note: 'Not present.' }],
+			imports: [],
+			plan: ['Replace the unsupported Profiler dependency.'],
+		};
+
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('consumer', '1.0.0', { 'react-partial': '^1.0.0' }),
+				extension,
+				hardHelper,
+			],
+			inventory: fixtureInventory(),
+			dependencyClassifications: {
+				'react-partial': 'react-coupled',
+				'hard-helper': 'react-coupled',
+			},
+		});
+
+		assert.equal(graph.nodes['pkg:hard-helper'].disposition, 'hard-blocked');
+		assert.equal(graph.nodes['pkg:react-partial'].action, 'extend-binding');
+		assert.equal(graph.nodes['pkg:react-partial'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-partial'].disposition, 'hard-blocked');
+		assert.equal(graph.nodes['pkg:consumer'].disposition, 'hard-blocked');
+		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:consumer']);
+		assert.deepEqual(graph.requestedSummary.pendingIntake, []);
 	});
 
 	test('does not reuse an existing binding without executable test evidence', () => {
