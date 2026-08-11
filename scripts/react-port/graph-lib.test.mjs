@@ -256,6 +256,25 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:ready-target']]);
 	});
 
+	test('keeps transient remote intake failures pending instead of hard-blocking the port', () => {
+		const graph = planPortGraph({
+			targets: [
+				{
+					input: 'retry-target',
+					status: 'blocked',
+					blockers: ['Remote request failed with HTTP 403'],
+					repair: 'Retry immutable evidence resolution.',
+				},
+			],
+			inventory: fixtureInventory(),
+		});
+
+		assert.equal(graph.nodes['pkg:retry-target'].action, 'repair-preflight');
+		assert.equal(graph.nodes['pkg:retry-target'].disposition, 'pending-intake');
+		assert.deepEqual(graph.requestedSummary.pendingIntake, ['pkg:retry-target']);
+		assert.deepEqual(graph.requestedSummary.hardBlocked, []);
+	});
+
 	test('names new bindings by removing a leading react segment', () => {
 		const graph = planPortGraph({
 			targets: [

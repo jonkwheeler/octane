@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateBatchManifest } from './state-lib.mjs';
 
-function parseArguments(argv) {
+export function parseArguments(argv) {
 	const options = { workRoot: '.react-port-work' };
 	for (let index = 0; index < argv.length; index += 1) {
 		const argument = argv[index];
@@ -12,6 +12,9 @@ function parseArguments(argv) {
 		else throw new Error(`Unknown argument: ${argument}`);
 	}
 	if (!options.batch) throw new Error('Missing required --batch <id>');
+	if (!/^[a-z0-9][a-z0-9._-]*$/i.test(options.batch)) {
+		throw new Error('--batch requires a path-safe identifier');
+	}
 	return options;
 }
 
@@ -25,6 +28,24 @@ export function terminalBatchReport(manifest) {
 			node.disposition !== 'satisfied' &&
 			node.disposition !== 'hard-blocked',
 	);
+	const nextActions = unfinished.map((node) => {
+		if (node.disposition === 'pending-intake') {
+			return {
+				nodeId: node.id,
+				kind: 'resolve-intake',
+				action: node.action ?? null,
+				repair: node.repair ?? 'Complete the node intake and rerun preflight.',
+			};
+		}
+		if (node.state === 'implementing') {
+			const gates = Object.entries(node.evidenceMatrix?.gates ?? {})
+				.filter(([, gate]) => !['passed', 'inapplicable'].includes(gate.status))
+				.map(([gateId]) => gateId)
+				.sort();
+			return { nodeId: node.id, kind: 'complete-evidence', gates };
+		}
+		return { nodeId: node.id, kind: 'implement', action: node.action ?? null };
+	});
 	return {
 		schemaVersion: 1,
 		status: unfinished.length === 0 ? 'terminal' : 'unfinished',
@@ -39,6 +60,7 @@ export function terminalBatchReport(manifest) {
 						: node.disposition,
 		})),
 		unfinished: unfinished.map((node) => node.id),
+		nextActions,
 	};
 }
 

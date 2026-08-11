@@ -148,6 +148,13 @@ pnpm react-port:evidence -- init --batch <id> --node pkg:<name> \
   --category <thin-core|hooks-store|dom-component|provider-portal|ssr-sensitive|async-suspense|performance-sensitive>
 ```
 
+Choose categories from the binding's public exports and observable contract,
+not implementation details. A hook that installs DOM listeners is
+`hooks-store`, not `dom-component`; add `dom-component` only for exported
+components. Add `provider-portal` only when the pinned public surface exports a
+provider or portal behavior. In particular, `react-hotkeys-hook` does not gain
+`provider-portal` merely because it uses context internally.
+
 Run every command-backed gate through the evidence runner. It executes an argv
 vector directly without a shell, captures bounded output, records the actual
 exit status, and cannot turn a failed command into a pass:

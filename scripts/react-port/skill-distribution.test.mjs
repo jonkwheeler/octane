@@ -31,6 +31,7 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(skill, /do not end on a progress report/i);
 		assert.match(skill, /missing Vitest projects/i);
 		assert.match(skill, /pnpm react-port:terminal/);
+		assert.match(skill, /nextActions/);
 		assert.match(skill, /Commit, push, issue, and PR actions require separate authority/);
 		for (const reference of REFERENCES) {
 			assert.match(skill, new RegExp(`references/${reference.replace('.', '\\.')}`));

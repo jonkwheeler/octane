@@ -93,6 +93,11 @@ A top-level `pending-intake` status means preflight itself completed without a
 hard failure but every requested branch still needs recursive dependency work.
 It is not a portability verdict and is not local implementation readiness.
 
+Network timeouts, rate limits, HTTP 403/429/5xx responses, and unavailable
+registry/source hosts are retryable intake failures, not immutable policy
+evidence. Keep them `pending-intake`, retry through configured credentials and
+supported source endpoints, and continue independent branches.
+
 Actions mean:
 
 - `reuse-package`: consume a proven framework-neutral dependency directly;

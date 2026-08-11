@@ -174,6 +174,12 @@ function blockedDisposition(nodeId, nodes, visiting = new Set()) {
 	const node = nodes[nodeId];
 	if (!node || node.state !== 'blocked') return null;
 	if (
+		node.action === 'repair-preflight' &&
+		node.blockers.some((blocker) => /^Remote request failed\b/.test(blocker))
+	) {
+		return 'pending-intake';
+	}
+	if (
 		[
 			'binding-name-conflict',
 			'feasibility-blocker',
