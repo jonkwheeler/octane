@@ -19,6 +19,14 @@ package/output boundary and keep its evidence independently reviewable.
 
 Load `authoring-tsrx` before writing `.tsrx`. Read a nearby authored file and
 `docs/differences-from-react.md`; React-shaped intuition is not enough here.
+Treat the graph's `feasibility.plan` as required work. A
+`bridgeable-with-rewrites` verdict, class-component architecture,
+`createElement`, or `Children` traversal does not reduce the surface that must be
+ported: translate lifecycle/state into hooks and re-author element construction
+and traversal as authored `.tsrx` components. A `needs-rework` verdict means the
+scan found a public API with no implementation or documented rewrite; route that
+primitive before implementation. If implementation discovers another such
+public behavior, stop that node and route the primitive to its owning package.
 
 ## Pin and mirror the upstream boundary
 

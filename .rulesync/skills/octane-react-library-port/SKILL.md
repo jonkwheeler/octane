@@ -70,11 +70,16 @@ and upstream type test with executable evidence or an explicit disposition.
    own immutable identity and approved-license gate without becoming a
    user-requested target.
    Do not classify by package name, README, or repository badge alone. Treat an
-   unsupported internal as `unsupported`.
+   unsupported internal as `unsupported`. Do not stop or ask the user to replace
+   a target merely because dependency nodes are still `audit-dependency` or
+   `preflight-prerequisite`; finish those intake tasks recursively.
 
 4. **Review the union graph before writes.** Confirm every requested input is
    present; inspect reuse/extend/create decisions, version lanes, shared nodes,
-   cycles, feasibility findings, blockers, and deterministic `executionUnits`.
+   cycles, required adaptation plans, true feasibility hazards, blockers, and
+   deterministic `executionUnits`.
+   An unresolved dependency audit is unfinished intake, not evidence that the
+   requested library is infeasible.
    Ask the user only when a real product choice remains, such as trimming a
    blocked target or selecting between incompatible version lanes.
 
@@ -83,7 +88,11 @@ and upstream type test with executable evidence or an explicit disposition.
    and current `git status`. Block a collision or explicitly adopt the partial
    work with recorded provenance. Never overwrite or reformat unrelated changes.
 
-6. **Implement only ready nodes.** Read
+6. **Implement only ready nodes.** Execute every ready node's
+   `feasibility.plan`; `bridgeable-with-rewrites`, class components,
+   `createElement`, and `Children` describe required port work, not permission
+   to block or trim the public surface. `needs-rework` is reserved for a public
+   React API with no Octane implementation or documented rewrite. Read
    [implementation-and-evidence.md](references/implementation-and-evidence.md).
    Load `authoring-tsrx` before adding `.tsrx`. Load `octane-core-extend` and
    `performance-audit` before changing `packages/octane/src`. A runtime,

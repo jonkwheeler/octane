@@ -22,7 +22,7 @@ function fixtureInventory() {
 	return buildCapabilityInventory({
 		knownBindings: { 'react-covered': '@octanejs/covered', 'react-partial': '@octanejs/partial' },
 		knownVanillaCores: { 'react-thin': 'thin-core' },
-		reactApiMap: { useState: { status: 'same' }, Component: { status: 'unsupported' } },
+		reactApiMap: { useState: { status: 'same' }, Component: { status: 'rewrite' } },
 		bindings: [
 			{
 				name: '@octanejs/covered',
@@ -292,7 +292,56 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:cycle-b'].state, 'ready');
 	});
 
-	test('turns unsupported shipped React surfaces into feasibility blockers', () => {
+	test('keeps rewrite-heavy class and element-construction ports ready with an adaptation plan', () => {
+		const target = licensedTarget('react-legacy-ui', '1.0.0');
+		target.sourceAnalysis = {
+			verdict: 'bridgeable-with-rewrites',
+			filesScanned: 42,
+			truncated: false,
+			hazards: [],
+			classComponents: true,
+			apis: [
+				{ name: 'Component', count: 3, status: 'rewrite', note: 'Rewrite as functions.' },
+				{ name: 'createElement', count: 8, status: 'partial', note: 'Re-author in .tsrx.' },
+				{ name: 'Children', count: 4, status: 'partial', note: 'Re-author traversal.' },
+			],
+			imports: ['react'],
+			plan: [
+				'Rewrite each class as a function component.',
+				'Re-author nested createElement calls in .tsrx.',
+			],
+		};
+		const graph = planPortGraph({ targets: [target], inventory: fixtureInventory() });
+		const node = graph.nodes['pkg:react-legacy-ui'];
+
+		assert.equal(node.state, 'ready');
+		assert.equal(node.action, 'create-binding');
+		assert.equal(node.feasibility.requiresAdaptation, true);
+		assert.equal(node.feasibility.classComponents, true);
+		assert.deepEqual(node.feasibility.plan, target.sourceAnalysis.plan);
+		assert.deepEqual(graph.executionOrder, ['pkg:react-legacy-ui']);
+	});
+
+	test('blocks a public React API that has no Octane implementation or rewrite', () => {
+		const target = licensedTarget('react-profiler-ui', '1.0.0');
+		target.sourceAnalysis = {
+			verdict: 'needs-rework',
+			filesScanned: 2,
+			truncated: false,
+			hazards: [],
+			apis: [{ name: 'Profiler', count: 1, status: 'unsupported', note: 'Not present.' }],
+			plan: ['Profiler (1x): Not present.'],
+		};
+		const graph = planPortGraph({ targets: [target], inventory: fixtureInventory() });
+		const node = graph.nodes['pkg:react-profiler-ui'];
+
+		assert.equal(node.state, 'blocked');
+		assert.equal(node.action, 'feasibility-blocker');
+		assert.equal(node.feasibility.requiresAdaptation, false);
+		assert.match(node.blockers.join('\n'), /unsupported React API.*Profiler/i);
+	});
+
+	test('turns concrete shipped React hazards into feasibility blockers', () => {
 		const target = licensedTarget('custom-renderer', '1.0.0');
 		target.sourceAnalysis = {
 			verdict: 'needs-rework',
@@ -305,5 +354,23 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:custom-renderer'].state, 'blocked');
 		assert.equal(graph.nodes['pkg:custom-renderer'].action, 'feasibility-blocker');
 		assert.match(graph.nodes['pkg:custom-renderer'].blockers.join('\n'), /custom renderer/i);
+	});
+
+	test('blocks an incomplete shipped-source scan instead of guessing at feasibility', () => {
+		const target = licensedTarget('large-react-library', '1.0.0');
+		target.sourceAnalysis = {
+			verdict: 'bridgeable-with-rewrites',
+			truncated: true,
+			hazards: [],
+			apis: [{ name: 'createElement', count: 100, status: 'partial' }],
+			plan: ['Re-author element construction in .tsrx.'],
+		};
+		const graph = planPortGraph({ targets: [target], inventory: fixtureInventory() });
+		const node = graph.nodes['pkg:large-react-library'];
+
+		assert.equal(node.state, 'blocked');
+		assert.equal(node.action, 'feasibility-blocker');
+		assert.match(node.blockers.join('\n'), /exceeded the bounded feasibility scan/i);
+		assert.match(node.repair, /complete a bounded shipped-source scan/i);
 	});
 });

@@ -60,10 +60,10 @@ Octane already has most of the raw authority needed to make those decisions repr
 **Capability and prerequisite planning**
 
 - R8. The planner reads live repository sources rather than maintaining another binding table: `KNOWN_BINDINGS`, `KNOWN_VANILLA_CORES`, `REACT_API_MAP`, canonical workspace discovery, package manifests, binding `status.json`, and Octane's current public exports/divergence contract.
-- R9. Runtime dependencies and effective shipped imports are classified as framework-neutral cores, React-coupled surfaces, already-covered Octane bindings, existing binding gaps, missing binding prerequisites, or feasibility blockers. Build, documentation, example, and test-only dependencies are excluded unless the shipped surface proves they are required.
+- R9. Runtime dependencies and effective shipped imports are classified as framework-neutral cores, React-coupled surfaces, already-covered Octane bindings, existing binding gaps, missing binding prerequisites, or feasibility blockers. Build, documentation, example, and test-only dependencies are excluded unless the shipped surface proves they are required. Unresolved dependency audits are recursive intake work, not a reason to stop or ask the user to replace a requested target.
 - R10. Existing bindings are reused only when their declared version lane, status, exports, and tests cover the required surface. A genuine gap becomes an extension prerequisite; the workflow never creates a second package for the same React library.
 - R11. Multiple targets produce one deduplicated graph with deterministic topological ordering. Incompatible requested versions of the same package block consolidation and name the conflicting dependents; cycles are represented as strongly connected components and either planned as one bounded implementation unit or surfaced as a blocker with evidence.
-- R12. Unsupported React internals, custom reconcilers, class-only designs, or missing Octane primitives become explicit feasibility findings. An application-specific workaround may not hide a runtime/compiler defect; such a defect is routed to its owning Octane package with a regression test.
+- R12. Unsupported React internals, custom reconcilers, truncated source evidence, or public behavior proven to need a missing Octane primitive become explicit feasibility blockers. Class components, `createElement`, `Children`, and other public rewrites remain ready with a mandatory adaptation plan. An application-specific workaround may not hide a runtime/compiler defect; such a defect is routed to its owning Octane package with a regression test.
 
 **Execution and resumability**
 
@@ -91,13 +91,14 @@ Octane already has most of the raw authority needed to make those decisions repr
 - **AE4 — Shared prerequisite:** Given two targets that require the same missing MIT React-coupled dependency, the union graph contains one prerequisite node and both targets depend on it.
 - **AE5 — Partial batch block:** Given one approved-license target and one target with conflicting manifest and source-tree licenses, the latter and its dependents are blocked before writes while the independent target can reach `verified`.
 - **AE6 — Monorepo scope:** Given a repository with a root MIT license but a subpackage-specific license outside the allowlist, the subpackage is blocked; a root-level GitHub license classification does not override package-scoped evidence.
-- **AE13 — Unlicense acceptance:** Given `react-use@17.6.1`, whose compact npm packument omits repository/license/`gitHead` fields but whose exact-version metadata and published manifest declare `Unlicense` and whose tarball/source LICENSE bytes match at the published `gitHead`, the node reaches `licensed` with SPDX `Unlicense` and retained-license provenance requirements.
 - **AE7 — Identity mismatch:** Given an npm version whose repository metadata cannot be tied to the requested Git tag/commit or whose package contents disagree with source metadata, the target remains blocked with the conflicting fields and repair action.
 - **AE8 — Resume invalidation:** Given a verified node in a saved batch, an unchanged rerun skips completed work; changing its resolved commit or applicable license checksum invalidates it and downstream nodes.
 - **AE9 — Unsupported primitive:** Given source that relies on a React internal or custom reconciler absent from Octane, the workflow emits a feasibility blocker or an owning-package core task rather than producing a compatibility shim in the binding.
 - **AE10 — Fresh-agent determinism:** Given fixture repositories for AE1-AE9, two fresh runs produce semantically identical identities, license verdicts, graph edges, states, and reports after volatile timestamps and temporary paths are normalized.
 - **AE11 — Version conflict:** Given two targets that require incompatible versions of the same React-coupled prerequisite, the graph does not silently select one; it blocks the conflict and names both dependency paths.
 - **AE12 — Shared worktree collision:** Given unrelated user edits plus a partially authored target package, the workflow preserves unrelated edits and blocks or explicitly adopts overlapping files; an independent ready target may continue.
+- **AE13 — Unlicense acceptance:** Given `react-use@17.6.1`, whose compact npm packument omits repository/license/`gitHead` fields but whose exact-version metadata and published manifest declare `Unlicense` and whose tarball/source LICENSE bytes match at the published `gitHead`, the node reaches `licensed` with SPDX `Unlicense` and retained-license provenance requirements.
+- **AE14 — Rewrite-heavy port:** Given a licensed library whose shipped source uses class components, `createElement`, and `Children` without private internals, a custom renderer, or truncated evidence, the graph keeps the node `ready`, records `requiresAdaptation` plus the scanner's rewrite plan, and requires the full public surface to be re-authored rather than blocking or trimming it.
 
 ---
 
@@ -170,7 +171,7 @@ stateDiagram-v2
   resolved --> blocked: identity or license conflict
   licensed --> classified
   classified --> ready: prerequisites verified
-  classified --> blocked: feasibility gap
+  classified --> blocked: concrete hazard, missing public API, or truncated scan
   ready --> implementing
   implementing --> verified: required evidence passes
   implementing --> blocked: actionable implementation failure
@@ -258,9 +259,9 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 
 - **Goal:** Produce a reproducible union graph that reuses Octane capabilities, orders missing prerequisites, and resumes safely.
 - **Requirements:** R8-R16, R24.
-- **Files:** `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`, `packages/octane-mcp-server/src/bridge.js` and `packages/octane-mcp-server/src/bridge.test.js` only if a reusable analysis export is needed, `.gitignore`, `package.json`.
-- **Implementation:** Read canonical workspace/binding inventory and bridge analysis at runtime. Compare requested version lanes and required imports/exports with existing binding manifests, `status.json`, and public entrypoints. Classify framework-neutral cores, covered bindings, extension prerequisites, missing bindings, and unsupported primitives. Construct a stable union graph, deduplicate shared nodes, collapse strongly connected components, propagate blockers only to dependents, and persist `.react-port-work/<batch-id>/manifest.json` with atomic updates and one-writer locking. Fingerprint upstream evidence and relevant repository capability inputs so changes invalidate the minimum affected subgraph.
-- **Tests:** Cover adequate/inadequate existing bindings, vanilla-core reuse, a missing React prerequisite, shared prerequisite deduplication, incompatible version paths, cycles, deterministic topological order, branch-local blocking, state transition validation, unknown schema version, interrupted atomic write, concurrent writer refusal, stale-lock recovery, unchanged resume, targeted invalidation, worktree collision/adoption, and `KNOWN_BINDINGS` parity with workspace bindings.
+- **Files:** `scripts/react-port/preflight-lib.mjs`, `scripts/react-port/preflight-lib.test.mjs`, `scripts/react-port/graph-lib.mjs`, `scripts/react-port/graph-lib.test.mjs`, `packages/octane-mcp-server/src/bridge.js` and `packages/octane-mcp-server/src/bridge.test.js` only if a reusable analysis export is needed, `.gitignore`, `package.json`.
+- **Implementation:** Read canonical workspace/binding inventory and bridge analysis at runtime. Compare requested version lanes and required imports/exports with existing binding manifests, `status.json`, and public entrypoints. Classify framework-neutral cores, covered bindings, extension prerequisites, missing bindings, and unsupported primitives. Preserve rewrite-heavy scanner verdicts as mandatory adaptation plans; reserve `needs-rework` and blocking for a public API with no Octane implementation/rewrite, truncated analysis, or concrete React-internal/custom-renderer hazards. Construct a stable union graph, deduplicate shared nodes, collapse strongly connected components, propagate blockers only to dependents, and persist `.react-port-work/<batch-id>/manifest.json` with atomic updates and one-writer locking. Fingerprint upstream evidence and relevant repository capability inputs so changes invalidate the minimum affected subgraph.
+- **Tests:** Cover adequate/inadequate existing bindings, vanilla-core reuse, a missing React prerequisite, rewrite-heavy class/`createElement`/`Children` plans that remain ready, true hazard and truncation blockers, shared prerequisite deduplication, incompatible version paths, cycles, deterministic topological order, branch-local blocking, state transition validation, unknown schema version, interrupted atomic write, concurrent writer refusal, stale-lock recovery, unchanged resume, targeted invalidation, worktree collision/adoption, and `KNOWN_BINDINGS` parity with workspace bindings.
 - **Validation:** `node --test scripts/react-port/preflight-lib.test.mjs`; `pnpm --dir packages/octane-mcp-server test` if bridge code changes; `pnpm packages:inventory:check`; `pnpm bindings:status:check`.
 - **Dependencies:** U1.
 
@@ -287,10 +288,10 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 ### U5 — Forward scenarios and repository-wide gates
 
 - **Goal:** Demonstrate that a fresh agent can use the shipped skill correctly across the dangerous paths, then leave generated repository state clean.
-- **Requirements:** R1-R24 and AE1-AE13.
+- **Requirements:** R1-R24 and AE1-AE14.
 - **Files:** `scripts/react-port/__fixtures__/`, `scripts/react-port/preflight-lib.test.mjs`, canonical/generated skill files, `package.json`, generated `docs/bindings-status.md`, `docs/packages.md`, binding parity/CLI data only when the implementation changes their inputs.
 - **Implementation:** Run the skill from clean fixture scenarios using natural prompts for one package, a URL, and a mixed batch. Inspect the manifest, graph, blockers, generated package artifacts, evidence matrix, and no-write behavior rather than asking an agent to critique the prose. Normalize volatile values and compare semantic outputs. Regenerate repository-derived artifacts and correct only source inputs, never generated files.
-- **Tests:** AE1-AE13 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
+- **Tests:** AE1-AE14 are the required scenario set. Add at least one adversarial input containing misleading repository text to prove fetched files are treated as data, not workflow instructions.
 - **Validation:** `pnpm react-port:test` (new aggregate); `pnpm react-parity:test`; `pnpm rules:check`; `pnpm context:budget:check`; `pnpm bindings:status:check`; `pnpm packages:inventory:check`; `pnpm binding-parity:gaps:check`; `pnpm cli:data:check`; `pnpm changeset:check`; `pnpm typecheck`; `pnpm format:check`. Run the full root `pnpm test` when fixture and targeted checks are green.
 - **Dependencies:** U1-U4.
 
@@ -338,6 +339,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 - **License false positives:** Package metadata can be stale or overbroad. Mitigate by cross-checking the published artifact, exact source revision, package scope, referenced license files, and notices; ambiguity blocks rather than guesses.
 - **License false negatives:** SPDX text matching allows harmless textual variation. Use SPDX identifiers/matching guidance and retain an evidence trail; keep a narrow explicit manual-repair path that supplies missing evidence without weakening the allowlist.
 - **Dependency explosion:** Large UI systems can pull in many React-coupled packages. Bound each graph before implementation, expose SCCs/unsupported primitives early, and allow the user to trim targets without losing completed evidence.
+- **Rewrite cost mistaken for impossibility:** Class components and element-construction APIs can make a port large without making it infeasible. Preserve scanner adaptation plans as required implementation work; reserve blockers for incomplete evidence, concrete unsupported hazards, or a public API with no Octane implementation/rewrite.
 - **Stale repository inventories:** Import/read canonical bridge, workspace, status, and public-export sources and include their fingerprints in resume invalidation.
 - **Skill drift:** Keep mutable facts in code/data, distribute from `.rulesync`, and make generation/reference parity a test.
 - **Legal overclaiming:** Phrase results as conformance with the repository's exact `MIT`/`Unlicense` intake policy, preserve license and notice evidence, cite sources, and never describe the tool as legal counsel.
@@ -354,7 +356,7 @@ Additional touched files are expected in `package.json`, `rulesync.jsonc`, `.git
 - [ ] The `octane-react-library-port` skill is rewritten with progressive-disclosure references and no duplicate mutable catalogs.
 - [ ] RuleSync generates the full multi-file skill for Codex/Agents and all existing configured consumers, with context-budget and drift checks passing.
 - [ ] Completed fixture ports include upstream provenance, retained license/notice evidence, complete test crosswalks, package/status/catalog/generated artifacts, and truthful evidence reports.
-- [ ] AE1-AE13 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
+- [ ] AE1-AE14 pass through deterministic tests and fresh-agent forward runs, including a prompt-injection fixture.
 - [ ] Targeted checks, `pnpm react-parity:test`, RuleSync/context checks, binding/package/data checks, typecheck, format, and the full test suite pass.
 - [ ] The workflow stops at verified local readiness unless the user separately authorizes the repository's commit/PR workflow.
 

@@ -334,11 +334,14 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		if (target.sourceAnalysis) {
 			node.feasibility = {
 				verdict: target.sourceAnalysis.verdict,
+				requiresAdaptation: target.sourceAnalysis.verdict === 'bridgeable-with-rewrites',
 				filesScanned: target.sourceAnalysis.filesScanned,
 				truncated: target.sourceAnalysis.truncated,
 				hazards: target.sourceAnalysis.hazards ?? [],
+				classComponents: target.sourceAnalysis.classComponents ?? false,
 				apis: target.sourceAnalysis.apis ?? [],
 				imports: target.sourceAnalysis.imports ?? [],
+				plan: target.sourceAnalysis.plan ?? [],
 			};
 		}
 		if (target.status === 'blocked') {
@@ -399,17 +402,23 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		) {
 			node.state = 'blocked';
 			node.action = 'feasibility-blocker';
-			node.blockers.push(
-				...(node.feasibility.hazards.length > 0
-					? node.feasibility.hazards
-					: [
-							node.feasibility.truncated
-								? 'Shipped source exceeded the bounded feasibility scan.'
-								: 'Shipped source uses an unsupported React surface or class-only design.',
-						]),
-			);
-			node.repair =
-				'Define a bounded rewrite or route a missing primitive to its owning Octane package before implementation.';
+			const unsupportedApis = node.feasibility.apis
+				.filter((api) => api.status === 'unsupported')
+				.map((api) => api.name);
+			if (node.feasibility.hazards.length > 0) {
+				node.blockers.push(...node.feasibility.hazards);
+				node.repair =
+					'Route the concrete unsupported React hazard to its owning Octane package before implementation.';
+			} else if (node.feasibility.truncated) {
+				node.blockers.push('Shipped source exceeded the bounded feasibility scan.');
+				node.repair = 'Complete a bounded shipped-source scan before implementation.';
+			} else {
+				node.blockers.push(
+					`Shipped source requires unsupported React API(s): ${unsupportedApis.join(', ') || 'unclassified public surface'}.`,
+				);
+				node.repair =
+					'Route the missing public primitive to its owning Octane package, or add an evidence-backed rewrite classification before implementation.';
+			}
 			continue;
 		}
 		if (inventory.sourceBindings[node.packageName]) {

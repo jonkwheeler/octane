@@ -52,23 +52,36 @@ Classify every unresolved runtime edge as exactly one of:
   a supported range to the highest exact stable published version and records it
   as a prerequisite rather than a user-requested target.
 - `unsupported`: relies on React private internals, `react-reconciler`, a custom
-  renderer, an absent Octane primitive, or an unbounded class-only design. Use
-  `--classify package=unsupported` and record the owning repair action.
+  renderer, or a specific public behavior proven to require an absent Octane
+  primitive. Use `--classify package=unsupported` and record the owning repair
+  action. Do not use this classification for a large rewrite or class-based
+  implementation.
 
 Do not treat “vanilla,” “headless,” “core,” or a README claim as proof. Conversely,
 do not port a package merely because its name contains `react` when the shipped
 surface proves it is framework-neutral.
 
 The bounded shipped-source scan reports React APIs, rewrites, class components,
-private/internal hazards, and truncation. Truncation or an unsupported surface is
-a blocker, not an empty/successful scan. Treat `forwardRef`, refs, host events,
-SSR entry points, and partial descriptor APIs according to the live bridge notes
-and `docs/differences-from-react.md`.
+private/internal hazards, and truncation. `bridgeable-with-rewrites` is an
+implementation estimate: keep the node ready and execute its `feasibility.plan`.
+Rewrite class components as functions, re-author `createElement`/`Children`
+structures in `.tsrx`, and use refs as ordinary props. Rewrite size is not a
+feasibility verdict.
+
+`needs-rework` is reserved for a detected public React API with no Octane
+implementation or documented rewrite. It, a truncated scan, or a nonempty
+`hazards` list is a preimplementation feasibility blocker. A missing Octane
+primitive becomes a blocker only after it is tied to specific required public
+behavior and an owning repair. Treat `forwardRef`, refs, host events, SSR entry
+points, and partial descriptor APIs according to the live bridge notes and
+`docs/differences-from-react.md`.
 
 ## Read the graph
 
 Each node names its constraints, `dependsOn`, action, state, blockers, repair,
-and evidence/plan fingerprints. Actions mean:
+and evidence/plan fingerprints. A ready node may set
+`feasibility.requiresAdaptation` and carry a mandatory `feasibility.plan`.
+Actions mean:
 
 - `reuse-package`: consume a proven framework-neutral dependency directly;
 - `reuse-binding`: use an adequate existing `@octanejs/*` package;
@@ -77,7 +90,15 @@ and evidence/plan fingerprints. Actions mean:
 - `binding-name-conflict`: resolve a derived package-name collision before any
   binding write;
 - `audit-dependency` or `preflight-prerequisite`: supply missing evidence;
-- `feasibility-blocker` or `resolve-version-conflict`: stop that branch.
+- `feasibility-blocker`: stop for truncated evidence, a concrete hazard, or a
+  `needs-rework` public API without an Octane implementation/rewrite;
+- `resolve-version-conflict`: stop the conflicting branch.
+
+`audit-dependency` and `preflight-prerequisite` are mandatory recursive intake
+work, not terminal outcomes. Inspect and classify them without asking the user
+to substitute or drop the requested target. Escalate to the user only if the
+completed evidence exposes a real policy block, incompatible version choice, or
+scope decision.
 
 Shared prerequisites appear once. Incompatible lanes name every dependent path;
 never choose a version silently. Strongly connected nodes appear in one
