@@ -118,6 +118,23 @@ Record every row as `required`, `passed`, `failed`, `blocked`, or `inapplicable`
 `inapplicable` requires a reason; “not run,” skipped, or missing output is never
 `passed`.
 
+Initialize the machine matrix once the node is ready; repeat `--category` for
+every applicable behavior:
+
+```bash
+pnpm react-port:evidence -- init --batch <id> --node pkg:<name> \
+  --category <thin-core|hooks-store|dom-component|provider-portal|ssr-sensitive|async-suspense|performance-sensitive>
+```
+
+Record observed results after running each command. A pass needs a command or
+artifact plus the observed result; blocked needs both reason and repair;
+inapplicable is accepted only for gates that allow it and needs a reason.
+
+```bash
+pnpm react-port:evidence -- record --batch <id> --node pkg:<name> \
+  --gate <gate-id> --status passed --command '<command>' --observed '<result>'
+```
+
 Always require:
 
 - package test suite and focused public-export behavior;
@@ -169,6 +186,24 @@ non-parity complement. Confirm every required parity lane executes rather than
 only validating metadata. Run affected core tests and the full root `pnpm test`
 after targeted evidence is green. Regenerate derived data from its source
 command; never edit generated files directly.
+
+Before verification, write three data files: the immutable upstream registration
+inventory, its complete classified crosswalk, and a closure object containing
+`runtimeDependencies` plus `adaptedSources` (`packageName` and exact paths).
+Then run the machine completion gate:
+
+```bash
+pnpm react-port:evidence -- verify --batch <id> --node pkg:<name> \
+  --package-dir packages/<binding> --expected-directory packages/<binding> \
+  --registrations <registrations.json> --crosswalk <crosswalk.json> \
+  --closure <closure.json>
+```
+
+This command inspects package shape, exports, Octane singleton dependencies,
+status, `UPSTREAM.md`, MIT/notice files, forbidden ambient `.tsrx` declarations,
+the complete upstream crosswalk, and the final licensed graph closure. It alone
+advances an `implementing` node to `verified`; missing required evidence leaves
+the node implementing and exits nonzero.
 
 The final machine/human report must name each command and observed result, link
 every required evidence row to a test/artifact, list attribution files and

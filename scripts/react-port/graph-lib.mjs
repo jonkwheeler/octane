@@ -353,6 +353,9 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 		if (target.identity?.version) {
 			node.constraints.push({ range: target.identity.version, via: packageName });
 			node.version = target.identity.version;
+			node.identity = target.identity;
+			node.license = target.license;
+			node.provenance = target.provenance;
 			targetByPackage.set(packageName, target);
 		}
 		if (target.sourceAnalysis) {
@@ -511,6 +514,9 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			differencesSha256: inventory.differencesSha256,
 			reactApis: node.action === 'reuse-package' ? null : inventory.reactApis,
 			feasibility: node.feasibility ?? null,
+			identity: node.identity ?? null,
+			license: node.license ?? null,
+			provenance: node.provenance ?? null,
 			blockers: node.blockers,
 		});
 		node.evidenceFingerprint ??= node.nodeFingerprint;

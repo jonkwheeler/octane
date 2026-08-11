@@ -78,6 +78,7 @@
     "react-parity:harness:validate": "node scripts/react-parity/harness.mjs validate",
     "react-parity:harness:list": "node scripts/react-parity/harness.mjs list",
     "react-parity:harness:run": "node scripts/react-parity/harness.mjs run",
+    "react-port:evidence": "node scripts/react-port/evidence.mjs",
     "react-port:preflight": "node scripts/react-port/preflight.mjs",
     "react-port:test": "node --test scripts/react-port/*.test.mjs",
     "redact-audit:generate": "node scripts/redact-audit/generate.mjs",
