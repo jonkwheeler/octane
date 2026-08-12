@@ -1129,7 +1129,7 @@ function validatePackedTsrxConsumer(tempRoot, archives) {
 	});
 
 	console.log(
-		'strict tsrx-tsc validated packed Cmdk, Input OTP, Sonner, and Tiptap source with the installed Octane Volar compiler and precise consumer props',
+		'strict tsrx-tsc validated packed Cmdk, Input OTP, Recharts, Sonner, and Tiptap source with the installed Octane Volar compiler and precise consumer props',
 	);
 }
 
