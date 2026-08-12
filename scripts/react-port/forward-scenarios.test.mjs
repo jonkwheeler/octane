@@ -230,35 +230,64 @@ describe('fresh forward scenarios', () => {
 		);
 		assert.equal(packageTests.status, 0, packageTests.stderr || packageTests.stdout);
 		assert.match(JSON.parse(packageTests.stdout).gate.observed, /fixture behavior passed/i);
-		manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 
-		const machineGates = new Set([
-			'identity-license',
-			'upstream-crosswalk',
-			'package-contract',
-			'provenance',
-			'closure-audit',
-		]);
-		for (const gate of Object.values(manifest.nodes['pkg:fixture-widget'].evidenceMatrix.gates)) {
-			if (gate.status !== 'required' || machineGates.has(gate.id)) continue;
-			const recorded = runNodeCli(
-				EVIDENCE_CLI,
+		const sourceEntry = path.join(packageDirectory, 'src/index.mjs');
+		const expectedSource = 'export function fixtureWidget(value) { return `fixture:${value}`; }\n';
+		const commandGates = [
+			['typecheck', ['--check', sourceEntry]],
+			[
+				'public-exports',
 				[
-					'record',
-					...evidenceCommon,
-					'--gate',
-					gate.id,
-					'--status',
-					'passed',
-					'--artifact',
-					path.join(packageDirectory, 'tests/fixture-widget.test.mjs'),
-					'--observed',
-					'Offline lifecycle fixture supplied observable evidence.',
+					'-e',
+					`import(${JSON.stringify(pathToFileURL(sourceEntry).href)}).then((module) => { if (typeof module.fixtureWidget !== 'function') process.exit(1); process.stdout.write('public export passed'); })`,
 				],
+			],
+			[
+				'package-pack',
+				[
+					'-e',
+					`const manifest = JSON.parse(require('node:fs').readFileSync(${JSON.stringify(path.join(packageDirectory, 'package.json'))}, 'utf8')); if (manifest.exports?.['.'] !== './src/index.mjs' || !manifest.files.includes('UPSTREAM.md')) process.exit(1); process.stdout.write('package boundary passed');`,
+				],
+			],
+			[
+				'format',
+				[
+					'-e',
+					`const source = require('node:fs').readFileSync(${JSON.stringify(sourceEntry)}, 'utf8'); if (source !== ${JSON.stringify(expectedSource)}) process.exit(1); process.stdout.write('fixture format passed');`,
+				],
+			],
+			[
+				'differential-surface',
+				[
+					'-e',
+					`import(${JSON.stringify(pathToFileURL(sourceEntry).href)}).then(({ fixtureWidget }) => { for (const value of ['', 'ok', 'value']) if (fixtureWidget(value) !== 'fixture:' + value) process.exit(1); process.stdout.write('differential surface passed'); })`,
+				],
+			],
+		];
+		for (const [gateId, commandArguments] of commandGates) {
+			const result = runNodeCli(
+				EVIDENCE_CLI,
+				['run', ...evidenceCommon, '--gate', gateId, '--', process.execPath, ...commandArguments],
 				workspace,
 			);
-			assert.equal(recorded.status, 0, `${gate.id}: ${recorded.stderr}`);
+			assert.equal(result.status, 0, `${gateId}: ${result.stderr || result.stdout}`);
+			assert.equal(JSON.parse(result.stdout).gate.status, 'passed');
 		}
+		const generatedData = runNodeCli(
+			EVIDENCE_CLI,
+			[
+				'record',
+				...evidenceCommon,
+				'--gate',
+				'generated-data',
+				'--status',
+				'inapplicable',
+				'--reason',
+				'The isolated fixture package is not part of repository catalogs.',
+			],
+			workspace,
+		);
+		assert.equal(generatedData.status, 0, generatedData.stderr);
 
 		const verified = runNodeCli(
 			EVIDENCE_CLI,
