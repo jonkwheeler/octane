@@ -288,6 +288,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		graphNodes: manifest.nodes,
 		runtimeDependencies: closure.runtimeDependencies ?? [],
 		adaptedSources: closure.adaptedSources ?? [],
+		reimplementedDependencies: closure.reimplementedDependencies ?? [],
 	});
 	setAutomatedGate(node.evidenceMatrix, 'upstream-crosswalk', crosswalkReport, {
 		artifact: path.resolve(options.crosswalk),
@@ -303,8 +304,10 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	}
 	setAutomatedGate(node.evidenceMatrix, 'closure-audit', closureReport, {
 		artifact: path.resolve(options.closure),
-		passedObserved: 'Actual runtime imports and adapted sources match the licensed graph.',
-		repair: 'Return new runtime/adapted edges to classification and approved-license preflight.',
+		passedObserved:
+			'Actual runtime imports, adapted sources, and clean-room proofs match the graph.',
+		repair:
+			'Return new runtime/adapted edges to classification and supply every planned clean-room proof.',
 	});
 	const readiness = evaluateVerificationReadiness({
 		matrix: node.evidenceMatrix,

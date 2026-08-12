@@ -359,6 +359,36 @@ function packageRoot(specifier) {
 	return specifier.split('/')[0];
 }
 
+function normalizedStrings(values) {
+	if (!Array.isArray(values)) return [];
+	return [
+		...new Set(values.filter((value) => typeof value === 'string').map((value) => value.trim())),
+	]
+		.filter(Boolean)
+		.sort();
+}
+
+function isSafeLocalEvidencePath(value) {
+	if (typeof value !== 'string' || !value.trim()) return false;
+	const candidate = value.trim();
+	const segments = candidate.split('/');
+	return (
+		!path.posix.isAbsolute(candidate) &&
+		!path.win32.isAbsolute(candidate) &&
+		!candidate.includes('\\') &&
+		!candidate.includes('\0') &&
+		segments.every((segment) => segment && segment !== '.' && segment !== '..')
+	);
+}
+
+function normalizeReimplementationProof(proof) {
+	return {
+		packageName: typeof proof?.packageName === 'string' ? proof.packageName.trim() : '',
+		publicBehaviors: normalizedStrings(proof?.publicBehaviors),
+		localEvidence: normalizedStrings(proof?.localEvidence),
+	};
+}
+
 function hasApprovedLicenseEvidence(node) {
 	return (
 		node?.license?.policy === 'approved-license-v2' &&
@@ -369,17 +399,32 @@ function hasApprovedLicenseEvidence(node) {
 	);
 }
 
-export function auditShippedClosure({ nodeId, graphNodes, runtimeDependencies, adaptedSources }) {
+export function auditShippedClosure({
+	nodeId,
+	graphNodes,
+	runtimeDependencies,
+	adaptedSources,
+	reimplementedDependencies = [],
+}) {
 	const issues = [];
 	const node = graphNodes[nodeId];
 	if (!node) return { status: 'blocked', issues: [`Unknown graph node ${nodeId}`] };
 	const plannedDependencies = new Set(
-		node.dependsOn.flatMap((dependencyId) => {
+		(node.dependsOn ?? []).flatMap((dependencyId) => {
 			const dependency = graphNodes[dependencyId];
 			return [dependency?.packageName, dependency?.binding].filter(Boolean);
 		}),
 	);
-	for (const dependency of [...new Set(runtimeDependencies.map(packageRoot))].sort()) {
+	const plannedCleanRoomDependencies = new Set(
+		(node.dependsOn ?? []).flatMap((dependencyId) => {
+			const dependency = graphNodes[dependencyId];
+			return dependency?.action === 'reimplement-in-parent' && dependency.packageName
+				? [dependency.packageName]
+				: [];
+		}),
+	);
+	const normalizedRuntimeDependencies = [...new Set(runtimeDependencies.map(packageRoot))].sort();
+	for (const dependency of normalizedRuntimeDependencies) {
 		if (
 			dependency === 'octane' ||
 			dependency === 'react' ||
@@ -390,9 +435,30 @@ export function auditShippedClosure({ nodeId, graphNodes, runtimeDependencies, a
 		}
 		issues.push(`Runtime dependency ${dependency} was not present in the approved graph.`);
 	}
-	for (const adaptedSource of adaptedSources) {
+	const normalizedAdaptedSources = adaptedSources
+		.map((adaptedSource) => ({
+			packageName:
+				typeof adaptedSource?.packageName === 'string' ? adaptedSource.packageName.trim() : '',
+			paths: Array.isArray(adaptedSource?.paths)
+				? [...adaptedSource.paths].sort()
+				: adaptedSource?.paths,
+		}))
+		.sort((left, right) =>
+			left.packageName === right.packageName
+				? JSON.stringify(left).localeCompare(JSON.stringify(right))
+				: left.packageName.localeCompare(right.packageName),
+		);
+	for (const adaptedSource of normalizedAdaptedSources) {
 		const adaptedNode = graphNodes[`pkg:${adaptedSource.packageName}`];
-		if (!hasApprovedLicenseEvidence(adaptedNode)) {
+		const copyForbidden =
+			adaptedNode?.action === 'reimplement-in-parent' ||
+			adaptedNode?.copyPermission === 'denied-or-unproven' ||
+			adaptedNode?.reimplementation?.copySource === false;
+		if (copyForbidden) {
+			issues.push(
+				`Adapted source ${adaptedSource.packageName} must not copy or adapt source because its graph action is no-copy.`,
+			);
+		} else if (!hasApprovedLicenseEvidence(adaptedNode)) {
 			issues.push(
 				`Adapted source ${adaptedSource.packageName} has no approved-license graph evidence.`,
 			);
@@ -402,20 +468,84 @@ export function auditShippedClosure({ nodeId, graphNodes, runtimeDependencies, a
 				`Adapted source ${adaptedSource.packageName} has no recorded copied/adapted paths.`,
 			);
 		}
-		for (const sourcePath of adaptedSource.paths ?? []) {
-			if (
-				path.posix.isAbsolute(sourcePath) ||
-				sourcePath.includes('\\') ||
-				sourcePath.split('/').includes('..')
-			) {
+		for (const sourcePath of Array.isArray(adaptedSource.paths) ? adaptedSource.paths : []) {
+			if (!isSafeLocalEvidencePath(sourcePath)) {
 				issues.push(`Adapted source path is unsafe: ${sourcePath}`);
 			}
 		}
 	}
+	if (!Array.isArray(reimplementedDependencies)) {
+		issues.push('reimplementedDependencies must be an array.');
+		reimplementedDependencies = [];
+	}
+	const proofs = reimplementedDependencies
+		.map(normalizeReimplementationProof)
+		.sort((left, right) =>
+			left.packageName === right.packageName
+				? JSON.stringify(left).localeCompare(JSON.stringify(right))
+				: left.packageName.localeCompare(right.packageName),
+		);
+	const proofsByPackage = new Map();
+	for (let index = 0; index < reimplementedDependencies.length; index += 1) {
+		const original = reimplementedDependencies[index];
+		const proof = normalizeReimplementationProof(original);
+		const label = proof.packageName || '<missing package>';
+		const packageProofs = proofsByPackage.get(proof.packageName) ?? [];
+		packageProofs.push(proof);
+		proofsByPackage.set(proof.packageName, packageProofs);
+		if (!plannedCleanRoomDependencies.has(proof.packageName)) {
+			issues.push(
+				`Reimplementation proof for ${label} was not planned as a direct clean-room dependency.`,
+			);
+		}
+		if (
+			!Array.isArray(original?.publicBehaviors) ||
+			original.publicBehaviors.length === 0 ||
+			original.publicBehaviors.some((behavior) => typeof behavior !== 'string' || !behavior.trim())
+		) {
+			issues.push(`Reimplementation proof for ${label} requires nonempty public behaviors.`);
+		}
+		if (
+			!Array.isArray(original?.localEvidence) ||
+			original.localEvidence.length === 0 ||
+			original.localEvidence.some(
+				(evidencePath) => typeof evidencePath !== 'string' || !evidencePath.trim(),
+			)
+		) {
+			issues.push(
+				`Reimplementation proof for ${label} requires nonempty independently authored local evidence.`,
+			);
+		}
+		for (const evidencePath of Array.isArray(original?.localEvidence)
+			? original.localEvidence
+			: []) {
+			if (!isSafeLocalEvidencePath(evidencePath)) {
+				issues.push(`Clean-room local evidence path is unsafe for ${label}: ${evidencePath}`);
+			}
+		}
+	}
+	for (const packageName of [...plannedCleanRoomDependencies].sort()) {
+		const proofCount = proofsByPackage.get(packageName)?.length ?? 0;
+		if (proofCount === 0) {
+			issues.push(`${packageName} clean-room dependency has no reimplementation proof.`);
+		} else if (proofCount !== 1) {
+			issues.push(
+				`${packageName} clean-room dependency requires exactly one reimplementation proof; found ${proofCount}.`,
+			);
+		}
+	}
+	issues.sort();
 	return {
 		status: issues.length === 0 ? 'passed' : 'blocked',
 		issues,
-		fingerprint: fingerprint({ nodeId, runtimeDependencies, adaptedSources, issues }),
+		reimplementedDependencies: proofs,
+		fingerprint: fingerprint({
+			nodeId,
+			runtimeDependencies: normalizedRuntimeDependencies,
+			adaptedSources: normalizedAdaptedSources,
+			reimplementedDependencies: proofs,
+			issues,
+		}),
 	};
 }
 

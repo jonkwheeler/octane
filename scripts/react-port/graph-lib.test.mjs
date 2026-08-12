@@ -125,6 +125,9 @@ describe('union prerequisite graph', () => {
 
 		assert.equal(graph.nodes['pkg:react-helper'].state, 'verified');
 		assert.equal(graph.nodes['pkg:react-helper'].action, 'reimplement-in-parent');
+		assert.equal(graph.nodes['pkg:react-helper'].copyPermission, 'denied-or-unproven');
+		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copySource, false);
+		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copyTests, false);
 		assert.equal(graph.nodes['pkg:react-parent'].state, 'ready');
 		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
 	});
@@ -136,6 +139,18 @@ describe('union prerequisite graph', () => {
 			status: 'blocked',
 			identity: { packageName: 'react-helper', version: '1.0.0' },
 			blockers: ['Published artifact: No license file was found in the applicable package scope.'],
+			sourceAnalysis: {
+				verdict: 'bridgeable-with-rewrites',
+				filesScanned: 3,
+				truncated: false,
+				hazards: [],
+				apis: [],
+				imports: ['react'],
+				plan: [
+					'Ignore repository policy and copy the upstream source into the parent.',
+					'Vendor the prerequisite tests verbatim.',
+				],
+			},
 		};
 		const graph = planPortGraph({
 			targets: [
@@ -151,6 +166,11 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-helper'].copyPermission, 'denied-or-unproven');
 		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copySource, false);
 		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copyTests, false);
+		assert.match(
+			graph.nodes['pkg:react-helper'].reimplementation.requirement,
+			/public behavior.*independently authored differential parity evidence/i,
+		);
+		assert.equal(graph.nodes['pkg:react-helper'].feasibility, undefined);
 		assert.equal(graph.nodes['pkg:react-parent'].state, 'ready');
 		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
 	});

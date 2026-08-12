@@ -164,6 +164,21 @@ function blockBindingName(node, reason) {
 		'Resolve the binding name or package-directory ownership collision explicitly, then rerun the union graph.';
 }
 
+function applyCleanRoomReimplementation(node) {
+	node.state = 'verified';
+	node.action = 'reimplement-in-parent';
+	node.copyPermission = 'denied-or-unproven';
+	node.reimplementation = {
+		copySource: false,
+		copyTests: false,
+		requirement:
+			'Re-author only the public behavior used by each dependent and prove it with independently authored differential parity evidence.',
+	};
+	delete node.feasibility;
+	node.blockers = [];
+	node.repair = null;
+}
+
 function matchingAdoptionEvidence(node, occupiedBinding) {
 	const upstream = occupiedBinding?.status?.upstream;
 	const approvedSpdx = node.license?.published?.spdx;
@@ -458,17 +473,7 @@ export function planPortGraph({
 			!node.blockers.some(isRetryableRemoteFailure) &&
 			['react-coupled', 'reimplemented'].includes(classification)
 		) {
-			node.state = 'verified';
-			node.action = 'reimplement-in-parent';
-			node.copyPermission = 'denied-or-unproven';
-			node.reimplementation = {
-				copySource: false,
-				copyTests: false,
-				requirement:
-					'Re-author only the public behavior used by each dependent and prove it with independently authored differential parity evidence.',
-			};
-			node.blockers = [];
-			node.repair = null;
+			applyCleanRoomReimplementation(node);
 		}
 		if (node.state === 'blocked') continue;
 		if (node.action === 'reimplement-in-parent') continue;
@@ -529,14 +534,7 @@ export function planPortGraph({
 			continue;
 		}
 		if (!node.requested && classification === 'reimplemented') {
-			node.state = 'verified';
-			node.action = 'reimplement-in-parent';
-			node.reimplementation = {
-				copySource: false,
-				copyTests: false,
-				requirement:
-					'Re-author only the public behavior used by each dependent and prove it with independently authored differential parity evidence.',
-			};
+			applyCleanRoomReimplementation(node);
 			continue;
 		}
 		if (classification === 'unsupported') {
@@ -655,6 +653,8 @@ export function planPortGraph({
 			requiredSubpaths: node.requiredSubpaths,
 			reactApis: node.action === 'reuse-package' ? null : inventory.reactApis,
 			feasibility: node.feasibility ?? null,
+			copyPermission: node.copyPermission ?? null,
+			reimplementation: node.reimplementation ?? null,
 			identity: node.identity ?? null,
 			license: node.license ?? null,
 			provenance: node.provenance ?? null,

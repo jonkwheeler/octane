@@ -17,7 +17,7 @@ function sha256(content) {
 	return createHash('sha256').update(content).digest('hex');
 }
 
-function createReadyBatch() {
+function createReadyBatch({ cleanRoomDependency = false } = {}) {
 	const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
 	const batchDirectory = path.join(workRoot, 'fixture-batch');
 	mkdirSync(batchDirectory);
@@ -30,7 +30,7 @@ function createReadyBatch() {
 				binding: '@octanejs/widget',
 				bindingDirectory: 'packages/widget',
 				state: 'ready',
-				dependsOn: [],
+				dependsOn: cleanRoomDependency ? ['pkg:react-helper'] : [],
 				evidenceFingerprint: 'evidence',
 				nodeFingerprint: 'plan',
 				identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
@@ -50,6 +50,20 @@ function createReadyBatch() {
 					},
 				},
 			},
+			...(cleanRoomDependency
+				? {
+						'pkg:react-helper': {
+							packageName: 'react-helper',
+							state: 'verified',
+							action: 'reimplement-in-parent',
+							dependsOn: [],
+							evidenceFingerprint: 'clean-room-evidence',
+							nodeFingerprint: 'clean-room-plan',
+							copyPermission: 'denied-or-unproven',
+							reimplementation: { copySource: false, copyTests: false },
+						},
+					}
+				: {}),
 		},
 	});
 	writeFileSync(
@@ -255,6 +269,44 @@ describe('evidence CLI', () => {
 		const report = JSON.parse(verified.stdout);
 		assert.equal(report.status, 'blocked');
 		assert.ok(report.issues.some((issue) => issue.includes('package-tests')));
+	});
+
+	test('enforces clean-room dependency proof from the closure artifact during verification', () => {
+		const { workRoot } = createReadyBatch({ cleanRoomDependency: true });
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+
+		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-clean-room-closure-'));
+		for (const [name, value] of Object.entries({
+			'registrations.json': [],
+			'crosswalk.json': [],
+			'closure.json': {
+				runtimeDependencies: [],
+				adaptedSources: [],
+				reimplementedDependencies: [],
+			},
+		})) {
+			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
+		}
+		const verified = runEvidence([
+			'verify',
+			...common,
+			'--package-dir',
+			path.join(inputRoot, 'missing-package'),
+			'--expected-directory',
+			'packages/widget',
+			'--registrations',
+			path.join(inputRoot, 'registrations.json'),
+			'--crosswalk',
+			path.join(inputRoot, 'crosswalk.json'),
+			'--closure',
+			path.join(inputRoot, 'closure.json'),
+		]);
+
+		assert.equal(verified.status, 2);
+		const report = JSON.parse(verified.stdout);
+		assert.equal(report.closureReport.status, 'blocked');
+		assert.match(report.closureReport.issues.join('\n'), /react-helper.*clean-room.*proof/i);
 	});
 
 	test('refuses verification outside the graph-planned binding directory', () => {

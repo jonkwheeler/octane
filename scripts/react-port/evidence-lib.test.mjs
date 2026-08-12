@@ -220,6 +220,103 @@ describe('package and closure completion', () => {
 		assert.match(result.issues.join('\n'), /copied-helper.*approved-license/i);
 	});
 
+	test('requires independently authored proof for every direct clean-room dependency', () => {
+		const graphNodes = {
+			'pkg:widget': {
+				packageName: 'widget',
+				dependsOn: ['pkg:react-helper'],
+			},
+			'pkg:react-helper': {
+				packageName: 'react-helper',
+				dependsOn: [],
+				action: 'reimplement-in-parent',
+				copyPermission: 'denied-or-unproven',
+				reimplementation: { copySource: false, copyTests: false },
+			},
+		};
+		const missing = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [],
+		});
+
+		assert.equal(missing.status, 'blocked');
+		assert.match(missing.issues.join('\n'), /react-helper.*clean-room.*proof/i);
+
+		const proof = {
+			packageName: 'react-helper',
+			publicBehaviors: ['Formats the parent-visible label', 'Preserves empty input'],
+			localEvidence: ['tests/react-helper-differential.test.tsrx'],
+		};
+		const valid = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [proof],
+		});
+		const reordered = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [
+				{
+					...proof,
+					publicBehaviors: [...proof.publicBehaviors].reverse(),
+				},
+			],
+		});
+
+		assert.equal(valid.status, 'passed', valid.issues.join('\n'));
+		assert.equal(reordered.fingerprint, valid.fingerprint);
+	});
+
+	test('blocks copied source and malformed or unplanned clean-room proof', () => {
+		const graphNodes = {
+			'pkg:widget': { packageName: 'widget', dependsOn: ['pkg:react-helper'] },
+			'pkg:react-helper': {
+				packageName: 'react-helper',
+				dependsOn: [],
+				action: 'reimplement-in-parent',
+				copyPermission: 'denied-or-unproven',
+				reimplementation: { copySource: false, copyTests: false },
+			},
+		};
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			runtimeDependencies: [],
+			adaptedSources: [{ packageName: 'react-helper', paths: ['src/copied-helper.ts'] }],
+			reimplementedDependencies: [
+				{
+					packageName: 'react-helper',
+					publicBehaviors: [''],
+					localEvidence: ['../upstream/react-helper.test.ts'],
+				},
+				{
+					packageName: 'react-helper',
+					publicBehaviors: ['Duplicate proof'],
+					localEvidence: ['tests/duplicate.test.ts'],
+				},
+				{
+					packageName: 'surprise-helper',
+					publicBehaviors: ['Unplanned behavior'],
+					localEvidence: ['tests/surprise.test.ts'],
+				},
+			],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /react-helper.*must not copy or adapt source/i);
+		assert.match(result.issues.join('\n'), /react-helper.*exactly one.*proof/i);
+		assert.match(result.issues.join('\n'), /public behaviors/i);
+		assert.match(result.issues.join('\n'), /unsafe.*\.\.\/upstream/i);
+		assert.match(result.issues.join('\n'), /surprise-helper.*not.*planned/i);
+	});
+
 	test('cannot report verified while a required gate or completion report is missing', () => {
 		const matrix = createEvidenceMatrix({
 			categories: ['thin-core'],
