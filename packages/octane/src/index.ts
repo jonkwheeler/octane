@@ -57,6 +57,8 @@ export {
 	// Resource hints (React DOM parity)
 	preload,
 	preinit,
+	preloadModule,
+	preinitModule,
 	preconnect,
 	prefetchDNS,
 	// Context
@@ -70,6 +72,9 @@ export {
 	ErrorBoundary,
 	Hydrate,
 	Activity,
+	// React shipped Activity as unstable_Activity before 19.2 — alias it so
+	// experimental-channel ports compile unchanged (mirrors unstable_ViewTransition).
+	Activity as unstable_Activity,
 	ViewTransition,
 	addTransitionType,
 	// React ships View Transitions on the experimental channel as unstable_-
@@ -181,8 +186,14 @@ export {
 	attachRef,
 	queueRefAttach,
 	queueRefDetach,
+	replaceRef,
+	queueOwnRefDetach,
 	injectStyle,
 	headBlock,
+	// React Float resources (stylesheet precedence links, style resources, async scripts)
+	stylesheetResource,
+	styleResource,
+	scriptResource,
 	namespaceHead,
 	namespaceHeadElement,
 	delegateEvents,
@@ -210,6 +221,7 @@ export {
 	// Compact compiler ABI; keep the descriptive export for older compiled output.
 	markSingleRoot as __s,
 	markChildrenBlock,
+	descriptorChildren,
 	createScopedValue,
 	createScopedElement,
 	childSlot,
@@ -249,6 +261,7 @@ export {
 	// ── 3. Test-only (this repo's test infrastructure; not API) ───────────────
 	drainPassiveEffects,
 	setIsOctaneActEnvironment,
+	resetFloatResourceState,
 	setTransitionFallbackTimeout,
 	getTransitionFallbackTimeout,
 } from './runtime.js';

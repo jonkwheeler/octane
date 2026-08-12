@@ -62,6 +62,13 @@ import {
 import { hasOwnProp } from './has-own.js';
 import { headOwnershipSuffix } from './head-ownership.js';
 import type { HydrateProps, HydrationStrategy } from './hydration/types.js';
+import {
+	applyElementDefaultProps,
+	childElementKey,
+	childrenIterator,
+	escapeMappedElementKey,
+	resolveLazyDefaultProps as lazyResolvedProps,
+} from './shared-value-helpers.js';
 
 // Shared client/SSR CSS helpers (single source in css.ts so class strings and
 // hyphenated style keys stay byte-equal across the two runtimes).
@@ -188,10 +195,33 @@ let PERMANENT_STATIC_HYDRATE_DEPTH = 0;
 // `<head>` when present, else prepended).
 interface HeadBuffer {
 	html: string;
-	/** Resource-hint dedupe keys emitted into `html` during this pass. */
+	/** Resource-hint + Float-resource dedupe keys emitted during this pass. */
 	hints: Set<string>;
+	/**
+	 * React Float stylesheet resources, grouped by precedence: precedence →
+	 * concatenated `<link>` html. Map insertion order IS group order
+	 * (first-encounter), and groups fold after `html` at capture time. Null
+	 * until the first stylesheet resource so ordinary passes pay nothing.
+	 */
+	sheets: Map<string, string> | null;
+	/**
+	 * Hint tags keyed for COALESCING: a preinit deletes the now-redundant
+	 * preload entry before the fold (React folds preload → initialized
+	 * resource on the server). Null until the first hint.
+	 */
+	hintHtml: Map<string, string> | null;
+	/** Preload-seeded connection/integrity options for the matching preinit. */
+	preloadXfer: Map<string, Record<string, unknown>> | null;
 	/** Precomputed caller root namespace, unaffected by streamed useId subspaces. */
 	rootSuffix: string;
+}
+
+/** Fold order: hoisted head elements, then hints, then grouped stylesheets. */
+function headHtmlWithSheets(buf: HeadBuffer): string {
+	let out = buf.html;
+	if (buf.hintHtml !== null) for (const tag of buf.hintHtml.values()) out += tag;
+	if (buf.sheets !== null) for (const group of buf.sheets.values()) out += group;
+	return out;
 }
 let HEAD: HeadBuffer | null = null;
 
@@ -514,14 +544,6 @@ function copyElementConfig(config: any): any {
 		}
 	}
 	return props;
-}
-
-function applyElementDefaultProps(type: any, props: any): void {
-	const defaults = type?.defaultProps;
-	if (defaults == null) return;
-	for (const name in defaults) {
-		if (props[name] === undefined) props[name] = defaults[name];
-	}
 }
 
 function finalizeElementDescriptor(descriptor: ElementDescriptor): ElementDescriptor {
@@ -900,28 +922,6 @@ function cloneAndReplaceElementKey(element: ElementDescriptor, key: string): Ele
 	return finalizeElementDescriptor(descriptor);
 }
 
-function escapeElementKey(key: string): string {
-	return '$' + key.replace(/[=:]/g, (match) => (match === '=' ? '=0' : '=2'));
-}
-
-function escapeMappedElementKey(key: string): string {
-	return key.replace(/\/+/g, '$&/');
-}
-
-function childElementKey(child: any, index: number): string {
-	return child != null && typeof child === 'object' && child.key != null
-		? escapeElementKey('' + child.key)
-		: index.toString(36);
-}
-
-function childrenIterator(children: any): (() => Iterator<any>) | null {
-	if (children == null || typeof children !== 'object') return null;
-	const iterator =
-		(typeof Symbol === 'function' && (children as any)[Symbol.iterator]) ||
-		(children as any)['@@iterator'];
-	return typeof iterator === 'function' ? iterator : null;
-}
-
 function iterableChildArray(value: any): any[] | null {
 	if (
 		value == null ||
@@ -1214,7 +1214,12 @@ export function ssrChild(v: unknown, scope: SSRScope): string {
 	return ssrChildValue(v, scope, true);
 }
 
-function ssrChildValue(v: unknown, scope: SSRScope, includeKeyedSingle: boolean): string {
+function ssrChildValue(
+	v: unknown,
+	scope: SSRScope,
+	includeKeyedSingle: boolean,
+	selfMarkItem: boolean = false,
+): string {
 	// Every renderable hole serializes to ONE `<!--[-->…<!--]-->` range so the
 	// client's childSlot adopts a uniform marker pair on hydration regardless of
 	// whether the value is a component, an element, a primitive, or empty — and
@@ -1249,7 +1254,7 @@ function ssrChildValue(v: unknown, scope: SSRScope, includeKeyedSingle: boolean)
 			for (let i = 0; i < preparedList.items.length; i++) {
 				const item = preparedList.items[i];
 				const key = preparedList.keys[i];
-				out += withAsyncIdentity('item', key, () => ssrChildValue(item, scope, false));
+				out += withAsyncIdentity('item', key, () => ssrChildValue(item, scope, false, true));
 			}
 			return ssrBlock(out);
 		});
@@ -1268,8 +1273,16 @@ function ssrChildValue(v: unknown, scope: SSRScope, includeKeyedSingle: boolean)
 			// so only the outer marker pair must line up). COMPONENT descriptor →
 			// ssrComponent, passing `children` through (don't drop them).
 			const render = (): string => {
-				if (typeof d.type === 'string')
-					return ssrBlock(ssrHostElement(d.type, d.props, d.children, scope));
+				if (typeof d.type === 'string') {
+					// Keep the established argument evaluation order and read each
+					// public descriptor field exactly once. Only the ACTUAL children
+					// handed to the serializer can prove a self-delimiting host.
+					const type = d.type;
+					const props = d.props;
+					const children = d.children;
+					const html = ssrHostElement(type, props, children, scope);
+					return selfMarkItem && serverHostHasPrimitiveChildren(children) ? html : ssrBlock(html);
+				}
 				return ssrComponentDescriptor(d, scope);
 			};
 			const renderType = () => withAsyncIdentity('child-type', d.type, render);
@@ -1486,14 +1499,15 @@ function ssrDeoptBlockChildren(children: unknown, scope: SSRScope): string {
 				const item = preparedList.items[i];
 				const key = preparedList.keys[i];
 				out += withAsyncIdentity('item', key, () => {
-					// The de-opt list's own item range is sufficient for pure host/text
-					// values: deoptItemBody adopts/reconciles the node directly inside it.
+					// A pure host is its own keyed-item boundary. Text and empty values
+					// still need an explicit movable range because they do not provide
+					// one stable Element root.
 					// A component-bearing value already contributes the coextensive range
 					// borrowed by its nested childSlot; wrapping it again would make hydration
 					// mount a duplicate beside the server content.
 					return serverDescNeedsBlocks(item)
 						? ssrChildValue(item, scope, false)
-						: ssrBlock(ssrDescriptorContent(item, scope));
+						: ssrDeoptItemContent(item, scope);
 				});
 			}
 			return ssrBlock(out);
@@ -1546,6 +1560,32 @@ function scriptDescriptorText(v: unknown): string | null {
 	}
 	if (typeof v === 'object' || typeof v === 'function') return null;
 	return String(v);
+}
+
+// A host with a primitive or empty actual child stays on the client's raw-host
+// reconciliation path and therefore provides one stable Element boundary. Any
+// object, array, iterable, portal, or render function remains conservatively
+// marked. Classify the very value already read for serialization so public
+// getters and forwarding Proxies cannot lie or be evaluated an extra time.
+function serverHostHasPrimitiveChildren(children: unknown): boolean {
+	return children === null || (typeof children !== 'object' && typeof children !== 'function');
+}
+
+// Serialize one de-opt keyed item after its established serverDescNeedsBlocks
+// routing. Capture descriptor fields in exactly ssrDescriptorContent's ordinary
+// evaluation order, then decide whether the actual rendered host can self-mark.
+function ssrDeoptItemContent(value: unknown, scope: SSRScope): string {
+	if (value !== null && typeof value === 'object' && (value as any).$$kind === ELEMENT_TAG) {
+		const descriptor = value as ElementDescriptor;
+		if (typeof descriptor.type === 'string') {
+			const type = descriptor.type;
+			const props = descriptor.props;
+			const children = descriptor.children;
+			const html = ssrHostElement(type, props, children, scope);
+			return serverHostHasPrimitiveChildren(children) ? html : ssrBlock(html);
+		}
+	}
+	return ssrBlock(ssrDescriptorContent(value, scope));
 }
 
 // Serialize the CONTENT inside a host descriptor (a `createElement(...)` child
@@ -2325,6 +2365,31 @@ export function ssrChildrenSources(
 	return child[0] ? ssrChildText(child[1], scope) : renderFallback();
 }
 
+/**
+ * Resolve the content of an otherwise empty ordinary host with one JSX spread.
+ * The compiler has already snapshotted every enumerable own getter in authored
+ * order, so direct reads here neither repeat those getters nor see inherited
+ * properties. Keeping this narrow avoids source-pair arrays and fallback
+ * closures while retaining React's raw-HTML validation and child-slot behavior.
+ */
+export function ssrSpreadContent(
+	snapshot: Record<string, unknown> | null,
+	scope: SSRScope,
+): string {
+	if (snapshot === null) return '';
+	const html = snapshot.dangerouslySetInnerHTML;
+	const child = snapshot.children;
+	if (html != null) {
+		if (typeof html !== 'object' || !('__html' in html)) {
+			throw new Error(formatServerError(6));
+		}
+		if (child != null) throw new Error(formatServerError(5));
+		const value = (html as { __html?: unknown }).__html;
+		return value == null ? '' : String(value);
+	}
+	return child === undefined ? '' : ssrChildText(child, scope);
+}
+
 /** Validate runtime spread/direct content props before closing a void host. */
 export function ssrVoidContent(
 	tag: string,
@@ -2818,6 +2883,9 @@ function captureComponentReplayState(scope: SSRScope, frame: Frame | null) {
 		head,
 		headLength: head !== null ? head.html.length : 0,
 		headHints: head === null ? null : new Set(head.hints),
+		headSheets: head === null || head.sheets === null ? null : new Map(head.sheets),
+		headHintHtml: head === null || head.hintHtml === null ? null : new Map(head.hintHtml),
+		headXfer: head === null || head.preloadXfer === null ? null : new Map(head.preloadXfer),
 		serial,
 		serialLength: serial !== null ? serial.length : 0,
 		susp,
@@ -2881,6 +2949,26 @@ function rewindComponentReplayState(
 		snapshot.head.html = snapshot.head.html.slice(0, snapshot.headLength);
 		snapshot.head.hints.clear();
 		for (const key of snapshot.headHints) snapshot.head.hints.add(key);
+		if (snapshot.headSheets === null) snapshot.head.sheets = null;
+		else {
+			// Restore INTO a live map (the snapshot map itself stays pristine so a
+			// second rewind from the same snapshot restores identically).
+			const sheets = (snapshot.head.sheets ??= new Map());
+			sheets.clear();
+			for (const [precedence, group] of snapshot.headSheets) sheets.set(precedence, group);
+		}
+		if (snapshot.headHintHtml === null) snapshot.head.hintHtml = null;
+		else {
+			const hintHtml = (snapshot.head.hintHtml ??= new Map());
+			hintHtml.clear();
+			for (const [k, v] of snapshot.headHintHtml) hintHtml.set(k, v);
+		}
+		if (snapshot.headXfer === null) snapshot.head.preloadXfer = null;
+		else {
+			const xfer = (snapshot.head.preloadXfer ??= new Map());
+			xfer.clear();
+			for (const [k, v] of snapshot.headXfer) xfer.set(k, v);
+		}
 	}
 	if (snapshot.serial !== null) snapshot.serial.length = snapshot.serialLength;
 	if (snapshot.susp !== null) snapshot.susp.length = snapshot.suspLength;
@@ -3481,22 +3569,16 @@ function vtSsrResolve(props: VtSsrProps, kind: 'enter' | 'exit' | 'update' | 'sh
 	return v.default != null ? v.default : 'auto';
 }
 
-/**
- * Inject `vt-*` attributes into the FIRST element open-tag of an HTML
- * fragment, skipping block/comment markers and streaming `<template>`
- * placeholders (the annotation belongs on the visible fallback root that
- * follows). Attributes already present (an inner boundary annotated first —
- * innermost owns vt-update) are left alone.
- */
-function vtSsrAnnotate(html: string, attrs: Array<[string, string]>): string {
+/** Skip comment markers and streaming placeholders to locate the visible root. */
+function vtSsrFirstVisibleOpenTag(html: string): number {
 	const n = html.length;
 	let i = 0;
 	while (i < n) {
 		const lt = html.indexOf('<', i);
-		if (lt === -1) return html;
+		if (lt === -1) return -1;
 		if (html.startsWith('<!--', lt)) {
 			const close = html.indexOf('-->', lt + 4);
-			if (close === -1) return html;
+			if (close === -1) return -1;
 			i = close + 3;
 			continue;
 		}
@@ -3508,36 +3590,53 @@ function vtSsrAnnotate(html: string, attrs: Array<[string, string]>): string {
 		}
 		let e = lt + 1;
 		while (e < n && /[a-zA-Z0-9-]/.test(html[e])) e++;
-		const tag = html.slice(lt + 1, e).toLowerCase();
-		// End of the open tag — quote-aware ('>' may appear inside attr values).
-		let j = e;
-		let q = '';
-		while (j < n) {
-			const ch = html[j];
-			if (q !== '') {
-				if (ch === q) q = '';
-			} else if (ch === '"' || ch === "'") q = ch;
-			else if (ch === '>') break;
-			j++;
-		}
-		if (j >= n) return html;
-		if (tag === 'template') {
+		if (e - lt === 9 && html.slice(lt + 1, e).toLowerCase() === 'template') {
+			const j = vtSsrOpenTagEnd(html, e);
+			if (j === -1) return -1;
 			const close = html.indexOf('</template>', j);
 			i = close === -1 ? j + 1 : close + 11;
 			continue;
 		}
-		const open = html.slice(lt, j);
-		let inject = '';
-		for (let k = 0; k < attrs.length; k++) {
-			if (open.indexOf(attrs[k][0] + '="') === -1) {
-				inject += ' ' + attrs[k][0] + '="' + escapeAttr(attrs[k][1]) + '"';
-			}
-		}
-		if (inject === '') return html;
-		const at = html[j - 1] === '/' ? j - 1 : j;
-		return html.slice(0, at) + inject + html.slice(at);
+		return lt;
 	}
-	return html;
+	return -1;
+}
+
+/** Find an opening tag's actual terminator without allocating scan state. */
+function vtSsrOpenTagEnd(html: string, from: number): number {
+	let quote = 0;
+	for (let index = from; index < html.length; index++) {
+		const code = html.charCodeAt(index);
+		if (quote !== 0) {
+			if (code === quote) quote = 0;
+		} else if (code === 34 || code === 39) {
+			quote = code;
+		} else if (code === 62) {
+			return index;
+		}
+	}
+	return -1;
+}
+
+/**
+ * Inject `vt-*` attributes into the first visible element's opening tag.
+ * An inner boundary owns attributes it has already placed on the same root.
+ */
+function vtSsrAnnotate(html: string, attrs: Array<[string, string]>): string {
+	const start = vtSsrFirstVisibleOpenTag(html);
+	if (start === -1) return html;
+	const end = vtSsrOpenTagEnd(html, start + 1);
+	if (end === -1) return html;
+	const open = html.slice(start, end);
+	let inject = '';
+	for (let index = 0; index < attrs.length; index++) {
+		if (open.indexOf(attrs[index][0] + '="') === -1) {
+			inject += ' ' + attrs[index][0] + '="' + escapeAttr(attrs[index][1]) + '"';
+		}
+	}
+	if (inject === '') return html;
+	const insertion = html[end - 1] === '/' ? end - 1 : end;
+	return html.slice(0, insertion) + inject + html.slice(insertion);
 }
 
 /**
@@ -3548,47 +3647,15 @@ function vtSsrAnnotate(html: string, attrs: Array<[string, string]>): string {
  * claims nothing — that is exactly React's "top of the arm only" rule.
  */
 function vtSsrClaimArm(html: string, kind: 'enter' | 'exit'): string {
-	const n = html.length;
-	let i = 0;
-	while (i < n) {
-		const lt = html.indexOf('<', i);
-		if (lt === -1) return html;
-		if (html.startsWith('<!--', lt)) {
-			const close = html.indexOf('-->', lt + 4);
-			if (close === -1) return html;
-			i = close + 3;
-			continue;
-		}
-		const c = html.charCodeAt(lt + 1);
-		if (!((c >= 65 && c <= 90) || (c >= 97 && c <= 122))) {
-			i = lt + 1;
-			continue;
-		}
-		let e = lt + 1;
-		while (e < n && /[a-zA-Z0-9-]/.test(html[e])) e++;
-		const tag = html.slice(lt + 1, e).toLowerCase();
-		let j = e;
-		let q = '';
-		while (j < n) {
-			const ch = html[j];
-			if (q !== '') {
-				if (ch === q) q = '';
-			} else if (ch === '"' || ch === "'") q = ch;
-			else if (ch === '>') break;
-			j++;
-		}
-		if (j >= n) return html;
-		if (tag === 'template') {
-			const close = html.indexOf('</template>', j);
-			i = close === -1 ? j + 1 : close + 11;
-			continue;
-		}
-		const marker = ' vt-' + kind + '-x="';
-		const at = html.slice(lt, j).indexOf(marker);
-		if (at === -1) return html;
-		return html.slice(0, lt + at) + ' vt-' + kind + '="' + html.slice(lt + at + marker.length);
-	}
-	return html;
+	const start = vtSsrFirstVisibleOpenTag(html);
+	if (start === -1) return html;
+	const end = vtSsrOpenTagEnd(html, start + 1);
+	if (end === -1) return html;
+	const marker = ' vt-' + kind + '-x="';
+	const offset = html.slice(start, end).indexOf(marker);
+	if (offset === -1) return html;
+	const insertion = start + offset;
+	return html.slice(0, insertion) + ' vt-' + kind + '="' + html.slice(insertion + marker.length);
 }
 
 /** Strip residual (unclaimed) arm candidates before emission. */
@@ -3706,6 +3773,25 @@ export function createContext<T>(defaultValue: T): Context<T> {
 	ctx.$$kind = CONTEXT_TAG;
 	ctx.defaultValue = defaultValue;
 	ctx.Provider = ctx;
+	if (process.env.NODE_ENV !== 'production') {
+		// Mirror of the client's Consumer diagnostic (see runtime.ts): warn once
+		// per context on access, return undefined so probes behave as in prod.
+		let consumerWarned = false;
+		Object.defineProperty(ctx, 'Consumer', {
+			configurable: true,
+			get() {
+				if (!consumerWarned) {
+					consumerWarned = true;
+					console.error(
+						'Octane has no Context.Consumer. Read the context directly with use(Context) or ' +
+							'useContext(Context) in the child component — Octane hooks are call-site keyed, ' +
+							'so the read is legal behind any condition the render-prop form was working around.',
+					);
+				}
+				return undefined;
+			},
+		});
+	}
 	return ctx;
 }
 
@@ -4152,7 +4238,7 @@ export function use<T>(
 // ---------------------------------------------------------------------------
 
 // Element-wise Object.is — the client useMemo's deps contract.
-function puDepsEqual(a: unknown[], b: unknown[]): boolean {
+function serverDepsEqual(a: readonly unknown[], b: readonly unknown[]): boolean {
 	if (a.length !== b.length) return false;
 	for (let i = 0; i < a.length; i++) if (!Object.is(a[i], b[i])) return false;
 	return true;
@@ -4190,7 +4276,7 @@ export function puMemo<T>(fn: () => T, deps: unknown[], siteKey?: ServerHookSlot
 	}
 	const key = prefix + '|' + base + '#' + n;
 	const hit = res.pu.created.get(key);
-	if (hit !== undefined && puDepsEqual(hit.deps, deps)) return hit.value as T;
+	if (hit !== undefined && serverDepsEqual(hit.deps, deps)) return hit.value as T;
 	// Warm adoption: a parent's warm walk may have prefetched this creation
 	// (keyed by the shared slot symbol). Deps must match — a drift between the
 	// warm-time and render-time props is a clean miss (the orphaned entry dies
@@ -4200,7 +4286,7 @@ export function puMemo<T>(fn: () => T, deps: unknown[], siteKey?: ServerHookSlot
 		const wlist = res.pu.warm.get(siteKey);
 		if (wlist !== undefined) {
 			for (let i = 0; i < wlist.length; i++) {
-				if (puDepsEqual(wlist[i].deps, deps)) {
+				if (serverDepsEqual(wlist[i].deps, deps)) {
 					if (!wlist[i].available) continue;
 					wlist[i].available = false;
 					const value = wlist[i].value;
@@ -4379,7 +4465,7 @@ export function warmMemo(compute: () => unknown, deps: unknown[], slot: ServerHo
 	if (list !== undefined) {
 		for (let i = 0; i < list.length; i++) {
 			const entry = list[i];
-			if (!puDepsEqual(entry.deps, deps) || CURRENT_PU_WARM_CLAIMS?.has(entry)) continue;
+			if (!serverDepsEqual(entry.deps, deps) || CURRENT_PU_WARM_CLAIMS?.has(entry)) continue;
 			CURRENT_PU_WARM_CLAIMS?.add(entry);
 			return entry.value; // this concrete occurrence already ran or warmed
 		}
@@ -4393,7 +4479,7 @@ export function warmMemo(compute: () => unknown, deps: unknown[], slot: ServerHo
 	for (const created of res.pu.created.values()) {
 		if (
 			created.site === slot &&
-			puDepsEqual(created.deps, deps) &&
+			serverDepsEqual(created.deps, deps) &&
 			!CURRENT_PU_WARM_CLAIMS?.has(created)
 		) {
 			activeCreation = created;
@@ -4468,19 +4554,6 @@ export function warmChild(comp: any, props: any): void {
 // has to be unique per lazy() call — not per frame like use()'s data keys.
 let LAZY_ID = 0;
 const LAZY_COMPONENT = Symbol.for('octane.lazy');
-
-function lazyResolvedProps(comp: ServerComponent, props: any): any {
-	const defaults = (comp as any).defaultProps;
-	if (defaults == null || typeof defaults !== 'object') return props;
-	let resolved = props;
-	for (const key of Object.keys(defaults)) {
-		if (props == null || props[key] === undefined) {
-			if (resolved === props) resolved = props == null ? {} : { ...props };
-			resolved[key] = defaults[key];
-		}
-	}
-	return resolved;
-}
 
 function resolveLazyModule(mod: any): ServerComponent {
 	let comp = mod;
@@ -4801,12 +4874,6 @@ export const useLayoutEffect = useEffect;
 export const useInsertionEffect = useEffect;
 export function useImperativeHandle(): void {}
 
-function serverHookDepsEqual(a: readonly unknown[], b: readonly unknown[]): boolean {
-	if (a.length !== b.length) return false;
-	for (let i = 0; i < a.length; i++) if (!Object.is(a[i], b[i])) return false;
-	return true;
-}
-
 export function useMemo<T>(compute: () => T, deps?: readonly unknown[] | null, slot?: symbol): T;
 export function useMemo<T>(
 	compute: () => T,
@@ -4825,7 +4892,7 @@ export function useMemo<T>(
 	if (rec === undefined) {
 		rec = { value: compute(), deps: deps.slice() };
 		position.list[position.index] = rec;
-	} else if (!serverHookDepsEqual(rec.deps, deps)) {
+	} else if (!serverDepsEqual(rec.deps, deps)) {
 		rec.value = compute();
 		rec.deps = deps.slice();
 	}
@@ -4980,6 +5047,11 @@ export function markChildrenBlock<T>(fn: T): T {
 	return fn;
 }
 
+/** Server twin of the compiler-visible descriptor-children marker. */
+export function descriptorChildren<T>(component: T): T {
+	return component;
+}
+
 /**
  * True when `value` is a compiler-generated children-block (element/text
  * children lowered to a render function) — as opposed to a user render-prop
@@ -5012,8 +5084,10 @@ export function ssrHeadEl(
 	tag: string,
 	attrs: Record<string, unknown> | null,
 	text: unknown,
-): void {
-	if (HEAD === null) return;
+): string {
+	// Returns '' so a NESTED hoist can sit in an html expression (the head write
+	// happens at the authored position; the body markup gains nothing).
+	if (HEAD === null) return '';
 	// Paired ownership comments bound the exact adoption interval; static markup
 	// is non-hydratable, so both are omitted there.
 	const rootSuffix = HEAD.rootSuffix;
@@ -5034,6 +5108,7 @@ export function ssrHeadEl(
 	}
 	if (MARKERS) s += '<!--/' + ownershipKey + '-->';
 	HEAD.html += s;
+	return '';
 }
 
 interface NamespaceHeadProps {
@@ -5471,8 +5546,11 @@ function runFullFramedPass(
 	const headBuf = (HEAD = {
 		html: '',
 		hints: new Set(),
+		sheets: null,
+		hintHtml: null,
+		preloadXfer: null,
 		rootSuffix: markers ? headOwnershipSuffix(identifierPrefix) : '',
-	});
+	} as HeadBuffer);
 	const suspended = (SUSPENDED = [] as SuspendedList);
 	const serial = (SERIAL = [] as unknown[]);
 	const deferred = (DEFERRED = [] as Job[]);
@@ -5529,7 +5607,7 @@ function runFullFramedPass(
 	}
 	return {
 		body,
-		head: headBuf.html,
+		head: headHtmlWithSheets(headBuf),
 		css,
 		serial,
 		suspended,
@@ -5564,7 +5642,14 @@ function runDiscoveryRound(
 	VT_SSR_HAS_CANDIDATES = false;
 	VT_SSR_STACK.length = 0;
 	CSS = new Map();
-	HEAD = { html: '', hints: new Set(), rootSuffix: headOwnershipSuffix(identifierPrefix) };
+	HEAD = {
+		html: '',
+		hints: new Set(),
+		sheets: null,
+		hintHtml: null,
+		preloadXfer: null,
+		rootSuffix: headOwnershipSuffix(identifierPrefix),
+	};
 	const suspended = (SUSPENDED = [] as SuspendedList);
 	SERIAL = [] as unknown[];
 	const deferred = (DEFERRED = [] as Job[]);
@@ -5964,6 +6049,47 @@ export async function prerender(
 		nonceAttr,
 		options?.headChannel === 'separate',
 	);
+}
+
+/**
+ * Stream variant of {@link prerender}, mirroring React's `prerenderToNodeStream`
+ * semantics: the promise resolves only after the await-everything render fully
+ * completes, and `prelude` is the transport for the COMPLETE document bytes —
+ * the deduped scoped-style tags first, then the folded html (the order a
+ * streamed shell serves). There is no `postponed` field: Octane has no
+ * postpone/resume protocol (a documented non-goal). `node:stream` loads
+ * lazily on call, so edge bundles that never invoke this pay nothing.
+ * `headChannel: 'separate'` has no channel to land in here and is ignored
+ * (the head folds), with a development diagnostic.
+ */
+export async function prerenderToNodeStream(
+	entryComponent: ServerEntryComponent,
+	props?: any,
+	options?: RenderOptions,
+): Promise<{ prelude: import('node:stream').Readable }> {
+	let resolved = options;
+	if (options?.headChannel === 'separate') {
+		if (process.env.NODE_ENV !== 'production') {
+			console.error(
+				"prerenderToNodeStream() streams one document and has no separate head channel; headChannel: 'separate' was ignored. Use prerender() for a split head.",
+			);
+		}
+		resolved = { ...options, headChannel: undefined };
+	}
+	const result = await prerender(entryComponent, props, resolved);
+	// The server runtime must bundle for platform-neutral (edge) targets — see
+	// ssr-production-bundle.test.ts — so the node-only dependency resolves at
+	// RUNTIME through process.getBuiltinModule (a plain call no bundler follows,
+	// evaluated only when this node-only API is actually invoked).
+	const getBuiltin = (globalThis as any).process?.getBuiltinModule as
+		((id: string) => any) | undefined;
+	if (getBuiltin === undefined) throw new Error(formatServerError(57));
+	const { Readable } = getBuiltin('node:stream');
+	const chunks: Uint8Array[] = [];
+	const encoder = new TextEncoder();
+	if (result.css !== '') chunks.push(encoder.encode(result.css));
+	chunks.push(encoder.encode(result.html));
+	return { prelude: Readable.from(chunks, { objectMode: false }) };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -6488,6 +6614,10 @@ export function ssrTry(
 			const head = HEAD;
 			const headHtml = head?.html;
 			const headHints = head === null ? null : new Set(head.hints);
+			const headSheets = head === null || head.sheets === null ? null : new Map(head.sheets);
+			const headHintHtml = head === null || head.hintHtml === null ? null : new Map(head.hintHtml);
+			const headXfer =
+				head === null || head.preloadXfer === null ? null : new Map(head.preloadXfer);
 			const vtTrySeq = VT_SSR_TRY_SEQ;
 			const vtHasCandidates = VT_SSR_HAS_CANDIDATES;
 			const vtStack = VT_SSR_STACK.map((candidate) => ({
@@ -6513,6 +6643,24 @@ export function ssrTry(
 					head.html = headHtml!;
 					head.hints.clear();
 					for (const hint of headHints) head.hints.add(hint);
+					if (headSheets === null) head.sheets = null;
+					else {
+						const sheets = (head.sheets ??= new Map());
+						sheets.clear();
+						for (const [precedence, group] of headSheets) sheets.set(precedence, group);
+					}
+					if (headHintHtml === null) head.hintHtml = null;
+					else {
+						const hintHtml = (head.hintHtml ??= new Map());
+						hintHtml.clear();
+						for (const [k, v] of headHintHtml) hintHtml.set(k, v);
+					}
+					if (headXfer === null) head.preloadXfer = null;
+					else {
+						const xfer = (head.preloadXfer ??= new Map());
+						xfer.clear();
+						for (const [k, v] of headXfer) xfer.set(k, v);
+					}
 				}
 				VT_SSR_TRY_SEQ = vtTrySeq;
 				VT_SSR_HAS_CANDIDATES = vtHasCandidates;
@@ -6895,8 +7043,11 @@ function segmentChunk(b: StreamBoundary, nonceAttr: string): string {
 	// Putting it directly inside the protocol carrier would let the HTML parser
 	// terminate that carrier early and strand nodes outside the revealed content.
 	// Store the complete markup as script-safe JSON and parse it into a detached
-	// template in $OCTRC instead; `<` escaping makes the data script uncloseable.
-	const payload = JSON.stringify(content).replace(/</g, '\\u003c');
+	// template in $OCTRC instead. Escape both script-token directions: a closing
+	// token could terminate the carrier, while `<!--<script` could otherwise enter
+	// the HTML tokenizer's double-escaped state and swallow its real closing tag.
+	// Ordinary markup and hydration comments need no expansion.
+	const payload = JSON.stringify(content).replace(/<(?=\/?script)/gi, '\\u003c');
 	return (
 		'<div hidden ' +
 		STREAM_SEGMENT_ATTR +
@@ -7828,8 +7979,22 @@ function emitHeadHint(key: string, html: string): void {
 	if (HEAD === null) return;
 	if (HEAD.hints.has(key)) return;
 	HEAD.hints.add(key);
-	HEAD.html += html;
+	(HEAD.hintHtml ??= new Map()).set(key, html);
 }
+
+/** The option keys React recognizes on resource hints; everything else drops. */
+const KNOWN_HINT_OPTIONS = new Set([
+	'as',
+	'crossOrigin',
+	'integrity',
+	'nonce',
+	'type',
+	'fetchPriority',
+	'referrerPolicy',
+	'imageSrcSet',
+	'imageSizes',
+	'media',
+]);
 
 function hintAttrs(
 	opts: Record<string, unknown> | undefined,
@@ -7839,6 +8004,7 @@ function hintAttrs(
 	let out = '';
 	if (opts == null) return out;
 	for (const k in opts) {
+		if (!KNOWN_HINT_OPTIONS.has(k)) continue;
 		if (skipAs && k === 'as') continue;
 		const v = (opts as any)[k];
 		if (v == null || v === false) continue;
@@ -7854,22 +8020,66 @@ function hintAttrs(
 }
 
 function coerceHintHref(href: unknown): string | null {
-	if (!href) return null;
-	const value = typeof href === 'string' ? href : String(href);
-	return value === '' ? null : value;
+	if (typeof href !== 'string' || href === '') {
+		warnHintUsage('resource hints require a non-empty string href; the call was ignored.');
+		return null;
+	}
+	return href;
 }
 
 /** React DOM `preload(href, {as, …})`. */
+/** Malformed-hint diagnostics (dev only; the call stays a no-op either way). */
+function warnHintUsage(message: string): void {
+	if (process.env.NODE_ENV !== 'production') console.error(message);
+}
+
 export function preload(href: string, options: { as: string } & Record<string, unknown>): void {
 	const value = coerceHintHref(href);
-	if (value === null || !options?.as) return;
-	const key = 'preload:' + options.as + ':' + value;
+	if (value === null) {
+		warnHintUsage('preload() requires a non-empty string href; the call was ignored.');
+		return;
+	}
+	if (!options?.as || typeof options.as !== 'string') {
+		warnHintUsage(
+			'preload() requires a string `as` option (e.g. "style", "script", "font", "image"); ' +
+				'the call was ignored.',
+		);
+		return;
+	}
+	const as = options.as;
+	// Fonts must be fetched anonymously to be reusable by CSS — enforced
+	// regardless of the caller's crossOrigin, matching React and the client.
+	if (as === 'font') options = { ...options, crossOrigin: '' };
+	// Mirror the client's one-way upgrade: once the matching resource is live in
+	// this pass (Float resource or preinit), the preload adds nothing. A preload
+	// that comes FIRST seeds connection/integrity options for the preinit and is
+	// coalesced away when the preinit lands (see the hintHtml delete there).
+	if (HEAD !== null) {
+		if (as === 'style' && HEAD.hints.has('sheet:' + value)) return;
+		// One executable per src across BOTH script forms (classic and module),
+		// matching the client's unified identity set.
+		if (as === 'script' && (HEAD.hints.has('script:' + value) || HEAD.hints.has('module:' + value)))
+			return;
+		if (as === 'style' || as === 'script') {
+			let subset: Record<string, unknown> | null = null;
+			for (const k of ['crossOrigin', 'integrity', 'nonce', 'fetchPriority', 'referrerPolicy']) {
+				const v = (options as any)[k];
+				if (v != null) (subset ??= {})[k] = v;
+			}
+			if (subset !== null) (HEAD.preloadXfer ??= new Map()).set(as + ':' + value, subset);
+		}
+	}
+	const imageSrcSet = as === 'image' ? options.imageSrcSet : undefined;
+	const key =
+		typeof imageSrcSet === 'string' && imageSrcSet !== ''
+			? 'preload:image:' + imageSrcSet + '::' + String(options.imageSizes ?? '')
+			: 'preload:' + as + ':' + value;
 	const safeHref = sanitizeURL(value);
+	const omitHref = typeof imageSrcSet === 'string' && imageSrcSet !== '';
 	emitHeadHint(
 		key,
-		'<link rel="preload" href="' +
-			escapeAttr(safeHref) +
-			'"' +
+		'<link rel="preload"' +
+			(omitHref ? '' : ' href="' + escapeAttr(safeHref) + '"') +
 			hintAttrs(options, false, 'link') +
 			' data-oct-hint="' +
 			escapeAttr(key) +
@@ -7878,35 +8088,59 @@ export function preload(href: string, options: { as: string } & Record<string, u
 }
 
 /** React DOM `preinit(href, {as: 'style'|'script', …})`. */
+/**
+ * React DOM `preinit(href, {as, …})` — routes through the Float resource emits
+ * so preinit and the rendered resource forms share ONE identity per pass
+ * (stylesheets join the precedence groups; scripts dedupe against
+ * `<script async src>`), mirroring the client.
+ */
 export function preinit(href: string, options: { as: string } & Record<string, unknown>): void {
 	const value = coerceHintHref(href);
-	if (value === null || !options?.as) return;
-	const key = 'preinit:' + options.as + ':' + value;
-	const safeHref = sanitizeURL(value);
-	const hint = ' data-oct-hint="' + escapeAttr(key) + '"';
-	emitHeadHint(
-		key,
-		options.as === 'style'
-			? '<link rel="stylesheet" href="' +
-					escapeAttr(safeHref) +
-					'"' +
-					hintAttrs(options, true, 'link') +
-					hint +
-					'>'
-			: '<script src="' +
-					escapeAttr(safeHref) +
-					'" async' +
-					hintAttrs(options, true, 'script') +
-					hint +
-					'></script>',
-	);
+	if (value === null) {
+		warnHintUsage('preinit() requires a non-empty string href; the call was ignored.');
+		return;
+	}
+	const as = options?.as;
+	if (as !== 'style' && as !== 'script') {
+		warnHintUsage(
+			'preinit() supports only as: "style" or "script" (got ' +
+				JSON.stringify(as) +
+				'); the call was ignored. Use preload() for other destinations.',
+		);
+		return;
+	}
+	let seeded: Record<string, unknown> | null = null;
+	if (HEAD !== null) {
+		const xfer = HEAD.preloadXfer?.get(as + ':' + value);
+		if (xfer !== undefined) {
+			seeded = xfer;
+			HEAD.preloadXfer!.delete(as + ':' + value);
+		}
+		// Coalesce the now-redundant preload out of the fold (React folds
+		// preload → initialized resource on the server).
+		HEAD.hintHtml?.delete('preload:' + as + ':' + value);
+		HEAD.hints.delete('preload:' + as + ':' + value);
+	}
+	if (as === 'style') {
+		ssrStylesheetResource({
+			...seeded,
+			...options,
+			as: undefined,
+			href: value,
+			precedence: (options as any).precedence ?? 'default',
+		});
+	} else {
+		ssrScriptResource({ ...seeded, ...options, as: undefined, href: undefined, src: value });
+	}
 }
 
 /** React DOM `preconnect(href, {crossOrigin?})`. */
 export function preconnect(href: string, options?: { crossOrigin?: string }): void {
 	const value = coerceHintHref(href);
 	if (value === null) return;
-	const key = 'preconnect:' + value;
+	const corsMode =
+		(options as any)?.crossOrigin == null ? '<none>' : String((options as any).crossOrigin);
+	const key = 'preconnect:' + corsMode + ':' + value;
 	const safeHref = sanitizeURL(value);
 	emitHeadHint(
 		key,
@@ -7933,5 +8167,150 @@ export function prefetchDNS(href: string): void {
 			'" data-oct-hint="' +
 			escapeAttr(key) +
 			'">',
+	);
+}
+
+/** Attribute serialization for Float resources; href/src/rel/async/precedence are owned by the emit. */
+function resourceAttrs(attrs: Record<string, unknown>, tag: 'link' | 'script'): string {
+	let out = '';
+	for (const k in attrs) {
+		if (k === 'precedence' || k === 'href' || k === 'src' || k === 'rel' || k === 'async') continue;
+		const v = (attrs as any)[k];
+		if (v == null || v === false || typeof v === 'function') continue;
+		const name = k === 'crossOrigin' ? 'crossorigin' : k.toLowerCase();
+		if (v === true) out += ' ' + name;
+		else out += ' ' + name + '="' + escapeAttr(sanitizeURLAttribute(tag, name, String(v))) + '"';
+	}
+	return out;
+}
+
+/**
+ * Compiler target for `<link rel="stylesheet" href precedence>` (React Float).
+ * Dedupes by href across the pass; groups by precedence in first-encounter
+ * order (the HeadBuffer.sheets Map), folded after the ordinary head content.
+ */
+export function ssrStylesheetResource(attrs: Record<string, unknown> | null): string {
+	if (HEAD === null || attrs == null) return '';
+	const href = attrs.href;
+	if (typeof href !== 'string' || href === '') return '';
+	const key = 'sheet:' + href;
+	if (HEAD.hints.has(key)) return '';
+	HEAD.hints.add(key);
+	const precedence = attrs.precedence == null ? '' : String(attrs.precedence);
+	const tag =
+		'<link rel="stylesheet" href="' +
+		escapeAttr(sanitizeURL(href)) +
+		'" data-precedence="' +
+		escapeAttr(precedence) +
+		'"' +
+		resourceAttrs(attrs, 'link') +
+		'>';
+	const sheets = (HEAD.sheets ??= new Map());
+	sheets.set(precedence, (sheets.get(precedence) ?? '') + tag);
+	return '';
+}
+
+/**
+ * Compiler target for `<style href precedence>` (React Float style resource).
+ * Shares the stylesheet dedupe namespace and precedence grouping with link
+ * resources; the CSS is raw `<style>` text (never HTML-escaped — entities do
+ * not decode inside style raw text), so content that could close the tag fails
+ * closed with a dev diagnostic instead of truncating the document.
+ */
+export function ssrStyleResource(attrs: Record<string, unknown> | null, css: string): string {
+	if (HEAD === null || attrs == null) return '';
+	const href = attrs.href;
+	if (typeof href !== 'string' || href === '') return '';
+	if (/<\/style/i.test(css)) {
+		if (process.env.NODE_ENV !== 'production') {
+			console.error(
+				'octane SSR: a <style href precedence> resource contains "</style" and cannot be ' +
+					'serialized safely; the resource was skipped. Load it as a stylesheet link instead.',
+			);
+		}
+		return '';
+	}
+	const key = 'sheet:' + href;
+	if (HEAD.hints.has(key)) return '';
+	HEAD.hints.add(key);
+	const precedence = attrs.precedence == null ? '' : String(attrs.precedence);
+	const tag =
+		'<style data-precedence="' +
+		escapeAttr(precedence) +
+		'" data-href="' +
+		escapeAttr(href) +
+		'"' +
+		resourceAttrs(attrs, 'link') +
+		'>' +
+		css +
+		'</style>';
+	const sheets = (HEAD.sheets ??= new Map());
+	sheets.set(precedence, (sheets.get(precedence) ?? '') + tag);
+	return '';
+}
+
+/** Compiler target for `<script async src>` resources (React Float). */
+export function ssrScriptResource(attrs: Record<string, unknown> | null): string {
+	if (HEAD === null || attrs == null) return '';
+	const src = attrs.src;
+	if (typeof src !== 'string' || src === '') return '';
+	const key = 'script:' + src;
+	// One executable per src per pass, across the classic and module forms.
+	if (HEAD.hints.has(key) || HEAD.hints.has('module:' + src)) return '';
+	HEAD.hints.add(key);
+	HEAD.html +=
+		'<script src="' +
+		escapeAttr(sanitizeURL(src)) +
+		'" async data-oct-res=""' +
+		resourceAttrs(attrs, 'script') +
+		'></script>';
+	return '';
+}
+
+/** React DOM `preloadModule(href, options?)` — `<link rel="modulepreload">`, keyed by href. */
+export function preloadModule(href: string, options?: Record<string, unknown>): void {
+	const value = coerceHintHref(href);
+	if (value === null) return;
+	// A module that preinitModule OR a classic Float script already executes in
+	// this pass needs no preload — one executable identity per src.
+	if (HEAD !== null && (HEAD.hints.has('module:' + value) || HEAD.hints.has('script:' + value)))
+		return;
+	const key = 'modulepreload:' + value;
+	const safeHref = sanitizeURL(value);
+	emitHeadHint(
+		key,
+		'<link rel="modulepreload" href="' +
+			escapeAttr(safeHref) +
+			'"' +
+			hintAttrs(options, false, 'link') +
+			' data-oct-hint="' +
+			escapeAttr(key) +
+			'">',
+	);
+}
+
+/**
+ * React DOM `preinitModule(href, options?)` — `<script type="module" async src>`.
+ * Only the `script` destination exists for module preinit; others fail closed.
+ */
+export function preinitModule(
+	href: string,
+	options?: { as?: string } & Record<string, unknown>,
+): void {
+	const value = coerceHintHref(href);
+	if (value === null) return;
+	if ((options?.as ?? 'script') !== 'script') return;
+	if (HEAD !== null && HEAD.hints.has('script:' + value)) return;
+	const key = 'module:' + value;
+	const safeHref = sanitizeURL(value);
+	emitHeadHint(
+		key,
+		'<script type="module" src="' +
+			escapeAttr(safeHref) +
+			'" async' +
+			hintAttrs(options, true, 'script') +
+			' data-oct-hint="' +
+			escapeAttr(key) +
+			'"></script>',
 	);
 }
