@@ -19,7 +19,10 @@ package/output boundary and keep its evidence independently reviewable.
 - `reimplement-in-parent`: copy no prerequisite source. Re-author only the
   public behavior the parent consumes. Do not vendor its tests; author
   independent differential scenarios from the public contract and prove the
-  parent-visible behavior through the parity lanes and crosswalk.
+  parent-visible behavior through the parity lanes and crosswalk. For a no-copy
+  dependency, ignore or remove all source-derived plans, code, snippets, tests,
+  and fixtures before authoring. Work only from its public contract and
+  independently observed behavior.
 - Core/compiler/scheduler/SSR/hydration/build defects belong to their owning
   Octane package. Load `octane-core-extend` and `performance-audit` before those
   edits and retain the real binding scenario as end-to-end evidence.
@@ -151,7 +154,7 @@ Initialize the machine matrix once the node is ready; repeat `--category` for
 every applicable behavior:
 
 ```bash
-pnpm react-port:evidence -- init --batch <id> --node pkg:<name> \
+pnpm react-port:evidence init --batch <id> --node pkg:<name> \
   --category <thin-core|hooks-store|dom-component|provider-portal|ssr-sensitive|async-suspense|performance-sensitive>
 ```
 
@@ -167,14 +170,22 @@ vector directly without a shell, captures bounded output, records the actual
 exit status, and cannot turn a failed command into a pass:
 
 ```bash
-pnpm react-port:evidence -- run --batch <id> --node pkg:<name> \
-  --gate <gate-id> -- pnpm --dir packages/<binding> test
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate <gate-id> -- <executable> [args...]
 ```
+
+For example, use `-- pnpm --dir packages/<binding> test` for a package test.
 
 Use `record` only for an existing `--artifact`, for a blocked row with both
 `--reason` and `--repair`, or for an allowed inapplicable row with `--reason`.
 It rejects passed/failed command claims that it did not execute. A skipped,
 unrun, or missing-output command is never `passed`.
+
+```bash
+pnpm react-port:evidence record --batch <id> --node pkg:<name> \
+  --gate <gate-id> --status <status> --artifact <existing-path> \
+  --observed <observed-result>
+```
 
 Always require:
 
@@ -244,12 +255,17 @@ after targeted evidence is green. Regenerate derived data from its source
 command; never edit generated files directly.
 
 Before verification, write three data files: the immutable upstream registration
-inventory, its complete classified crosswalk, and a closure object containing
-`runtimeDependencies` plus `adaptedSources` (`packageName` and exact paths).
-Then run the machine completion gate:
+inventory, its complete classified crosswalk, and a closure object. The closure
+contains `runtimeDependencies`, `adaptedSources` (`packageName` and exact paths),
+and `reimplementedDependencies`. Use `reimplementedDependencies: []` when there
+are none. For every no-copy dependency, add exactly one object with its
+`packageName`, nonempty `publicBehaviors`, and independently authored
+`localEvidence` paths. Those paths must point to safe local tests or artifacts;
+source-derived plans and upstream test copies are not clean-room evidence. Then
+run the machine completion gate:
 
 ```bash
-pnpm react-port:evidence -- verify --batch <id> --node pkg:<name> \
+pnpm react-port:evidence verify --batch <id> --node pkg:<name> \
   --package-dir packages/<binding> --expected-directory packages/<binding> \
   --registrations <registrations.json> --crosswalk <crosswalk.json> \
   --closure <closure.json>
