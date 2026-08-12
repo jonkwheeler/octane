@@ -132,7 +132,7 @@ describe('package and closure completion', () => {
 				name: '@octanejs/widget',
 				version: '0.1.0',
 				license: 'MIT',
-				engines: { node: '>=22' },
+				engines: { node: '>=22.22.2' },
 				publishConfig: { access: 'public' },
 				repository: { directory: 'packages/widget' },
 				files: ['src', 'README.md', 'UPSTREAM.md', 'LICENSE', 'NOTICE'],
@@ -179,6 +179,17 @@ describe('package and closure completion', () => {
 		assert.match(wrongName.issues.join('\n'), /package name must be @octanejs\/other/i);
 		const manifestPath = path.join(packageDirectory, 'package.json');
 		const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+		manifest.engines.node = '>=22';
+		await writeFile(manifestPath, JSON.stringify(manifest));
+		const staleNodeEngine = inspectBindingPackage(packageDirectory, {
+			expectedPackageName: '@octanejs/widget',
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.match(staleNodeEngine.issues.join('\n'), /engines\.node must be >=22\.22\.2/i);
+		manifest.engines.node = '>=22.22.2';
 		manifest.files = manifest.files.filter((file) => file !== 'NOTICE');
 		await writeFile(manifestPath, JSON.stringify(manifest));
 		const noticeOmitted = inspectBindingPackage(packageDirectory, {

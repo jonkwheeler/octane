@@ -90,7 +90,7 @@ function createCompletePackage(root) {
 			name: '@octanejs/widget',
 			version: '0.1.0',
 			license: 'MIT',
-			engines: { node: '>=22' },
+			engines: { node: '>=22.22.2' },
 			publishConfig: { access: 'public' },
 			repository: { directory: 'packages/widget' },
 			files: ['src', 'README.md', 'UPSTREAM.md', 'LICENSE'],

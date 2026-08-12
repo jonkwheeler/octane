@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
 	APPROVED_LICENSE_IDENTIFIERS,
 	fingerprint,
@@ -17,6 +18,9 @@ const CROSSWALK_CLASSIFICATIONS = new Set([
 ]);
 const LICENSE_ARTIFACT_PATTERN = /^(?:licen[cs]e|copying)(?:[._-].*)?$/i;
 const NOTICE_ARTIFACT_PATTERN = /^notice(?:[._-].*)?$/i;
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const REQUIRED_NODE_ENGINE = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
+	.engines.node;
 
 const COMMON_GATES = [
 	['identity-license', 'Immutable identity and approved-license preflight', false],
@@ -256,7 +260,9 @@ export function inspectBindingPackage(
 			issues.push('package name must use @octanejs/*');
 		}
 		if (manifest.license !== 'MIT') issues.push('package.json license must be exact MIT');
-		if (manifest.engines?.node !== '>=22') issues.push('package.json engines.node must be >=22');
+		if (manifest.engines?.node !== REQUIRED_NODE_ENGINE) {
+			issues.push(`package.json engines.node must be ${REQUIRED_NODE_ENGINE}`);
+		}
 		if (manifest.publishConfig?.access !== 'public') issues.push('package must publish publicly');
 		if (manifest.repository?.directory !== expectedDirectory) {
 			issues.push(`repository.directory must be ${expectedDirectory}`);
