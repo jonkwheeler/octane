@@ -222,13 +222,14 @@ export const lynxBackgroundRenderer = {
 	server: 'unsupported',
 	intrinsics: '@octanejs/lynx/intrinsics',
 	text: 'host',
-	capabilities: ['class-name-alias', 'visibility', 'thread-functions'],
+	capabilities: ['class-name-alias', 'visibility', 'thread-functions', 'template-program-mount'],
 	validation: LYNX_BACKGROUND_VALIDATION,
 } as const;
 
 /** Main-thread renderer that rejects APIs owned by the background runtime. */
 export const lynxMainThreadRenderer = {
 	module: '@octanejs/lynx/main-renderer',
+	threadFunctionsModule: '@octanejs/lynx/main-worklets',
 	target: 'universal',
 	server: 'unsupported',
 	intrinsics: '@octanejs/lynx/intrinsics',

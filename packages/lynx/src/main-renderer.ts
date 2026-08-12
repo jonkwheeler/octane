@@ -6,6 +6,8 @@
  * reconciler, effects, refs, event handlers, or background transport.
  */
 import type {
+	LinkedStateOptions,
+	LinkedStatePrevious,
 	UniversalComponent,
 	UniversalContext,
 	UniversalEventPriority,
@@ -19,24 +21,6 @@ import type {
 	UniversalRenderContext,
 } from 'octane/universal/native';
 import { isLynxNativeResource } from './resource.js';
-import { createLynxMainThreadRefDescriptor, type LynxMainThreadRefCell } from './core/worklets.js';
-
-export {
-	attachThreadFunction,
-	bindThreadFunction,
-	invokeThreadFunction,
-	registerThreadFunction,
-	runOnBackground,
-	runOnMainThread,
-	unregisterThreadFunction,
-} from './core/worklets.js';
-export type {
-	LynxBackgroundFunctionDescriptor,
-	LynxCancelablePromise,
-	LynxMainThreadRefDescriptor,
-	LynxMainThreadWorkletDescriptor,
-	LynxWorkletValue,
-} from './core/worklets.js';
 
 const UNIVERSAL_PLAN = Symbol.for('octane.universal.plan');
 const UNIVERSAL_VALUE = Symbol.for('octane.universal.value');
@@ -1081,6 +1065,26 @@ export function useState<T>(
 
 export const __useStateWithGetter = useState;
 
+export function useLinkedState<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	_optionsOrSlot?: LinkedStateOptions<Source, Value> | symbol | string | number,
+	_slot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void] {
+	currentOwner();
+	return [reconcile(source, undefined), NOOP_UPDATE];
+}
+
+export function __useLinkedStateWithGetter<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	optionsOrSlot?: LinkedStateOptions<Source, Value> | symbol | string | number,
+	slot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value] {
+	const [value, setValue] = useLinkedState(source, reconcile, optionsOrSlot, slot);
+	return [value, setValue, () => value];
+}
+
 export function useReducer<S, A, I = S>(
 	_reducer: (state: S, action: A) => S,
 	initialArg: I,
@@ -1136,25 +1140,6 @@ export function useId(_slot?: unknown): string {
 	const sum = 1 + index;
 	const paired = (sum * (sum + 1)) / 2 + index;
 	return `:octane-u${paired.toString(36)}:`;
-}
-
-/** Create the same deterministic main-thread cell as the background specialization. */
-export function useMainThreadRef<T>(initialValue: T): LynxMainThreadRefCell<T>;
-export function useMainThreadRef<T = undefined>(): LynxMainThreadRefCell<T | undefined>;
-export function useMainThreadRef<T>(
-	initialValueOrSlot?: T | unknown,
-	slot?: unknown,
-): LynxMainThreadRefCell<T | undefined> {
-	const hasInitialValue = arguments.length > 1 || typeof initialValueOrSlot !== 'symbol';
-	const resolvedSlot =
-		arguments.length > 1 ? slot : hasInitialValue ? undefined : initialValueOrSlot;
-	const initialValue = hasInitialValue ? (initialValueOrSlot as T) : undefined;
-	const id = useId(resolvedSlot);
-	return useMemo(
-		() => createLynxMainThreadRefDescriptor(`octane:${id}`, initialValue),
-		[],
-		'main-thread-ref-descriptor',
-	) as LynxMainThreadRefCell<T | undefined>;
 }
 
 export function useSyncExternalStore<T>(

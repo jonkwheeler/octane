@@ -2,6 +2,10 @@
 // read `version` can tree-shake this module and the package.json payload in full.
 export { version } from './version.js';
 export { initializeHydrationEventCapture } from './hydration/event-capture.js';
+// Keep external DOM ownership separate from the reconciling runtime so
+// behavior-only consumers never retain component or hydration machinery.
+export { attachBehaviorRoot } from './behavior-root.js';
+export type * from './behavior-root.js';
 
 // Profiling's application API and compiler ABI live at `octane/profiling`;
 // neither belongs on the React-shaped main namespace.
@@ -25,6 +29,9 @@ export {
 	// Hooks (octane extension: each accepts a trailing compiler slot — required
 	// when calling from plain .ts, injected by the compiler in .tsrx/.tsx)
 	useState,
+	useLinkedState,
+	type LinkedStatePrevious,
+	type LinkedStateOptions,
 	useReducer,
 	useEffect,
 	useLayoutEffect,
@@ -50,6 +57,8 @@ export {
 	// Resource hints (React DOM parity)
 	preload,
 	preinit,
+	preloadModule,
+	preinitModule,
 	preconnect,
 	prefetchDNS,
 	// Context
@@ -63,6 +72,9 @@ export {
 	ErrorBoundary,
 	Hydrate,
 	Activity,
+	// React shipped Activity as unstable_Activity before 19.2 — alias it so
+	// experimental-channel ports compile unchanged (mirrors unstable_ViewTransition).
+	Activity as unstable_Activity,
 	ViewTransition,
 	addTransitionType,
 	// React ships View Transitions on the experimental channel as unstable_-
@@ -90,6 +102,7 @@ export {
 	// `@try`/`@catch` as the language tooling's type-only virtual TSX spells it.
 	TsrxErrorBoundary,
 	__useStateWithGetter,
+	__useLinkedStateWithGetter,
 	__useReducerWithGetter,
 	__createVoidRoot,
 	bindRendererRegionOwner,
@@ -150,6 +163,7 @@ export {
 	setClassAttr,
 	normalizeClass,
 	setStyle,
+	setStyleProperty,
 	setSpread,
 	snapshotSpread,
 	setHostPropSources,
@@ -172,25 +186,44 @@ export {
 	attachRef,
 	queueRefAttach,
 	queueRefDetach,
+	replaceRef,
+	queueOwnRefDetach,
 	injectStyle,
 	headBlock,
+	// React Float resources (stylesheet precedence links, style resources, async scripts)
+	stylesheetResource,
+	styleResource,
+	scriptResource,
 	namespaceHead,
 	namespaceHeadElement,
 	delegateEvents,
 	delegateCaptureEvents,
+	fastForBlock,
+	fastKeyedForBlock,
+	fastMapSlot,
 	forBlock,
+	keyedForBlock,
+	mapSlot,
 	ifBlock,
+	errorBlock,
 	tryBlock,
 	switchBlock,
 	activityBlock,
 	componentSlot,
 	componentSlotVoid,
 	componentSlotLite,
+	compilerCacheArray,
+	compilerCacheImmutableArrayFilter,
+	compilerCacheMappedArray,
 	compilerCacheContext,
+	compilerOwnsContextProvider,
 	markSingleRoot,
 	// Compact compiler ABI; keep the descriptive export for older compiled output.
 	markSingleRoot as __s,
 	markChildrenBlock,
+	descriptorChildren,
+	createScopedValue,
+	createScopedElement,
 	childSlot,
 	positionalChildren,
 	textSlot,
@@ -204,6 +237,7 @@ export {
 	// Compiler-emitted parallel use(): batched stratum unwrap + fetch-tree
 	// warming (docs/suspense-parallel-use-plan.md).
 	useBatch,
+	seedOrCreate,
 	warmMemo,
 	warmChild,
 	// Closure-free creation take/publish ABI (inline hook-memo tier).
@@ -227,6 +261,7 @@ export {
 	// ── 3. Test-only (this repo's test infrastructure; not API) ───────────────
 	drainPassiveEffects,
 	setIsOctaneActEnvironment,
+	resetFloatResourceState,
 	setTransitionFallbackTimeout,
 	getTransitionFallbackTimeout,
 } from './runtime.js';
@@ -247,3 +282,6 @@ export type {
 
 // Semi-public compiler target for `module server` browser stubs.
 export { __serverRpc } from './server-rpc-client.js';
+
+// Semi-public compiler target for inferred method-call dependencies.
+export { __methodDep } from './method-dep.js';

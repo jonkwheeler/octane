@@ -1,43 +1,20 @@
 import type { UniversalComponent } from 'octane/universal/native';
 import type { LynxComponent } from './intrinsics.js';
 import type { LynxFirstScreenRenderResult } from './main-renderer.js';
+import {
+	currentLynxFirstScreenHost,
+	installLynxFirstScreenHost,
+	requireLynxFirstScreenHost,
+	type LynxFirstScreenHost,
+} from './core/first-screen-host.js';
 
-/** Main-thread root contract installed by the generated receiver entry. */
-export interface LynxFirstScreenHost {
-	render<Props>(component: UniversalComponent<Props>, props: Props): LynxFirstScreenRenderResult;
-	markSyncReady(): void;
-	unmount(): void;
-}
-
-let installedHost: LynxFirstScreenHost | null = null;
-
-/** @internal Connect the application facade to its entry-owned PAPI receiver. */
-export function installLynxFirstScreenHost(host: LynxFirstScreenHost): () => void {
-	if (installedHost !== null) {
-		throw new Error('A Lynx first-screen host is already installed for this entry.');
-	}
-	installedHost = host;
-	let active = true;
-	return () => {
-		if (!active) return;
-		active = false;
-		if (installedHost === host) installedHost = null;
-	};
-}
-
-function requireHost(): LynxFirstScreenHost {
-	if (installedHost === null) {
-		throw new Error(
-			'Lynx first-screen root rendered before the generated main-thread receiver was installed.',
-		);
-	}
-	return installedHost;
-}
+export { installLynxFirstScreenHost, type LynxFirstScreenHost };
 
 export interface LynxFirstScreenRoot {
 	readonly renderer: 'lynx';
 	readonly ready: Promise<void>;
-	render<Props>(component: LynxComponent<Props>, props?: Props): LynxFirstScreenRenderResult;
+	/** Null when no synchronous first screen was painted; see {@link LynxFirstScreenHost.render}. */
+	render<Props>(component: LynxComponent<Props>, props?: Props): LynxFirstScreenRenderResult | null;
 	flushTransport(): Promise<void>;
 	unmount(): Promise<void>;
 }
@@ -52,7 +29,7 @@ export const root: LynxFirstScreenRoot = Object.freeze({
 		if (typeof component !== 'function') {
 			throw new TypeError('Lynx first-screen root.render() requires a component function.');
 		}
-		return requireHost().render(
+		return requireLynxFirstScreenHost().render(
 			component as UniversalComponent<Props>,
 			props === undefined ? ({} as Props) : props,
 		);
@@ -61,7 +38,7 @@ export const root: LynxFirstScreenRoot = Object.freeze({
 		return ready;
 	},
 	unmount() {
-		if (installedHost !== null) installedHost.unmount();
+		currentLynxFirstScreenHost()?.unmount();
 		return ready;
 	},
 });
@@ -73,7 +50,7 @@ export function createLynxRoot(): LynxFirstScreenRoot {
 
 /** Release a receiver configured for manual first-screen synchronization. */
 export function markFirstScreenSyncReady(): void {
-	requireHost().markSyncReady();
+	requireLynxFirstScreenHost().markSyncReady();
 }
 
 export const lynxRootAvailability = {
@@ -88,12 +65,12 @@ export const lynxRootAvailability = {
 export { createLynxNativeResource } from './resource.js';
 export type { LynxNativeResource } from './resource.js';
 export { LynxNodesRefError } from './core/nodes-ref.js';
-export { useMainThreadRef } from './main-renderer.js';
 export {
+	useMainThreadRef,
 	runOnBackground,
 	runOnMainThread,
 	LynxCrossThreadCallCancelledError,
-} from './core/worklets.js';
+} from './main-worklets.js';
 export type {
 	LynxBackgroundFunctionDescriptor,
 	LynxCancelablePromise,
@@ -101,8 +78,7 @@ export type {
 	LynxMainThreadRefDescriptor,
 	LynxMainThreadWorkletDescriptor,
 	LynxWorkletValue,
-} from './core/worklets.js';
-
+} from './main-worklets.js';
 export type {
 	LynxCustomIntrinsicElements,
 	LynxElements,

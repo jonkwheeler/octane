@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mount } from './_helpers';
-import { SpreadToggle, SpreadDirect } from './_fixtures/spread-ref.tsrx';
+import { SpreadToggle, SpreadDirect, SpreadSharedHost } from './_fixtures/spread-ref.tsrx';
 
 describe('spread-supplied ref (React 19 parity with ref={})', () => {
 	it('callback ref via spread runs its cleanup-return on conditional detach + unmount', () => {
@@ -99,5 +99,108 @@ describe('spread-supplied ref (React 19 parity with ref={})', () => {
 		expect(log).toEqual(['A:attach', 'A:cleanup']);
 		r.unmount();
 		expect(log).toEqual(['A:attach', 'A:cleanup']);
+	});
+
+	it('detaches the latest committed spread ref after multiple replacements and removals', () => {
+		const log: string[] = [];
+		const trackedRef = (name: string) => (element: Element | null) => {
+			if (element !== null) log.push(`${name}:attach`);
+			return () => log.push(`${name}:cleanup`);
+		};
+		const first = trackedRef('first');
+		const second = trackedRef('second');
+		const third = trackedRef('third');
+		const root = mount(SpreadDirect, { attrs: { id: 'target', ref: first } });
+		const host = root.find('#target');
+
+		root.update(SpreadDirect, { attrs: { id: 'target', ref: second } });
+		root.update(SpreadDirect, { attrs: { id: 'target' } });
+		root.update(SpreadDirect, { attrs: { id: 'target', ref: third } });
+		expect(root.find('#target')).toBe(host);
+		expect(log).toEqual([
+			'first:attach',
+			'first:cleanup',
+			'second:attach',
+			'second:cleanup',
+			'third:attach',
+		]);
+
+		root.unmount();
+		expect(log.at(-1)).toBe('third:cleanup');
+	});
+
+	it('does not attach or detach inherited or non-enumerable spread refs', () => {
+		const calls: Array<Element | null> = [];
+		const observe = (element: Element | null) => calls.push(element);
+		const inherited: Record<string, unknown> = Object.create({ ref: observe });
+		inherited.id = 'target';
+		const hidden: Record<string, unknown> = { id: 'target' };
+		Object.defineProperty(hidden, 'ref', { value: observe, enumerable: false });
+
+		for (const attrs of [inherited, hidden]) {
+			const root = mount(SpreadDirect, { attrs });
+			expect(root.find('#target')).toBeInstanceOf(HTMLElement);
+			expect(calls).toEqual([]);
+			root.unmount();
+			expect(calls).toEqual([]);
+		}
+	});
+
+	it('preserves one host across changing spread refs, attributes, events, and conditional children', () => {
+		const log: string[] = [];
+		const firstRef = (element: Element | null) => {
+			if (element) log.push('first:attach');
+			return () => log.push('first:cleanup');
+		};
+		const secondRef = (element: Element | null) => {
+			if (element) log.push('second:attach');
+			return () => log.push('second:cleanup');
+		};
+		const firstClick = () => log.push('first:click');
+		const firstKeyDown = () => log.push('first:key');
+		const root = mount(SpreadSharedHost, {
+			attrs: { id: 'shared', ref: firstRef },
+			className: 'before',
+			label: 'first',
+			secondary: 'first-secondary',
+			onClick: firstClick,
+			onKeyDown: firstKeyDown,
+			shown: true,
+		});
+		const host = root.find('#shared') as HTMLElement;
+		expect(host.getAttribute('aria-label')).toBe('first');
+		expect(host.querySelector('.secondary')?.getAttribute('title')).toBe('first-secondary');
+		expect(host.querySelector('.detail')?.textContent).toBe('first');
+		host.click();
+		host.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+		expect(log).toEqual(['first:attach', 'first:click', 'first:key']);
+
+		root.update(SpreadSharedHost, {
+			attrs: { id: 'shared', ref: secondRef },
+			className: 'after',
+			label: 'second',
+			secondary: 'second-secondary',
+			onClick: () => log.push('second:click'),
+			onKeyDown: () => log.push('second:key'),
+			shown: false,
+		});
+		expect(root.find('#shared')).toBe(host);
+		expect(host.className).toBe('after');
+		expect(host.getAttribute('aria-label')).toBe('second');
+		expect(host.querySelector('.secondary')?.getAttribute('title')).toBe('second-secondary');
+		expect(host.querySelector('.detail')).toBeNull();
+		expect(log).toEqual([
+			'first:attach',
+			'first:click',
+			'first:key',
+			'first:cleanup',
+			'second:attach',
+		]);
+
+		host.click();
+		host.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+		expect(log.slice(-2)).toEqual(['second:click', 'second:key']);
+		root.unmount();
+		expect(log.at(-1)).toBe('second:cleanup');
 	});
 });

@@ -34,6 +34,8 @@ export type OctaneRendererRegistryEntry =
 			capabilities?: readonly string[];
 			/** Host event prop names/prefixes replaced by first-screen listener sentinels. */
 			firstScreenEvents?: readonly string[];
+			/** Optional cold module that owns compiler-emitted thread-function helpers. */
+			threadFunctionsModule?: string;
 			validation?: OctaneRendererValidationOptions;
 	  };
 
@@ -65,6 +67,13 @@ export interface OctaneVitePluginOptions {
 	 * `@octanejs/vite-plugin`'s `devtools` option.
 	 */
 	profile?: boolean | 'auto';
+	/**
+	 * Reject state updates during render, synchronous effect state updates, and
+	 * render-time ref writes in application-owned modules. Individual modules
+	 * can opt in with a top-level `"use strong"` directive.
+	 * @default false
+	 */
+	strong?: boolean;
 	/**
 	 * Path fragments excluded from Octane's plain `.ts`/`.js` hook-slot pass.
 	 * Prefer package manifest `octane.hookSlots.manual` declarations for bindings.

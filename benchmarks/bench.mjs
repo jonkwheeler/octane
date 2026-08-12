@@ -159,6 +159,38 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		// React-hosted migration boundary: the same React 19 host renders either
+		// upstream Streamdown directly or @octanejs/streamdown through
+		// OctaneCompat. The browser harness checks semantic DOM parity before
+		// publishing mount, replacement, and token-stream timings.
+		name: 'streamdown-hosted',
+		cwd: 'streamdown-hosted',
+		servers: [
+			{ filter: 'react-streamdown-hosted-bench', port: 5300 },
+			{ filter: 'octane-streamdown-hosted-bench', port: 5301 },
+		],
+		iter: { normal: 8, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		// Hand-rolled-SVG observability dashboard (no chart libs): path-d and
+		// transform churn, keyed reconcile inside <svg>, foreignObject labels,
+		// portal tooltip overlay, and a createElement icon layer (octane's
+		// de-opt path). The harness byte-compares the DOM against a Node-side
+		// replay of the shared ops module and cross-hashes DOM parity across
+		// all four fixtures before timing anything.
+		name: 'svg-dashboard',
+		cwd: 'svg-dashboard',
+		servers: [
+			{ filter: 'octane-tsrx-svg-dashboard-bench', port: 5302 },
+			{ filter: 'react-svg-dashboard-bench', port: 5303 },
+			{ filter: 'solid-svg-dashboard-bench', port: 5304 },
+			{ filter: 'svelte-svg-dashboard-bench', port: 5305 },
+		],
+		iter: { normal: 20, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		name: 'dbmon',
 		cwd: 'dbmon',
 		servers: [
@@ -186,6 +218,22 @@ const SUITES = [
 			{ filter: 'vue-vapor-recursive-bench', port: 5189 },
 			{ filter: 'preact-recursive-bench', port: 5264 },
 			{ filter: 'svelte-recursive-bench', port: 5275 },
+		],
+		iter: { normal: 20, quick: 3 },
+		runs: [
+			{ script: 'run.mjs', args: (n) => [String(n)] },
+			{ label: 'work', script: 'work.mjs', args: () => [] },
+		],
+	},
+	{
+		name: 'spa-navigation',
+		cwd: 'spa-navigation',
+		servers: [
+			{ filter: 'octane-tsrx-spa-navigation-bench', port: 5310 },
+			{ filter: 'octane-jsx-spa-navigation-bench', port: 5311 },
+			{ filter: 'react-spa-navigation-bench', port: 5312 },
+			{ filter: 'solid-spa-navigation-bench', port: 5313 },
+			{ filter: 'vue-vapor-spa-navigation-bench', port: 5314 },
 		],
 		iter: { normal: 20, quick: 3 },
 		runs: [
@@ -276,11 +324,16 @@ const SUITES = [
 		cwd: name,
 		servers: [],
 		iter: name === 'lifecycle-memory' ? { normal: 84, quick: 2 } : { normal: 8, quick: 2 },
-		runs: ['octane-tsrx', 'react', 'preact', 'solid', 'svelte', 'vue-vapor'].map((target) => ({
-			label: target,
-			script: 'run.mjs',
-			args: (n) => [target, String(n)],
-		})),
+		runs: [
+			...['octane-tsrx', 'react', 'preact', 'solid', 'svelte', 'vue-vapor'].map((target) => ({
+				label: target,
+				script: 'run.mjs',
+				args: (n) => [target, String(n)],
+			})),
+			...(name === 'event-delegation'
+				? [{ label: 'work', script: 'work.mjs', args: () => [] }]
+				: []),
+		],
 	})),
 	{
 		// Selector-based fan-out: 512 subscribers read one store through a
@@ -532,16 +585,55 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
-		// Native Lynx dual-thread render cost (Node-only): drives the real
-		// background root, async transport, main receiver, and host driver through
-		// a cheap fake Element PAPI, so the milliseconds are Octane's own per-node
-		// CPU cost. It also gates that a native tap reaches its background handler
-		// through the engine's own `publishEvent` receiver. No device timing claim.
+		// Universal renderer update locality (Node-only): compiles the public issue
+		// fixture and measures one stateful leaf beside up to 4,000 unrelated owners.
+		name: 'universal-leaf-update',
+		cwd: 'universal-leaf-update',
+		servers: [],
+		iter: { normal: 5, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		// Compiled Octane and pinned ReactLynx dual-thread render cost (Node-only)
+		// on the same cheap Element PAPI. Both visible trees and real native taps
+		// must match; three quick samples keep same-run ratio guards stable.
 		name: 'lynx-render',
 		cwd: 'lynx-render',
 		servers: [],
-		iter: { normal: 5, quick: 1 },
+		iter: { normal: 5, quick: 3 },
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		// Native Lynx table wire cost (Node-only): drives the cross-framework
+		// krausest table app through the real dual-thread path via real tap tokens
+		// and reports deterministic per-operation command counts and serialized
+		// commit bytes against a changed-rows semantic floor. The wire payload of a
+		// point update must scale with the change, not the tree. Wall-clock lives
+		// in the separate Lynx-for-Web harness (lynx-table-web) and is ungated.
+		name: 'lynx-table',
+		cwd: 'lynx-table',
+		servers: [],
+		iter: { normal: 2, quick: 1 },
+		runs: [
+			{
+				script: 'run.mjs',
+				args: (n) => [String(n)],
+				env: (iter, quick) => ({ LYNX_TABLE_SCALES: quick ? '1000' : '1000,10000' }),
+			},
+		],
+	},
+	{
+		// Lynx-for-Web wall clock (headless Chromium): serves the octane table
+		// app and the vendored ReactLynx / Vue Lynx reference bundles into a
+		// <lynx-view> and drives real clicks through one shared page driver.
+		// Timing is host-bound and carries no ratio guards — the deterministic
+		// wire gates live in `lynx-table` — but the recorded medians feed the
+		// site's cross-framework Lynx chart. Iterations map to fresh-page reps.
+		name: 'lynx-table-web',
+		cwd: 'lynx-table',
+		servers: [],
+		iter: { normal: 3, quick: 1 },
+		runs: [{ script: 'web/run-web.mjs', args: (n) => ['--reps', String(n)] }],
 	},
 	{
 		// Production Rspeedy preview/IFR bundles (Node-only): decodes both real
@@ -551,7 +643,10 @@ const SUITES = [
 		cwd: 'lynx-bundle-size',
 		servers: [],
 		iter: { normal: 1, quick: 1 },
-		runs: [{ script: 'run.mjs', args: () => [] }],
+		runs: [
+			{ script: 'run.mjs', args: () => [] },
+			{ script: 'inventory.mjs', args: () => [] },
+		],
 	},
 	{
 		// Compiled-output size (Node-only, seconds-fast): compiles a fixed
@@ -582,6 +677,16 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: () => [] }],
 	},
 	{
+		// Public-import reachability (Node-only): builds and executes isolated
+		// production feature entries, then compares raw/gzip/brotli bytes with
+		// explicit same-run budget targets through the committed ratio guards.
+		name: 'bundle-reachability',
+		cwd: 'bundle-size',
+		servers: [],
+		iter: { normal: 1, quick: 1 },
+		runs: [{ script: 'run-minimal.mjs', args: () => [] }],
+	},
+	{
 		// Three host lifecycle work in a production browser: Octane Three against
 		// R3F 9.6.1 and a direct plain-Three lower bound. The injected renderer
 		// deliberately excludes GPU/driver time while retaining real Three objects,
@@ -589,7 +694,7 @@ const SUITES = [
 		name: 'three-renderer',
 		cwd: 'three',
 		servers: [{ filter: 'octane-three-bench', port: 5291 }],
-		iter: { normal: 10, quick: 2 },
+		iter: { normal: 20, quick: 10 },
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{

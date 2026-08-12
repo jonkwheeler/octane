@@ -10,9 +10,9 @@
  *      `.tsx` and would octane-compile the React reference code.
  *   2. Every `.tsrx` fixture under `tests/_fixtures` is compiled through
  *      `@tsrx/react` + esbuild (same as octane's/radix's setup), then specifiers
- *      are rewritten so the React side runs against the vendored upstream:
- *      `@octanejs/shadcn` (and any relative `src/ui/*.tsrx` import) →
- *      `./upstream-index.js`, `octane` → `react`.
+ *      are rewritten so the React side runs against the matching vendored
+ *      upstream module. Aggregate and relative imports fall back to
+ *      `./upstream-index.js`; `octane` becomes `react`.
  *
  * The cache lives INSIDE this package so the compiled React modules resolve THIS
  * package's deps (react, react-dom, radix-ui, lucide-react). The differential
@@ -20,7 +20,7 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -29,6 +29,13 @@ const __dirname = dirname(__filename);
 const FIXTURE_DIR = join(__dirname, '../_fixtures');
 const UPSTREAM_DIR = join(__dirname, 'upstream');
 const CACHE_DIR = join(__dirname, '.react-cache');
+const UPSTREAM_SUBPATHS: Record<string, string> = {
+	Badge: 'badge',
+	Button: 'button',
+	Dialog: 'dialog',
+	DropdownMenu: 'dropdown-menu',
+	Tabs: 'tabs',
+};
 
 // Must match the hash in octane's `_rig.ts` so the slug+hash file names line up.
 function hashString(s: string): string {
@@ -65,40 +72,54 @@ function compileUpstream(name: string, ext: '.ts' | '.tsx'): void {
 
 function compileFixture(srcPath: string): void {
 	const source = readFileSync(srcPath, 'utf8');
-	let compiled;
-	try {
-		compiled = compileToReact(source, srcPath);
-	} catch {
-		return;
+	const compiled = compileToReact(source, srcPath);
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React differential precompile failed for ${srcPath}:\n${compiled.errors.join('\n')}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
-	let transformed;
-	try {
-		transformed = esbuildTransformSync(compiled.code, {
-			loader: 'tsx',
-			jsx: 'automatic',
-			jsxImportSource: 'react',
-			target: 'esnext',
-			format: 'esm',
-			sourcefile: srcPath,
-		});
-	} catch {
-		return;
-	}
+	const transformed = esbuildTransformSync(compiled.code, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: srcPath,
+	});
 	// `@octanejs/shadcn` → the vendored pinned upstream barrel (shadcn has no npm
-	// runtime package to rewrite to); relative `src/ui/*.tsrx` imports → the same
-	// barrel; `octane` → `react`.
+	// runtime package to rewrite to). Subpath fixtures go straight to their
+	// matching upstream module so an isolated case does not load unrelated
+	// Dialog/Menu/Tabs graphs. Relative source imports still use the aggregate
+	// barrel as a fallback for any future multi-component fixture.
 	const rewritten = transformed.code
-		.replace(/from\s*["']@octanejs\/shadcn["']/g, 'from "./upstream-index.js"')
-		.replace(/from\s*["'](?:\.\.\/)+src\/ui\/[\w-]+\.tsrx["']/g, 'from "./upstream-index.js"')
+		.replace(/from\s*["']@octanejs\/shadcn\/([\w-]+)["']/g, (_match, subpath: string) => {
+			const moduleName = UPSTREAM_SUBPATHS[subpath] ?? 'index';
+			return `from "./upstream-${moduleName}.js"`;
+		})
+		.replace(/from\s*["']@octanejs\/shadcn(?:\/[\w./-]+)?["']/g, 'from "./upstream-index.js"')
+		.replace(
+			/from\s*["'](?:\.\.\/)+src\/bases\/[\w-]+\/ui\/[\w-]+\.tsrx["']/g,
+			'from "./upstream-index.js"',
+		)
 		.replace(/from\s*["']octane["']/g, 'from "react"');
 	const slug = basename(srcPath).replace(/\.tsrx$/, '');
 	const outFile = join(CACHE_DIR, `${slug}-${hashString(srcPath)}.js`);
 	writeFileSync(outFile, rewritten);
 }
 
+function walk(directory: string): string[] {
+	const files: string[] = [];
+	for (const name of readdirSync(directory)) {
+		const fullPath = join(directory, name);
+		if (statSync(fullPath).isDirectory()) files.push(...walk(fullPath));
+		else if (fullPath.endsWith('.tsrx')) files.push(fullPath);
+	}
+	return files;
+}
+
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	rmSync(CACHE_DIR, { recursive: true, force: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
 	compileUpstream('utils', '.ts');
 	compileUpstream('icon-placeholder', '.tsx');
 	compileUpstream('badge', '.tsx');
@@ -107,17 +128,9 @@ export async function setup(): Promise<void> {
 	compileUpstream('dialog', '.tsx');
 	compileUpstream('dropdown-menu', '.tsx');
 	compileUpstream('index', '.ts');
-	if (!existsSync(FIXTURE_DIR)) return;
-	const walk = (dir: string): string[] => {
-		const out: string[] = [];
-		for (const name of readdirSync(dir)) {
-			const full = join(dir, name);
-			if (statSync(full).isDirectory()) out.push(...walk(full));
-			else if (full.endsWith('.tsrx')) out.push(full);
-		}
-		return out;
-	};
-	for (const file of walk(FIXTURE_DIR)) compileFixture(file);
+	for (const fixturePath of walk(join(FIXTURE_DIR, 'shadcn-diff'))) {
+		compileFixture(fixturePath);
+	}
 }
 
 export async function teardown(): Promise<void> {

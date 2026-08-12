@@ -29,6 +29,10 @@ All integrations use the same compiler, runtime selection, source maps, raw
 Octane dependency discovery, and cache dependencies. Choosing a bundler does
 not change component semantics.
 
+Publishing a package built on Octane? Ship its authored modules as a
+[source package](/docs/publishing-libraries) so the consuming application compiles
+the library with the same Octane compiler and runtime as its own code.
+
 All three integrations also accept `profile: true` for a client profiling
 build. See [Profiling](/docs/profiling) for Chrome tracks, render causes, the
 console API, and the recommended production-style workflow.
@@ -131,8 +135,76 @@ web and Node entries required for SSR and hydration.
 
 The shared `build.target` setting controls both SWC application transforms and
 Rspack's generated runtime. Rsbuild accepts one ES level, `modules`, `false`, or
-esbuild-style browser targets such as `['chrome100', 'firefox100']`; do not mix
-ES levels and browser targets in the same array.
+browser targets such as `['chrome100', 'firefox100', 'samsung24']`; do not mix
+ES levels and browser targets in the same array. Samsung targets use the Samsung
+Internet version rather than its Chromium engine version: `samsung24` means
+Samsung Internet 24, which is based on Chromium 117. The `modules` baseline
+includes Samsung Internet 14 and Chromium 87. Browser targeting transpiles
+syntax but does not supply application-specific Web API polyfills.
+
+<h2 id="strong-mode">Strong mode</h2>
+
+Strong mode asks the compiler to reject a few state and ref patterns that make a
+component harder to follow. It is off by default, so you can try it in one file:
+
+```tsx
+'use strong';
+
+import { useLinkedState } from 'octane';
+
+export function ProfileEditor({ user }) {
+	const [name, setName] = useLinkedState(user.id, () => user.name);
+	return <input value={name} onInput={(event) => setName(event.currentTarget.value)} />;
+}
+```
+
+The directive applies only to its own module. Put it at the top of the file,
+before imports or other code; comments and other directives may come first. When
+a file needs an `@jsxImportSource octane` ownership pragma, put that comment
+first:
+
+```tsx
+/** @jsxImportSource octane */
+'use strong';
+
+import { useState } from 'octane';
+```
+
+When the whole application is ready, switch it on in the shared app config used
+by the Vite and Rsbuild integrations:
+
+```ts
+// octane.config.ts
+export default {
+	compiler: {
+		strong: true,
+	},
+};
+```
+
+Each bundler plugin also accepts the same option directly. A standalone Rspack
+setup uses its plugin option because it does not load `octane.config.ts`:
+
+```ts
+octane({ strong: true }); // Vite
+new OctaneRspackPlugin({ strong: true }); // Rspack
+pluginOctane({ strong: true }); // Rsbuild
+```
+
+An explicit plugin option wins over `octane.config.ts`. Application-wide mode
+does not change installed dependencies; a dependency can opt in with its own
+`"use strong"` directive.
+
+A Strong module cannot:
+
+- Call a state setter or reducer dispatcher while rendering.
+- Call one directly while an effect is being set up.
+- Assign to a ref's `current` value while rendering.
+
+Use `useLinkedState` when state should reset or adjust after an input changes.
+Event handlers may update state normally. Effects that connect to external
+systems and refs for DOM nodes, timers, or event callbacks are still useful and
+remain allowed. Values such as `Date.now()` and `Math.random()` are not banned.
 
 <h2 id="mixed-toolchains">Mixed toolchains and file ownership</h2>
 
@@ -340,10 +412,12 @@ and needs a dev-server restart.
 <h2 id="renderer-targets">Renderer targets</h2>
 
 Compiler and app-core options use declarative module IDs rather than bundler
-callbacks or instantiated renderer objects. That keeps DOM, Three, and future
-Lynx renderer selection an Octane compiler/config concern.
+callbacks or instantiated renderer objects. That keeps DOM, Three, and Lynx
+renderer selection an Octane compiler/config concern.
 
 `@octanejs/rsbuild-plugin` already follows the Rsbuild plugin model consumed by
-Rspeedy, but this release targets Octane's DOM renderer. A Lynx renderer target
-and Rspeedy preset are future work; do not point the current web hydration entry
-at a Lynx application.
+Rspeedy, but it targets Octane's DOM renderer. A Lynx application is a separate
+build: it runs Rspeedy with `@octanejs/rspeedy-plugin`, which compiles one
+authored entry into the main-thread and background graphs Lynx evaluates. See
+[Native with Lynx](/docs/lynx). Do not point the web hydration entry at a Lynx
+application.

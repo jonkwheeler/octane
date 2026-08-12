@@ -4,8 +4,8 @@
  * with octane's exceptions. Compile-only (tsgo --noEmit); never executed and
  * never imported by runtime code.
  */
-import { Fragment } from 'octane';
-import type { JSX as OctaneJSX } from 'octane/jsx-runtime';
+import { Fragment, type FragmentInstance } from 'octane';
+import { Fragment as AutomaticRuntimeFragment, type JSX as OctaneJSX } from 'octane/jsx-runtime';
 import type * as React from 'react';
 
 declare function use<T>(value: T): void;
@@ -21,6 +21,8 @@ use<true>(octaneCoversEveryReactTag);
 export function TypeSurface() {
 	const cb = (el: HTMLDivElement | null) => {};
 	const obj: { current: HTMLDivElement | null } = { current: null };
+	const fragmentObject: { current: FragmentInstance | null } = { current: null };
+	const fragmentCallback = (instance: FragmentInstance | null) => {};
 
 	return (
 		<main>
@@ -72,10 +74,77 @@ export function TypeSurface() {
 			{/* @ts-expect-error — numbers are not a style value */}
 			<div style={42} />
 
-			{/* ── React-shaped attribute surface ── */}
+			{/* ── React aliases and native HTML attribute spellings ── */}
 			<main tabIndex={-1} />
-			{/* @ts-expect-error — lowercase `tabindex` is not the typed surface */}
 			<main tabindex={-1} />
+			<main tabindex="-1" />
+			<main enterkeyhint="send" inputmode="numeric" spellcheck={false} autocorrect="on" />
+			<input autocomplete="email" autocapitalize="sentences" readonly maxlength="24" />
+			<form novalidate autocomplete="off" />
+			<form accept-charset="utf-8" />
+			<a referrerpolicy="no-referrer" />
+			<img crossorigin="anonymous" />
+			<meta http-equiv="refresh" />
+			<button popovertarget="details" popovertargetaction="show" />
+			<button command="show-modal" commandfor="dialog" />
+			<button command={undefined} commandfor={undefined} />
+			<button
+				formaction={(data) => {
+					use<FormData>(data);
+				}}
+			/>
+			<input
+				formaction={async (data) => {
+					use<FormData>(data);
+				}}
+			/>
+			<table>
+				<tbody>
+					<tr>
+						<td colspan="2" rowspan={2} />
+					</tr>
+				</tbody>
+			</table>
+			<svg hidden tabindex="0" viewBox="0 0 10 10" />
+			<svg tabindex={-1} strokeWidth={2} />
+			{/* @ts-expect-error — numeric HTML attributes reject nonnumeric text */}
+			<main tabindex="first" />
+			{/* @ts-expect-error — lowercase aliases preserve their enumerated values */}
+			<button popovertargetaction="expand" />
+			{/* @ts-expect-error — lowercase aliases preserve enter-key-hint tokens */}
+			<main enterkeyhint={String('send')} />
+			{/* @ts-expect-error — lowercase aliases preserve input-mode tokens */}
+			<main inputmode="latin" />
+			{/* @ts-expect-error — spellcheck accepts booleans and boolean strings only */}
+			<main spellcheck="perhaps" />
+			{/* @ts-expect-error — lowercase aliases preserve referrer-policy values */}
+			<a referrerpolicy="always" />
+			{/* @ts-expect-error — command invoker attributes belong to buttons */}
+			<div command="show-modal" />
+			{/* @ts-expect-error — SVG attribute names remain case sensitive */}
+			<svg viewbox="0 0 10 10" />
+			{/* @ts-expect-error — autoFocus is a mount action, not a native boolean attribute */}
+			<input autofocus />
+			{/* @ts-expect-error — controlled defaults are React/Octane props, not attributes */}
+			<input defaultvalue="value" />
+			{/* @ts-expect-error — controlled defaults are React/Octane props, not attributes */}
+			<input defaultchecked />
+			{/* @ts-expect-error — warning hints are framework props, not attributes */}
+			<div suppresshydrationwarning />
+			{/* @ts-expect-error — native delegated events keep their onClick spelling */}
+			<button onclick={() => {}} />
+			{/* @ts-expect-error — htmlFor's native spelling is `for`, never `htmlfor` */}
+			<label htmlfor="field" />
+			{/* @ts-expect-error — acceptCharset's native spelling is `accept-charset` */}
+			<form acceptcharset="utf-8" />
+			{/* @ts-expect-error — httpEquiv's native spelling is `http-equiv` */}
+			<meta httpequiv="refresh" />
+			<button aria-pressed="mixed" />
+			<input aria-checked={true} />
+			{/* @ts-expect-error — ARIA token unions must reject widened arbitrary strings */}
+			<button aria-pressed={String(true)} />
+			{/* @ts-expect-error — ARIA token unions must reject widened arbitrary strings */}
+			<input aria-checked={String(false)} />
 			<div dangerouslySetInnerHTML={{ __html: '<b>x</b>' }} suppressHydrationWarning />
 			<input defaultValue="a" defaultChecked />
 			<div data-testid="anything" aria-hidden="true" />
@@ -85,12 +154,34 @@ export function TypeSurface() {
 			<div>{null}</div>
 
 			{/* ── Fragment: children, key, and fragment refs ── */}
-			<Fragment ref={(instance) => {}}>
+			<Fragment
+				ref={(instance) => {
+					use<FragmentInstance | null>(instance);
+					instance?.focus();
+					instance?.focusLast({ preventScroll: true });
+					instance?.getRootNode({ composed: true });
+					instance?.scrollIntoView(false);
+				}}
+			>
 				<span />
 			</Fragment>
+			<Fragment ref={fragmentObject} />
+			<Fragment ref={[fragmentObject, fragmentCallback]} />
+			<AutomaticRuntimeFragment
+				ref={(instance) => {
+					use<FragmentInstance | null>(instance);
+					instance?.focus();
+				}}
+			/>
+			{/* @ts-expect-error — fragment refs receive an instance, not an element */}
+			<Fragment ref={(instance: HTMLDivElement | null) => {}} />
 		</main>
 	);
 }
+
+declare const fragmentInstance: FragmentInstance;
+// @ts-expect-error — fragment scrolling accepts only its boolean alignment argument.
+fragmentInstance.scrollIntoView({ block: 'center' });
 
 // ── Elements are not promises — the poisoned protocol holds octane-side too ──
 // `Octane.JSX.Element`'s `Promise<React.ReactNode>` parent exists only for the

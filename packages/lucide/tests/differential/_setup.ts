@@ -5,7 +5,15 @@
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync as esbuildTransformSync } from 'esbuild';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const FIXTURE_DIR = join(__dirname, '../_fixtures');
 const CACHE_DIR = join(__dirname, '.react-cache');
+const ICONS_RUNTIME = join(CACHE_DIR, 'icons-runtime.js');
 
 function hashString(value: string): string {
 	let hash = 5381;
@@ -24,27 +33,21 @@ function hashString(value: string): string {
 
 function compileOne(sourcePath: string): void {
 	const source = readFileSync(sourcePath, 'utf8');
-	let compiled;
-	try {
-		compiled = compileToReact(source, sourcePath);
-	} catch {
-		return;
+	const compiled = compileToReact(source, sourcePath);
+	if (compiled.errors && compiled.errors.length > 0) {
+		throw new Error(
+			`React compilation failed for ${sourcePath}: ${JSON.stringify(compiled.errors)}`,
+		);
 	}
-	if (compiled.errors && compiled.errors.length > 0) return;
 
-	let transformed;
-	try {
-		transformed = esbuildTransformSync(compiled.code, {
-			loader: 'tsx',
-			jsx: 'automatic',
-			jsxImportSource: 'react',
-			target: 'esnext',
-			format: 'esm',
-			sourcefile: sourcePath,
-		});
-	} catch {
-		return;
-	}
+	const transformed = esbuildTransformSync(compiled.code, {
+		loader: 'tsx',
+		jsx: 'automatic',
+		jsxImportSource: 'react',
+		target: 'esnext',
+		format: 'esm',
+		sourcefile: sourcePath,
+	});
 
 	const rewritten = transformed.code
 		.replace(
@@ -67,7 +70,15 @@ function walk(directory: string): string[] {
 }
 
 export async function setup(): Promise<void> {
-	if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+	if (existsSync(CACHE_DIR)) rmSync(CACHE_DIR, { recursive: true });
+	mkdirSync(CACHE_DIR, { recursive: true });
+	// icons.tsrx uses a narrow Octane implementation facade so the unbundled
+	// test does not load every generated icon. Give the compiled React fixture
+	// the equivalent facade; the root export inventories are tested separately.
+	writeFileSync(
+		ICONS_RUNTIME,
+		"export { Camera, CircleAlert, Icon, LucideProvider, Search } from 'lucide-react';\n",
+	);
 	if (!existsSync(FIXTURE_DIR)) return;
 	for (const sourcePath of walk(FIXTURE_DIR)) compileOne(sourcePath);
 }

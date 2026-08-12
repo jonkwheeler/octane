@@ -1,11 +1,13 @@
 // Focused contract for the newcomer-oriented Core APIs guide. This file owns
 // the route's learning structure, local navigation, and real interactive
 // examples so the unusually large page does not need duplicate generic smoke
-// coverage.
+// coverage. Its timeout absorbs the website job's background build contention
+// without serializing that build and this test.
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, fireEvent, render, waitFor, within } from '@octanejs/testing-library';
 import { RouterProvider, createMemoryHistory } from '@octanejs/tanstack-router';
 import { getRouter } from '../src/router.ts';
+import { expectRegisteredHeadings } from './support/doc-headings.ts';
 import { docs } from '../src/content/docs.ts';
 
 afterEach(cleanup);
@@ -48,6 +50,18 @@ describe('Core APIs documentation', () => {
 			const tag = section.level === 3 ? 'h3' : 'h2';
 			expect(container.querySelector(`${tag}#${section.id}`)).toBeTruthy();
 		}
+		// This guide is excluded from the generic smoke sweep, so it carries the
+		// heading→registry direction itself: an `<h2>` no entry names is missing
+		// from this table of contents and from what the MCP server serves.
+		expectRegisteredHeadings(container, coreDoc);
+		expect(container.querySelector('h2#behavior-only-roots')?.textContent).toBe(
+			'Behavior-only roots and external ownership',
+		);
+		expect(toc.querySelector('a[href="#behavior-only-roots"]')?.textContent).toContain(
+			'Behavior-only roots and external ownership',
+		);
+		expect(container.textContent).toContain('same original native');
+		expect(container.textContent).toContain('preserveDOM');
 
 		expect(container.querySelectorAll('.topic-grid a')).toHaveLength(7);
 		expect(container.querySelectorAll('[data-demo]')).toHaveLength(9);
@@ -65,6 +79,8 @@ describe('Core APIs documentation', () => {
 			expect(container.querySelector(`[data-demo="${id}"]`)).toBeTruthy();
 		}
 		for (const id of [
+			'use-linked-state',
+			'strong-mode',
 			'use-sync-external-store',
 			'hydrate-when',
 			'hydrate-split',
@@ -99,10 +115,17 @@ describe('Core APIs documentation', () => {
 		expect(highlightedSource.some((source) => source.includes('createRoot(container)'))).toBe(true);
 		expect(highlightedSource.some((source) => source.includes('renderToString(App'))).toBe(true);
 		for (const sourceMarker of [
+			'useLinkedState(props.user.id, () => props.user.name)',
+			"'use strong';",
+			'nextItems.find((item) => item.id === previous?.value?.id)',
 			'export function NetworkStatus()',
 			'<Hydrate when={visible({ rootMargin:',
 			'<Hydrate when={idle()} split={false}>',
 			'<Hydrate when={interaction()} prefetch={idle()}>',
+			'<Hydrate split={false} when={never()}>',
+			"import { attachBehaviorRoot } from 'octane/behavior';",
+			'root.registerExternalRange(article,',
+			'root.registerBehavior({',
 			'const [isPending, startTransition] = useTransition();',
 			'const deferredQuery = useDeferredValue(query);',
 			'<ViewTransition enter="notice-in" exit="notice-out">',
@@ -126,6 +149,14 @@ describe('Core APIs documentation', () => {
 		expect(groupedApiCodeCount('isChildrenBlock')).toBe(3);
 		expect(
 			apiRows.some((row) => row.querySelector(':scope > code')?.textContent === 'Hydrate'),
+		).toBe(true);
+		expect(
+			apiRows.some(
+				(row) => row.querySelector(':scope > code')?.textContent === 'attachBehaviorRoot',
+			),
+		).toBe(true);
+		expect(
+			apiRows.some((row) => row.querySelector(':scope > code')?.textContent === 'useLinkedState'),
 		).toBe(true);
 
 		const active = container.querySelector(
@@ -386,5 +417,5 @@ describe('Core APIs documentation', () => {
 			});
 			expect(mobileToggle.getAttribute('aria-expanded')).toBe('false');
 		}
-	});
+	}, 60_000);
 });

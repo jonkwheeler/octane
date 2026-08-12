@@ -1,0 +1,208 @@
+name: Label PR
+
+# Both labels are things the author cannot apply themselves: a fork
+# contributor's token has no rights to label the base repository at all. A
+# `pull_request_target` job has the write token, so the author only has to state
+# the facts, in the title or branch and in the body, and this turns them into labels.
+on:
+  pull_request_target:
+    types: [opened, reopened, edited]
+
+concurrency:
+  # Serialize per pull request instead of cancelling: two runs racing on the
+  # same pull request would fight over which labels survive.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  label:
+    name: apply labels
+    if: github.event.pull_request.state == 'open'
+    runs-on: ubuntu-latest
+    # `pull_request_target` is what gives a fork pull request a writable token.
+    # Nothing here checks out or executes the pull request's code.
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+
+    steps:
+      - name: Apply the labels the pull request declares
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          # PR edits occasionally race a transient GitHub API 5xx. The script
+          # is idempotent, so retry reads and label writes before failing the
+          # check and asking a maintainer to rerun it manually.
+          retries: 3
+          script: |
+            const TYPES = ["feat", "fix", "docs", "test", "perf", "refactor", "chore", "ci"];
+            const AGENT = "agent-authored";
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
+
+            // The event payload is a snapshot from before this run was queued.
+            const { data: pull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+            if (pull.state !== "open") {
+              return;
+            }
+
+            const current = pull.labels.map((label) => label.name);
+            const add = [];
+            const remove = [];
+
+            const titled = /^\s*([a-z]+)(?:\s*(?:\([^)]*\))?\s*!?:|\/)/.exec(pull.title);
+            const branched = /^([a-z]+)\//.exec(pull.head.ref);
+            const titleType = titled && TYPES.includes(titled[1]) ? titled[1] : null;
+            const branchType = branched && TYPES.includes(branched[1]) ? branched[1] : null;
+            const type = titleType ?? branchType;
+            // Prefer the title, then use the repository's type-prefixed branch
+            // convention when GitHub supplied a plain or branch-shaped title.
+            remove.push(
+              ...current.filter((name) => name !== type && TYPES.includes(name)),
+            );
+            if (type) {
+              // Exactly one type label is the rule, so a retitled pull request
+              // has to take its previous type with it.
+              if (!current.includes(type)) add.push(type);
+            } else {
+              core.notice(
+                `#${number} has no conventional-commit type in its title and no supported type prefix ` +
+                  `in its head branch, so no type label was applied. Retitle it or prefix the branch ` +
+                  `with one of ${TYPES.join(", ")} and this runs again.`,
+              );
+            }
+
+            // A fenced example or a commented-out line is text about the box,
+            // not the box itself, and a pull request that documents this
+            // workflow quotes the line in both forms.
+            let fenced = false;
+            const live = (pull.body ?? "")
+              .replace(/<!--[\s\S]*?-->/g, "\n")
+              .split("\n")
+              .filter((line) => {
+                if (/^[ \t]*(?:```|~~~)/.test(line)) {
+                  fenced = !fenced;
+                  return false;
+                }
+                return !fenced;
+              })
+              .join("\n");
+
+            // The template's own section is the declaration, so a Validation
+            // item that happens to mention the label cannot stand in for it.
+            const heading = /^[ \t]*#{1,6}[ \t]+provenance[ \t]*$/im.exec(live);
+            const after = heading ? live.slice(heading.index + heading[0].length) : "";
+            const nextHeading = heading ? /^[ \t]*#{1,6}[ \t]/m.exec(after) : null;
+            const scope = nextHeading ? after.slice(0, nextHeading.index) : after;
+
+            // Only a checked box is an agent claim. An empty box, a missing
+            // section, or no body at all means human-authored, so stale agent
+            // labels are retracted and provenance never blocks the workflow.
+            const box = new RegExp(
+              `^[ \\t]*[-*][ \\t]*\\[([ \\t]*[xX]?[ \\t]*)\\][^\\n]*${AGENT}`,
+              "im",
+            ).exec(scope);
+            const agentAuthored = box ? /x/i.test(box[1]) : false;
+            if (agentAuthored && !current.includes(AGENT)) add.push(AGENT);
+            if (!agentAuthored && current.includes(AGENT)) remove.push(AGENT);
+
+            try {
+              for (const name of remove) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: number,
+                  name,
+                });
+              }
+              if (add.length > 0) {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: number,
+                  labels: add,
+                });
+              }
+            } catch (error) {
+              core.setFailed(
+                `Could not set labels on #${number}: ${error.message}. ` +
+                  `Intended: +[${add.join(", ")}] -[${remove.join(", ")}].`,
+              );
+              return;
+            }
+
+            if (add.length > 0 || remove.length > 0) {
+              core.notice(
+                `#${number}: applied [${add.join(", ") || "none"}], removed [${remove.join(", ") || "none"}].`,
+              );
+            }
+
+      - name: Convert an agent-authored pull request back to draft
+        # A label written with GITHUB_TOKEN cannot trigger the separate `labeled`
+        # workflow. Enforce the draft policy here, after the label API call, so a
+        # ready agent pull request is handled in the same workflow run.
+        if: always()
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          retries: 3
+          # GitHub's GraphQL permission mapping requires `contents: write`
+          # alongside `pull-requests: write` for this mutation, even though no
+          # repository content changes. An app or PAT can still take over where
+          # the repository defines one.
+          github-token: ${{ secrets.DRAFT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
+
+            // Refetch after the preceding step: the event payload predates the
+            // label that this workflow may just have applied.
+            const { data: pull } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: number,
+            });
+            if (pull.draft || pull.state !== "open") {
+              return;
+            }
+            if (!pull.labels.some((label) => label.name === "agent-authored")) {
+              return;
+            }
+
+            // Marking a pull request ready for review is a deliberate act, and
+            // ordinary body edits keep arriving afterwards. Without this the
+            // next edit would drag a reviewed pull request back into draft.
+            const timeline = await github.paginate(
+              github.rest.issues.listEventsForTimeline,
+              { owner, repo, issue_number: number, per_page: 100 },
+            );
+            if (timeline.some((event) => event.event === "ready_for_review")) {
+              core.notice(
+                `#${number} was already marked ready for review; leaving it as is.`,
+              );
+              return;
+            }
+
+            try {
+              await github.graphql(
+                `mutation ($id: ID!) {
+                   convertPullRequestToDraft(input: { pullRequestId: $id }) {
+                     clientMutationId
+                   }
+                 }`,
+                { id: pull.node_id },
+              );
+            } catch (error) {
+              core.setFailed(
+                `Could not convert #${number} to a draft: ${error.message}. ` +
+                  "Convert it manually; repository CI starts after a maintainer marks it ready.",
+              );
+              return;
+            }
+
+            core.notice(
+              `Converted #${number} to a draft. Repository CI will start after a maintainer marks it ready for review.`,
+            );

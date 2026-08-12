@@ -1,10 +1,10 @@
 {
   "name": "@octanejs/recharts",
-  "version": "0.1.15",
+  "version": "0.1.33",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "Recharts for the octane renderer — reuses recharts' framework-agnostic core (Redux Toolkit state, reselect, d3 via victory-vendor) and swaps the React layer for octane's hooks.",
   "author": {
@@ -21,13 +21,16 @@
   },
   "main": "src/index.ts",
   "module": "src/index.ts",
-  "types": "src/index.ts",
+  "types": "src/index.d.ts",
   "files": [
     "src",
     "README.md"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.ts"
+    }
   },
   "scripts": {
     "test": "vitest run"

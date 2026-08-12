@@ -39,6 +39,7 @@ export const REQUIRED_PUBLIC_VALUE_EXPORTS = {
 		'act',
 		'activityBlock',
 		'addTransitionType',
+		'attachBehaviorRoot',
 		'attachRef',
 		'bag0',
 		'bag1',
@@ -204,6 +205,7 @@ export const REQUIRED_PUBLIC_VALUE_EXPORTS = {
 		'never',
 		'visible',
 	],
+	'./behavior': ['attachBehaviorRoot'],
 	'./react/server': ['OctaneCompat'],
 	'./server': [
 		'Activity',
@@ -314,7 +316,10 @@ export const REQUIRED_PUBLIC_VALUE_EXPORTS = {
 		'warmMemo',
 		'withSlot',
 	],
+	'./internal/client': ['queueOwnRefDetach', 'replaceRef'],
+	'./internal/server': ['ssrSpreadContent'],
 	'./static': ['prerender'],
+	'./testing': ['clampJsdomScrollTop'],
 	'./constants': [
 		'ATTRIBUTE_ALIASES',
 		'BLOCK_CLOSE',
@@ -512,6 +517,7 @@ export const REQUIRED_PUBLIC_VALUE_EXPORTS = {
 		'resolveOctaneRuntimeRequest',
 		'resolveRendererForFile',
 	],
+	'./compiler/register': [],
 	'./compiler/renderers': [
 		'DOM_RENDERER_ID',
 		'DOM_RENDERER_MODULE',
@@ -557,6 +563,14 @@ export function publishedRuntimeEntries(publishedExports) {
 		return [...targets]
 			.filter((target) => /\.(?:c|m)?js$/.test(target))
 			.map((target) => [subpath, target]);
+	});
+}
+
+export function publishedRequireEntries(publishedExports) {
+	return Object.entries(publishedExports).flatMap(([subpath, value]) => {
+		if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+		const target = value.require;
+		return typeof target === 'string' ? [[subpath, target]] : [];
 	});
 }
 
@@ -607,8 +621,8 @@ export async function verifyDist(pkgDir) {
 	// esbuild in bundle mode is the resolver (a real parser, not a regex, and it
 	// follows dynamic import() literals too): each dist module is its own entry,
 	// bare specifiers stay external (they are declared dependencies, present at
-	// install time), and *.json covers the `../package.json` attribute import
-	// (package.json is always included in the tarball).
+	// install time), and JSON modules remain external so any future package
+	// metadata imports retain their import-attribute semantics.
 	const jsFiles = readdirSync(dist, { recursive: true })
 		.filter((f) => f.endsWith('.js'))
 		.map((f) => join(dist, f));
@@ -634,7 +648,7 @@ export async function verifyDist(pkgDir) {
 
 // Import each published entry point in a fresh plain-Node process — the same
 // resolution a consumer gets, catching anything static analysis can't (a module
-// that throws at init, a bad package.json attribute import, …).
+// that throws at init or depends on unsupported Node module semantics).
 export function smokeDist(pkgDir) {
 	const pkg = readPackage(pkgDir);
 	const entries = publishedRuntimeEntries(pkg.publishConfig.exports);
@@ -669,6 +683,28 @@ export function smokeDist(pkgDir) {
 					'--input-type=module',
 					'-e',
 					`const namespace = await import(${JSON.stringify(url)});
+process.stdout.write(JSON.stringify(Object.keys(namespace)));`,
+				],
+				{
+					encoding: 'utf8',
+					stdio: ['ignore', 'pipe', 'inherit'],
+					cwd: pkgDir,
+					timeout: 10_000,
+				},
+			),
+		);
+		assertRequiredPublicValueExports(subpath, exportedNames);
+	}
+
+	for (const [subpath, entry] of publishedRequireEntries(pkg.publishConfig.exports)) {
+		const path = join(pkgDir, entry);
+		const exportedNames = JSON.parse(
+			execFileSync(
+				process.execPath,
+				[
+					'--input-type=commonjs',
+					'-e',
+					`const namespace = require(${JSON.stringify(path)});
 process.stdout.write(JSON.stringify(Object.keys(namespace)));`,
 				],
 				{

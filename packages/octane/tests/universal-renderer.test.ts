@@ -287,6 +287,37 @@ describe('universal compiler target', () => {
 		expect(optionalValidation).toEqual(baseline);
 	});
 
+	it('lowers static class arrays and literal children out of the slot array', () => {
+		// `['row', on && 'danger']` composes clsx-style to a string, so when every
+		// element is statically string-or-falsy the compiler emits the composed
+		// string expression: the slot value becomes a primitive (stable across
+		// renders on transported roots) instead of a fresh array per render.
+		// All-literal arrays and string-literal children leave the slot array
+		// entirely and ride the frozen plan.
+		const source =
+			"export function Row({ selected }) @{ <view class={['row', selected && 'danger']}><text class={['col', 'label']}>{'x'}</text></view> }";
+		const compiled = compile(source, '/src/Row.object.tsrx', { hmr: false, renderer });
+		const values = callsByImportedName(compiled.code, 'octane/universal').get('universalValue');
+		expect(values).toHaveLength(1);
+		const elements = values![0].arguments[1].elements;
+		expect(elements).toHaveLength(1);
+		expect(elements[0].type).toBe('BinaryExpression');
+		expect(compiled.code).toContain('"kind": "text", "value": "x"');
+		expect(compiled.code).toContain('"class": "col label"');
+
+		// Values outside the static string-or-falsy shape keep the authored
+		// array and the runtime's general composition.
+		const dynamic = compile(
+			"export function Row({ extra }) @{ <view class={['row', extra]} /> }",
+			'/src/Row.object.tsrx',
+			{ hmr: false, renderer },
+		);
+		const dynamicValues = callsByImportedName(dynamic.code, 'octane/universal').get(
+			'universalValue',
+		);
+		expect(dynamicValues![0].arguments[1].elements[0].type).toBe('ArrayExpression');
+	});
+
 	it('carries frozen runtime/thread metadata without changing emitted code by default', () => {
 		const source = 'export function Scene() @{ <view id="root" /> }';
 		const baseline = compile(source, '/src/Scene.object.tsrx', { hmr: false, renderer });
@@ -472,6 +503,31 @@ export function onTap(value) {
 		);
 	});
 
+	it('routes thread-function helpers through a renderer-owned cold module', () => {
+		const result = compile(
+			`export const onTap = () => { 'main thread'; return 1; };`,
+			'/src/ColdThreadFunction.object.ts',
+			{
+				hmr: false,
+				renderer: {
+					...renderer,
+					capabilities: ['thread-functions'],
+					threadFunctionsModule: 'octane/universal/thread-functions',
+				},
+				universalRuntime: { runtime: 'object', thread: 'main-thread' },
+			},
+		);
+
+		expect(
+			callsByImportedName(result.code, 'octane/universal/thread-functions').get(
+				'registerThreadFunction',
+			),
+		).toHaveLength(1);
+		expect(result.code).not.toMatch(
+			/import\s*\{[^}]*registerThreadFunction[^}]*\}\s*from\s*["']octane\/universal["']/,
+		);
+	});
+
 	it('registers active thread implementations before authored calls and defers captures', () => {
 		const source = `
 export const immediate = () => {
@@ -595,7 +651,7 @@ export const capturedDeclarationValue = setupCapturedDeclaration();`;
 
 	it.each([
 		['Vite', true, 'import.meta.hot.dispose'],
-		['webpack', 'webpack', 'import.meta.webpackHot.dispose'],
+		['webpack', 'webpack', '__octaneWebpackHot.dispose'],
 	] as const)(
 		'unregisters every active-layer thread site on %s disposal without requiring a component',
 		(_label, hmr, disposeCall) => {
@@ -1830,7 +1886,7 @@ export function Scene() @{
 			hmr: false,
 		}).code;
 		expect(output).toMatch(/__octaneUniversalFor\(\s*items/);
-		expect(output).toMatch(/,\s*null,\s*true,\s*true\s*\)/);
+		expect(output).toMatch(/,\s*null,\s*true,\s*true,\s*void 0,\s*\w+\s*\)/);
 		const hmrOutput = compile(source, '/src/PureList.object.tsrx', {
 			renderer,
 			hmr: true,
@@ -1962,6 +2018,87 @@ export function Scene() @{
 		root.render(GetterStateList as any, { items: [b, a] });
 		expect(container.children).toEqual([hostB, hostA]);
 		expect(container.children.map((child) => child.props.name)).toEqual(['B', 'A2']);
+		root.unmount();
+	});
+
+	it('elides proven intrinsic tree owners while retaining keyed getter hooks and event captures', () => {
+		const source = `
+			export function Scene({items, select}) @{
+				@for (const item of items; key item.id) {
+					<node id={item.id}>
+						<leaf bindtap={() => select(item.id)}>{item.label as string}</leaf>
+					</node>
+				}
+			}
+		`;
+		const supported = { ...renderer, capabilities: ['template-program-mount'] } as const;
+		let output = compile(source, '/src/ProgramTree.object.tsrx', {
+			renderer: supported,
+			hmr: false,
+		}).code;
+		expect(output).toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+		expect(
+			compile(source, '/src/ProgramTree.object.tsrx', { renderer, hmr: false }).code,
+		).not.toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+		expect(
+			compile(source, '/src/ProgramTree.object.tsrx', { renderer: supported, hmr: true }).code,
+		).not.toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+
+		output = output.replace(
+			/import\s*\{([\s\S]*?)\}\s*from\s*["']octane\/universal["'];/g,
+			(_match, specifiers: string) =>
+				`const {${specifiers.replace(/\s+as\s+/g, ': ')}} = __universal;`,
+		);
+		output = output.replace('export const Scene =', 'const Scene =');
+		const ProgramTree = new Function('__universal', `${output}\nreturn Scene;`)(
+			UniversalRuntime,
+		) as (props: unknown) => unknown;
+		const container = createObjectContainer();
+		const base = createObjectDriver();
+		const root = createUniversalRoot(container, {
+			...base,
+			capabilities: { ...base.capabilities, templateProgramMount: true },
+			events: {
+				classify(name) {
+					return name === 'bindtap'
+						? { type: 'tap', priority: 'discrete' as const }
+						: (base.events?.classify(name) ?? null);
+				},
+			},
+		});
+		const selected: string[] = [];
+		let setLabel!: (value: string) => void;
+		const first = { id: 'a', label: 'plain' };
+		const second = {
+			id: 'b',
+			get label() {
+				const [value, update] = UniversalRuntime.useState('hooked', 'program-getter');
+				setLabel = update;
+				return value;
+			},
+		};
+
+		root.render(ProgramTree as any, {
+			items: [first, second],
+			select: (id: string) => selected.push(`first:${id}`),
+		});
+		const [plainHost, hookedHost] = container.children;
+		expect(plainHost.children[0].children[0].props.value).toBe('plain');
+		expect(hookedHost.children[0].children[0].props.value).toBe('hooked');
+		container.dispatchEvent(hookedHost.children[0], 'tap', undefined);
+		expect(selected).toEqual(['first:b']);
+
+		UniversalRuntime.flushUniversalSync(() => setLabel('updated'));
+		expect(container.children).toEqual([plainHost, hookedHost]);
+		expect(hookedHost.children[0].children[0].props.value).toBe('updated');
+
+		root.render(ProgramTree as any, {
+			items: [second, first],
+			select: (id: string) => selected.push(`second:${id}`),
+		});
+		expect(container.children).toEqual([hookedHost, plainHost]);
+		container.dispatchEvent(plainHost.children[0], 'tap', undefined);
+		expect(selected).toEqual(['first:b', 'second:a']);
 		root.unmount();
 	});
 
@@ -2148,7 +2285,7 @@ export function Scene() @{
 			renderer,
 			hmr: false,
 		}).code;
-		expect(output).toMatch(/,\s*null,\s*true,\s*true\s*\)/);
+		expect(output).toMatch(/,\s*null,\s*true,\s*true,\s*void 0,\s*\w+\s*\)/);
 		output = output.replace(
 			/import\s*\{([\s\S]*?)\}\s*from\s*["']octane\/universal["'];/g,
 			(_match, specifiers: string) =>
@@ -2472,6 +2609,49 @@ export function Scene() @{
 				column: 14,
 			}),
 		);
+	});
+
+	it('evaluates a webpack-HMR universal module before any dispose data exists', () => {
+		const source = `
+			export function Scene() @{ <scene /> }
+		`;
+		let output = compile(source, '/src/HotData.object.tsrx', { renderer, hmr: 'webpack' }).code;
+		expect(output).toContain('const __octaneWebpackHot = import.meta.webpackHot;');
+		expect(output).not.toContain('import.meta.webpackHot.data');
+		output = output.replace(
+			/import\s*\{([\s\S]*?)\}\s*from\s*["']octane\/universal["'];/g,
+			(_match, specifiers: string) =>
+				`const {${specifiers.replace(/\s+as\s+/g, ': ')}} = __universal;`,
+		);
+		output = output.replaceAll('import.meta.webpackHot', '__hot');
+		output = output.replace('export let Scene =', 'let Scene =');
+		interface WebpackHot {
+			data: object | undefined;
+			dispose(callback: (data: object) => void): void;
+			accept(): void;
+		}
+		const evaluate = (hot: WebpackHot) =>
+			new Function('__universal', '__hot', `${output}\nreturn Scene;`)(
+				UniversalRuntime,
+				hot,
+			) as object;
+
+		// Webpack and rspack leave `hot.data` undefined until a previous instance
+		// of the module has disposed, so the first evaluation must not read it.
+		const disposals: Array<(data: object) => void> = [];
+		const first = evaluate({
+			data: undefined,
+			dispose: (callback) => disposals.push(callback),
+			accept: () => {},
+		});
+		expect(first).toBeTruthy();
+		expect(disposals).toHaveLength(1);
+
+		// A hot update hands the retained canonical component to the new module.
+		const bag = {};
+		disposals[0]!(bag);
+		const second = evaluate({ data: bag, dispose: () => {}, accept: () => {} });
+		expect(second).toBe(first);
 	});
 
 	it('warms adjacent universal component trees from a parent with no use()', async () => {
@@ -2871,6 +3051,55 @@ export function Scene() @{
 		expect(loads).toBe(1);
 		first.root.unmount();
 		second.root.unmount();
+	});
+
+	it('applies live lazy defaults without replacing null or mutating supplied props', async () => {
+		const plan = universalPlan('object', {
+			kind: 'host',
+			type: 'lazy-defaults',
+			bindings: [
+				['label', 0],
+				['nullable', 1],
+				['extra', 2],
+			],
+		});
+		const Loaded = defineUniversalComponent(
+			'object',
+			(props: { label?: string; nullable?: string | null; extra?: string; revision: number }) =>
+				universalValue(plan, [props.label, props.nullable, props.extra]),
+		);
+		const component = Loaded as typeof Loaded & {
+			defaultProps: { label: string; nullable: string; extra: string };
+		};
+		component.defaultProps = { label: 'first', nullable: 'unused', extra: 'first extra' };
+		const Lazy = UniversalRuntime.lazy(() => Promise.resolve({ default: component }));
+		const Parent = defineUniversalComponent('object', (props: any) =>
+			UniversalRuntime.universalComponent('object', Lazy, props),
+		);
+		const first = Object.freeze({ label: undefined, nullable: null, revision: 0 });
+		const { container, root } = objectRoot();
+
+		expect(root.render(Parent, first).status).toBe('suspended');
+		await Promise.resolve();
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(container.children[0].props).toMatchObject({
+			label: 'first',
+			nullable: null,
+			extra: 'first extra',
+		});
+		expect(first).toEqual({ label: undefined, nullable: null, revision: 0 });
+
+		component.defaultProps = { label: 'second', nullable: 'still unused', extra: 'second extra' };
+		const second = Object.freeze({ label: undefined, nullable: null, revision: 1 });
+		root.render(Parent, second);
+		expect(container.children[0].props).toMatchObject({
+			label: 'second',
+			nullable: null,
+			extra: 'second extra',
+		});
+		expect(second).toEqual({ label: undefined, nullable: null, revision: 1 });
+		root.unmount();
 	});
 
 	it('composes memo comparators with resolved universal lazy components', async () => {
@@ -3884,11 +4113,10 @@ describe('universal nested boundary ownership', () => {
 		container.dispatchEvent(mesh, 'pointerdown', 'one');
 
 		root.render(SceneWithEvent, { handler: (payload) => log.push(`second:${payload}`) });
+		// A replaced handler closure keeps its stable listener ID, so no wire
+		// re-announcement is emitted — yet dispatch must reach the new closure.
 		const replacement = container.commits[1].commands.find((command) => command.op === 'event');
-		expect(replacement).toMatchObject({
-			op: 'event',
-			listener: { id: (firstCommand as any).listener.id },
-		});
+		expect(replacement).toBeUndefined();
 		container.dispatchEvent(mesh.id, 'pointerdown', 'two');
 
 		root.render(SceneWithEvent, { handler: null });

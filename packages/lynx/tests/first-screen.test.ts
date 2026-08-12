@@ -1,7 +1,11 @@
 import { installLynxTestingEnv, uninstallLynxTestingEnv } from '@lynx-js/testing-environment';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { deserialize, serialize } from 'node:v8';
 import { JSDOM } from 'jsdom';
 import {
 	defineUniversalComponent,
+	universalComponent,
 	universalFor,
 	universalPlan,
 	universalProps,
@@ -9,10 +13,11 @@ import {
 	useLayoutEffect,
 	type UniversalComponent,
 } from 'octane/universal/native';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createLynxRoot, type LynxRoot } from '../src/index.js';
 import { root as firstScreenRoot } from '../src/first-screen.js';
 import { installLynxMainThread, type LynxMainThreadController } from '../src/main-thread.js';
+import * as firstScreenRenderer from '../src/main-renderer.js';
 import {
 	defineUniversalComponent as defineFirstScreenComponent,
 	firstScreenEvent,
@@ -25,16 +30,22 @@ import {
 } from '../src/main-renderer.js';
 import {
 	LYNX_BACKGROUND_TO_MAIN_EVENT,
+	LYNX_COMPACT_ACKNOWLEDGEMENT,
+	LYNX_LAZY_PUBLIC_INSTANCES,
 	LYNX_MAIN_TO_BACKGROUND_EVENT,
 	LYNX_TRANSPORT_PROTOCOL_VERSION,
 	LYNX_TRANSPORT_RENDERER,
 	type LynxBackgroundInboundMessage,
+	type LynxBackgroundOutboundMessage,
 	type LynxContextProxy,
 } from '../src/core/protocol.js';
 
 interface SceneProps {
 	readonly id: string;
 	readonly items: readonly string[];
+	readonly componentItems?: readonly string[];
+	readonly rowPrefix?: string;
+	readonly onRowTap?: (id: string) => void;
 	readonly onTap: (payload: unknown) => void;
 	readonly onEffect: (owner: 'main' | 'background') => void;
 }
@@ -55,16 +66,24 @@ const mainPlan = firstScreenPlan('lynx', {
 	propsSlot: 0,
 });
 
+const mainScenePlan = firstScreenPlan('lynx', {
+	kind: 'host',
+	type: 'view',
+	propsSlot: 0,
+	children: [{ kind: 'slot', slot: 1 }],
+});
+
 const MainScene = defineFirstScreenComponent('lynx', (props: SceneProps) => {
 	useFirstScreenLayoutEffect(() => {
 		props.onEffect('main');
 	});
 	return [
-		firstScreenValue(mainPlan, [
+		firstScreenValue(mainScenePlan, [
 			firstScreenProps([
 				['set', 'id', props.id],
 				['set', 'bindtap', firstScreenEvent],
 			]),
+			null,
 		]),
 		firstScreenFor(
 			props.items,
@@ -81,22 +100,173 @@ const MainSingleHost = defineFirstScreenComponent('lynx', (props: { readonly id:
 	firstScreenValue(mainPlan, [firstScreenProps([['set', 'id', props.id]])]),
 );
 
+const feedPlan = firstScreenPlan('lynx', {
+	kind: 'host',
+	type: 'view',
+	bindings: [['id', 0]],
+	children: [
+		{
+			kind: 'host',
+			type: 'list',
+			bindings: [['id', 1]],
+			children: [{ kind: 'host', type: 'list-item', bindings: [['item-key', 2]] }],
+		},
+	],
+});
+
+const FeedScene = defineFirstScreenComponent('lynx', () =>
+	firstScreenValue(feedPlan, ['feed-shell', 'feed', 'row-0']),
+);
+
+interface FirstScreenLinkedRuntime {
+	useLinkedState?<Source, Value>(
+		source: Source,
+		reconcile: (source: Source, previous: { source: Source; value: Value } | undefined) => Value,
+		options?:
+			| {
+					sourceEqual?: (previous: Source, next: Source) => boolean;
+					valueEqual?: (previous: Value, next: Value) => boolean;
+			  }
+			| symbol
+			| string
+			| number,
+		slot?: unknown,
+	): [Value, (next: Value | ((previous: Value) => Value)) => void];
+	__useLinkedStateWithGetter?<Source, Value>(
+		source: Source,
+		reconcile: (source: Source, previous: { source: Source; value: Value } | undefined) => Value,
+		options?:
+			| {
+					sourceEqual?: (previous: Source, next: Source) => boolean;
+					valueEqual?: (previous: Value, next: Value) => boolean;
+			  }
+			| symbol
+			| string
+			| number,
+		slot?: unknown,
+	): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value];
+}
+
+const firstScreenLinkedRuntime = firstScreenRenderer as FirstScreenLinkedRuntime;
+
+function compiledFirstScreenHookImports(observeGetter: boolean): Set<string> {
+	const tuple = observeGetter ? '[value, setValue, getValue]' : '[value, setValue]';
+	const output = observeGetter ? 'getValue()' : 'value';
+	const source = `
+			import { useLinkedState } from 'octane';
+			export function LinkedFirstScreen(props) @{
+				const ${tuple} = useLinkedState(props.source, (source) => source.label);
+				<view id={${output}} />
+			}
+		`;
+	const repository = fileURLToPath(new URL('../../../', import.meta.url));
+	const result = execFileSync(
+		process.execPath,
+		[
+			'--input-type=module',
+			'-e',
+			`import { createRequire } from 'node:module';
+import { compile } from './packages/octane/src/compiler/compile.js';
+import { lynxMainThreadRenderer } from './packages/lynx/src/config.runtime.js';
+const compilerRequire = createRequire(new URL('./packages/octane/package.json', import.meta.url));
+const { parseModule } = await import(compilerRequire.resolve('@tsrx/core'));
+let source = '';
+for await (const chunk of process.stdin) source += chunk;
+const { code } = compile(source, '/src/linked-first-screen.lynx.tsrx', {
+	hmr: false,
+	inlineHookMemo: false,
+	renderer: { ...lynxMainThreadRenderer, id: 'lynx' },
+	universalRuntime: { runtime: 'lynx', thread: 'main-thread' },
+});
+const imports = [];
+for (const statement of parseModule(code, '/compiled/linked-first-screen.js').body ?? []) {
+	if (
+		statement.type !== 'ImportDeclaration' ||
+		statement.source?.value !== '@octanejs/lynx/main-renderer'
+	) continue;
+	for (const specifier of statement.specifiers ?? []) {
+		if (specifier.type === 'ImportSpecifier') {
+			imports.push(specifier.imported?.name ?? specifier.imported?.value);
+		}
+	}
+}
+process.stdout.write(JSON.stringify(imports));`,
+		],
+		{
+			cwd: repository,
+			input: source,
+			encoding: 'utf8',
+		},
+	);
+	return new Set(JSON.parse(result) as string[]);
+}
+
 const backgroundPlan = universalPlan('lynx', {
 	kind: 'host',
 	type: 'view',
 	propsSlot: 0,
 });
 
+const backgroundScenePlan = universalPlan('lynx', {
+	kind: 'host',
+	type: 'view',
+	propsSlot: 0,
+	children: [{ kind: 'slot', slot: 1 }],
+});
+
+const postAdoptionRowPlan = universalPlan('lynx', {
+	kind: 'host',
+	type: 'view',
+	bindings: [['id', 0]],
+	children: [
+		{
+			kind: 'host',
+			type: 'text',
+			bindings: [['bindtap', 2]],
+			children: [{ kind: 'slot', slot: 1 }],
+		},
+	],
+});
+
+const PostAdoptionRow = defineUniversalComponent(
+	'lynx',
+	({
+		id,
+		label,
+		onTap,
+	}: {
+		readonly id: string;
+		readonly label: string;
+		readonly onTap: (id: string) => void;
+	}) => universalValue(postAdoptionRowPlan, [id, label, () => onTap(id)]),
+);
+
 const BackgroundScene = defineUniversalComponent('lynx', (props: SceneProps) => {
 	useLayoutEffect(() => {
 		props.onEffect('background');
 	}, []);
 	return [
-		universalValue(backgroundPlan, [
+		universalValue(backgroundScenePlan, [
 			universalProps([
 				['set', 'id', props.id],
 				['set', 'bindtap', props.onTap],
 			]),
+			props.componentItems === undefined
+				? null
+				: universalFor(
+						props.componentItems,
+						(id) => id,
+						(id) =>
+							universalComponent(
+								'lynx',
+								PostAdoptionRow,
+								universalProps([
+									['set', 'id', id],
+									['set', 'label', `${props.rowPrefix ?? 'label'}:${id}`],
+									['set', 'onTap', props.onRowTap ?? (() => {})],
+								]),
+							),
+					),
 		]),
 		universalFor(
 			props.items,
@@ -130,6 +300,7 @@ function backgroundContext(): LynxContextProxy {
 
 function installEnvironment(
 	configurePAPI?: (target: Record<string, unknown>) => void,
+	installOptions?: Partial<Parameters<typeof installLynxMainThread>[0]>,
 ): InstalledEnvironment {
 	const dom = new JSDOM('<!doctype html><html><body></body></html>');
 	installLynxTestingEnv(globalThis, {
@@ -149,7 +320,11 @@ function installEnvironment(
 		registrations.push(Object.freeze({ listener }));
 		addEvent(node, kind, name, listener);
 	};
-	const main = installLynxMainThread({ firstScreen: true, firstScreenSync: 'manual' });
+	const main = installLynxMainThread({
+		firstScreen: true,
+		firstScreenSync: 'manual',
+		...installOptions,
+	});
 	return (installed = { dom, main, registrations });
 }
 
@@ -172,11 +347,79 @@ afterEach(async () => {
 });
 
 describe.sequential('Lynx synchronous first-screen adoption', () => {
+	it('compiles linked-state pairs for the main renderer and paints their one-shot initial value', () => {
+		expect(compiledFirstScreenHookImports(false).has('useLinkedState')).toBe(true);
+		const { dom } = installEnvironment();
+		let update!: (next: string) => void;
+		const initialValues: Array<{ source: { label: string }; value: string } | undefined> = [];
+		const LinkedScene = defineFirstScreenComponent(
+			'lynx',
+			(props: { source: { label: string } }) => {
+				const [value, setValue] = firstScreenLinkedRuntime.useLinkedState!(
+					props.source,
+					(source, previous) => {
+						initialValues.push(previous);
+						return `linked-${source.label}`;
+					},
+					Symbol('linked-first-screen'),
+				);
+				update = setValue;
+				return firstScreenValue(mainPlan, [firstScreenProps([['set', 'id', value]])]);
+			},
+		);
+
+		firstScreenRoot.render(LinkedScene, { source: { label: 'main' } });
+		expect(dom.window.document.querySelector('#linked-main')).not.toBeNull();
+		expect(initialValues).toEqual([undefined]);
+
+		update('ignored-update');
+		expect(dom.window.document.querySelector('#linked-main')).not.toBeNull();
+		expect(dom.window.document.querySelector('#ignored-update')).toBeNull();
+	});
+
+	it('compiles observed linked getters and exposes the original one-shot value after inert updates', () => {
+		expect(compiledFirstScreenHookImports(true).has('__useLinkedStateWithGetter')).toBe(true);
+		const { dom } = installEnvironment();
+		const sourceEqual = vi.fn(() => false);
+		const valueEqual = vi.fn(() => false);
+		let getValue!: () => string;
+		let setValue!: (next: string) => void;
+		const LinkedGetterScene = defineFirstScreenComponent(
+			'lynx',
+			(props: { source: { label: string } }) => {
+				const [value, update, read] = firstScreenLinkedRuntime.__useLinkedStateWithGetter!(
+					props.source,
+					(source, previous) => {
+						expect(previous).toBeUndefined();
+						return `getter-${source.label}`;
+					},
+					{ sourceEqual, valueEqual },
+					Symbol('linked-getter-first-screen'),
+				);
+				getValue = read;
+				setValue = update;
+				return firstScreenValue(mainPlan, [firstScreenProps([['set', 'id', value]])]);
+			},
+		);
+
+		firstScreenRoot.render(LinkedGetterScene, { source: { label: 'main' } });
+		expect(dom.window.document.querySelector('#getter-main')).not.toBeNull();
+		expect(getValue()).toBe('getter-main');
+		setValue('ignored-update');
+		expect(getValue()).toBe('getter-main');
+		expect(sourceEqual).not.toHaveBeenCalled();
+		expect(valueEqual).not.toHaveBeenCalled();
+	});
+
 	it('paints synchronously, gates background startup, adopts node identity, and replays events', async () => {
 		const { dom, main, registrations } = installEnvironment();
 		const inbound: LynxBackgroundInboundMessage[] = [];
+		const outbound: LynxBackgroundOutboundMessage[] = [];
 		mainContext().addEventListener(LYNX_MAIN_TO_BACKGROUND_EVENT, (event) => {
 			inbound.push(event.data as LynxBackgroundInboundMessage);
+		});
+		mainContext().addEventListener(LYNX_BACKGROUND_TO_MAIN_EVENT, (event) => {
+			outbound.push(event.data as LynxBackgroundOutboundMessage);
 		});
 		const effects: string[] = [];
 		const events: unknown[] = [];
@@ -217,6 +460,29 @@ describe.sequential('Lynx synchronous first-screen adoption', () => {
 		main.dispatchNativeEvent(placeholderToken!, { type: 'tap', detail: { phase: 'first' } });
 
 		globalThis.lynxTestingEnv.switchToBackgroundThread();
+		const context = backgroundContext();
+		const dispatch = context.dispatchEvent.bind(context);
+		const clonedRuns: boolean[] = [];
+		context.dispatchEvent = (event) => {
+			const data = deserialize(serialize(event.data)) as unknown;
+			if (
+				data !== null &&
+				typeof data === 'object' &&
+				'type' in data &&
+				data.type === 'commit' &&
+				'batch' in data
+			) {
+				const batch = data.batch as { commands?: readonly unknown[] };
+				const run = batch.commands?.[0] as
+					{ op?: string; program?: object; values?: readonly unknown[] } | undefined;
+				if (run?.op === 'mount-template-run') {
+					clonedRuns.push(
+						!Object.isFrozen(run) && !Object.isFrozen(run.program) && !Object.isFrozen(run.values),
+					);
+				}
+			}
+			return dispatch({ ...event, data });
+		};
 		backgroundRoot = createLynxRoot();
 		const rendering = backgroundRoot.render(BackgroundScene, props);
 		let settled = false;
@@ -248,8 +514,114 @@ describe.sequential('Lynx synchronous first-screen adoption', () => {
 		expect(ready[0]).toMatchObject({
 			type: 'main-ready',
 			firstTree: { root: 1, version: 1 },
+			capabilities: { templateProgram: 1, templateRuns: 1, lazyPublicInstances: 1 },
 		});
 		expect((ready[0] as { request: number }).request).toBeGreaterThan(0);
+		const adoptionCommit = outbound.find((message) => message.type === 'commit');
+		expect(adoptionCommit).not.toHaveProperty('ack');
+		expect(adoptionCommit).not.toHaveProperty('instances');
+
+		const componentItems = ['row-a', 'row-b', 'row-c', 'row-d', 'row-e', 'row-f', 'row-g', 'row-h'];
+		const rowTaps: string[] = [];
+		await backgroundRoot.render(BackgroundScene, {
+			...props,
+			componentItems,
+			onRowTap: (id) => rowTaps.push(id),
+		});
+		expect(dom.window.document.querySelector('#first-screen')).toBe(firstNode);
+		expect(dom.window.document.querySelector('#a')).toBe(firstA);
+		expect(dom.window.document.querySelector('#b')).toBe(firstB);
+		expect(
+			componentItems.map((id) => dom.window.document.querySelector(`#${id}`)?.textContent),
+		).toEqual(componentItems.map((id) => `label:${id}`));
+		const creation = outbound.filter((message) => message.type === 'commit').at(-1);
+		expect(creation).toMatchObject({
+			ack: LYNX_COMPACT_ACKNOWLEDGEMENT,
+			instances: LYNX_LAZY_PUBLIC_INSTANCES,
+			batch: { commands: [{ op: 'mount-template-run' }] },
+		});
+		const creationAcknowledgement = inbound.find(
+			(message) => message.type === 'ack' && message.version === creation!.version,
+		);
+		expect(creationAcknowledgement).toMatchObject({
+			encoding: LYNX_COMPACT_ACKNOWLEDGEMENT,
+			count: componentItems.length * 3,
+		});
+		expect(creationAcknowledgement).not.toHaveProperty('handles');
+		expect(clonedRuns).toEqual([true]);
+		const lastRowListener = registrations.at(-1)?.listener;
+		expect(lastRowListener).toBeTypeOf('string');
+		main.dispatchNativeEvent(lastRowListener!, { type: 'tap' });
+		expect(rowTaps).toEqual(['row-h']);
+		expect(main.diagnostics()).toEqual([]);
+
+		await backgroundRoot.render(BackgroundScene, {
+			...props,
+			componentItems,
+			rowPrefix: 'updated',
+			onRowTap: (id) => rowTaps.push(id),
+		});
+		expect(dom.window.document.querySelector('#row-a')?.textContent).toBe('updated:row-a');
+		expect(dom.window.document.querySelector('#first-screen')).toBe(firstNode);
+
+		await backgroundRoot.render(BackgroundScene, {
+			...props,
+			componentItems: componentItems.slice(0, -1),
+			rowPrefix: 'updated',
+			onRowTap: (id) => rowTaps.push(id),
+		});
+		expect(dom.window.document.querySelector('#row-h')).toBeNull();
+		expect(dom.window.document.querySelector('#first-screen')).toBe(firstNode);
+		main.dispatchNativeEvent(lastRowListener!, { type: 'tap' });
+		expect(rowTaps).toEqual(['row-h']);
+		expect(main.diagnostics().at(-1)?.message).toMatch(/stale, hidden, removed, or foreign/);
+	});
+
+	it('defers an engine-mode first screen until __RenderPage arrives', () => {
+		// Native installs the decoded PageConfig on the ElementManager only after
+		// main-thread script evaluation, so an engine-mode receiver must not
+		// create elements during evaluation; the render runs when the engine's
+		// __RenderPage lifecycle proves evaluation has finished.
+		const engineListeners = new Map<string, Set<(event: LynxContextProxyEvent) => void>>();
+		const engineContext: LynxContextProxy = {
+			dispatchEvent(event) {
+				for (const listener of [...(engineListeners.get(event.type) ?? [])]) listener(event);
+			},
+			addEventListener(type, listener) {
+				let entries = engineListeners.get(type);
+				if (entries === undefined) engineListeners.set(type, (entries = new Set()));
+				entries.add(listener);
+			},
+			removeEventListener(type, listener) {
+				engineListeners.get(type)?.delete(listener);
+			},
+		};
+		const { dom, main } = installEnvironment(
+			(target) => {
+				(target.lynx as Record<string, unknown>).getEngine = () => engineContext;
+			},
+			{ firstScreenRender: 'engine' },
+		);
+		const props: SceneProps = {
+			id: 'engine-mode',
+			items: ['a'],
+			onTap() {},
+			onEffect() {},
+		};
+
+		const deferred = firstScreenRoot.render(MainScene as UniversalComponent<SceneProps>, props);
+		expect(deferred).toBeNull();
+		expect(dom.window.document.querySelector('#engine-mode')).toBeNull();
+
+		main.markFirstScreenSyncReady();
+		expect(dom.window.document.querySelector('#engine-mode')).toBeNull();
+		expect(main.firstScreenSnapshot()).toBeNull();
+
+		engineContext.dispatchEvent({ type: '__RenderPage', data: [{}, {}] });
+		expect(dom.window.document.querySelector('#engine-mode')).not.toBeNull();
+		expect(dom.window.document.querySelector('#a')).not.toBeNull();
+		expect(main.firstScreenSnapshot()).toMatchObject({ root: 1, version: 1 });
+		expect(main.diagnostics()).toEqual([]);
 	});
 
 	it('repairs a nondeterministic first tree and reports the typed mismatch', () => {
@@ -422,6 +794,90 @@ describe.sequential('Lynx synchronous first-screen adoption', () => {
 		expect(dom.window.document.querySelector('#cleanup-retry')).toBeNull();
 		expect(main.firstScreenSnapshot()).toBeNull();
 		expect(inbound).toEqual([expect.objectContaining({ type: 'main-ready', request: 43 })]);
+	});
+
+	// A `<list>` is a documented element an application is entitled to use, and
+	// the background genuinely cannot adopt one: the platform materializes its
+	// rows through main-local callbacks and owns the resulting cells. Declining
+	// the synchronous paint is therefore an ordinary outcome, and must not be
+	// reported the way the broken host in the next test is.
+	it('declines a synchronous first screen holding a native list without faulting', () => {
+		// The renderer captures the flush when the runtime installs, so this has to
+		// wrap it before that; each flush reports the page as the batch left it.
+		const painted: string[] = [];
+		const { dom, main } = installEnvironment((target) => {
+			const hostFlush = target.__FlushElementTree as (...args: unknown[]) => void;
+			target.__FlushElementTree = (...args: unknown[]) => {
+				hostFlush.apply(target, args);
+				painted.push((args[0] as { innerHTML?: string } | undefined)?.innerHTML ?? '');
+			};
+		});
+		const inbound: LynxBackgroundInboundMessage[] = [];
+		mainContext().addEventListener(LYNX_MAIN_TO_BACKGROUND_EVENT, (event) => {
+			inbound.push(event.data as LynxBackgroundInboundMessage);
+		});
+
+		expect(firstScreenRoot.render(FeedScene, {})).toBeNull();
+
+		// The tree really was built, then retired, so the background owns the page
+		// alone rather than rendering beneath a duplicate.
+		expect(painted.some((html) => html.includes('id="feed"'))).toBe(true);
+		expect(dom.window.document.querySelector('#feed')).toBeNull();
+		expect(dom.window.document.querySelector('#feed-shell')).toBeNull();
+		expect(main.firstScreenSnapshot()).toBeNull();
+		expect(main.diagnostics()).toEqual([]);
+
+		backgroundContext().dispatchEvent({
+			type: LYNX_BACKGROUND_TO_MAIN_EVENT,
+			data: {
+				protocol: LYNX_TRANSPORT_PROTOCOL_VERSION,
+				renderer: LYNX_TRANSPORT_RENDERER,
+				type: 'main-ready-request',
+				request: 51,
+			},
+		});
+		// Declining settles readiness immediately, exactly as an entry that never
+		// rendered a first screen does, so the background is not left waiting.
+		expect(inbound).toEqual([
+			expect.objectContaining({ type: 'main-ready', request: 0 }),
+			expect.objectContaining({ type: 'main-ready', request: 51 }),
+		]);
+	});
+
+	it('retries deferred cleanup for a declined first screen before announcing readiness', () => {
+		let allowCleanup = false;
+		const { dom, main } = installEnvironment((target) => {
+			const remove = target.__RemoveElement as (parent: object, child: object) => unknown;
+			target.__RemoveElement = (parent: object, child: object) => {
+				if (!allowCleanup) throw new Error('transient declined-source remove failure');
+				return remove(parent, child);
+			};
+		});
+		const inbound: LynxBackgroundInboundMessage[] = [];
+		mainContext().addEventListener(LYNX_MAIN_TO_BACKGROUND_EVENT, (event) => {
+			inbound.push(event.data as LynxBackgroundInboundMessage);
+		});
+
+		expect(firstScreenRoot.render(FeedScene, {})).toBeNull();
+
+		expect(dom.window.document.querySelector('#feed-shell')).not.toBeNull();
+		expect(main.firstScreenSnapshot()).toBeNull();
+		expect(inbound).toEqual([]);
+
+		allowCleanup = true;
+		backgroundContext().dispatchEvent({
+			type: LYNX_BACKGROUND_TO_MAIN_EVENT,
+			data: {
+				protocol: LYNX_TRANSPORT_PROTOCOL_VERSION,
+				renderer: LYNX_TRANSPORT_RENDERER,
+				type: 'main-ready-request',
+				request: 52,
+			},
+		});
+
+		expect(dom.window.document.querySelector('#feed-shell')).toBeNull();
+		expect(main.firstScreenSnapshot()).toBeNull();
+		expect(inbound).toEqual([expect.objectContaining({ type: 'main-ready', request: 52 })]);
 	});
 
 	it('retains a failed pre-capture source and retries cleanup for background readiness', () => {

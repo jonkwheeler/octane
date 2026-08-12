@@ -1,11 +1,14 @@
 {
   "name": "octane",
-  "version": "0.1.18",
+  "version": "0.1.36",
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/compiler/register.js",
+    "./dist/compiler/register.js"
+  ],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "A fast, modern UI framework and the successor to Inferno",
   "author": {
@@ -32,15 +35,20 @@
     "./tsrx-spread": "./src/tsrx-spread.ts",
     "./react": "./src/react/index.ts",
     "./hydration": "./src/hydration/index.ts",
+    "./behavior": "./src/behavior-root.ts",
     "./react/server": "./src/react/server.ts",
     "./server": "./src/server/index.ts",
+    "./internal/client": "./src/internal/client.ts",
+    "./internal/server": "./src/internal/server.ts",
     "./static": "./src/static/index.ts",
+    "./testing": "./src/testing.ts",
     "./constants": "./src/constants.ts",
     "./profiling": "./src/profiling.ts",
     "./universal": "./src/universal.ts",
     "./universal/native": "./src/universal-native.ts",
     "./compiler": "./src/compiler/index.js",
     "./compiler/bundler": "./src/compiler/bundler.js",
+    "./compiler/register": "./src/compiler/register.js",
     "./compiler/renderers": "./src/compiler/renderers.js",
     "./compiler/vite": {
       "types": "./src/compiler/vite.d.ts",
@@ -56,6 +64,8 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/cjs/index.cjs",
         "default": "./dist/index.js"
       },
       "./jsx-runtime": {
@@ -80,17 +90,37 @@
         "types": "./dist/hydration/index.d.ts",
         "default": "./dist/hydration/index.js"
       },
+      "./behavior": {
+        "types": "./dist/behavior-root.d.ts",
+        "default": "./dist/behavior-root.js"
+      },
       "./react/server": {
         "types": "./dist/react/server.d.ts",
         "default": "./dist/react/server.js"
       },
       "./server": {
         "types": "./dist/server/index.d.ts",
+        "import": "./dist/server/index.js",
+        "require": "./dist/cjs/server/index.cjs",
         "default": "./dist/server/index.js"
+      },
+      "./internal/client": {
+        "types": "./dist/internal/client.d.ts",
+        "import": "./dist/internal/client.js",
+        "default": "./dist/internal/client.js"
+      },
+      "./internal/server": {
+        "types": "./dist/internal/server.d.ts",
+        "import": "./dist/internal/server.js",
+        "default": "./dist/internal/server.js"
       },
       "./static": {
         "types": "./dist/static/index.d.ts",
         "default": "./dist/static/index.js"
+      },
+      "./testing": {
+        "types": "./dist/testing.d.ts",
+        "default": "./dist/testing.js"
       },
       "./constants": {
         "types": "./dist/constants.d.ts",
@@ -110,6 +140,7 @@
       },
       "./compiler": "./dist/compiler/index.js",
       "./compiler/bundler": "./dist/compiler/bundler.js",
+      "./compiler/register": "./dist/compiler/register.js",
       "./compiler/renderers": "./dist/compiler/renderers.js",
       "./compiler/vite": {
         "types": "./dist/compiler/vite.d.ts",
@@ -128,6 +159,7 @@
     "@tsrx/core": "catalog:default",
     "@types/react": "catalog:default",
     "devalue": "catalog:default",
+    "es-module-lexer": "catalog:default",
     "esrap": "catalog:default"
   },
   "peerDependencies": {
@@ -148,11 +180,14 @@
   },
   "devDependencies": {
     "@tsrx/react": "catalog:default",
+    "@wagmi/connectors": "catalog:default",
+    "@wagmi/core": "catalog:default",
     "esbuild": "catalog:default",
     "happy-dom": "catalog:default",
     "playwright": "catalog:default",
     "react": "catalog:default",
     "react-dom": "catalog:default",
+    "viem": "catalog:default",
     "vite": "catalog:default",
     "vitest": "catalog:default"
   }

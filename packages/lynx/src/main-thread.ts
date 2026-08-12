@@ -1,3 +1,5 @@
+import { hasOwnSymbolFields } from './core/own-symbols.js';
+import { hasCrossRealmPlainPrototype } from './core/plain-object.js';
 import type {
 	UniversalComponent,
 	UniversalHostBatch,
@@ -38,10 +40,17 @@ import {
 } from './core/native-events.js';
 import {
 	LYNX_BACKGROUND_TO_MAIN_EVENT,
+	LYNX_CAPABILITY_READY_REQUEST_BASE,
+	LYNX_COMPACT_ACKNOWLEDGEMENT,
+	LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS,
+	LYNX_LAZY_PUBLIC_INSTANCES,
+	LYNX_LAZY_PUBLIC_INSTANCE_READY_REQUEST_BASE,
+	LYNX_TEMPLATE_RUN_READY_REQUEST_BASE,
 	LYNX_MAIN_TO_BACKGROUND_EVENT,
 	LYNX_READY_ANNOUNCEMENT_REQUEST,
 	LYNX_TRANSPORT_PROTOCOL_VERSION,
 	LYNX_TRANSPORT_RENDERER,
+	countLynxCompactAcknowledgementHosts,
 	sameLynxTransportIdentity,
 	selfCheckLynxBackgroundInboundMessage,
 	validateLynxBackgroundInboundMessage,
@@ -58,6 +67,7 @@ import {
 	type LynxHostAttachmentMessage,
 	type LynxHostFaultMessage,
 	type LynxMainCallPublicationMessage,
+	type LynxMainThreadCapabilities,
 	type LynxMainReadyReply,
 	type LynxMainReadyRequest,
 	type LynxPageDataMessage,
@@ -71,16 +81,15 @@ import {
 	type LynxLifecycleDataRecord,
 } from './core/lifecycle-data.js';
 import { createLynxElementPAPI, type LynxElementPAPI, type LynxElementRef } from './core/papi.js';
+import { LYNX_PROFILE, lynxWireProfile } from './core/profiling.js';
 import {
-	createLynxMainThreadWorkletRegistry,
-	installLynxMainThreadWorkletRegistry,
-	installMainThreadCallBridge,
-	isLynxBackgroundFunctionDescriptor,
-	isolateLynxWorkletValue,
-	type LynxMainThreadWorkletRegistry,
-	type LynxWorkletValue,
-} from './core/worklets.js';
-import { installLynxFirstScreenHost } from './first-screen.js';
+	createReplaceableLynxMainThreadWorkletRegistry,
+	createUnavailableLynxMainThreadWorkletRegistry,
+	subscribeLynxMainThreadWorkletFeature,
+	type LynxMainThreadWorkletFeature,
+} from './core/main-thread-worklet-feature.js';
+import type { LynxMainThreadWorkletRegistry, LynxWorkletValue } from './core/worklets.js';
+import { installLynxFirstScreenHost } from './core/first-screen-host.js';
 import { renderLynxFirstScreen, type LynxFirstScreenRenderResult } from './main-renderer.js';
 
 interface LynxMainThreadGlobals {
@@ -104,6 +113,16 @@ export interface InstallLynxMainThreadOptions {
 	 * initialization. `automatic` releases background work after `root.render()`.
 	 */
 	readonly firstScreenSync?: 'automatic' | 'manual';
+	/**
+	 * `engine` defers the one-shot first-screen render until the engine's
+	 * `__RenderPage` lifecycle arrives. Native decodes the template's PageConfig
+	 * onto the ElementManager only after main-thread script evaluation
+	 * (`TemplateAssembler::DidVMExecute`), so elements created during evaluation
+	 * see config-dependent defaults — `defaultOverflowVisible` above all — as
+	 * unset and paint clipped. `immediate` keeps the evaluation-time render used
+	 * by source and JavaScript-host tests.
+	 */
+	readonly firstScreenRender?: 'immediate' | 'engine';
 	readonly onDiagnostic?: (error: Error) => void;
 	readonly executeMainThreadWorklet?: (
 		worklet: import('./core/protocol.js').LynxMainThreadWorkletWireDescriptor,
@@ -149,6 +168,8 @@ interface LynxQueuedNativeEventDelivery {
 interface ActiveLynxMainRoot<Node extends LynxElementRef> {
 	readonly root: number;
 	readonly container: LynxHostContainer<Node>;
+	capabilities?: LynxMainThreadCapabilities;
+	postFirstTreeUpgrade?: true;
 	acceptedVersion: number;
 	lastMainCall: number;
 	lastMainCallPublication: number;
@@ -201,11 +222,10 @@ function lifecycleRecord(value: unknown, label: string): Record<string, unknown>
 	if (value === null || typeof value !== 'object' || Array.isArray(value)) {
 		throw new TypeError(`Octane Lynx ${label} must be a plain object.`);
 	}
-	const prototype = Object.getPrototypeOf(value);
-	if (prototype !== Object.prototype && prototype !== null) {
+	if (!hasCrossRealmPlainPrototype(value)) {
 		throw new TypeError(`Octane Lynx ${label} must be a plain object.`);
 	}
-	if (Object.getOwnPropertySymbols(value).length !== 0) {
+	if (hasOwnSymbolFields(value)) {
 		throw new TypeError(`Octane Lynx ${label} contains symbol fields.`);
 	}
 	return value as Record<string, unknown>;
@@ -225,7 +245,7 @@ function lifecycleTuple(
 		throw new TypeError(`Octane Lynx ${expectedType} data must be an exact ${length}-item tuple.`);
 	}
 	const names = Object.getOwnPropertyNames(event.data);
-	if (names.length !== length + 1 || Object.getOwnPropertySymbols(event.data).length !== 0) {
+	if (names.length !== length + 1 || hasOwnSymbolFields(event.data)) {
 		throw new TypeError(
 			`Octane Lynx ${expectedType} data must be a dense tuple without extra fields.`,
 		);
@@ -399,38 +419,34 @@ function acknowledgementHandles<Node extends LynxElementRef>(
 	prepared: LynxPreparedHostBatch,
 	batch: UniversalHostBatch,
 ): readonly LynxPublicHandleDelta[] {
-	const handles = new Map<number, LynxPublicHandleDelta>();
+	const handles: LynxPublicHandleDelta[] = [];
+	let publishedIds: Set<number> | null = null;
+	const alreadyPublished = (id: number): boolean => {
+		if (publishedIds === null) {
+			publishedIds = new Set(handles.map((handle) => handle.id));
+		}
+		return publishedIds.has(id);
+	};
 	for (const delta of prepared.handleDelta) {
 		if (delta.op === 'destroy') {
-			handles.set(
-				delta.id,
-				Object.freeze({
-					op: 'remove',
-					id: delta.id,
-					generation: delta.generation,
-				}),
-			);
+			handles.push(Object.freeze({ op: 'remove', id: delta.id, generation: delta.generation }));
 		} else {
-			handles.set(
-				delta.handle.id,
+			handles.push(
 				publicHandleUpsert(delta.handle, getLynxHostPublicState(container, delta.handle.id)),
 			);
 		}
 	}
 	for (const command of batch.commands) {
-		if (command.op !== 'update' || handles.has(command.id)) continue;
+		if (command.op !== 'update' || alreadyPublished(command.id)) continue;
 		const handle = driver.getPublicInstance(container, command.id);
 		if (handle !== null) {
-			handles.set(
-				command.id,
-				publicHandleUpsert(handle, getLynxHostPublicState(container, command.id)),
-			);
+			handles.push(publicHandleUpsert(handle, getLynxHostPublicState(container, command.id)));
+			publishedIds!.add(command.id);
 		}
 	}
 	for (const delta of prepared.listAncestryDelta) {
-		if (handles.has(delta.id)) continue;
-		handles.set(
-			delta.id,
+		if (alreadyPublished(delta.id)) continue;
+		handles.push(
 			Object.freeze({
 				op: 'list-ancestry',
 				id: delta.id,
@@ -438,8 +454,33 @@ function acknowledgementHandles<Node extends LynxElementRef>(
 				listDescendant: delta.listDescendant,
 			}),
 		);
+		publishedIds!.add(delta.id);
 	}
-	return Object.freeze([...handles.values()]);
+	return Object.freeze(handles);
+}
+
+function freezeValidatedIntrinsicRun(
+	run: Extract<UniversalHostBatch['commands'][number], { readonly op: 'mount-template-run' }>,
+): void {
+	// MessagePort structured-clones worker payloads and drops every frozen
+	// descriptor. Restore immutability only after the complete receive-boundary
+	// validator has rejected hostile prototypes, accessors, symbols, and scalars.
+	// The program is a tiny shared shape; its flat values are frozen in place.
+	const program = run.program;
+	for (const node of program.nodes) {
+		Object.freeze(node.props);
+		if (node.bindings !== undefined) {
+			for (const binding of node.bindings) Object.freeze(binding);
+			Object.freeze(node.bindings);
+		}
+		Object.freeze(node);
+	}
+	Object.freeze(program.nodes);
+	for (const event of program.events) Object.freeze(event);
+	Object.freeze(program.events);
+	Object.freeze(program);
+	Object.freeze(run.values);
+	Object.freeze(run);
 }
 
 /**
@@ -463,6 +504,16 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	if (options.firstScreen !== true && options.firstScreenSync !== undefined) {
 		throw new TypeError('Octane Lynx firstScreenSync requires firstScreen: true.');
 	}
+	if (
+		options.firstScreenRender !== undefined &&
+		options.firstScreenRender !== 'immediate' &&
+		options.firstScreenRender !== 'engine'
+	) {
+		throw new TypeError('Octane Lynx firstScreenRender must be immediate or engine.');
+	}
+	if (options.firstScreen !== true && options.firstScreenRender !== undefined) {
+		throw new TypeError('Octane Lynx firstScreenRender requires firstScreen: true.');
+	}
 	const firstScreenEnabled = options.firstScreen === true;
 	const firstScreenSync = options.firstScreenSync ?? 'automatic';
 	const rawTarget = options.target ?? globalThis;
@@ -483,6 +534,13 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		throw new TypeError(
 			'Octane Lynx main-thread receiver requires ContextProxy dispatchEvent/addEventListener/removeEventListener.',
 		);
+	}
+	// The native main thread exposes SystemInfo only as `lynx.SystemInfo`, but
+	// authored `'main thread'` functions read the documented bare global; expose
+	// it exactly as ReactLynx's worklet environment setup does.
+	const environmentTarget = target as { SystemInfo?: unknown; lynx?: { SystemInfo?: unknown } };
+	if (environmentTarget.SystemInfo === undefined) {
+		environmentTarget.SystemInfo = environmentTarget.lynx?.SystemInfo ?? {};
 	}
 	const papi: LynxElementPAPI<Node> = createLynxElementPAPI<Node>(rawTarget);
 	const componentId = options.componentId ?? '0';
@@ -509,9 +567,18 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	let firstScreenRenderInProgress = false;
 	let closePending = false;
 	let finalizeDeferredClose: (() => void) | null = null;
-	let firstScreenState: 'open' | 'painted' | 'skipped' | 'failed' | 'cleanup-pending' =
-		firstScreenEnabled ? 'open' : 'skipped';
+	type FirstScreenState =
+		| 'open'
+		| 'painted'
+		| 'skipped'
+		| 'failed'
+		| 'cleanup-pending:skipped'
+		| 'cleanup-pending:failed';
+	let firstScreenState: FirstScreenState = firstScreenEnabled ? 'open' : 'skipped';
 	let firstScreenSyncReady = !firstScreenEnabled;
+	const firstScreenRenderMode = options.firstScreenRender ?? 'immediate';
+	let pendingFirstScreenRender: (() => void) | null = null;
+	let firstScreenRenderReleased = firstScreenRenderMode !== 'engine';
 	let firstTree: LynxFirstTree<Node> | null = null;
 	let failedFirstScreenSource: LynxHostContainer<Node> | null = null;
 	let awaitingAdoption: UniversalTransportIdentity | null = null;
@@ -519,6 +586,8 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	let readyAnnouncementInProgress = false;
 	let dispatchingReadyRequest: number | null = null;
 	let correlatedReadySent = false;
+	let negotiatedCapabilities: LynxMainThreadCapabilities | undefined;
+	let deferredFirstTreeCapabilities: LynxMainThreadCapabilities | undefined;
 	let firstTreeSnapshotSent = false;
 	let uninstallFirstScreenHost: (() => void) | null = null;
 	const queuedCommits: LynxCommitMessage[] = [];
@@ -536,8 +605,11 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	let nextThreadCall = 1;
 	let uninstallWorkletRegistry: (() => void) | null = null;
 	let uninstallCallBridge: (() => void) | null = null;
-	let restoreRunWorklet: (() => void) | null = null;
-	let worklets: LynxMainThreadWorkletRegistry;
+	let unsubscribeWorkletFeature: (() => void) | null = null;
+	let restoreHostHooks: (() => void) | null = null;
+	let workletFeature: LynxMainThreadWorkletFeature | null = null;
+	let worklets: LynxMainThreadWorkletRegistry = createUnavailableLynxMainThreadWorkletRegistry();
+	const hostWorklets = createReplaceableLynxMainThreadWorkletRegistry(worklets);
 	let mainCallPublication: UniversalTransportIdentity | null = null;
 	let nativeDestroyListenerRegistered = false;
 	let nativeDestroyReceived = false;
@@ -554,6 +626,12 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			);
 		}
 		return error;
+	};
+	const requireWorkletFeature = (): LynxMainThreadWorkletFeature => {
+		if (workletFeature !== null) return workletFeature;
+		throw new Error(
+			'Octane Lynx received main-thread worklet traffic, but this bundle compiled no worklet feature.',
+		);
 	};
 	// Replaced with the terminal page-lifetime path before any host listener is
 	// registered. The bootstrap fallback only protects unexpected early reentry.
@@ -638,6 +716,10 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			);
 		} catch (error) {
 			report(error, 'Octane Lynx received malformed __RenderPage data.');
+		} finally {
+			// The engine dispatches __RenderPage after script evaluation, once the
+			// decoded PageConfig is installed; a deferred first screen renders here.
+			releaseFirstScreenRender();
 		}
 	};
 
@@ -786,7 +868,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		if (message.type === 'call-background-result') {
 			try {
 				entry.deferred.resolve(
-					isolateLynxWorkletValue(
+					requireWorkletFeature().isolateValue(
 						message.value as LynxWorkletValue,
 						'background call result',
 					) as UniversalSerializableValue,
@@ -887,7 +969,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 				runningMainCalls.delete(message.call);
 				running.release();
 				try {
-					const isolated = isolateLynxWorkletValue(
+					const isolated = requireWorkletFeature().isolateValue(
 						value as LynxWorkletValue,
 						'main-thread call result',
 					);
@@ -989,14 +1071,15 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			deferred.reject(new Error('Octane Lynx background call identity space is exhausted.'));
 			return Object.freeze({ promise: deferred.promise, cancel() {} });
 		}
-		const isolatedFn = isolateLynxWorkletValue(
+		const feature = requireWorkletFeature();
+		const isolatedFn = feature.isolateValue(
 			fn as LynxWorkletValue,
 			'background function call target',
 		);
-		if (!isLynxBackgroundFunctionDescriptor(isolatedFn)) {
+		if (!feature.isBackgroundFunction(isolatedFn)) {
 			throw new TypeError('Octane Lynx background function call target is invalid.');
 		}
-		const isolatedArgs = isolateLynxWorkletValue(
+		const isolatedArgs = feature.isolateValue(
 			args as unknown as LynxWorkletValue[],
 			'background function call arguments',
 		);
@@ -1029,50 +1112,171 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		});
 	};
 
-	worklets = createLynxMainThreadWorkletRegistry({
-		callBackground(fn, args) {
-			return callBackground(
-				fn as LynxBackgroundFunctionWireDescriptor,
-				args as readonly UniversalSerializableValue[],
-			).promise;
-		},
-	});
-	const runWorkletTarget = rawTarget as Record<string, unknown>;
-	const previousRunWorklet = runWorkletTarget.runWorklet;
-	const installedRunWorklet = (
-		descriptor: import('./core/worklets.js').LynxMainThreadWorkletDescriptor,
-		args?: readonly unknown[],
-	) => worklets.runWorklet(descriptor, args);
-	restoreRunWorklet = () => {
-		if (runWorkletTarget.runWorklet !== installedRunWorklet) return;
-		if (previousRunWorklet === undefined) delete runWorkletTarget.runWorklet;
-		else runWorkletTarget.runWorklet = previousRunWorklet;
-	};
-	try {
-		uninstallWorkletRegistry = installLynxMainThreadWorkletRegistry(worklets);
-		uninstallCallBridge = installMainThreadCallBridge({
-			callBackground<Result>(
-				fn: import('./core/worklets.js').LynxBackgroundFunctionDescriptor,
-				args: readonly import('./core/worklets.js').LynxWorkletValue[],
-			) {
-				const call = callBackground(
+	const installWorkletFeature = (feature: LynxMainThreadWorkletFeature): void => {
+		if (workletFeature === feature) return;
+		if (workletFeature !== null) {
+			throw new Error('Octane Lynx main-thread receiver changed worklet features after install.');
+		}
+		const registry = feature.createRegistry({
+			callBackground(fn, args) {
+				return callBackground(
 					fn as LynxBackgroundFunctionWireDescriptor,
 					args as readonly UniversalSerializableValue[],
-				);
-				return {
-					promise: call.promise as Promise<Result>,
-					cancel: call.cancel,
-				};
+				).promise;
 			},
 		});
-		runWorkletTarget.runWorklet = installedRunWorklet;
-	} catch (error) {
-		restoreRunWorklet?.();
-		restoreRunWorklet = null;
+		let uninstallRegistry: (() => void) | null = null;
+		let uninstallBridge: (() => void) | null = null;
+		try {
+			uninstallRegistry = feature.installRegistry(registry);
+			uninstallBridge = feature.installCallBridge({
+				callBackground<Result>(
+					fn: import('./core/worklets.js').LynxBackgroundFunctionDescriptor,
+					args: readonly import('./core/worklets.js').LynxWorkletValue[],
+				) {
+					const call = callBackground(
+						fn as LynxBackgroundFunctionWireDescriptor,
+						args as readonly UniversalSerializableValue[],
+					);
+					return {
+						promise: call.promise as Promise<Result>,
+						cancel: call.cancel,
+					};
+				},
+			});
+			workletFeature = feature;
+			worklets = registry;
+			hostWorklets.replace(registry);
+			uninstallWorkletRegistry = uninstallRegistry;
+			uninstallCallBridge = uninstallBridge;
+		} catch (error) {
+			uninstallBridge?.();
+			uninstallRegistry?.();
+			registry.close();
+			throw error;
+		}
+	};
+	const uninstallWorkletFeature = (): void => {
 		uninstallCallBridge?.();
 		uninstallCallBridge = null;
 		uninstallWorkletRegistry?.();
 		uninstallWorkletRegistry = null;
+	};
+	const hostGlobals = rawTarget as Record<string, unknown>;
+	const previousRunWorklet = hostGlobals.runWorklet;
+	// Captured before the wrapper is installed, because installing it creates an
+	// own property either way. `papi` resolved the same entry earlier and holds it
+	// bound, so Octane's own commit flushes deliberately bypass this wrapper —
+	// they never run inside a host dispatch.
+	const hostFlush = hostGlobals.__FlushElementTree as (...values: unknown[]) => void;
+	const hostOwnsFlush = Object.prototype.hasOwnProperty.call(hostGlobals, '__FlushElementTree');
+
+	// A host may dispatch a `'main thread'` event handler from inside its own
+	// element-tree work rather than from a clean stack. Lynx for Web does: its
+	// wasm element context holds a live borrow across `common_event_handler` ->
+	// `runWorklet`, so the host's own `__FlushElementTree` — the documented way a
+	// main-thread handler publishes its mutations — throws "recursive use of an
+	// object detected which would lead to unsafe aliasing in rust" for the whole
+	// life of the page, and the throw escapes through the host's frames as an
+	// uncaught error once per event. Most of that host's element PAPIs take the
+	// same borrow and would fail the same way; only the ones backed by free wasm
+	// functions are unaffected.
+	//
+	// This wraps the flush alone, not because the others are safe, but because
+	// the flush is the only one whose effect survives being moved past the end of
+	// the dispatch — every other PAPI has a return value or an ordering the
+	// handler depends on. The inline call is still attempted first, which leaves
+	// every host that permits a re-entrant flush on exactly its previous timing;
+	// only a host that rejects one latches into the deferred path. A deferred
+	// request holds the latest arguments and publishes once per microtask
+	// checkpoint, so a handler bound to a per-frame event does not queue one job
+	// per event.
+	let hostDispatchDepth = 0;
+	let hostTakesInlineFlush = true;
+	let deferredFlush: readonly unknown[] | null = null;
+
+	const runHostFlush = (args: readonly unknown[]): void => {
+		hostFlush.apply(hostGlobals, args as unknown[]);
+	};
+
+	const drainDeferredFlush = (): void => {
+		const args = deferredFlush;
+		if (args === null) return;
+		deferredFlush = null;
+		try {
+			runHostFlush(args);
+		} catch (error) {
+			report(error, 'Octane Lynx could not flush the element tree after a main-thread event.');
+		}
+	};
+
+	// Last request wins: a second flush inside one checkpoint replaces the first
+	// rather than queueing behind it, so its `node`/`options` are what publish.
+	const deferHostFlush = (args: readonly unknown[]): void => {
+		const alreadyScheduled = deferredFlush !== null;
+		deferredFlush = args;
+		if (!alreadyScheduled) void Promise.resolve().then(drainDeferredFlush);
+	};
+
+	const installedFlush = (...args: unknown[]): void => {
+		if (hostDispatchDepth === 0) {
+			runHostFlush(args);
+			return;
+		}
+		if (!hostTakesInlineFlush) {
+			deferHostFlush(args);
+			return;
+		}
+		try {
+			runHostFlush(args);
+		} catch {
+			hostTakesInlineFlush = false;
+			deferHostFlush(args);
+		}
+	};
+
+	const installedRunWorklet = (
+		descriptor: import('./core/worklets.js').LynxMainThreadWorkletDescriptor,
+		args?: readonly unknown[],
+	) => {
+		if (workletFeature === null) {
+			report(
+				new Error(
+					'Octane Lynx host dispatched a main-thread worklet, but this bundle compiled none.',
+				),
+			);
+			return undefined;
+		}
+		hostDispatchDepth++;
+		try {
+			return worklets.runWorklet(descriptor, args);
+		} finally {
+			hostDispatchDepth--;
+		}
+	};
+	restoreHostHooks = () => {
+		// A flush still owed to a torn-down page has nothing left to publish.
+		deferredFlush = null;
+		if (hostGlobals.__FlushElementTree === installedFlush) {
+			// Restoring by assignment would leave a permanent own-property shadow on a
+			// target that only inherits the PAPI, which an explicit `target` may.
+			if (hostOwnsFlush) hostGlobals.__FlushElementTree = hostFlush;
+			else delete hostGlobals.__FlushElementTree;
+		}
+		if (hostGlobals.runWorklet !== installedRunWorklet) return;
+		if (previousRunWorklet === undefined) delete hostGlobals.runWorklet;
+		else hostGlobals.runWorklet = previousRunWorklet;
+	};
+	try {
+		unsubscribeWorkletFeature = subscribeLynxMainThreadWorkletFeature(installWorkletFeature);
+		hostGlobals.runWorklet = installedRunWorklet;
+		hostGlobals.__FlushElementTree = installedFlush;
+	} catch (error) {
+		restoreHostHooks?.();
+		restoreHostHooks = null;
+		uninstallWorkletFeature();
+		unsubscribeWorkletFeature?.();
+		unsubscribeWorkletFeature = null;
 		worklets.close();
 		throw error;
 	}
@@ -1087,9 +1291,12 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		}
 	};
 
+	const isFirstScreenCleanupPending = () =>
+		firstScreenState === 'cleanup-pending:skipped' || firstScreenState === 'cleanup-pending:failed';
+
 	const canAnnounceReady = () =>
 		!firstScreenEnabled ||
-		(firstScreenState !== 'open' && firstScreenState !== 'cleanup-pending' && firstScreenSyncReady);
+		(firstScreenState !== 'open' && !isFirstScreenCleanupPending() && firstScreenSyncReady);
 
 	const dispatchReady = (request: number): boolean => {
 		// Request 0 is an unsolicited availability hint and can be emitted before a
@@ -1105,6 +1312,29 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			type: 'main-ready',
 			request,
 			...(snapshot == null ? null : { firstTree: snapshot }),
+			...(request < LYNX_CAPABILITY_READY_REQUEST_BASE
+				? null
+				: {
+						capabilities: {
+							compactAck: 1 as const,
+							...(driver.capabilities?.templateMount === true
+								? { templateMount: 1 as const }
+								: null),
+							...(driver.capabilities?.templateProgramMount === true
+								? { templateProgram: 1 as const }
+								: null),
+							...(request >= LYNX_LAZY_PUBLIC_INSTANCE_READY_REQUEST_BASE &&
+							driver.capabilities?.templateProgramMount === true &&
+							driver.capabilities?.lazyPublicInstances === true
+								? { lazyPublicInstances: 1 as const }
+								: null),
+							...(request >= LYNX_TEMPLATE_RUN_READY_REQUEST_BASE &&
+							driver.capabilities?.templateProgramMount === true &&
+							driver.capabilities?.templateProgramRuns === true
+								? { templateRuns: 1 as const }
+								: null),
+						},
+					}),
 		};
 		if (request !== LYNX_READY_ANNOUNCEMENT_REQUEST && !correlatedReadySent) {
 			correlatedReadySent = true;
@@ -1112,6 +1342,18 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		}
 		if (lifecycleClosed) return false;
 		dispatch(reply);
+		if (request !== LYNX_READY_ANNOUNCEMENT_REQUEST) {
+			// Delivery must succeed before an inbound commit can exercise any optional
+			// wire behavior. Keep first-tree capabilities dormant until its exact
+			// legacy adoption has completed and the main-thread journal is released.
+			if (snapshot === null) {
+				negotiatedCapabilities = reply.capabilities;
+			} else {
+				negotiatedCapabilities = undefined;
+				deferredFirstTreeCapabilities =
+					reply.capabilities?.templateProgram === 1 ? reply.capabilities : undefined;
+			}
+		}
 		if (snapshot !== null) firstTreeSnapshotSent = true;
 		return true;
 	};
@@ -1172,6 +1414,16 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		firstTree = null;
 	};
 
+	const activateFirstTreeCapabilities = (record: ActiveLynxMainRoot<Node>): void => {
+		if (firstTree !== null || record.faulted || deferredFirstTreeCapabilities === undefined) {
+			return;
+		}
+		record.capabilities = deferredFirstTreeCapabilities;
+		record.postFirstTreeUpgrade = true;
+		negotiatedCapabilities = deferredFirstTreeCapabilities;
+		deferredFirstTreeCapabilities = undefined;
+	};
+
 	const disposeAvailableFirstTree = (): boolean => {
 		if (firstTree === null) return true;
 		const cleanup = disposeLynxFirstTree(firstTree);
@@ -1196,19 +1448,49 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		for (let attempt = 0; attempt < MAX_CLOSE_CLEANUP_ATTEMPTS; attempt++) {
 			const treeComplete = disposeAvailableFirstTree();
 			const sourceComplete = disposeFailedFirstScreenSource();
-			if (treeComplete && sourceComplete) return true;
+			if (treeComplete && sourceComplete) {
+				// Ready, fault, dispose, and unmount retries all finish here; preserve
+				// the outcome chosen when retirement began.
+				if (firstScreenState === 'cleanup-pending:skipped') firstScreenState = 'skipped';
+				else if (firstScreenState === 'cleanup-pending:failed') firstScreenState = 'failed';
+				return true;
+			}
 		}
 		return false;
 	};
 
+	/**
+	 * Take a rendered first screen back out and release the background, whether it
+	 * was declined as unadoptable or lost to a fault. Both outcomes retain the
+	 * source first so a throwing remove/flush stays retryable rather than leaking
+	 * an unreachable tree the background would then duplicate.
+	 */
+	const retireFirstScreen = (
+		source: LynxHostContainer<Node> | null,
+		settled: 'skipped' | 'failed',
+		reason: string,
+	): void => {
+		firstScreenState = settled === 'skipped' ? 'cleanup-pending:skipped' : 'cleanup-pending:failed';
+		firstScreenSyncReady = true;
+		if (firstTree === null && source !== null) failedFirstScreenSource = source;
+		if (!retryFirstScreenCleanup()) {
+			report(
+				new Error(
+					`Octane Lynx withheld background readiness because ${reason} first-screen cleanup remains incomplete.`,
+				),
+			);
+		}
+		announceReady();
+	};
+
 	const forceCloseWorkletRuntime = (): void => {
-		restoreRunWorklet?.();
-		restoreRunWorklet = null;
-		uninstallCallBridge?.();
-		uninstallCallBridge = null;
-		uninstallWorkletRegistry?.();
-		uninstallWorkletRegistry = null;
+		unsubscribeWorkletFeature?.();
+		unsubscribeWorkletFeature = null;
+		restoreHostHooks?.();
+		restoreHostHooks = null;
+		uninstallWorkletFeature();
 		worklets.close();
+		workletFeature = null;
 	};
 
 	const closeWorkletRuntime = (): boolean => {
@@ -1582,6 +1864,10 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	const abortKey = (identity: UniversalTransportIdentity) => `${identity.root}:${identity.version}`;
 
 	const handleReady = (message: LynxMainReadyRequest): void => {
+		// A background ready request also proves script evaluation has finished;
+		// hosts without the typed __RenderPage lifecycle release the deferred
+		// first screen here.
+		releaseFirstScreenRender();
 		if (
 			dispatchingReadyRequest === message.request ||
 			completedReadyRequests.has(message.request)
@@ -1589,16 +1875,14 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			return;
 		}
 		queuedReadyRequests.add(message.request);
-		if (firstScreenState === 'cleanup-pending' && retryFirstScreenCleanup()) {
-			firstScreenState = 'failed';
-		}
+		if (isFirstScreenCleanupPending()) retryFirstScreenCleanup();
 		if (canAnnounceReady()) announceReady();
 	};
 
-	const renderFirstScreen = <Props>(
+	const renderFirstScreenNow = <Props>(
 		component: UniversalComponent<Props>,
 		props: Props,
-	): LynxFirstScreenRenderResult => {
+	): LynxFirstScreenRenderResult | null => {
 		if (closed) throw new Error('Octane Lynx first-screen root rendered after receiver close.');
 		if (firstScreenState !== 'open') {
 			throw new Error(
@@ -1612,41 +1896,83 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			source = createLynxHostContainer(papi, {
 				root: FIRST_SCREEN_ROOT_ID,
 				page,
-				worklets,
+				worklets: hostWorklets,
 			});
 			const prepared = prepareLynxHostBatch(source, result.batch);
 			prepared.apply();
 			if (!prepared.mutationStarted) {
 				throw new Error('Octane Lynx first-screen host batch did not cross its apply boundary.');
 			}
-			firstTree = captureLynxFirstTree(source);
+			const captured = captureLynxFirstTree(source);
+			if (captured === null) {
+				// The page rendered correctly but holds a composition the background
+				// cannot adopt — today a native `<list>`, whose rows the platform
+				// materializes through main-local callbacks. That is a property of the
+				// page, not a broken host, so it settles as `skipped` rather than
+				// `failed` and raises no error against an application that is entitled
+				// to the element. `null` tells the caller its paint was declined.
+				//
+				// The batch is built before any of this is applied, so a `<list>` is in
+				// principle knowable before the tree is created; declining that early
+				// would avoid building and tearing down a first screen that is never
+				// kept. That needs the prepared batch to publish what it stages.
+				retireFirstScreen(source, 'skipped', 'unadoptable');
+				return null;
+			}
+			firstTree = captured;
 			firstScreenState = 'painted';
 			if (firstScreenSync === 'automatic') firstScreenSyncReady = true;
 			announceReady();
 			return result;
 		} catch (error) {
-			firstScreenState = 'cleanup-pending';
-			firstScreenSyncReady = true;
-			if (firstTree === null && source !== null) {
-				// Retain the only native ownership journal before cleanup. A throwing
-				// remove/flush must remain retryable rather than leaking an unreachable
-				// first tree and allowing the background root to duplicate it.
-				failedFirstScreenSource = source;
-			}
-			if (retryFirstScreenCleanup()) {
-				firstScreenState = 'failed';
-			} else {
-				report(
-					new Error(
-						'Octane Lynx withheld background readiness because failed first-screen cleanup remains incomplete.',
-					),
-				);
-			}
-			announceReady();
+			retireFirstScreen(source, 'failed', 'failed');
 			throw report(error, 'Octane Lynx could not render its synchronous first screen.');
 		} finally {
 			firstScreenRenderInProgress = false;
 			if (closePending) finalizeDeferredClose?.();
+		}
+	};
+
+	const renderFirstScreen = <Props>(
+		component: UniversalComponent<Props>,
+		props: Props,
+	): LynxFirstScreenRenderResult | null => {
+		if (firstScreenRenderReleased) return renderFirstScreenNow(component, props);
+		if (closed) throw new Error('Octane Lynx first-screen root rendered after receiver close.');
+		if (firstScreenState !== 'open' || pendingFirstScreenRender !== null) {
+			throw new Error(
+				'Octane Lynx first-screen root is one-shot and its render window has closed.',
+			);
+		}
+		// Element creation must wait for the engine's post-evaluation lifecycle:
+		// PageConfig reaches the ElementManager only after main-thread script
+		// evaluation, and elements created earlier bake in unconfigured defaults.
+		pendingFirstScreenRender = () => {
+			renderFirstScreenNow(component, props);
+		};
+		return null;
+	};
+
+	const releaseFirstScreenRender = (): void => {
+		if (firstScreenRenderReleased) return;
+		firstScreenRenderReleased = true;
+		const pending = pendingFirstScreenRender;
+		pendingFirstScreenRender = null;
+		if (closed) return;
+		if (pending !== null && firstScreenState === 'open') {
+			try {
+				pending();
+			} catch {
+				// renderFirstScreenNow reported the failure and transitioned the
+				// first-screen state; there is no authored caller left to rethrow to.
+			}
+			return;
+		}
+		// The entry finished evaluation without rendering a first screen; settle
+		// the window exactly as an immediate-mode markFirstScreenSyncReady would.
+		if (firstScreenState === 'open' && firstScreenSyncReady) {
+			firstScreenState = 'skipped';
+			announceReady();
 		}
 	};
 
@@ -1657,7 +1983,13 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		if (closed) throw new Error('Octane Lynx first-screen synchronization ran after close.');
 		if (firstScreenSyncReady) return;
 		firstScreenSyncReady = true;
-		if (firstScreenState === 'open') firstScreenState = 'skipped';
+		if (
+			firstScreenState === 'open' &&
+			firstScreenRenderReleased &&
+			pendingFirstScreenRender === null
+		) {
+			firstScreenState = 'skipped';
+		}
 		announceReady();
 	};
 
@@ -1717,6 +2049,61 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			);
 			return;
 		}
+		const peerCapabilities = active === null ? negotiatedCapabilities : active.capabilities;
+		const postFirstTreeLazyPublicInstances =
+			message.instances === LYNX_LAZY_PUBLIC_INSTANCES && active !== null;
+		const incrementalRun =
+			message.batch.commands.length === 1 ? message.batch.commands[0] : undefined;
+		if (
+			message.instances === LYNX_LAZY_PUBLIC_INSTANCES &&
+			(peerCapabilities?.lazyPublicInstances !== 1 ||
+				(postFirstTreeLazyPublicInstances &&
+					(active?.postFirstTreeUpgrade !== true ||
+						message.batch.commands.length === 0 ||
+						!message.batch.commands.every(
+							(command) =>
+								command.op === 'mount-template-range' || command.op === 'mount-template-run',
+						))))
+		) {
+			reject(identity, new Error('Octane Lynx rejected unnegotiated lazy public instances.'));
+			return;
+		}
+		if (peerCapabilities?.templateProgram !== 1 || peerCapabilities.templateRuns !== 1) {
+			for (const command of message.batch.commands) {
+				if (command.op === 'mount-template-range' && peerCapabilities?.templateProgram !== 1) {
+					reject(
+						identity,
+						new Error('Octane Lynx rejected an unnegotiated intrinsic template program.'),
+					);
+					return;
+				}
+				if (command.op === 'mount-template-run' && peerCapabilities?.templateRuns !== 1) {
+					reject(
+						identity,
+						new Error('Octane Lynx rejected an unnegotiated intrinsic template run.'),
+					);
+					return;
+				}
+			}
+		}
+		let postFirstTreeIncrementalCompact = false;
+		if (
+			postFirstTreeLazyPublicInstances &&
+			active?.postFirstTreeUpgrade === true &&
+			peerCapabilities?.compactAck === 1 &&
+			peerCapabilities.templateProgram === 1 &&
+			peerCapabilities.templateRuns === 1 &&
+			message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT &&
+			incrementalRun?.op === 'mount-template-run'
+		) {
+			try {
+				freezeValidatedIntrinsicRun(incrementalRun);
+				postFirstTreeIncrementalCompact = true;
+			} catch (error) {
+				reject(identity, error);
+				return;
+			}
+		}
 
 		let record = active;
 		const provisional = record === null;
@@ -1724,10 +2111,11 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			try {
 				record = {
 					root: message.root,
+					...(peerCapabilities === undefined ? null : { capabilities: peerCapabilities }),
 					container: createLynxHostContainer(papi, {
 						root: message.root,
 						page,
-						worklets,
+						worklets: hostWorklets,
 						onAttachments: submitHostAttachments,
 						onCallbackFault: failAcceptedRoot,
 					}),
@@ -1747,12 +2135,21 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		// tokens can be resolved until background confirms listener ownership. It
 		// must never be offered to an already-populated background container again.
 		const candidateFirstTree = provisional ? firstTree : null;
+		const startedPrepare = LYNX_PROFILE ? performance.now() : 0;
 		try {
 			prepared = prepareLynxHostBatch(
 				record.container,
 				message.batch,
 				candidateFirstTree === null
-					? undefined
+					? provisional && message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT
+						? message.instances === LYNX_LAZY_PUBLIC_INSTANCES
+							? { compact: true, lazyPublicInstances: true }
+							: { compact: true }
+						: postFirstTreeIncrementalCompact
+							? { compact: true, incrementalCompact: true, lazyPublicInstances: true }
+							: postFirstTreeLazyPublicInstances
+								? { lazyPublicInstances: true }
+								: undefined
 					: {
 							firstTree: candidateFirstTree,
 							onMismatch(error) {
@@ -1767,14 +2164,22 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		}
 
 		if (provisional) active = record;
+		if (LYNX_PROFILE) {
+			const profile = lynxWireProfile();
+			profile.prepareMs += performance.now() - startedPrepare;
+			profile.commits += 1;
+			profile.commands += message.batch.commands.length;
+		}
 		let applyFailed = false;
 		let applyError: unknown;
+		const startedApply = LYNX_PROFILE ? performance.now() : 0;
 		try {
 			prepared.apply();
 		} catch (error) {
 			applyFailed = true;
 			applyError = error;
 		}
+		if (LYNX_PROFILE) lynxWireProfile().applyMs += performance.now() - startedApply;
 		if (!prepared.mutationStarted) {
 			prepared.abort();
 			if (provisional) {
@@ -1800,20 +2205,58 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			if (prepared.firstTreeAction === 'repair' || applyFailed) {
 				disposeAvailableFirstTree();
 			}
+			if (!applyFailed && prepared.firstTreeAction === 'repair') {
+				activateFirstTreeCapabilities(record);
+			}
 		}
-		const handles = acknowledgementHandles(driver, record.container, prepared, message.batch);
-		const acknowledgement: LynxTransportAcknowledgement = {
-			...identity,
-			type: 'ack',
-			handles,
-			...(prepared.firstTreeAction === 'none'
-				? null
+		const startedAck = LYNX_PROFILE ? performance.now() : 0;
+		let compactCount: number | null =
+			message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT &&
+			(provisional || postFirstTreeIncrementalCompact) &&
+			!applyFailed &&
+			prepared.firstTreeAction === 'none' &&
+			prepared.listAncestryDelta.length === 0
+				? provisional
+					? (prepared.compactHostCount ?? countLynxCompactAcknowledgementHosts(message.batch))
+					: (prepared.compactHostCount ?? null)
+				: null;
+		if (compactCount !== null && compactCount < LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS) {
+			compactCount = null;
+		}
+		if (compactCount !== null && prepared.compactHostCount !== compactCount) {
+			if (prepared.handleDelta.length !== compactCount) {
+				compactCount = null;
+			} else {
+				for (let index = 0; index < prepared.handleDelta.length; index++) {
+					const delta = prepared.handleDelta[index]!;
+					if (delta.op !== 'create' || delta.handle.generation !== 1) {
+						compactCount = null;
+						break;
+					}
+				}
+			}
+		}
+		const acknowledgement: LynxTransportAcknowledgement =
+			compactCount === null
+				? {
+						...identity,
+						type: 'ack',
+						handles: acknowledgementHandles(driver, record.container, prepared, message.batch),
+						...(prepared.firstTreeAction === 'none'
+							? null
+							: {
+									adoption: prepared.firstTreeAction === 'adopt' ? 'adopted' : 'repaired',
+								}),
+					}
 				: {
-						adoption: prepared.firstTreeAction === 'adopt' ? 'adopted' : 'repaired',
-					}),
-		};
+						...identity,
+						type: 'ack',
+						encoding: LYNX_COMPACT_ACKNOWLEDGEMENT,
+						count: compactCount,
+					};
 		try {
 			dispatch(acknowledgement);
+			if (LYNX_PROFILE) lynxWireProfile().ackMs += performance.now() - startedAck;
 		} catch (error) {
 			// ContextProxy may deliver the acknowledgement (and reentrant calls) before
 			// reporting a dispatch failure. Release those activations before owner state.
@@ -1915,6 +2358,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			awaitingAdoption = null;
 			releaseFirstTree();
 		}
+		activateFirstTreeCapabilities(active);
 		openBackgroundCalls();
 	};
 
@@ -2009,8 +2453,10 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	function receive(event: LynxContextProxyEvent): void {
 		if (closed) return;
 		let message: ReturnType<typeof validateLynxBackgroundOutboundMessage>;
+		const startedValidate = LYNX_PROFILE ? performance.now() : 0;
 		try {
 			message = validateLynxBackgroundOutboundMessage(event.data);
+			if (LYNX_PROFILE) lynxWireProfile().validateMs += performance.now() - startedValidate;
 		} catch (error) {
 			const normalized = report(error, 'Octane Lynx received a malformed outbound message.');
 			const identity = recoverIdentity(event.data);
@@ -2245,13 +2691,17 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 				render: renderFirstScreen,
 				markSyncReady: markFirstScreenSyncReady,
 				unmount() {
+					pendingFirstScreenRender = null;
+					firstScreenRenderReleased = true;
 					queuedNativeEvents.length = 0;
 					awaitingAdoption = null;
 					// Unmount closes the authored synchronous window immediately. Cleanup
 					// can still gate readiness until a retry succeeds.
 					firstScreenSyncReady = true;
 					if (!retryFirstScreenCleanup()) {
-						firstScreenState = 'cleanup-pending';
+						if (!isFirstScreenCleanupPending()) {
+							firstScreenState = 'cleanup-pending:skipped';
+						}
 						report(
 							new Error(
 								'Octane Lynx withheld background readiness because first-screen unmount cleanup remains incomplete.',
@@ -2259,11 +2709,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 						);
 						return;
 					}
-					if (
-						firstScreenState === 'open' ||
-						firstScreenState === 'painted' ||
-						firstScreenState === 'cleanup-pending'
-					) {
+					if (firstScreenState === 'open' || firstScreenState === 'painted') {
 						firstScreenState = 'skipped';
 					}
 					announceReady();
@@ -2307,14 +2753,3 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	};
 	return Object.freeze(controller);
 }
-
-export {
-	runOnBackground,
-	runOnMainThread,
-	LynxCrossThreadCallCancelledError,
-} from './core/worklets.js';
-export type {
-	LynxBackgroundFunctionDescriptor,
-	LynxCancelablePromise,
-	LynxMainThreadWorkletDescriptor,
-} from './core/worklets.js';

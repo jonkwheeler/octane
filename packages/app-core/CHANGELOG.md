@@ -1,5 +1,316 @@
 # @octanejs/app-core
 
+## 0.0.32
+
+### Patch Changes
+
+- Updated dependencies [972fdd3]
+- Updated dependencies [4a792e3]
+- Updated dependencies [581b8bd]
+- Updated dependencies [24aa236]
+- Updated dependencies [9c397a2]
+- Updated dependencies [24aa236]
+- Updated dependencies [5377ef3]
+- Updated dependencies [6b65644]
+- Updated dependencies [f12a9a9]
+- Updated dependencies [972fdd3]
+- Updated dependencies [1039b7d]
+- Updated dependencies [ffadd39]
+- Updated dependencies [a03ff0f]
+- Updated dependencies [4c1ecd1]
+  - octane@0.1.36
+
+## 0.0.31
+
+### Patch Changes
+
+- Updated dependencies [50b7988]
+- Updated dependencies [6daa380]
+- Updated dependencies [d2c9e1c]
+- Updated dependencies [01240e6]
+- Updated dependencies [59a35ae]
+- Updated dependencies [a8b432b]
+- Updated dependencies [910c240]
+- Updated dependencies [db5687e]
+- Updated dependencies [e2466a5]
+- Updated dependencies [2d06817]
+  - octane@0.1.35
+
+## 0.0.30
+
+### Patch Changes
+
+- Updated dependencies [78316b4]
+- Updated dependencies [4e53ef4]
+- Updated dependencies [4cc7840]
+- Updated dependencies [39b3e19]
+- Updated dependencies [8c29020]
+- Updated dependencies [97e65b9]
+  - octane@0.1.34
+
+## 0.0.29
+
+### Patch Changes
+
+- Updated dependencies [1fe297e]
+- Updated dependencies [db0d495]
+- Updated dependencies [677182d]
+- Updated dependencies [3fb96df]
+- Updated dependencies [677182d]
+- Updated dependencies [4653a2e]
+- Updated dependencies [7282555]
+- Updated dependencies [3d09348]
+- Updated dependencies [8cb40df]
+- Updated dependencies [677182d]
+- Updated dependencies [fc1c146]
+- Updated dependencies [a84fcaa]
+- Updated dependencies [217a0b5]
+  - octane@0.1.33
+
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies [d453832]
+- Updated dependencies [3152f0b]
+- Updated dependencies [1c44117]
+- Updated dependencies [cbd55ca]
+- Updated dependencies [cdb501c]
+  - octane@0.1.32
+
+## 0.0.27
+
+### Patch Changes
+
+- Updated dependencies [80a9c7e]
+- Updated dependencies [62d7f13]
+- Updated dependencies [16df26e]
+  - octane@0.1.31
+
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies [10011bb]
+- Updated dependencies [081fa1e]
+- Updated dependencies [60004f0]
+- Updated dependencies [27758f5]
+- Updated dependencies [136b0e3]
+- Updated dependencies [d69ab86]
+- Updated dependencies [1a27e19]
+- Updated dependencies [7f6a134]
+- Updated dependencies [ce68bb8]
+- Updated dependencies [fbe0d39]
+- Updated dependencies [9fa0b47]
+  - octane@0.1.30
+
+## 0.0.25
+
+### Patch Changes
+
+- Updated dependencies [8fb7990]
+  - octane@0.1.29
+
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [2b98a33]
+  - octane@0.1.28
+
+## 0.0.23
+
+### Patch Changes
+
+- Updated dependencies [46e1833]
+- Updated dependencies [5a8e807]
+  - octane@0.1.27
+
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [1f01b08]
+- Updated dependencies [48e2397]
+  - octane@0.1.26
+
+## 0.0.21
+
+### Patch Changes
+
+- bd8bb1b: Require Node.js 22.22.2 or newer across Octane's published packages.
+
+  Add the `octane/compiler/register` preload for running server and SSG scripts
+  directly with Node or Bun. It compiles imported `.tsrx`/`.tsx` modules and
+  plain TypeScript custom hooks in server mode without a Vite build. Bun also
+  targets bare `octane` imports at `octane/server` in pass-through authored source
+  dependencies, including packages that manage their hook slots manually.
+
+- Updated dependencies [bd8bb1b]
+  - octane@0.1.25
+
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies [ec77602]
+- Updated dependencies [29c5bdb]
+- Updated dependencies [9b032d8]
+- Updated dependencies [f9b2731]
+- Updated dependencies [6714914]
+  - octane@0.1.24
+
+## 0.0.19
+
+### Patch Changes
+
+- Updated dependencies [c1ad31b]
+  - octane@0.1.23
+
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [43df1f9]
+- Updated dependencies [7a112b4]
+  - octane@0.1.22
+
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies [10efc28]
+- Updated dependencies [39bfc49]
+- Updated dependencies [4863b39]
+- Updated dependencies [ef82ba3]
+  - octane@0.1.21
+
+## 0.0.16
+
+### Patch Changes
+
+- 89323b7: Fail the boot on a `module server` function id collision instead of silently
+  rerouting one function's calls to another.
+
+  An id is `strong_hash("<module>#<export>")`, a SHA-256 truncated to 8 hex
+  characters, whose own documentation calls it "fine for identification, not for
+  authentication". Both registration paths were a plain Map set, which resolves a
+  collision by overwriting: one function became unreachable and every call to it
+  executed the other one instead, under whatever authorization that other function
+  carries. Nothing reported it, and which function wins depends on module
+  evaluation order.
+
+  Dev registers through `globalThis.rpc_modules`, which is now built by
+  `createRpcRegistry()` and rejects a second declaration under an id another export
+  already took. Re-registering the same export stays a no-op, which module reloads
+  depend on. Production builds its descriptor map from the server manifest and
+  throws from `createHandler` on a duplicate id, before serving a request.
+
+  Both report the two colliding module paths and export names, and say that
+  renaming either export resolves it. This does not widen the id: 32 bits stays
+  narrow enough to collide at scale, but the failure is now loud and happens at
+  build or boot rather than in production traffic.
+
+- 89323b7: Tell middleware which server function an RPC request targets, so authorization
+  can be written per function instead of per endpoint.
+
+  `options.middlewares` is one chain for the whole RPC boundary, and the only
+  identifying thing in the request was a compiler-assigned hash in the URL. A
+  policy could authenticate the caller but could not express "the admin functions
+  require an admin role" without hard-coding hashes that change on rename.
+
+  `Context.rpc` now names the target, and is populated before the middleware chain
+  runs:
+
+  ```ts
+  const authorize: Middleware = async (context, next) => {
+  	if (context.rpc?.module === '/src/admin.ts' && !isAdmin(context)) {
+  		return new Response('Forbidden', { status: 403 });
+  	}
+  	return next();
+  };
+  ```
+
+  The mapping comes from a new optional `describeFunction(hash)` on
+  `RpcRequestOptions`, which names an export without loading its module and is
+  synchronous so the middleware chain never waits on it. The Vite plugin reads the
+  dev registration map, and the production handler builds descriptors from the
+  server manifest once per handler, because `build_rpc_lookup` keeps only the
+  namespace object and export name. An integration that omits `describeFunction`
+  gets `module` and `export` as `null`, which a per-function policy will not match,
+  so a hand-rolled boundary must supply it before relying on one.
+
+  `rpc.id` is the raw hash and is stable only within a build; authorize on
+  `module`/`export`. Unauthorized requests already never reached the target
+  function, since `resolveFunction` runs as the middleware chain's final handler;
+  this adds the identity that was missing, not a new ordering guarantee.
+
+- 0a0b813: Give `module server` functions access to the request they are serving, via
+  `getRequestContext()` and `tryGetRequestContext()`.
+
+  The RPC boundary built a full `Context` for every request and handed it to the
+  middleware chain, but the request store it ran the handler inside carried only
+  `origin` and `platform`. A server function could therefore not read the headers,
+  cookies, or middleware `state` for its own request, so the identity of the caller
+  had to arrive as an argument from the browser, which is exactly the value a
+  mutation must not trust. Render routes already received middleware state through
+  `RenderRouteProps.state`; server functions now have the equivalent.
+
+  ```tsx
+  module server {
+  	import { getRequestContext } from '@octanejs/app-core';
+
+  	export async function deletePost(id: string) {
+  		const { state } = getRequestContext();
+  		const user = state.get('user');
+  		if (!user) throw new Error('Not signed in');
+  		await db.posts.delete(id, user.id);
+  	}
+  }
+  ```
+
+  The returned `Context` is the same instance the middleware chain observed,
+  including its `state` mutations. `context.request.body` is already consumed by
+  the time a server function runs, since the boundary reads it under the configured
+  size limit before dispatching, so `bodyUsed` is `true`; headers, cookies, and
+  `url` are unaffected. `getRequestContext()` throws outside a request because that
+  is a programmer error, and `tryGetRequestContext()` returns `null` for code that
+  has to run in both places.
+
+  The active async context is published on a `Symbol.for` global, matching the
+  existing fetch coordinator, so the accessor resolves the live store even though a
+  server function is loaded through a separate module graph in dev and through the
+  server manifest in production. Dev and production share the one boundary, so both
+  behave identically. This does not yet cover SSR render routes, which never enter
+  the request async context.
+
+- c151b71: Add optional Strong mode for clearer state and ref behavior. Enable it across an
+  application with `compiler: { strong: true }`, in one module with `"use strong"`,
+  or through the Vite, Rspack, and Rsbuild plugin options. Strong modules reject
+  state updates during render, direct state updates while setting up an effect, and
+  render-time writes to refs, with `useLinkedState` available for state that
+  should follow another value.
+- Updated dependencies [c6370b6]
+- Updated dependencies [dd272ad]
+- Updated dependencies [c151b71]
+- Updated dependencies [66b51d8]
+- Updated dependencies [a57c32a]
+- Updated dependencies [e38a557]
+- Updated dependencies [bd90e27]
+- Updated dependencies [ae6811d]
+- Updated dependencies [62d81b8]
+  - octane@0.1.20
+
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies [9d5d642]
+- Updated dependencies [f469b3f]
+- Updated dependencies [ac2ae2f]
+- Updated dependencies [3aada64]
+  - octane@0.1.19
+
 ## 0.0.14
 
 ### Patch Changes

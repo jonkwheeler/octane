@@ -5,6 +5,7 @@ import { createThreeContainer, createThreeDriver } from '../src/core/driver.js';
 import {
 	buildGraph,
 	getRootState,
+	useFrame,
 	useStore,
 	type Instance,
 	type ObjectMap,
@@ -44,6 +45,8 @@ async function flushUniversalUpdates(): Promise<void> {
 }
 
 describe('Three hooks and graph helpers', () => {
+	// OCTANE DIVERGENCE[build-graph-named-only][adapted:three-build-graph]
+	// @parity-case adapted:three-build-graph
 	it('collects the public named object graph', () => {
 		const root = new THREE.Group();
 		const firstMaterial = new THREE.MeshBasicMaterial();
@@ -78,6 +81,39 @@ describe('Three hooks and graph helpers', () => {
 		);
 	});
 
+	it('keeps the last accepted frame callback when a replacement render fails', async () => {
+		const frames: string[] = [];
+		const Scene = defineUniversalComponent(
+			'three',
+			(props: { callback: () => void; fail: boolean }) => {
+				useFrame(props.callback);
+				if (props.fail) throw new Error('frame callback render rejected');
+				return null;
+			},
+		);
+		const initial = () => frames.push('initial');
+		const rejected = () => frames.push('rejected');
+		const accepted = () => frames.push('accepted');
+		const root = await createThreeTestRenderer(Scene, { callback: initial, fail: false });
+
+		try {
+			root.advanceFrames(1);
+			expect(() => root.update(Scene, { callback: rejected, fail: true })).toThrow(
+				'frame callback render rejected',
+			);
+			root.advanceFrames(1);
+			expect(frames).toEqual(['initial', 'initial']);
+
+			root.update(Scene, { callback: accepted, fail: false });
+			root.advanceFrames(1);
+			expect(frames).toEqual(['initial', 'initial', 'accepted']);
+		} finally {
+			root.unmount();
+		}
+	});
+
+	// OCTANE DIVERGENCE[order-based-callable-selector][adapted:three-store-selector]
+	// @parity-case adapted:three-store-selector
 	it('selects root state, exposes managed handles, and keeps frame callbacks current', async () => {
 		const graphRoot = new THREE.Group();
 		const material = new THREE.MeshBasicMaterial();

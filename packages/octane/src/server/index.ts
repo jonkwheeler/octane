@@ -23,6 +23,11 @@
 
 export { executeServerFunction } from './rpc.js';
 
+// Semi-public compiler target for inferred method-call dependencies — the
+// same helper the client entry ships, because inferred dependency arrays are
+// compiled identically for SSR (see applyHookDependencies' server call site).
+export { __methodDep } from '../method-dep.js';
+
 export {
 	// Entry — React `react-dom/server` parity (buffered; streaming lands in a
 	// later phase). `renderToString` is a single sync pass (fallbacks for
@@ -43,9 +48,13 @@ export {
 
 	// Hooks (server semantics)
 	useState,
+	useLinkedState,
 	useReducer,
 	__useStateWithGetter,
+	__useLinkedStateWithGetter,
 	__useReducerWithGetter,
+	type LinkedStatePrevious,
+	type LinkedStateOptions,
 	useEffect,
 	useLayoutEffect,
 	useInsertionEffect,
@@ -76,6 +85,8 @@ export {
 	requestFormReset,
 	preload,
 	preinit,
+	preloadModule,
+	preinitModule,
 	preconnect,
 	prefetchDNS,
 
@@ -85,6 +96,7 @@ export {
 	Hydrate,
 	Fragment,
 	Activity,
+	Activity as unstable_Activity,
 	// Transparent server twin of the client ViewTransition boundary (client-only
 	// behavior; SSR annotations are view-transitions plan Phase 5).
 	ViewTransition,
@@ -102,7 +114,10 @@ export {
 
 	// Compiler-emitted codegen helpers (private ABI — see module doc)
 	markChildrenBlock,
+	descriptorChildren,
 	createElement,
+	createScopedValue,
+	createScopedElement,
 	positionalChildren,
 	escapeHtml,
 	escapeAttr,
@@ -120,6 +135,7 @@ export {
 	ssrInnerHtml,
 	ssrScriptInnerHtml,
 	ssrChildrenSources,
+	ssrSpreadContent,
 	ssrVoidContent,
 	// Controlled form serialization (value/checked attrs, textarea content,
 	// select option-projection scope)
@@ -138,14 +154,20 @@ export {
 	ssrComponentNS,
 	ssrInNamespace,
 	ssrBlock,
+	ssrFragmentMarker,
 	ssrActivity,
 	ssrForBlock,
+	mapSlot,
 	ssrControl,
 	ssrArm,
 	ssrTry,
 	ssrPortal,
 	injectStyle,
 	ssrHeadEl,
+	// React Float resources (stylesheet precedence links, style resources, async scripts)
+	ssrStylesheetResource,
+	ssrStyleResource,
+	ssrScriptResource,
 	namespaceHead,
 	namespaceHeadElement,
 	// SSR parallel-use mirror (compiler targets — see suspense-parallel-use plan).

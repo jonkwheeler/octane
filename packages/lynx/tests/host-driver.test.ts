@@ -1,6 +1,7 @@
 import type {
 	UniversalHostBatch,
 	UniversalHostCommand,
+	UniversalHostTemplateProgram,
 	UniversalPortalTargetHandle,
 } from 'octane/universal/native';
 import { installLynxTestingEnv, uninstallLynxTestingEnv } from '@lynx-js/testing-environment';
@@ -371,6 +372,94 @@ describe('Lynx Element PAPI host driver', () => {
 		expect(papi.calls).toEqual(['getUniqueId']);
 	});
 
+	it('captures an optional native append operation without changing anchored insertion', () => {
+		const dom = new JSDOM();
+		installLynxTestingEnv(globalThis, { window: dom.window as never });
+		const environment = globalThis.lynxTestingEnv;
+		environment.clearGlobal();
+		environment.switchToMainThread();
+		try {
+			const target = globalThis as unknown as {
+				__AppendElement?: (parent: object, child: object) => void;
+				__InsertElementBefore: (parent: object, child: object, before?: object) => void;
+			};
+			let receiver: unknown;
+			target.__AppendElement = function (parent, child) {
+				receiver = this;
+				target.__InsertElementBefore(parent, child);
+			};
+			const papi = createLynxElementPAPI(globalThis) as ReturnType<typeof createLynxElementPAPI> & {
+				append?: (parent: object, child: object) => void;
+			};
+			expect(typeof papi.append).toBe('function');
+			const page = papi.createPage('append-test', 0);
+			const first = papi.createElement('view', papi.getUniqueId(page), '');
+			const before = papi.createElement('view', papi.getUniqueId(page), '');
+			papi.append!(page, first);
+			expect(receiver).toBe(globalThis);
+			papi.insertBefore(page, before, first);
+			expect((page as Element).children[0]).toBe(before);
+			expect((page as Element).children[1]).toBe(first);
+		} finally {
+			environment.clearGlobal();
+			uninstallLynxTestingEnv(globalThis);
+			dom.window.close();
+		}
+	});
+
+	it('captures receiver-bound intrinsic element factories without changing authored text', () => {
+		const dom = new JSDOM();
+		installLynxTestingEnv(globalThis, { window: dom.window as never });
+		const environment = globalThis.lynxTestingEnv;
+		environment.clearGlobal();
+		environment.switchToMainThread();
+		try {
+			const target = globalThis as unknown as {
+				__CreateView(parent: number): object;
+				__CreateText(parent: number): object;
+				__CreateRawText(text: string): object;
+			};
+			const view = target.__CreateView;
+			const text = target.__CreateText;
+			const rawText = target.__CreateRawText;
+			const receivers: unknown[] = [];
+			target.__CreateView = function (parent) {
+				receivers.push(this);
+				return view.call(this, parent);
+			};
+			target.__CreateText = function (parent) {
+				receivers.push(this);
+				return text.call(this, parent);
+			};
+			target.__CreateRawText = function (value) {
+				receivers.push(this);
+				return rawText.call(this, value);
+			};
+			const papi = createLynxElementPAPI(globalThis) as ReturnType<typeof createLynxElementPAPI> & {
+				intrinsics?: {
+					view(parent: number): object;
+					text(parent: number): object;
+					rawText(value: string): object;
+				};
+			};
+			expect(papi.intrinsics).toBeDefined();
+			const page = papi.createPage('intrinsic-test', 0);
+			const pageId = papi.getUniqueId(page);
+			const element = papi.intrinsics!.view(pageId);
+			const label = papi.intrinsics!.text(pageId);
+			const value = papi.intrinsics!.rawText('native text');
+			papi.insertBefore(page, element, null);
+			papi.insertBefore(element, label, null);
+			papi.insertBefore(label, value, null);
+			expect((page as Element).textContent).toBe('native text');
+			expect(receivers.every((receiver) => receiver === globalThis)).toBe(true);
+		} finally {
+			environment.clearGlobal();
+			uninstallLynxTestingEnv(globalThis);
+			dom.window.close();
+		}
+	});
+
 	it('transfers a compatible first tree without allocating or restructuring native nodes', () => {
 		const papi = createFakePAPI();
 		const page = papi.createPage('entry', 0);
@@ -503,6 +592,52 @@ describe('Lynx Element PAPI host driver', () => {
 		expect(target.disposed).toBe(false);
 		releaseLynxFirstTree(firstTree);
 		expect(resolveLynxFirstTreeEvent(firstTree, placeholderToken)).toBeNull();
+	});
+
+	it('adopts an already-painted host template without replacing its nodes or event behavior', () => {
+		const papi = createFakePAPI();
+		const page = papi.createPage('entry', 0);
+		const shape = Object.freeze([
+			Object.freeze({ type: 'view', parent: -1 }),
+			Object.freeze({ type: 'text', parent: 0 }),
+			Object.freeze({ type: '#text', parent: 1 }),
+		]);
+		const command = (listener: number): UniversalHostCommand => ({
+			op: 'mount-template',
+			parent: null,
+			before: null,
+			shape,
+			nodes: [
+				{
+					id: 1,
+					props: { id: 'painted' },
+					events: [{ type: 'bindtap', listener: { id: listener, priority: 'discrete' } }],
+				},
+				{ id: 2, props: { class: 'label' } },
+				{ id: 3, props: { value: 'Ready' } },
+			],
+		});
+		const source = createLynxHostContainer(papi, { root: 26, page });
+		prepareLynxHostBatch(source, batch(1, [command(601)])).apply();
+		const painted = page.children[0]!;
+		const paintedLabel = painted.children[0]!;
+		const firstTree = captureLynxFirstTree(source);
+		const target = createLynxHostContainer(papi, { root: 26, page });
+
+		papi.resetCalls();
+		const prepared = prepareLynxHostBatch(target, batch(1, [command(602)]), { firstTree });
+		expect(prepared.firstTreeAction).toBe('adopt');
+		prepared.apply();
+
+		expect(page.children).toEqual([painted]);
+		expect(painted.children).toEqual([paintedLabel]);
+		expect(paintedLabel.children[0]).toMatchObject({ type: 'raw-text', text: 'Ready' });
+		expect(papi.calls.some((call) => call.startsWith('create:'))).toBe(false);
+		expect(papi.calls).not.toContain('insertBefore');
+		expect(resolveLynxHostNativeEvent(target, painted.events.get('bindEvent:tap')!)).toEqual({
+			listener: 602,
+			priority: 'discrete',
+		});
 	});
 
 	it('preserves capture aliases through compatible first-tree adoption', () => {
@@ -993,6 +1128,300 @@ describe('Lynx Element PAPI host driver', () => {
 		expect(papi.flushCount).toBe(3);
 	});
 
+	it('mounts a complete host template before an existing sibling with live events and query handles', () => {
+		const { container, driver, page, papi } = createHost(24);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'parent' } },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'existing' } },
+				{ op: 'insert', parent: null, id: 1, before: null },
+				{ op: 'insert', parent: 1, id: 2, before: null },
+			]),
+		).apply();
+
+		const command: UniversalHostCommand = {
+			op: 'mount-template',
+			parent: 1,
+			before: 2,
+			shape: [
+				{ type: 'view', parent: -1 },
+				{ type: 'text', parent: 0 },
+				{ type: '#text', parent: 1 },
+				{ type: 'view', parent: 0 },
+				{ type: 'text', parent: 3 },
+				{ type: '#text', parent: 4 },
+			],
+			nodes: [
+				{ id: 3, props: { class: 'card' } },
+				{ id: 4, props: { class: 'label' } },
+				{ id: 5, props: { value: 'First' } },
+				{
+					id: 6,
+					props: { id: 'button', title: 'ready' },
+					events: [{ type: 'bindtap', listener: { id: 401, priority: 'discrete' } }],
+				},
+				{ id: 7, props: {} },
+				{ id: 8, props: { value: 'Second' } },
+			],
+		};
+		const prepared = prepareLynxHostBatch(container, batch(2, [command]));
+		expect(prepared.handleDelta.map((delta) => delta.op)).toEqual([
+			'create',
+			'create',
+			'create',
+			'create',
+			'create',
+			'create',
+		]);
+		expect(page.children[0]!.children.map((node) => node.id)).toEqual(['existing']);
+		prepared.apply();
+
+		const parent = page.children[0]!;
+		const [card, existing] = parent.children;
+		const [label, button] = card.children;
+		expect(card.classes).toBe('card');
+		expect(existing.id).toBe('existing');
+		expect(label.classes).toBe('label');
+		expect(label.children[0]).toMatchObject({ type: 'raw-text', text: 'First' });
+		expect(button).toMatchObject({ id: 'button', attributes: { title: 'ready' } });
+		expect(button.children[0]!.children[0]).toMatchObject({ type: 'raw-text', text: 'Second' });
+		const token = button.events.get('bindEvent:tap')!;
+		expect(resolveLynxHostNativeEvent(container, token)).toEqual({
+			listener: 401,
+			priority: 'discrete',
+		});
+		for (const id of [3, 4, 5, 6, 7, 8]) {
+			expect(driver.getPublicInstance(container, id)).toMatchObject({
+				root: 24,
+				id,
+				generation: 1,
+			});
+		}
+		expect(card.selector).toBe('r24-h3-g1');
+		expect(button.selector).toBe('r24-h6-g1');
+		expect(container.instanceCount).toBe(8);
+		expect(papi.flushCount).toBe(2);
+	});
+
+	it('snapshots template values and listener identities before physical application', () => {
+		const { container, page } = createHost(25);
+		const props = { id: 'before' };
+		const listener = { id: 501, priority: 'discrete' as const };
+		const shape = [{ type: 'view', parent: -1 }];
+		const nodes = [{ id: 1, props, events: [{ type: 'bindtap', listener }] }];
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [{ op: 'mount-template', parent: null, before: null, shape, nodes }]),
+		);
+
+		props.id = 'after';
+		listener.id = 999;
+		shape[0]!.type = 'image';
+		nodes[0]!.id = 999;
+		prepared.apply();
+
+		const mounted = page.children[0]!;
+		expect(mounted).toMatchObject({ type: 'view', id: 'before' });
+		expect(resolveLynxHostNativeEvent(container, mounted.events.get('bindEvent:tap')!)).toEqual({
+			listener: 501,
+			priority: 'discrete',
+		});
+	});
+
+	it('executes a shared host program with dynamic scalar values and contiguous listener identities', () => {
+		const { container, driver, page } = createHost(35);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'card' }) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({ class: 'label' }) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 0 })]),
+				}),
+				Object.freeze({
+					type: 'view',
+					parent: 0,
+					props: Object.freeze({ class: 'action' }),
+					bindings: Object.freeze([Object.freeze({ name: 'id', valueIndex: 1 })]),
+				}),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+				Object.freeze({ node: 3, type: 'catchtap', priority: 'discrete' as const }),
+			]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-range',
+					parent: null,
+					before: null,
+					program,
+					firstId: 10,
+					values: ['Ready', 'primary'],
+					firstListenerId: 800,
+				},
+				{
+					op: 'mount-template-range',
+					parent: null,
+					before: null,
+					program,
+					firstId: 20,
+					values: ['Again', 'secondary'],
+					firstListenerId: 900,
+				},
+			]),
+		).apply();
+
+		const [first, second] = page.children;
+		expect(first.classes).toBe('card');
+		expect(first.children[0]!.classes).toBe('label');
+		expect(first.children[0]!.children[0]).toMatchObject({ type: 'raw-text', text: 'Ready' });
+		expect(first.children[1]).toMatchObject({ classes: 'action', id: 'primary' });
+		expect(second.children[0]!.children[0]!.text).toBe('Again');
+		expect(second.children[1]!.id).toBe('secondary');
+		expect(resolveLynxHostNativeEvent(container, first.events.get('bindEvent:tap')!)).toEqual({
+			listener: 800,
+			priority: 'default',
+		});
+		expect(
+			resolveLynxHostNativeEvent(container, first.children[1]!.events.get('catchEvent:tap')!),
+		).toEqual({ listener: 801, priority: 'discrete' });
+		expect(resolveLynxHostNativeEvent(container, second.events.get('bindEvent:tap')!)).toEqual({
+			listener: 900,
+			priority: 'default',
+		});
+		for (const id of [10, 11, 12, 13, 20, 21, 22, 23]) {
+			expect(driver.getPublicInstance(container, id)).toMatchObject({
+				root: 35,
+				id,
+				generation: 1,
+			});
+		}
+		expect(first.selector).toBe('r35-h10-g1');
+		expect(first.children[1]!.selector).toBe('r35-h13-g1');
+
+		const oldAction = first.children[1]!.events.get('catchEvent:tap')!;
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'update', id: 12, props: { value: 'Updated' } },
+				{
+					op: 'event',
+					id: 13,
+					type: 'catchtap',
+					listener: { id: 950, priority: 'default' },
+				},
+			]),
+		).apply();
+		expect(first.children[0]!.children[0]!.text).toBe('Updated');
+		expect(resolveLynxHostNativeEvent(container, oldAction)).toBeNull();
+		expect(
+			resolveLynxHostNativeEvent(container, first.children[1]!.events.get('catchEvent:tap')!),
+		).toEqual({ listener: 950, priority: 'default' });
+	});
+
+	it('rejects malformed program identities and scalar bindings before mutating the native tree', () => {
+		const { container, page, papi } = createHost(36);
+		const program: UniversalHostTemplateProgram = {
+			nodes: [
+				{ type: 'view', parent: -1, props: {} },
+				{ type: 'text', parent: 0, props: {} },
+				{
+					type: '#text',
+					parent: 1,
+					props: {},
+					bindings: [{ name: 'value', valueIndex: 0 }],
+				},
+			],
+			events: [{ node: 0, type: 'bindtap', priority: 'discrete' }],
+		};
+		const command = {
+			op: 'mount-template-range' as const,
+			parent: null,
+			before: null,
+			program,
+			firstId: 1,
+			values: ['ready'],
+			firstListenerId: 20,
+		};
+
+		expect(() => prepareLynxHostBatch(container, batch(1, [{ ...command, values: [] }]))).toThrow(
+			/scalar binding count/,
+		);
+		expect(() =>
+			prepareLynxHostBatch(container, batch(1, [{ ...command, firstListenerId: null }])),
+		).toThrow(/firstListenerId/);
+		expect(() =>
+			prepareLynxHostBatch(container, batch(1, [{ ...command, firstId: Number.MAX_SAFE_INTEGER }])),
+		).toThrow(/host identity range/);
+		expect(() =>
+			prepareLynxHostBatch(container, batch(1, [{ ...command, values: [false] }])),
+		).toThrow(/#text must contain a string value/);
+		expect(page.children).toEqual([]);
+		expect(container.instanceCount).toBe(0);
+		expect(papi.calls).toEqual([]);
+	});
+
+	it('preserves shared frozen static classes across host types and independent later updates', () => {
+		const { container, page } = createHost(27);
+		const shared = Object.freeze({ class: 'repeated' });
+		const shape = Object.freeze([
+			Object.freeze({ type: 'view', parent: -1 }),
+			Object.freeze({ type: 'text', parent: 0 }),
+		]);
+		const template = (root: number): UniversalHostCommand => ({
+			op: 'mount-template',
+			parent: null,
+			before: null,
+			shape,
+			nodes: [
+				{ id: root, props: shared },
+				{ id: root + 1, props: shared },
+			],
+		});
+		prepareLynxHostBatch(container, batch(1, [template(1), template(3)])).apply();
+		const [first, second] = page.children;
+		expect(first.classes).toBe('repeated');
+		expect(first.children[0]!.classes).toBe('repeated');
+		expect(second.classes).toBe('repeated');
+		expect(second.children[0]!.classes).toBe('repeated');
+
+		prepareLynxHostBatch(
+			container,
+			batch(2, [{ op: 'update', id: 1, props: { class: 'updated' } }]),
+		).apply();
+		expect(first.classes).toBe('updated');
+		expect(first.children[0]!.classes).toBe('repeated');
+		expect(second.classes).toBe('repeated');
+	});
+
+	it('reads each frozen accessor independently instead of retaining its first rendered value', () => {
+		const { container, page } = createHost(28);
+		let reads = 0;
+		const props = Object.freeze(
+			Object.defineProperty(Object.create(null) as Record<string, unknown>, 'class', {
+				enumerable: true,
+				get() {
+					return `card-${++reads}`;
+				},
+			}),
+		);
+		const shape = Object.freeze([Object.freeze({ type: 'view', parent: -1 })]);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'mount-template', parent: null, before: null, shape, nodes: [{ id: 1, props }] },
+				{ op: 'mount-template', parent: null, before: null, shape, nodes: [{ id: 2, props }] },
+			]),
+		).apply();
+		expect(page.children.map((node) => node.classes)).toEqual(['card-1', 'card-2']);
+	});
+
 	it('routes classes, styles, datasets, CSS scopes, assets, and removals through PAPI', () => {
 		const { container, driver, page } = createHost(12);
 		prepareLynxHostBatch(
@@ -1254,6 +1683,43 @@ describe('Lynx Element PAPI host driver', () => {
 		expect(resolveLynxHostNativeEvent(container, replacementToken)).toBe(null);
 	});
 
+	it('keeps listeners isolated when neighboring hosts gain and lose native handlers', () => {
+		const { container, page } = createHost(22);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'first' } },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'second' } },
+				{ op: 'event', id: 1, type: 'bindtap', listener: { id: 101, priority: 'discrete' } },
+				{ op: 'insert', parent: null, id: 1, before: null },
+				{ op: 'insert', parent: null, id: 2, before: null },
+			]),
+		).apply();
+
+		const [first, second] = page.children;
+		const firstToken = first.events.get('bindEvent:tap')!;
+		expect(resolveLynxHostNativeEvent(container, firstToken)?.listener).toBe(101);
+		expect(second.events.size).toBe(0);
+		expect(getLynxHostEventListener(container, 2, 'bindtap')).toBeNull();
+
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'event', id: 2, type: 'bindtap', listener: { id: 202, priority: 'default' } },
+				{ op: 'event', id: 1, type: 'bindtap', listener: null },
+			]),
+		).apply();
+
+		const secondToken = second.events.get('bindEvent:tap')!;
+		expect(first.events.size).toBe(0);
+		expect(resolveLynxHostNativeEvent(container, firstToken)).toBeNull();
+		expect(resolveLynxHostNativeEvent(container, secondToken)).toEqual({
+			listener: 202,
+			priority: 'default',
+		});
+		expect(getLynxHostEventListener(container, 1, 'bindtap')).toBeNull();
+	});
+
 	it('routes main-thread worklet events and refs without background callback tokens', () => {
 		const worklets = createObservedWorkletRegistry();
 		const { container, page } = createHost(21, worklets);
@@ -1355,10 +1821,13 @@ describe('Lynx Element PAPI host driver', () => {
 		});
 		prepareLynxHostBatch(
 			container,
-			batch(1, [
+			batch(1, [{ op: 'create', id: 3, type: 'view', props: {} }]),
+		).apply();
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
 				{ op: 'create', id: 1, type: 'view', props: props('detached:parent') },
 				{ op: 'create', id: 2, type: 'view', props: props('detached:child') },
-				{ op: 'create', id: 3, type: 'view', props: {} },
 				{ op: 'insert', parent: 1, id: 2, before: null },
 			]),
 		).apply();
@@ -1369,7 +1838,7 @@ describe('Lynx Element PAPI host driver', () => {
 
 		prepareLynxHostBatch(
 			container,
-			batch(2, [{ op: 'insert', parent: null, id: 1, before: null }]),
+			batch(3, [{ op: 'insert', parent: null, id: 1, before: null }]),
 		).apply();
 		const parent = page.children[0]!;
 		const child = parent.children[0]!;
@@ -1380,7 +1849,7 @@ describe('Lynx Element PAPI host driver', () => {
 
 		prepareLynxHostBatch(
 			container,
-			batch(3, [{ op: 'move', parent: 3, id: 1, before: null }]),
+			batch(4, [{ op: 'move', parent: 3, id: 1, before: null }]),
 		).apply();
 		expect(page.children).toEqual([]);
 		expect(parent.events.size).toBe(0);
@@ -1823,6 +2292,26 @@ describe('Lynx Element PAPI host driver', () => {
 				container,
 				batch(2, [
 					{ op: 'create', id: 3, type: 'view', props: {} },
+					{ op: 'insert', parent: 3, id: 3, before: null },
+				]),
+			),
+		).toThrow(/create a cycle/);
+		expect(() =>
+			prepareLynxHostBatch(
+				container,
+				batch(2, [
+					{ op: 'create', id: 3, type: 'view', props: {} },
+					{ op: 'create', id: 4, type: 'view', props: {} },
+					{ op: 'insert', parent: 3, id: 4, before: null },
+					{ op: 'insert', parent: 4, id: 3, before: null },
+				]),
+			),
+		).toThrow(/create a cycle/);
+		expect(() =>
+			prepareLynxHostBatch(
+				container,
+				batch(2, [
+					{ op: 'create', id: 3, type: 'view', props: {} },
 					{
 						op: 'insert',
 						parent: {
@@ -1841,6 +2330,46 @@ describe('Lynx Element PAPI host driver', () => {
 			/renderer mismatch/,
 		);
 		expect(() => prepareLynxHostBatch(container, batch(1, []))).toThrow(/stale batch version/);
+		expect(() =>
+			prepareLynxHostBatch(
+				container,
+				batch(2, [
+					{
+						op: 'mount-template',
+						parent: 1,
+						before: null,
+						shape: [
+							{ type: 'view', parent: -1 },
+							{ type: '#text', parent: 0 },
+						],
+						nodes: [
+							{ id: 3, props: {} },
+							{ id: 4, props: { value: 'invalid under view' } },
+						],
+					},
+				]),
+			),
+		).toThrow(/may only be placed directly under a text host/);
+		expect(() =>
+			prepareLynxHostBatch(
+				container,
+				batch(2, [
+					{
+						op: 'mount-template',
+						parent: 1,
+						before: null,
+						shape: [
+							{ type: 'view', parent: -1 },
+							{ type: 'view', parent: 1 },
+						],
+						nodes: [
+							{ id: 3, props: {} },
+							{ id: 4, props: {} },
+						],
+					},
+				]),
+			),
+		).toThrow(/earlier template node/);
 		expect(() =>
 			prepareLynxHostBatch(
 				container,
@@ -1902,6 +2431,1629 @@ describe('Lynx Element PAPI host driver', () => {
 		expect(container.instanceCount).toBe(0);
 		expect(papi.calls).toEqual([]);
 		expect(papi.flushCount).toBe(0);
+	});
+
+	it('abandons a prepared host template without creating or attaching native elements', () => {
+		const { container, page, papi } = createHost(29);
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template',
+					parent: null,
+					before: null,
+					shape: [
+						{ type: 'view', parent: -1 },
+						{ type: 'view', parent: 0 },
+					],
+					nodes: [
+						{ id: 1, props: { id: 'aborted' } },
+						{ id: 2, props: {} },
+					],
+				},
+			]),
+		);
+		prepared.abort();
+		prepared.apply();
+		expect(prepared.mutationStarted).toBe(false);
+		expect(page.children).toEqual([]);
+		expect(container.instanceCount).toBe(0);
+		expect(papi.calls).toEqual([]);
+	});
+
+	it('keeps compact first mounts queryable and reconstructs immutable legacy deltas on demand', () => {
+		const { container, driver, page } = createHost(33);
+		const shape = Object.freeze([Object.freeze({ type: 'view', parent: -1 })]);
+		const commands: UniversalHostCommand[] = Array.from({ length: 16 }, (_, index) => ({
+			op: 'mount-template',
+			parent: null,
+			before: null,
+			shape,
+			nodes: [{ id: index + 1, props: { id: `entry-${index + 1}` } }],
+		}));
+		const prepared = prepareLynxHostBatch(container, batch(1, commands), { compact: true });
+		expect(prepared.compactHostCount).toBe(16);
+		prepared.apply();
+
+		expect(page.children).toHaveLength(16);
+		expect(driver.getPublicInstance(container, 16)).toMatchObject({
+			root: 33,
+			id: 16,
+			generation: 1,
+		});
+		const deltas = prepared.handleDelta;
+		expect(deltas).toHaveLength(16);
+		expect(deltas.every((delta) => delta.op === 'create')).toBe(true);
+		expect(Object.isFrozen(deltas)).toBe(true);
+		expect(prepared.handleDelta).toBe(deltas);
+	});
+
+	it('counts implicit program hosts for compact acknowledgements without losing native listeners', () => {
+		const { container, page } = createHost(37);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'row' }) }),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 1, type: 'bindtap', priority: 'discrete' as const }),
+			]),
+		});
+		const commands: UniversalHostCommand[] = Array.from({ length: 8 }, (_, index) => ({
+			op: 'mount-template-range',
+			parent: null,
+			before: null,
+			program,
+			firstId: index * 2 + 1,
+			values: [],
+			firstListenerId: 100 + index,
+		}));
+		const prepared = prepareLynxHostBatch(container, batch(1, commands), { compact: true });
+		expect(prepared.compactHostCount).toBe(16);
+		prepared.apply();
+		expect(page.children).toHaveLength(8);
+		expect(page.children.at(-1)!.children[0]!.classes).toBe('action');
+		expect(
+			resolveLynxHostNativeEvent(
+				container,
+				page.children.at(-1)!.children[0]!.events.get('bindEvent:tap')!,
+			),
+		).toEqual({ listener: 107, priority: 'discrete' });
+		expect(prepared.handleDelta).toHaveLength(16);
+	});
+
+	it('mounts a dense program run before an existing sibling with sparse public instances and events', () => {
+		const { container, driver, page, papi } = createHost(43);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([
+						Object.freeze({ name: 'class', valueIndex: 0 }),
+						Object.freeze({ name: 'id', valueIndex: 1 }),
+					]),
+				}),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({ class: 'label' }) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 2 })]),
+				}),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+				Object.freeze({ node: 3, type: 'catchtap', priority: 'discrete' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'insert', parent: null, id: 1, before: null },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'anchor' } },
+				{ op: 'insert', parent: 1, id: 2, before: null },
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: 2,
+					program,
+					firstId: 10,
+					firstListenerId: 700,
+					count: 3,
+					values: Object.freeze([
+						'first',
+						'row-1',
+						'One',
+						'second',
+						'row-2',
+						'Two',
+						'third',
+						'row-3',
+						'Three',
+					]),
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(14);
+		prepared.apply();
+
+		const shell = page.children[0]!;
+		expect(shell.children.map((child) => child.id)).toEqual(['row-1', 'row-2', 'row-3', 'anchor']);
+		expect(shell.children[0]!.children[0]!.children[0]!.text).toBe('One');
+		expect(shell.children[1]!.children[0]!.children[0]!.text).toBe('Two');
+		expect(shell.children[2]!.children[0]!.children[0]!.text).toBe('Three');
+		expect(shell.children[0]!.selector).toBe('');
+		expect(shell.children[1]!.children[1]!.selector).toBe('');
+		expect(shell.children[3]!.selector).toBe('r43-h2-g1');
+
+		const secondRootListener = shell.children[1]!.events.get('bindEvent:tap')!;
+		expect(resolveLynxHostNativeEvent(container, secondRootListener)).toEqual({
+			listener: 702,
+			priority: 'default',
+		});
+		expect(
+			resolveLynxHostNativeEvent(
+				container,
+				shell.children[2]!.children[1]!.events.get('catchEvent:tap')!,
+			),
+		).toEqual({ listener: 705, priority: 'discrete' });
+		expect(getLynxHostEventListener(container, 21, 'catchtap')).toEqual({
+			id: 705,
+			priority: 'discrete',
+		});
+
+		papi.resetCalls();
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'update', id: 16, props: { value: 'Updated' } },
+				{
+					op: 'event',
+					id: 14,
+					type: 'bindtap',
+					listener: { id: 900, priority: 'continuous' },
+				},
+				{ op: 'ensure-public-instance', id: 21 },
+			]),
+		).apply();
+		expect(shell.children[1]!.children[0]!.children[0]!.text).toBe('Updated');
+		expect(resolveLynxHostNativeEvent(container, secondRootListener)).toBeNull();
+		expect(
+			resolveLynxHostNativeEvent(container, shell.children[1]!.events.get('bindEvent:tap')!),
+		).toEqual({ listener: 900, priority: 'continuous' });
+		expect(shell.children[2]!.children[1]!.selector).toBe('r43-h21-g1');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toHaveLength(1);
+		expect(driver.getPublicInstance(container, 21)).toMatchObject({ id: 21, generation: 1 });
+		expect(prepared.handleDelta).toHaveLength(14);
+	});
+
+	it('rejects unsafe program runs before entering the Element PAPI', () => {
+		const { container, page, papi } = createHost(44);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'id', valueIndex: 0 })]),
+				}),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		const command = {
+			op: 'mount-template-run' as const,
+			parent: null,
+			before: null,
+			program,
+			firstId: 1,
+			firstListenerId: 90,
+			count: 2,
+			values: ['one', 'two'],
+		};
+		for (const invalid of [
+			{ ...command, count: 0 },
+			{ ...command, count: Number.MAX_SAFE_INTEGER },
+			{ ...command, firstId: Number.MAX_SAFE_INTEGER },
+			{ ...command, firstListenerId: Number.MAX_SAFE_INTEGER },
+			{ ...command, firstListenerId: null },
+			{ ...command, values: ['one'] },
+			{ ...command, values: ['one', {}] },
+		]) {
+			expect(
+				() => prepareLynxHostBatch(container, batch(1, [invalid as never])),
+				JSON.stringify(invalid),
+			).toThrow();
+		}
+		expect(page.children).toEqual([]);
+		expect(container.instanceCount).toBe(0);
+		expect(papi.calls).toEqual([]);
+	});
+
+	it('hydrates dense run hosts sparsely across trailing shell attachment, updates, teardown, and reuse', () => {
+		const { container, driver, page, papi } = createHost(46);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([
+						Object.freeze({ name: 'class', valueIndex: 0 }),
+						Object.freeze({ name: 'id', valueIndex: 1 }),
+					]),
+				}),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({ class: 'label' }) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 2 })]),
+				}),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+				Object.freeze({ node: 3, type: 'catchtap', priority: 'discrete' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'table' } },
+				{
+					op: 'mount-template-run',
+					parent: 2,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 800,
+					count: 3,
+					values: Object.freeze([
+						'first',
+						'row-1',
+						'One',
+						'second',
+						'row-2',
+						'Two',
+						'third',
+						'row-3',
+						'Three',
+					]),
+				},
+				{ op: 'insert', parent: 1, id: 2, before: null },
+				{ op: 'insert', parent: null, id: 1, before: null },
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(14);
+		prepared.apply();
+		expect(container.instanceCount).toBe(14);
+		const table = page.children[0]!.children[0]!;
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'row-2', 'row-3']);
+		expect(table.children[1]!.classes).toBe('second');
+		expect(table.children[1]!.children[0]!.children[0]!.text).toBe('Two');
+		expect(table.children[1]!.selector).toBe('');
+		const previous = table.children[1]!.events.get('bindEvent:tap')!;
+		expect(resolveLynxHostNativeEvent(container, previous)).toEqual({
+			listener: 802,
+			priority: 'default',
+		});
+
+		papi.resetCalls();
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'update', id: 14, props: { class: 'selected', id: 'row-2' } },
+				{ op: 'update', id: 16, props: { value: 'Changed' } },
+				{
+					op: 'event',
+					id: 14,
+					type: 'bindtap',
+					listener: { id: 990, priority: 'continuous' },
+				},
+				{ op: 'ensure-public-instance', id: 21 },
+			]),
+		).apply();
+		expect(table.children[1]!.classes).toBe('selected');
+		expect(table.children[1]!.children[0]!.children[0]!.text).toBe('Changed');
+		expect(resolveLynxHostNativeEvent(container, previous)).toBeNull();
+		expect(
+			resolveLynxHostNativeEvent(container, table.children[1]!.events.get('bindEvent:tap')!),
+		).toEqual({ listener: 990, priority: 'continuous' });
+		expect(table.children[2]!.children[1]!.selector).toBe('r46-h21-g1');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toHaveLength(1);
+
+		const retired = table.children[1]!.events.get('bindEvent:tap')!;
+		prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{ op: 'remove', parent: 2, id: 14 },
+				{ op: 'destroy', id: 16 },
+				{ op: 'destroy', id: 15 },
+				{ op: 'destroy', id: 17 },
+				{ op: 'destroy', id: 14 },
+			]),
+		).apply();
+		expect(container.instanceCount).toBe(10);
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'row-3']);
+		expect(resolveLynxHostNativeEvent(container, retired)).toBeNull();
+
+		prepareLynxHostBatch(
+			container,
+			batch(4, [
+				{ op: 'create', id: 14, type: 'view', props: { id: 'replacement' } },
+				{ op: 'insert', parent: 2, id: 14, before: 18 },
+			]),
+		).apply();
+		expect(container.instanceCount).toBe(11);
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'replacement', 'row-3']);
+		expect(driver.getPublicInstance(container, 14)?.generation).toBe(2);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('snapshots mutable run values before a caller can replace validated text between prepare and apply', () => {
+		const { container, page } = createHost(47);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([
+						Object.freeze({ name: 'class', valueIndex: 0 }),
+						Object.freeze({ name: 'id', valueIndex: 1 }),
+					]),
+				}),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 2 })]),
+				}),
+			]),
+			events: Object.freeze([]),
+		});
+		const values: Array<string | number> = ['accepted-class', 'accepted-id', 'Accepted'];
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-run',
+					parent: null,
+					before: null,
+					program,
+					firstId: 1,
+					firstListenerId: null,
+					count: 1,
+					values,
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		values[0] = 'tampered-class';
+		values[1] = 'tampered-id';
+		values[2] = 42;
+		prepared.apply();
+		expect(page.children[0]).toMatchObject({ classes: 'accepted-class', id: 'accepted-id' });
+		expect(page.children[0]!.children[0]!.children[0]!.text).toBe('Accepted');
+	});
+
+	it('retains pre-journaled run listeners for cleanup when native event installation mutates then fails', () => {
+		const { container, page, papi } = createHost(45);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-run',
+					parent: null,
+					before: null,
+					program,
+					firstId: 1,
+					firstListenerId: 301,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		const failure = new Error('run event installation mutated then failed');
+		papi.failNext('setEvent', 'after', failure);
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(1);
+		expect(prepared.handleDelta).toHaveLength(2);
+		expect(page.children).toEqual([]);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(container.disposed).toBe(true);
+	});
+
+	it('installs only requested public-instance selectors for negotiated compact program hosts', () => {
+		const { container, driver, page, papi } = createHost(38);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'row' }) }),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({ type: '#text', parent: 2, props: Object.freeze({ value: 'ready' }) }),
+			]),
+			events: Object.freeze([]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'insert', id: 1, parent: null, before: null },
+				{
+					op: 'mount-template-range',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 2,
+					values: [],
+					firstListenerId: null,
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(5);
+		prepared.apply();
+
+		const shell = page.children[0]!;
+		const row = shell.children[0]!;
+		const action = row.children[0]!;
+		const text = row.children[1]!;
+		expect(shell.selector).toBe('r38-h1-g1');
+		expect(row.selector).toBe('');
+		expect(action.selector).toBe('');
+		expect(text.selector).toBe('');
+		expect(text.children[0]!.text).toBe('ready');
+
+		papi.resetCalls();
+		const publicHandle = driver.getPublicInstance(container, 3);
+		expect(publicHandle).toMatchObject({
+			id: 3,
+			generation: 1,
+			selector: '[octane-ref=r38-h3-g1]',
+		});
+		expect(Object.isFrozen(publicHandle)).toBe(true);
+		expect(Object.keys(publicHandle!)).toEqual([
+			'$$kind',
+			'renderer',
+			'root',
+			'id',
+			'type',
+			'generation',
+			'selector',
+		]);
+		expect(action.selector).toBe('r38-h3-g1');
+		expect(row.selector).toBe('');
+		expect(text.selector).toBe('');
+		expect(papi.calls).toEqual(['setRefSelector']);
+		expect(driver.getPublicInstance(container, 3)).toBe(publicHandle);
+		expect(papi.calls).toEqual(['setRefSelector']);
+
+		papi.resetCalls();
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'ensure-public-instance', id: 2 },
+				{ op: 'ensure-public-instance', id: 2 },
+				{ op: 'ensure-public-instance', id: 5 },
+			]),
+		).apply();
+		expect(row.selector).toBe('r38-h2-g1');
+		expect(text.selector).toBe('');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual(['setRefSelector']);
+	});
+
+	it('keeps accepted-root program hosts queryable without publishing unrequested selectors', () => {
+		const { container, driver, page, papi } = createHost(48);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const shell = page.children[0]!;
+		expect(shell.selector).toBe('r48-h1-g1');
+
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'row' }) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({ class: 'label' }) }),
+				Object.freeze({ type: '#text', parent: 1, props: Object.freeze({ value: 'ready' }) }),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 3, type: 'bindtap', priority: 'discrete' as const }),
+			]),
+		});
+		papi.resetCalls();
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 700,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBeUndefined();
+		prepared.apply();
+		expect(shell.selector).toBe('r48-h1-g1');
+		expect(shell.children).toHaveLength(2);
+		expect(shell.children[0]!.selector).toBe('');
+		expect(shell.children[1]!.children[0]!.selector).toBe('');
+		expect(shell.children[1]!.children[0]!.children[0]!.text).toBe('ready');
+		expect(shell.children[1]!.children[1]!.selector).toBe('');
+		expect(
+			resolveLynxHostNativeEvent(
+				container,
+				shell.children[1]!.children[1]!.events.get('bindEvent:tap')!,
+			),
+		).toEqual({
+			listener: 701,
+			priority: 'discrete',
+		});
+		expect(prepared.handleDelta).toHaveLength(8);
+		expect(prepared.handleDelta.every((delta) => delta.op === 'create')).toBe(true);
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual([]);
+
+		const requested = driver.getPublicInstance(container, 17);
+		expect(requested).toMatchObject({
+			id: 17,
+			generation: 1,
+			selector: '[octane-ref=r48-h17-g1]',
+		});
+		expect(shell.children[1]!.children[1]!.selector).toBe('r48-h17-g1');
+		expect(shell.children[0]!.selector).toBe('');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual(['setRefSelector']);
+		expect(driver.getPublicInstance(container, 17)).toBe(requested);
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual(['setRefSelector']);
+
+		papi.resetCalls();
+		prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{ op: 'ensure-public-instance', id: 10 },
+				{ op: 'ensure-public-instance', id: 10 },
+			]),
+		).apply();
+		expect(shell.children[0]!.selector).toBe('r48-h10-g1');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual(['setRefSelector']);
+	});
+
+	it('preserves adopted-shell identity while compact program rows remain live and sparsely queryable', () => {
+		const { container, driver, page, papi } = createHost(52);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'table' } },
+				{ op: 'insert', id: 2, parent: 1, before: null },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const shellHandle = driver.getPublicInstance(container, 1);
+		const shell = page.children[0]!;
+		const table = shell.children[0]!;
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([
+						Object.freeze({ name: 'class', valueIndex: 0 }),
+						Object.freeze({ name: 'id', valueIndex: 1 }),
+					]),
+				}),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({ class: 'label' }) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 2 })]),
+				}),
+				Object.freeze({ type: 'view', parent: 0, props: Object.freeze({ class: 'action' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+				Object.freeze({ node: 3, type: 'catchtap', priority: 'discrete' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 2,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 900,
+					count: 3,
+					values: Object.freeze([
+						'first',
+						'row-1',
+						'One',
+						'second',
+						'row-2',
+						'Two',
+						'third',
+						'row-3',
+						'Three',
+					]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(12);
+		expect(container.instanceCount).toBe(2);
+		expect(table.children).toEqual([]);
+		prepared.apply();
+		expect(container.instanceCount).toBe(14);
+		expect(driver.getPublicInstance(container, 1)).toBe(shellHandle);
+		expect(shell.selector).toBe('r52-h1-g1');
+		expect(table.selector).toBe('r52-h2-g1');
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'row-2', 'row-3']);
+		expect(table.children[1]!.classes).toBe('second');
+		expect(table.children[1]!.children[0]!.children[0]!.text).toBe('Two');
+		expect(table.children[1]!.selector).toBe('');
+		const retired = table.children[1]!.events.get('bindEvent:tap')!;
+		expect(resolveLynxHostNativeEvent(container, retired)).toEqual({
+			listener: 902,
+			priority: 'default',
+		});
+
+		papi.resetCalls();
+		prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{ op: 'update', id: 14, props: { class: 'selected', id: 'row-2' } },
+				{ op: 'update', id: 16, props: { value: 'Changed' } },
+				{
+					op: 'event',
+					id: 14,
+					type: 'bindtap',
+					listener: { id: 990, priority: 'continuous' },
+				},
+				{ op: 'ensure-public-instance', id: 21 },
+			]),
+		).apply();
+		expect(table.children[1]!.classes).toBe('selected');
+		expect(table.children[1]!.children[0]!.children[0]!.text).toBe('Changed');
+		expect(resolveLynxHostNativeEvent(container, retired)).toBeNull();
+		expect(
+			resolveLynxHostNativeEvent(container, table.children[1]!.events.get('bindEvent:tap')!),
+		).toEqual({ listener: 990, priority: 'continuous' });
+		expect(table.children[2]!.children[1]!.selector).toBe('r52-h21-g1');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual(['setRefSelector']);
+
+		prepareLynxHostBatch(
+			container,
+			batch(4, [
+				{ op: 'remove', parent: 2, id: 14 },
+				{ op: 'destroy', id: 16 },
+				{ op: 'destroy', id: 15 },
+				{ op: 'destroy', id: 17 },
+				{ op: 'destroy', id: 14 },
+			]),
+		).apply();
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'row-3']);
+		prepareLynxHostBatch(
+			container,
+			batch(5, [
+				{ op: 'create', id: 14, type: 'view', props: { id: 'replacement' } },
+				{ op: 'insert', parent: 2, id: 14, before: 18 },
+			]),
+		).apply();
+		expect(driver.getPublicInstance(container, 14)?.generation).toBe(2);
+		expect(table.children.map((node) => node.id)).toEqual(['row-1', 'replacement', 'row-3']);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('abandons a compact accepted-root suffix without changing the accepted shell', () => {
+		const { container, driver, page, papi } = createHost(53);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const accepted = driver.getPublicInstance(container, 1);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([]),
+		});
+		papi.resetCalls();
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(2);
+		expect(container.instanceCount).toBe(1);
+		expect(page.children[0]!.children).toEqual([]);
+		prepared.abort();
+		prepared.apply();
+		expect(container.instanceCount).toBe(1);
+		expect(container.acceptedVersion).toBe(1);
+		expect(driver.getPublicInstance(container, 1)).toBe(accepted);
+		expect(page.children[0]!.children).toEqual([]);
+		expect(papi.calls).toEqual([]);
+	});
+
+	it('uses direct intrinsic factories for dense programs without changing dynamic text, events, or custom hosts', () => {
+		const { container, page, papi } = createHost(60);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const create = papi.createElement.bind(papi);
+		const directTypes: string[] = [];
+		const genericTypes: string[] = [];
+		const optimized = papi as FakePAPI & {
+			intrinsics: {
+				view(parent: number): FakeNode;
+				text(parent: number): FakeNode;
+				rawText(value: string): FakeNode;
+			};
+		};
+		optimized.intrinsics = Object.freeze({
+			view(parent: number): FakeNode {
+				directTypes.push('view');
+				return create('view', parent, '');
+			},
+			text(parent: number): FakeNode {
+				directTypes.push('text');
+				return create('text', parent, '');
+			},
+			rawText(value: string): FakeNode {
+				directTypes.push('raw-text');
+				return create('#text', 0, value);
+			},
+		});
+		papi.createElement = (type, parent, text) => {
+			if (type === 'view' || type === 'text' || type === '#text' || type === 'raw-text') {
+				throw new Error(`Intrinsic ${type} used the generic factory.`);
+			}
+			genericTypes.push(type);
+			return create(type, parent, text);
+		};
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({
+					type: '#text',
+					parent: 1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'value', valueIndex: 0 })]),
+				}),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({ type: '#text', parent: 3, props: Object.freeze({ value: 'static' }) }),
+				Object.freeze({ type: 'image', parent: 0, props: Object.freeze({}) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 700,
+					count: 2,
+					values: Object.freeze(['first', 'second']),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		).apply();
+		const rows = page.children[0]!.children;
+		expect(rows.map((row) => row.children[0]!.children[0]!.text)).toEqual(['first', 'second']);
+		expect(rows.map((row) => row.children[1]!.children[0]!.text)).toEqual(['static', 'static']);
+		expect(rows.map((row) => row.children[2]!.type)).toEqual(['image', 'image']);
+		expect(directTypes).toHaveLength(10);
+		expect(genericTypes).toEqual(['image', 'image']);
+		expect(resolveLynxHostNativeEvent(container, rows[1]!.events.get('bindEvent:tap')!)).toEqual({
+			listener: 701,
+			priority: 'default',
+		});
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('appends dense intrinsic children natively while preserving later explicit sibling anchors', () => {
+		const { container, page, papi } = createHost(58);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const shell = page.children[0]!;
+		const appendedParents: FakeNode[] = [];
+		(papi as FakePAPI & { append(parent: FakeNode, child: FakeNode): void }).append = (
+			parent,
+			child,
+		) => {
+			appendedParents.push(parent);
+			papi.insertBefore(parent, child, null);
+		};
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({ type: '#text', parent: 1, props: Object.freeze({ value: 'ready' }) }),
+			]),
+			events: Object.freeze([]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		).apply();
+		expect(shell.children.map((row) => row.children[0]!.children[0]!.text)).toEqual([
+			'ready',
+			'ready',
+		]);
+		expect(appendedParents).toContain(shell);
+		expect(appendedParents.some((parent) => parent.type === 'text')).toBe(true);
+
+		const appendCount = appendedParents.length;
+		prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{
+					op: 'mount-template-range',
+					parent: 1,
+					before: 10,
+					program,
+					firstId: 30,
+					firstListenerId: null,
+					values: [],
+				},
+			]),
+		).apply();
+		expect(shell.children).toHaveLength(3);
+		expect(appendedParents).toHaveLength(appendCount);
+	});
+
+	it('retains complete cleanup ownership when native append mutates and then fails', () => {
+		const { container, page, papi } = createHost(59);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const failure = new Error('native append attached then failed');
+		let first = true;
+		(papi as FakePAPI & { append(parent: FakeNode, child: FakeNode): void }).append = (
+			parent,
+			child,
+		) => {
+			papi.insertBefore(parent, child, null);
+			if (first) {
+				first = false;
+				throw failure;
+			}
+		};
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 850,
+					count: 1,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(2);
+		expect(page.children[0]!.children).toHaveLength(1);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('preserves accepted-shell ownership and full legacy handles when a compact suffix faults', () => {
+		const { container, driver, page, papi } = createHost(54);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const shell = driver.getPublicInstance(container, 1);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 850,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBe(2);
+		const failure = new Error('accepted compact listener mutated then failed');
+		papi.failNext('setEvent', 'after', failure);
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(2);
+		expect(driver.getPublicInstance(container, 1)).toBe(shell);
+		expect(
+			prepared.handleDelta.map((delta) => (delta.op === 'destroy' ? delta.id : delta.handle.id)),
+		).toEqual([10, 11]);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('snapshots mutable accepted-root program values instead of trusting an incremental suffix', () => {
+		const { container, page } = createHost(55);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({
+					type: 'view',
+					parent: -1,
+					props: Object.freeze({}),
+					bindings: Object.freeze([Object.freeze({ name: 'id', valueIndex: 0 })]),
+				}),
+			]),
+			events: Object.freeze([]),
+		});
+		const values = ['accepted'];
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 1,
+					values,
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBeUndefined();
+		values[0] = 'tampered';
+		prepared.apply();
+		expect(page.children[0]!.children[0]!.id).toBe('accepted');
+	});
+
+	it('preserves historical host generations instead of accepting an overlapping compact suffix', () => {
+		const { container, driver, page } = createHost(56);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'create', id: 10, type: 'view', props: { id: 'old' } },
+				{ op: 'insert', id: 10, parent: 1, before: null },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'remove', parent: 1, id: 10 },
+				{ op: 'destroy', id: 10 },
+			]),
+		).apply();
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ id: 'new' }) }),
+			]),
+			events: Object.freeze([]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 1,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBeUndefined();
+		prepared.apply();
+		expect(page.children[0]!.children[0]!.id).toBe('new');
+		expect(driver.getPublicInstance(container, 10)?.generation).toBe(2);
+	});
+
+	it('leaves detached accepted-root additions on the ordinary acknowledgement path', () => {
+		const { container, page } = createHost(57);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [{ op: 'create', id: 1, type: 'view', props: {} }]),
+		).apply();
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-run',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 1,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBeUndefined();
+		prepared.apply();
+		expect(container.instanceCount).toBe(2);
+		expect(page.children).toEqual([]);
+	});
+
+	it('keeps accepted-root selectors eager for unnegotiated or mixed host commands', () => {
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'row' }) }),
+			]),
+			events: Object.freeze([]),
+		});
+		for (const mixed of [false, true]) {
+			const { container, page } = createHost(mixed ? 50 : 49);
+			prepareLynxHostBatch(
+				container,
+				batch(1, [
+					{ op: 'create', id: 1, type: 'view', props: {} },
+					{ op: 'insert', id: 1, parent: null, before: null },
+				]),
+			).apply();
+			const commands: UniversalHostCommand[] = [
+				{
+					op: 'mount-template-range',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 2,
+					firstListenerId: null,
+					values: [],
+				},
+			];
+			if (mixed) {
+				commands.push(
+					{ op: 'create', id: 3, type: 'view', props: {} },
+					{ op: 'insert', id: 3, parent: 1, before: null },
+				);
+			}
+			prepareLynxHostBatch(
+				container,
+				batch(2, commands),
+				mixed ? { lazyPublicInstances: true } : undefined,
+			).apply();
+			expect(page.children[0]!.children[0]!.selector).toBe(`r${mixed ? 50 : 49}-h2-g1`);
+			if (mixed) expect(page.children[0]!.children[1]!.selector).toBe('r50-h3-g1');
+		}
+	});
+
+	it('cleans an accepted root when a lazily published program listener mutates before failing', () => {
+		const { container, page, papi } = createHost(51);
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: {} },
+				{ op: 'insert', id: 1, parent: null, before: null },
+			]),
+		).apply();
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{
+					op: 'mount-template-range',
+					parent: 1,
+					before: null,
+					program,
+					firstId: 2,
+					firstListenerId: 800,
+					values: [],
+				},
+			]),
+			{ lazyPublicInstances: true },
+		);
+		const failure = new Error('accepted-root listener mutated then failed');
+		papi.resetCalls();
+		papi.failNext('setEvent', 'after', failure);
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(2);
+		expect(prepared.handleDelta).toHaveLength(1);
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toEqual([]);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('keeps program selectors eager unless a safe compact mount explicitly negotiates laziness', () => {
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([]),
+		});
+		const command: UniversalHostCommand = {
+			op: 'mount-template-range',
+			parent: null,
+			before: null,
+			program,
+			firstId: 1,
+			values: [],
+			firstListenerId: null,
+		};
+		for (const options of [undefined, { compact: true }, { lazyPublicInstances: true }]) {
+			const { container, page } = createHost(39);
+			prepareLynxHostBatch(container, batch(1, [command]), options).apply();
+			expect(page.children[0]!.selector).toBe('r39-h1-g1');
+		}
+
+		const { container, page, papi } = createHost(40);
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [command, { op: 'ensure-public-instance', id: 1 }]),
+			{ compact: true, lazyPublicInstances: true },
+		);
+		expect(prepared.compactHostCount).toBeUndefined();
+		prepared.apply();
+		expect(page.children[0]!.selector).toBe('r40-h1-g1');
+		expect(papi.calls.filter((call) => call === 'setRefSelector')).toHaveLength(1);
+
+		papi.resetCalls();
+		expect(() =>
+			prepareLynxHostBatch(container, batch(2, [{ op: 'ensure-public-instance', id: 99 }])),
+		).toThrow(/unknown public instance target 99/);
+		expect(papi.calls).toEqual([]);
+	});
+
+	it('retires a complete compact run without disturbing its shell, events, or generations', () => {
+		const { container, driver, page } = createHost(64);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([
+				Object.freeze({ type: 'view', parent: -1, props: Object.freeze({ class: 'row' }) }),
+				Object.freeze({ type: 'text', parent: 0, props: Object.freeze({}) }),
+				Object.freeze({ type: '#text', parent: 1, props: Object.freeze({ value: 'ready' }) }),
+			]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'shell' } },
+				{ op: 'create', id: 2, type: 'view', props: { id: 'rows' } },
+				{
+					op: 'mount-template-run',
+					parent: 2,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 100,
+					count: 2,
+					values: Object.freeze([]),
+				},
+				{ op: 'insert', parent: 1, id: 2, before: null },
+				{ op: 'insert', parent: null, id: 1, before: null },
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		).apply();
+		const shell = page.children[0]!;
+		const rows = shell.children[0]!;
+		const first = rows.children[0]!;
+		const second = rows.children[1]!;
+		const firstEvent = first.events.get('bindEvent:tap')!;
+		const secondEvent = second.events.get('bindEvent:tap')!;
+		const teardownCommands: UniversalHostCommand[] = [
+			{ op: 'event', id: 10, type: 'bindtap', listener: null },
+			{ op: 'event', id: 13, type: 'bindtap', listener: null },
+			{ op: 'remove', parent: 2, id: 10 },
+			{ op: 'remove', parent: 2, id: 13 },
+			{ op: 'destroy', id: 12 },
+			{ op: 'destroy', id: 11 },
+			{ op: 'destroy', id: 10 },
+			{ op: 'destroy', id: 15 },
+			{ op: 'destroy', id: 14 },
+			{ op: 'destroy', id: 13 },
+		];
+
+		const abandoned = prepareLynxHostBatch(container, batch(2, teardownCommands));
+		abandoned.abort();
+		abandoned.apply();
+		expect(rows.children).toEqual([first, second]);
+		expect(resolveLynxHostNativeEvent(container, firstEvent)).toEqual({
+			listener: 100,
+			priority: 'default',
+		});
+
+		const teardown = prepareLynxHostBatch(container, batch(2, teardownCommands));
+		expect(teardown.handleDelta.map((delta) => (delta.op === 'destroy' ? delta.id : -1))).toEqual([
+			12, 11, 10, 15, 14, 13,
+		]);
+		teardown.apply();
+		expect(page.children).toEqual([shell]);
+		expect(shell.children).toEqual([rows]);
+		expect(rows.children).toEqual([]);
+		expect(first.events.size).toBe(0);
+		expect(second.events.size).toBe(0);
+		expect(resolveLynxHostNativeEvent(container, firstEvent)).toBeNull();
+		expect(resolveLynxHostNativeEvent(container, secondEvent)).toBeNull();
+		expect(container.instanceCount).toBe(2);
+		expect(driver.getPublicInstance(container, 10)).toBeNull();
+
+		const remount = prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{
+					op: 'mount-template-run',
+					parent: 2,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: 200,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, incrementalCompact: true, lazyPublicInstances: true },
+		);
+		expect(remount.compactHostCount).toBeUndefined();
+		remount.apply();
+		expect(rows.children).toHaveLength(2);
+		prepareLynxHostBatch(container, batch(4, [])).apply();
+		const repeatedTeardown = prepareLynxHostBatch(
+			container,
+			batch(5, [
+				{ op: 'event', id: 10, type: 'bindtap', listener: null },
+				{ op: 'event', id: 13, type: 'bindtap', listener: null },
+				{ op: 'remove', parent: 2, id: 10 },
+				{ op: 'remove', parent: 2, id: 13 },
+				{ op: 'destroy', id: 12 },
+				{ op: 'destroy', id: 11 },
+				{ op: 'destroy', id: 10 },
+				{ op: 'destroy', id: 15 },
+				{ op: 'destroy', id: 14 },
+				{ op: 'destroy', id: 13 },
+			]),
+		);
+		expect(
+			repeatedTeardown.handleDelta.every(
+				(delta) => delta.op === 'destroy' && delta.generation === 2,
+			),
+		).toBe(true);
+		repeatedTeardown.apply();
+		expect(rows.children).toEqual([]);
+
+		prepareLynxHostBatch(
+			container,
+			batch(6, [
+				{ op: 'create', id: 10, type: 'view', props: { id: 'replacement' } },
+				{ op: 'insert', parent: 2, id: 10, before: null },
+			]),
+		).apply();
+		expect(driver.getPublicInstance(container, 10)?.generation).toBe(3);
+		expect(rows.children.map((node) => node.id)).toEqual(['replacement']);
+	});
+
+	it('retains compact-run ownership for terminal cleanup when fast teardown faults', () => {
+		const { container, page, papi } = createHost(65);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-run',
+					parent: null,
+					before: null,
+					program,
+					firstId: 10,
+					firstListenerId: null,
+					count: 2,
+					values: Object.freeze([]),
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		).apply();
+		const failure = new Error('fast teardown remove failed');
+		papi.failNext('remove', 'before', failure);
+		const teardown = prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'remove', parent: null, id: 10 },
+				{ op: 'remove', parent: null, id: 11 },
+				{ op: 'destroy', id: 10 },
+				{ op: 'destroy', id: 11 },
+			]),
+		);
+		expect(() => teardown.apply()).toThrow(failure);
+		expect(teardown.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(2);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('preserves compact generation tombstones across destroy, identity reuse, and recreation', () => {
+		const { container, driver, page } = createHost(41);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-range',
+					parent: null,
+					before: null,
+					program,
+					firstId: 1,
+					values: [],
+					firstListenerId: 501,
+				},
+				{
+					op: 'mount-template-range',
+					parent: null,
+					before: null,
+					program,
+					firstId: 2,
+					values: [],
+					firstListenerId: 502,
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		).apply();
+		const retiredListener = page.children[0]!.events.get('bindEvent:tap')!;
+
+		prepareLynxHostBatch(
+			container,
+			batch(2, [
+				{ op: 'remove', parent: null, id: 1 },
+				{ op: 'destroy', id: 1 },
+			]),
+		).apply();
+		expect(resolveLynxHostNativeEvent(container, retiredListener)).toBeNull();
+		prepareLynxHostBatch(
+			container,
+			batch(3, [
+				{ op: 'create', id: 1, type: 'view', props: { id: 'replacement' } },
+				{ op: 'event', id: 1, type: 'bindtap', listener: { id: 601, priority: 'discrete' } },
+				{ op: 'insert', parent: null, id: 1, before: null },
+			]),
+		).apply();
+		expect(driver.getPublicInstance(container, 1)?.generation).toBe(2);
+		expect(resolveLynxHostNativeEvent(container, retiredListener)).toBeNull();
+		expect(
+			resolveLynxHostNativeEvent(container, page.children[1]!.events.get('bindEvent:tap')!),
+		).toEqual({ listener: 601, priority: 'discrete' });
+
+		prepareLynxHostBatch(
+			container,
+			batch(4, [{ op: 'recreate', id: 2, type: 'view', props: { id: 'recreated' } }]),
+		).apply();
+		expect(driver.getPublicInstance(container, 2)?.generation).toBe(2);
+		expect(driver.getPublicInstance(container, 1)?.generation).toBe(2);
+	});
+
+	it('treats a deferred selector installation failure as an accepted, cleanable host fault', () => {
+		const { container, page, papi } = createHost(42);
+		const program: UniversalHostTemplateProgram = Object.freeze({
+			nodes: Object.freeze([Object.freeze({ type: 'view', parent: -1, props: Object.freeze({}) })]),
+			events: Object.freeze([
+				Object.freeze({ node: 0, type: 'bindtap', priority: 'default' as const }),
+			]),
+		});
+		prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template-range',
+					parent: null,
+					before: null,
+					program,
+					firstId: 1,
+					values: [],
+					firstListenerId: 701,
+				},
+			]),
+			{ compact: true, lazyPublicInstances: true },
+		).apply();
+		const node = page.children[0]!;
+		expect(node.selector).toBe('');
+		const failure = new Error('deferred selector mutated then failed');
+		papi.failNext('setRefSelector', 'after', failure);
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(2, [{ op: 'ensure-public-instance', id: 1 }]),
+		);
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		expect(container.acceptedVersion).toBe(2);
+		expect(node.selector).toBe('r42-h1-g1');
+		expect(node.events.size).toBe(1);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(node.events.size).toBe(0);
+		expect(page.children).toEqual([]);
+	});
+
+	it('retains every legacy handle when a negotiated compact mount faults after acceptance', () => {
+		const { container, page, papi } = createHost(34);
+		const shape = Object.freeze([Object.freeze({ type: 'view', parent: -1 })]);
+		const commands: UniversalHostCommand[] = Array.from({ length: 16 }, (_, index) => ({
+			op: 'mount-template',
+			parent: null,
+			before: null,
+			shape,
+			nodes: [{ id: index + 1, props: { id: `partial-${index + 1}` } }],
+		}));
+		const prepared = prepareLynxHostBatch(container, batch(1, commands), { compact: true });
+		const failure = new Error('compact template insertion mutated then failed');
+		papi.failNext('insertBefore', 'after', failure);
+
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.compactHostCount).toBe(16);
+		expect(prepared.handleDelta).toHaveLength(16);
+		expect(prepared.handleDelta.at(-1)).toMatchObject({
+			op: 'create',
+			handle: { root: 34, id: 16, generation: 1 },
+		});
+		expect(page.children).toHaveLength(1);
+		expect(disposeLynxHostContainer(container).complete).toBe(true);
+		expect(page.children).toEqual([]);
+	});
+
+	it('releases template-owned listeners and page roots after a partially applied native fault', () => {
+		const { container, page, papi } = createHost(30);
+		const failure = new Error('template insertion mutated then failed');
+		papi.failNext('insertBefore', 'after', failure);
+		const prepared = prepareLynxHostBatch(
+			container,
+			batch(1, [
+				{
+					op: 'mount-template',
+					parent: null,
+					before: null,
+					shape: [{ type: 'view', parent: -1 }],
+					nodes: [
+						{
+							id: 1,
+							props: { id: 'partial-template' },
+							events: [{ type: 'bindtap', listener: { id: 701, priority: 'discrete' } }],
+						},
+					],
+				},
+			]),
+		);
+
+		expect(() => prepared.apply()).toThrow(failure);
+		expect(prepared.mutationStarted).toBe(true);
+		const partial = page.children[0]!;
+		expect(partial.id).toBe('partial-template');
+		expect(partial.events.size).toBe(1);
+		expect(container.acceptedVersion).toBe(1);
+
+		const cleanup = disposeLynxHostContainer(container);
+		expect(cleanup.complete).toBe(true);
+		expect(cleanup.removedRoots).toBe(1);
+		expect(partial.events.size).toBe(0);
+		expect(page.children).toEqual([]);
+		expect(container.disposed).toBe(true);
 	});
 
 	it('retains an attached node for idempotent terminal cleanup when a mutation throws', () => {

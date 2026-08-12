@@ -1,10 +1,10 @@
 {
   "name": "@octanejs/cmdk",
-  "version": "0.1.1",
+  "version": "0.1.19",
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "cmdk for the octane renderer — the cmdk 1.1.1 command-menu source ported onto octane's hooks and native events: the Command namespace, useCommandState, and the DOM-authoritative filter/selection model, built on @octanejs/radix primitives.",
   "author": {
@@ -45,8 +45,10 @@
     "cmdk": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
+    "@types/react": "catalog:cmdk-react-oracle",
+    "@types/react-dom": "catalog:cmdk-react-oracle",
+    "react": "catalog:cmdk-react-oracle",
+    "react-dom": "catalog:cmdk-react-oracle",
     "vitest": "catalog:default"
   }
 }

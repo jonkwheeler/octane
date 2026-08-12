@@ -43,6 +43,15 @@ const PREVIEW_RECEIVER_NAME = 'main__preview_receiver';
 const BUNDLE_NAME = 'main.lynx.bundle';
 const FORBIDDEN_RUNTIME = /(?:^|[^$\w])(?:react|react-dom|preact|ReactLynx)(?:[^$\w]|$)/i;
 const FORBIDDEN_DOM = /\b(?:document|window|HTMLElement|MutationObserver)\b/;
+// Recalibrated on upstream main ffadd397, which contains merged #706 and #707.
+// These exact deterministic caps keep the accepted worklet boundary, #706
+// size tax, and subsequent mainline parity work visible together instead of
+// applying any controlled gzip delta additively.
+const NO_WORKLET_BUDGET = Object.freeze({
+	previewMainGzip: 77_286,
+	ifrMainGzip: 82_274,
+	backgroundRaw: 272_504,
+});
 
 function packageEntry(packageName) {
 	const packageRoot = path.join(RSPEEDY_MODULES, ...packageName.split('/'));
@@ -378,6 +387,18 @@ try {
 			`preview and IFR ${operation} differ`,
 		);
 	}
+	gate(
+		preview.ops.main_gzip.score <= NO_WORKLET_BUDGET.previewMainGzip,
+		`preview main gzip ${preview.ops.main_gzip.score} exceeds ${NO_WORKLET_BUDGET.previewMainGzip}`,
+	);
+	gate(
+		ifr.ops.main_gzip.score <= NO_WORKLET_BUDGET.ifrMainGzip,
+		`IFR main gzip ${ifr.ops.main_gzip.score} exceeds ${NO_WORKLET_BUDGET.ifrMainGzip}`,
+	);
+	gate(
+		preview.ops.background_raw.score === NO_WORKLET_BUDGET.backgroundRaw,
+		`background raw ${preview.ops.background_raw.score} differs from ${NO_WORKLET_BUDGET.backgroundRaw}`,
+	);
 } catch (error) {
 	failed = error instanceof Error ? error.stack || error.message : String(error);
 	console.error(failed);

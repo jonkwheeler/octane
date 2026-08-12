@@ -11,6 +11,7 @@
  * may change in patch releases until real Three and transported renderers
  * validate the protocol.
  */
+import { hasOwnProp } from './has-own.js';
 import {
 	__profileBeginRender,
 	__profileComponentSource,
@@ -18,12 +19,17 @@ import {
 	__profileSchedule,
 	__profileTrackComponent,
 } from './profiling.js';
+import { getRendererHostFlusher } from './renderer-bridge.js';
+import { resolveLazyDefaultProps } from './shared-value-helpers.js';
+
+declare const __OCTANE_PROFILE_ENABLED__: boolean;
 
 const UNIVERSAL_PLAN = Symbol.for('octane.universal.plan');
 const UNIVERSAL_VALUE = Symbol.for('octane.universal.value');
 const UNIVERSAL_LIST = Symbol.for('octane.universal.list');
 const UNIVERSAL_COMPONENT = Symbol.for('octane.universal.component');
 const UNIVERSAL_COMPONENT_VALUE = Symbol.for('octane.universal.component-value');
+const UNIVERSAL_HOST_COMPONENT = Symbol('octane.universal.host-component');
 const UNIVERSAL_PROPS = Symbol.for('octane.universal.props');
 const UNIVERSAL_CHILDREN = Symbol.for('octane.universal.children');
 const UNIVERSAL_IF = Symbol.for('octane.universal.if');
@@ -42,6 +48,8 @@ const UNIVERSAL_COMPONENT_REVISION = Symbol('octane.universal.component-revision
 const NO_CHILDREN = Symbol('octane.universal.no-children');
 const NO_KEY = Symbol('octane.universal.no-key');
 const NO_PENDING_PASSIVE_ERROR = Symbol('octane.universal.no-pending-passive-error');
+
+let HAS_UNIVERSAL_HOST_COMPONENTS = false;
 
 /** Structured-clone protocol version used by experimental transported roots. */
 export const UNIVERSAL_TRANSPORT_PROTOCOL_VERSION = 1 as const;
@@ -192,6 +200,13 @@ export type UniversalComponent<P = any> = ((
 	readonly [UNIVERSAL_COMPONENT]: UniversalRendererMetadata;
 };
 
+interface UniversalHostComponentMetadata<P = any> {
+	readonly component: UniversalComponent<P>;
+	readonly renderer: string;
+	readonly plan: UniversalPlan;
+	readonly specializations: Map<string, UniversalPlan>;
+}
+
 export type UniversalPropEntry =
 	readonly ['set', name: string, value: unknown] | readonly ['spread', value: unknown];
 
@@ -240,6 +255,11 @@ export interface UniversalForValue {
 	readonly empty: (() => UniversalRenderable) | null;
 	readonly ownerless: boolean;
 	readonly compact: boolean;
+	readonly hostComponent?: UniversalComponent<any>;
+	readonly leafPlan?: UniversalPlan;
+	readonly leafSignature?: string;
+	readonly template?: boolean;
+	readonly componentScope?: boolean;
 }
 
 export interface UniversalTryValue {
@@ -305,6 +325,18 @@ export interface UniversalHostCapabilities {
 	 * may additionally compact these leaves.
 	 */
 	readonly compilerLeafProps?: boolean;
+	/** Accepts immutable, shape-sharing commands for wholly fresh intrinsic host trees. */
+	readonly templateMount?: boolean;
+	/** Scalar static host props are encoded deterministically and may be shared within one root. */
+	readonly stableStaticHostProps?: boolean;
+	/** Allows fresh static template descendants to remain logically opaque until first replay. */
+	readonly collapsedTemplateMount?: boolean;
+	/** Accepts shared immutable intrinsic programs with contiguous host and listener IDs. */
+	readonly templateProgramMount?: boolean;
+	/** Defers renderer-owned public-instance metadata until explicitly requested by core. */
+	readonly lazyPublicInstances?: boolean;
+	/** Accepts consecutive contiguous instances of one immutable intrinsic host program. */
+	readonly templateProgramRuns?: boolean;
 }
 
 export interface UniversalResourceHandle {
@@ -420,6 +452,70 @@ export interface UniversalHostAttachmentCapability<Container = unknown> {
 	): UniversalHostAttachmentRegistration;
 }
 
+/** Immutable, renderer-neutral shape shared by repeated compiler-hoisted host trees. */
+export interface UniversalHostTemplateShapeNode {
+	readonly type: string;
+	/** Earlier shape-node index, or -1 for the template's one physical root. */
+	readonly parent: number;
+}
+
+/** A native event installed on one freshly mounted template host. */
+export interface UniversalHostTemplateEvent {
+	readonly type: string;
+	readonly listener: UniversalEventListenerDescriptor;
+}
+
+/** Per-instance values paired by index with one immutable host-template shape. */
+export interface UniversalHostTemplateNode {
+	readonly id: number;
+	readonly props: Readonly<Record<string, unknown>>;
+	readonly events?: readonly UniversalHostTemplateEvent[];
+}
+
+/** One scalar instance value patched into a shared intrinsic host program. */
+export interface UniversalHostTemplateProgramBinding {
+	readonly name: string;
+	readonly valueIndex: number;
+}
+
+/** Immutable, renderer-encoded static host information shared by repeated mounts. */
+export interface UniversalHostTemplateProgramNode {
+	readonly type: string;
+	readonly parent: number;
+	readonly props: Readonly<Record<string, unknown>>;
+	readonly bindings?: readonly UniversalHostTemplateProgramBinding[];
+}
+
+/** A stable native listener site whose ID is derived from the instance range. */
+export interface UniversalHostTemplateProgramEvent {
+	readonly node: number;
+	readonly type: string;
+	readonly priority: UniversalEventPriority;
+}
+
+/** Immutable renderer-neutral program reused by fresh intrinsic host subtrees. */
+export interface UniversalHostTemplateProgram {
+	readonly nodes: readonly UniversalHostTemplateProgramNode[];
+	readonly events: readonly UniversalHostTemplateProgramEvent[];
+}
+
+/** Encoded primitive that can be transported directly without object reconstruction. */
+export type UniversalHostTemplateProgramValue =
+	string | number | boolean | bigint | null | undefined;
+
+function isUniversalHostTemplateProgramValue(
+	value: unknown,
+): value is UniversalHostTemplateProgramValue {
+	return (
+		value === null ||
+		value === undefined ||
+		typeof value === 'string' ||
+		typeof value === 'number' ||
+		typeof value === 'boolean' ||
+		typeof value === 'bigint'
+	);
+}
+
 export type UniversalHostCommand =
 	| {
 			readonly op: 'create';
@@ -428,9 +524,39 @@ export type UniversalHostCommand =
 			readonly props: Readonly<Record<string, unknown>>;
 	  }
 	| {
+			readonly op: 'mount-template';
+			readonly parent: UniversalHostParent;
+			readonly before: number | null;
+			readonly shape: readonly UniversalHostTemplateShapeNode[];
+			readonly nodes: readonly UniversalHostTemplateNode[];
+	  }
+	| {
+			readonly op: 'mount-template-range';
+			readonly parent: UniversalHostParent;
+			readonly before: number | null;
+			readonly program: UniversalHostTemplateProgram;
+			readonly firstId: number;
+			readonly values: readonly UniversalHostTemplateProgramValue[];
+			readonly firstListenerId: number | null;
+	  }
+	| {
+			readonly op: 'mount-template-run';
+			readonly parent: UniversalHostParent;
+			readonly before: number | null;
+			readonly program: UniversalHostTemplateProgram;
+			readonly firstId: number;
+			readonly firstListenerId: number | null;
+			readonly count: number;
+			readonly values: readonly UniversalHostTemplateProgramValue[];
+	  }
+	| {
 			readonly op: 'update';
 			readonly id: number;
 			readonly props: Readonly<Record<string, unknown>>;
+	  }
+	| {
+			readonly op: 'ensure-public-instance';
+			readonly id: number;
 	  }
 	| {
 			readonly op: 'recreate';
@@ -577,6 +703,21 @@ export interface UniversalAsyncPreparedHostBatch {
 	abort(): void;
 }
 
+function isValidPreparedHostBatch(
+	prepared: unknown,
+): prepared is UniversalPreparedHostBatch | UniversalAsyncPreparedHostBatch {
+	return (
+		prepared !== null &&
+		typeof prepared === 'object' &&
+		typeof (prepared as UniversalPreparedHostBatch).apply === 'function' &&
+		typeof (prepared as UniversalPreparedHostBatch).abort === 'function' &&
+		((prepared as UniversalPreparedHostBatch).afterAccept === undefined ||
+			typeof (prepared as UniversalPreparedHostBatch).afterAccept === 'function')
+	);
+}
+
+function noopUniversalCommitTask(): void {}
+
 export interface UniversalHostDriver<Container = unknown, PublicInstance = unknown> {
 	readonly id: string;
 	readonly capabilities?: UniversalHostCapabilities;
@@ -621,6 +762,26 @@ export interface UniversalRootOptions<Container> {
 	 * the standard global `queueMicrotask` (for example Lynx PrimJS).
 	 */
 	scheduleMicrotask?: (callback: () => void) => void;
+	/**
+	 * React 19 parity, reporting only: called after a `universalTry` catch arm
+	 * claims an error from this root — a render-time throw its arm catches, or
+	 * an effect/host-callback error routed to it between renders. Mirrors the
+	 * DOM runtime's `createRoot` option: only the error is passed (no
+	 * `errorInfo`/`componentStack` second argument).
+	 */
+	onCaughtError?: (error: unknown) => void;
+	/**
+	 * React 19 parity: called for an error no boundary claims. When provided it
+	 * REPLACES the default report for this root's scheduler-owned work — a
+	 * scheduled render error stops rethrowing out of the microtask flush (or,
+	 * on a transported root, out of `flushTransport()`), and an unrouted
+	 * effect/host-callback error stops rethrowing out of the commit or passive
+	 * flush. Direct `prepare()`/`render()`/`commit()` calls still throw: the
+	 * thrown attempt is that API's documented result channel. Recovery
+	 * semantics are unchanged either way — the failed attempt is discarded and
+	 * committed content is retained exactly as without the option.
+	 */
+	onUncaughtError?: (error: unknown) => void;
 }
 
 export interface UniversalTransaction {
@@ -664,11 +825,26 @@ interface BlueprintCompactLeafList {
 	propCount: number;
 }
 
+interface BlueprintCompactTemplateList {
+	readonly plan: UniversalPlan;
+	readonly compiled: CompiledCollapsedTemplateProgram;
+	readonly program: PreparedCollapsedTemplateProgram;
+	readonly keys: UniversalKey[];
+	readonly values: (readonly UniversalHostTemplateProgramValue[])[];
+	readonly captures: (readonly unknown[])[];
+	readonly owner: UniversalOwnerRecord;
+}
+
 interface BlueprintRange {
 	kind: 'range';
 	key: UniversalKey | null;
 	children: BlueprintNode[];
+	owner?: UniversalOwnerRecord;
 	compactLeafList?: BlueprintCompactLeafList;
+	compactTemplateList?: BlueprintCompactTemplateList;
+	// The committed range this marker stands for: the subtree neither re-rendered
+	// nor re-drafted, so reconciliation must adopt the committed records as-is.
+	retained?: LogicalRecord;
 }
 
 interface BlueprintHost {
@@ -683,6 +859,26 @@ interface BlueprintHost {
 	localCallbacks: Map<string, BlueprintHostCallback>;
 	visibility: UniversalVisibility;
 	children: BlueprintNode[];
+	/** Hoisted source shape retained only for an optional initial host-template mount. */
+	templatePlan?: UniversalHostPlan;
+	/** Renderer-approved fresh descendants that have not allocated logical records. */
+	collapsedTemplate?: BlueprintCollapsedTemplate;
+}
+
+interface BlueprintCollapsedTemplateNode {
+	readonly props: Record<string, unknown>;
+	readonly events?: readonly BlueprintEvent[];
+}
+
+interface BlueprintCollapsedTemplate {
+	readonly program: CompiledCollapsedTemplateProgram;
+	readonly nodes: readonly BlueprintCollapsedTemplateNode[] | null;
+	readonly prepared?: PreparedCollapsedTemplateProgram;
+	readonly values?: readonly UniversalHostTemplateProgramValue[];
+	readonly captures?: readonly unknown[];
+	readonly owner?: UniversalOwnerRecord;
+	ids: number[] | null;
+	firstId?: number;
 }
 
 interface BlueprintPortal {
@@ -727,6 +923,27 @@ interface LogicalRecord {
 	portalRegistration: UniversalPortalTargetRegistration | null;
 	parent: LogicalRecord | null;
 	children: LogicalRecord[];
+	collapsedTemplate?: CommittedCollapsedTemplate;
+}
+
+interface CommittedCollapsedTemplateEvent {
+	readonly index: number;
+	readonly event: CommittedEvent;
+}
+
+interface CommittedCollapsedTemplate {
+	readonly shape: readonly UniversalHostTemplateShapeNode[];
+	readonly nodes:
+		| readonly {
+				readonly id?: number;
+				readonly props: Readonly<Record<string, unknown>>;
+		  }[]
+		| null;
+	readonly events: readonly CommittedCollapsedTemplateEvent[];
+	readonly owner: UniversalOwnerRecord;
+	readonly firstId?: number;
+	readonly prepared?: PreparedCollapsedTemplateProgram;
+	readonly values?: readonly UniversalHostTemplateProgramValue[];
 }
 
 interface CommittedEvent extends BlueprintEvent {
@@ -741,6 +958,8 @@ const EMPTY_BLUEPRINT_EVENTS = new Map<string, BlueprintEvent>();
 const EMPTY_BLUEPRINT_HOST_CALLBACKS = new Map<string, BlueprintHostCallback>();
 const EMPTY_COMMITTED_EVENTS = new Map<string, CommittedEvent>();
 const EMPTY_COMMITTED_HOST_CALLBACKS = new Map<string, CommittedHostCallback>();
+const EMPTY_STATIC_HOST_PROPS: Record<string, unknown> = Object.freeze({});
+const EMPTY_STATIC_PROP_NAMES: readonly string[] = Object.freeze([]);
 
 interface DraftRecord {
 	record: LogicalRecord;
@@ -748,6 +967,9 @@ interface DraftRecord {
 	children: DraftRecord[];
 	isNew: boolean;
 	hostUpdate: UniversalHostUpdateKind | null;
+	// A retained subtree adopts its committed records wholesale: commit must not
+	// rewrite the record's children, and placement reads them from the record.
+	retained?: boolean;
 }
 
 type EffectPhase = 'insertion' | 'layout' | 'passive';
@@ -759,6 +981,42 @@ interface StateHook<T = unknown> {
 	set: (value: T | ((previous: T) => T)) => void;
 	get: () => T;
 }
+
+export interface LinkedStatePrevious<Source, Value> {
+	source: Source;
+	value: Value;
+}
+
+export interface LinkedStateOptions<Source, Value> {
+	sourceEqual?: (previous: Source, next: Source) => boolean;
+	valueEqual?: (previous: Value, next: Value) => boolean;
+}
+
+interface LinkedStateHook<Source = unknown, Value = unknown> {
+	kind: 'state';
+	linked: true;
+	source: Source;
+	generation: number;
+	generationBase: Value;
+	value: Value;
+	valueEqual: (previous: Value, next: Value) => boolean;
+	set: (value: Value | ((previous: Value) => Value)) => void;
+	get?: () => Value;
+}
+
+interface ParkedUniversalLinkedDraft<Source = unknown, Value = unknown> {
+	source: Source;
+	value: Value;
+	valueEqual: (previous: Value, next: Value) => boolean;
+	generation: number;
+	updated: boolean;
+}
+
+// Retained Suspense commits the old primary owner while discarding its speculative
+// replacement owner. Preserve only linked-state source drafts here; ordinary
+// state hooks never allocate, consult, or change this optional side table.
+let PARKED_UNIVERSAL_LINKED_DRAFTS: WeakMap<object, ParkedUniversalLinkedDraft<any, any>> | null =
+	null;
 
 interface ReducerHook<S = unknown, A = unknown> {
 	kind: 'reducer';
@@ -820,6 +1078,7 @@ interface EffectHook {
 
 type UniversalHook =
 	| StateHook<any>
+	| LinkedStateHook<any, any>
 	| ReducerHook<any, any>
 	| MemoHook
 	| ComponentMemoHook
@@ -832,6 +1091,11 @@ interface UniversalOwnerRecord {
 	readonly root: UniversalRootImpl<any, any>;
 	readonly renderer: string;
 	component: UniversalComponent<any> | null;
+	componentProps: any;
+	// The component revision this owner last rendered under. HMR swaps keep the
+	// wrapper identity and bump only the revision, so a retained-subtree reuse
+	// must compare it to know the committed output still reflects current code.
+	componentRevision: number;
 	parent: UniversalOwnerRecord | null;
 	identityPath: readonly unknown[];
 	key: unknown;
@@ -840,6 +1104,11 @@ interface UniversalOwnerRecord {
 	hooks: Map<unknown, UniversalHook>;
 	effectOrder: EffectHook[];
 	children: UniversalOwnerRecord[];
+	// The root's dirty epoch this owner (or a descendant) was last scheduled in.
+	// Comparing against an attempt's consumed epoch answers "does this subtree
+	// carry scheduled work?" in O(1); stale epochs expire without any clearing.
+	dirtyEpoch: number;
+	range: LogicalRecord | null;
 	contextValues: Map<UniversalContext<any>, unknown> | null;
 	updates: Map<unknown, UniversalHookUpdateQueue>;
 	isBoundary: boolean;
@@ -860,6 +1129,7 @@ interface BoundaryOwner {
 interface RenderAttempt {
 	root: UniversalRootImpl<any, any>;
 	owner: DraftOwner;
+	scope: UniversalOwnerRecord | null;
 	owners: DraftOwner[];
 	treeFeatures: number;
 	replayEntries: readonly SuspendedMemoEntry[];
@@ -869,6 +1139,16 @@ interface RenderAttempt {
 	transitionBatches: ReadonlySet<UniversalTransitionBatch>;
 	transitionRender: boolean;
 	bridgeContextReads: Map<UniversalContext<any>, unknown> | null;
+	// Whether this attempt may reuse committed component subtrees whose inputs
+	// are provably unchanged instead of re-rendering them. Only plain urgent
+	// attempts qualify; replay, transition, and bridge renders need every owner
+	// re-executed for their own bookkeeping.
+	retainEligible: boolean;
+	retainedCount: number;
+	// The dirty epoch this attempt consumed. An owner stamped with it contains
+	// scheduled work, so its subtree must re-render even when its props, update
+	// queues, and contexts look clean.
+	dirtyEpoch: number;
 }
 
 const UNIVERSAL_TREE_PORTAL = 1 << 0;
@@ -881,13 +1161,24 @@ const UNIVERSAL_TREE_HIDDEN = 1 << 6;
 
 interface DraftOwner {
 	record: UniversalOwnerRecord;
+	componentProps: any;
+	componentRevision: number;
 	parent: DraftOwner | null;
 	replayPath: readonly SuspendedOwnerSegment[];
 	hooks: Map<unknown, UniversalHook>;
 	clonedHooks: Set<unknown>;
 	seenEffects: EffectHook[];
 	children: DraftOwner[];
+	// Committed child owners adopted without re-rendering, with the drafted-child
+	// index each was claimed at so commit can rebuild record.children in exact
+	// claim order.
+	retainedChildren: { record: UniversalOwnerRecord; position: number }[] | null;
 	claimedChildren: Set<UniversalOwnerRecord>;
+	// Claims almost always revisit committed children in their original order,
+	// so a plain cursor with a direct identity compare resolves them without
+	// touching the identity-path index; the first out-of-order claim builds the
+	// buckets and retires the cursor for this render.
+	sequentialClaimCursor: number;
 	childOwnerBuckets: OwnerIdentityIndex<UniversalOwnerRecord[]> | null;
 	childClaimCursors: OwnerIdentityIndex<number> | null;
 	childReplayOrdinals: OwnerIdentityIndex<number> | null;
@@ -901,6 +1192,9 @@ interface DraftOwner {
 	isBoundary: boolean;
 	canHandleSuspense: boolean;
 	visibility: UniversalVisibility;
+	// Lazily memoized answer to "has any context this owner can observe changed
+	// value since the last commit?"; null until computed for this attempt.
+	contextStable: boolean | null;
 }
 
 interface LazyLeafOwnerScope {
@@ -1116,7 +1410,8 @@ class UniversalRendererRegionOwnerBridge implements RendererRegionOwnerBridge {
 			try {
 				dispose();
 			} catch (error) {
-				if (!routeUniversalOwnerError(this.owner, error)) console.error(error);
+				if (routeUniversalOwnerError(this.owner, error)) continue;
+				if (!reportUniversalUncaughtError(this.owner.root, error)) console.error(error);
 			}
 		}
 		cell.disposing = false;
@@ -1186,7 +1481,8 @@ function freezePlanNode(node: UniversalPlanNode): UniversalPlanNode {
 		if (typeof node.type !== 'string' || node.type === '') {
 			throw new TypeError('A universal host plan requires a non-empty string type.');
 		}
-		const props = Object.freeze({ ...(node.props ?? {}) });
+		const props =
+			node.props === undefined ? EMPTY_STATIC_HOST_PROPS : Object.freeze({ ...node.props });
 		const bindings = Object.freeze(
 			(node.bindings ?? []).map((binding) => Object.freeze([binding[0], binding[1]] as const)),
 		);
@@ -1330,7 +1626,7 @@ function assignUniversalPropSpread(
 	}
 
 	let protoAssigned = false;
-	const needsProtoGuard = hasOwnProto && !Object.prototype.hasOwnProperty.call(props, '__proto__');
+	const needsProtoGuard = hasOwnProto && !hasOwnProp.call(props, '__proto__');
 	if (needsProtoGuard) {
 		Object.defineProperty(props, '__proto__', {
 			configurable: true,
@@ -1360,7 +1656,17 @@ export function universalProps(
 	entries: readonly UniversalPropEntry[],
 	children: unknown = NO_CHILDREN,
 	canonicalizeHostClass = false,
+	compilerOwnedRecord = false,
 ): UniversalPropsValue {
+	if (compilerOwnedRecord) {
+		return {
+			$$kind: UNIVERSAL_PROPS,
+			props: Object.freeze(entries as unknown as Record<string, unknown>),
+			key: null,
+			hasKey: false,
+			hasChildren: false,
+		};
+	}
 	const props: Record<string, unknown> = {};
 	if (!canonicalizeHostClass) {
 		for (const entry of entries) {
@@ -1389,7 +1695,7 @@ export function universalProps(
 		}
 	}
 	if (children !== NO_CHILDREN) props.children = children;
-	const hasKey = Object.prototype.hasOwnProperty.call(props, 'key');
+	const hasKey = hasOwnProp.call(props, 'key');
 	const key = hasKey ? props.key : null;
 	if (hasKey) delete props.key;
 	return {
@@ -1397,7 +1703,7 @@ export function universalProps(
 		props: Object.freeze(props),
 		key,
 		hasKey,
-		hasChildren: Object.prototype.hasOwnProperty.call(props, 'children'),
+		hasChildren: hasOwnProp.call(props, 'children'),
 	};
 }
 
@@ -1460,8 +1766,58 @@ export function universalFor<T>(
 	empty: (() => UniversalRenderable) | null = null,
 	ownerless = false,
 	compact = false,
+	hostComponent?: UniversalComponent<any> | true,
+	leafPlan?: UniversalPlan,
+	leafSignature?: string,
+	componentScope = false,
 ): UniversalForValue {
-	return { $$kind: UNIVERSAL_FOR, items, key, render, empty, ownerless, compact };
+	if (componentScope) {
+		return {
+			$$kind: UNIVERSAL_FOR,
+			items,
+			key,
+			render,
+			empty,
+			ownerless,
+			compact,
+			componentScope: true,
+		};
+	}
+	if (hostComponent === true) {
+		return { $$kind: UNIVERSAL_FOR, items, key, render, empty, ownerless, compact, template: true };
+	}
+	if (leafSignature !== undefined) {
+		return {
+			$$kind: UNIVERSAL_FOR,
+			items,
+			key,
+			render,
+			empty,
+			ownerless,
+			compact,
+			...(hostComponent === undefined ? null : { hostComponent }),
+			...(leafPlan === undefined ? null : { leafPlan }),
+			leafSignature,
+		};
+	}
+	if (leafPlan !== undefined) {
+		return hostComponent === undefined
+			? { $$kind: UNIVERSAL_FOR, items, key, render, empty, ownerless, compact, leafPlan }
+			: {
+					$$kind: UNIVERSAL_FOR,
+					items,
+					key,
+					render,
+					empty,
+					ownerless,
+					compact,
+					hostComponent,
+					leafPlan,
+				};
+	}
+	return hostComponent === undefined
+		? { $$kind: UNIVERSAL_FOR, items, key, render, empty, ownerless, compact }
+		: { $$kind: UNIVERSAL_FOR, items, key, render, empty, ownerless, compact, hostComponent };
 }
 
 export function universalTry(
@@ -1572,6 +1928,112 @@ export function defineUniversalComponent<P>(
 	return render as UniversalComponent<P>;
 }
 
+/** Certify a binding-owned component that only forwards its props to one host. */
+export function markUniversalHostComponent<P>(
+	component: UniversalComponent<P>,
+	renderer: string,
+	plan: UniversalPlan,
+): UniversalComponent<P> {
+	assertRendererId(renderer, 'markUniversalHostComponent renderer');
+	if (getComponentMetadata(component).id !== renderer) {
+		throw new Error('A universal host component and its renderer must match.');
+	}
+	if ((component as any)[UNIVERSAL_HMR] !== undefined) {
+		throw new Error('A hot-reloadable component cannot be certified as a universal host.');
+	}
+	if (
+		plan?.$$kind !== UNIVERSAL_PLAN ||
+		plan.renderer !== renderer ||
+		plan.root.kind !== 'host' ||
+		plan.root.type === '#text' ||
+		plan.root.propsSlot !== 0 ||
+		(plan.root.children?.length ?? 0) !== 0 ||
+		(plan.root.bindings?.length ?? 0) !== 0 ||
+		Object.keys(plan.root.props ?? {}).length !== 0
+	) {
+		throw new TypeError('A universal host component requires one matching forwarded-props host.');
+	}
+	const existing = (component as any)[UNIVERSAL_HOST_COMPONENT] as
+		UniversalHostComponentMetadata<P> | undefined;
+	if (existing !== undefined) {
+		if (
+			existing.component === component &&
+			existing.renderer === renderer &&
+			existing.plan === plan
+		) {
+			return component;
+		}
+		throw new Error('A universal host component cannot change its certified host plan.');
+	}
+	Object.defineProperty(component, UNIVERSAL_HOST_COMPONENT, {
+		value: Object.freeze({ component, renderer, plan, specializations: new Map() }),
+	});
+	HAS_UNIVERSAL_HOST_COMPONENTS = true;
+	return component;
+}
+
+function trustedUniversalHostComponent(
+	component: UniversalComponent<any>,
+	renderer: string,
+): UniversalHostComponentMetadata | null {
+	if (
+		!HAS_UNIVERSAL_HOST_COMPONENTS ||
+		(typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__)
+	) {
+		return null;
+	}
+	const metadata = (component as any)[UNIVERSAL_HOST_COMPONENT] as
+		UniversalHostComponentMetadata | undefined;
+	return metadata !== undefined &&
+		metadata.component === component &&
+		metadata.renderer === renderer &&
+		(component as any)[UNIVERSAL_HMR] === undefined
+		? metadata
+		: null;
+}
+
+function parseUniversalHostComponentSignature(signature: string): readonly string[] {
+	const names: unknown = JSON.parse(signature);
+	if (
+		!Array.isArray(names) ||
+		new Set(names).size !== names.length ||
+		names.some(
+			(name) =>
+				typeof name !== 'string' ||
+				name === '__proto__' ||
+				name === 'key' ||
+				name === 'ref' ||
+				name === 'children' ||
+				name === 'attach' ||
+				name.startsWith('on'),
+		)
+	) {
+		throw new TypeError('A universal host component requires safe, unique ordinary prop names.');
+	}
+	return names;
+}
+
+/** Compiler ABI: resolve one certified adapter's immutable leaf plan once per list. */
+export function universalHostComponentLeafPlan(
+	renderer: string,
+	component: UniversalComponent<any>,
+	signature: string,
+): UniversalPlan | undefined {
+	const host = trustedUniversalHostComponent(component, renderer);
+	if (host === null) return undefined;
+	let plan = host.specializations.get(signature);
+	if (plan === undefined) {
+		const names = parseUniversalHostComponentSignature(signature);
+		plan = universalPlan(renderer, {
+			kind: 'host',
+			type: (host.plan.root as UniversalHostPlan).type,
+			bindings: names.map((name, index) => [name, index] as const),
+		});
+		host.specializations.set(signature, plan);
+	}
+	return plan;
+}
+
 export const UNIVERSAL_HMR: unique symbol = Symbol.for('octane.universal.hmr');
 
 interface UniversalHmrMeta {
@@ -1612,7 +2074,9 @@ export function hmrUniversalComponent<P>(
 			}
 			meta.component = next;
 			meta.revision++;
-			__profileComponentSource(wrapper, next);
+			if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+				__profileComponentSource(wrapper, next);
+			}
 			if ((next as any).__warm === undefined) delete (wrapper as any).__warm;
 			else (wrapper as any).__warm = (next as any).__warm;
 			for (const owner of owners) {
@@ -1620,7 +2084,9 @@ export function hmrUniversalComponent<P>(
 					owners.delete(owner);
 					continue;
 				}
-				__profileSchedule(owner, 'hmr');
+				if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+					__profileSchedule(owner, 'hmr');
+				}
 				owner.root.schedule();
 			}
 		},
@@ -1638,7 +2104,9 @@ export function hmrUniversalComponent<P>(
 		[UNIVERSAL_HMR]: { value: meta },
 		[UNIVERSAL_COMPONENT_REVISION]: { get: () => meta.revision },
 	});
-	__profileComponentSource(wrapper, component);
+	if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+		__profileComponentSource(wrapper, component);
+	}
 	if ((component as any).__warm !== undefined) (wrapper as any).__warm = (component as any).__warm;
 	return wrapper;
 }
@@ -1724,6 +2192,8 @@ function createOwnerRecord(
 		root,
 		renderer: root.renderer,
 		component,
+		componentProps: null,
+		componentRevision: 0,
 		parent,
 		identityPath,
 		key,
@@ -1732,6 +2202,8 @@ function createOwnerRecord(
 		hooks: new Map(),
 		effectOrder: [],
 		children: [],
+		dirtyEpoch: 0,
+		range: null,
 		contextValues: null,
 		updates: new Map(),
 		isBoundary: false,
@@ -1752,13 +2224,17 @@ function draftOwner(
 ): DraftOwner {
 	return {
 		record,
+		componentProps: record.componentProps,
+		componentRevision: record.componentRevision,
 		parent,
 		replayPath,
 		hooks: new Map(record.hooks),
 		clonedHooks: new Set(),
 		seenEffects: [],
 		children: [],
+		retainedChildren: null,
 		claimedChildren: new Set(),
+		sequentialClaimCursor: 0,
 		childOwnerBuckets: null,
 		childClaimCursors: null,
 		childReplayOrdinals: null,
@@ -1771,7 +2247,8 @@ function draftOwner(
 		boundaryThenable: record.boundaryThenable,
 		isBoundary: record.isBoundary,
 		canHandleSuspense: record.canHandleSuspense,
-		visibility: parent?.visibility ?? 'visible',
+		visibility: parent?.visibility ?? record.visibility,
+		contextStable: null,
 	};
 }
 
@@ -1809,34 +2286,124 @@ function childOwnerBucket(
 	return readOwnerIdentity(buckets, component, identityPath, key);
 }
 
+function identityPathsEqual(left: readonly unknown[], right: readonly unknown[]): boolean {
+	if (left === right) return true;
+	if (left.length !== right.length) return false;
+	for (let index = 0; index < left.length; index++) {
+		if (!Object.is(left[index], right[index])) return false;
+	}
+	return true;
+}
+
+function findClaimableChildRecord(
+	parent: DraftOwner,
+	component: UniversalComponent<any> | null,
+	identityPath: readonly unknown[],
+	key: unknown,
+): UniversalOwnerRecord | undefined {
+	if (parent.record.children.length === 0) return undefined;
+	// Order-stable renders resolve every claim with one positional compare; the
+	// identity-path buckets exist for reorders, insertions, and removals.
+	if (parent.childOwnerBuckets === null) {
+		const candidate = parent.record.children[parent.sequentialClaimCursor];
+		if (
+			candidate !== undefined &&
+			candidate.component === component &&
+			Object.is(candidate.key, key) &&
+			identityPathsEqual(candidate.identityPath, identityPath) &&
+			!parent.claimedChildren.has(candidate)
+		) {
+			parent.sequentialClaimCursor++;
+			return candidate;
+		}
+	}
+	const bucket = childOwnerBucket(parent, component, identityPath, key);
+	if (bucket === undefined) return undefined;
+	const cursors = (parent.childClaimCursors ??= createOwnerIdentityIndex());
+	let cursor = readOwnerIdentity(cursors, component, identityPath, key) ?? 0;
+	while (cursor < bucket.length && parent.claimedChildren.has(bucket[cursor])) cursor++;
+	const record = bucket[cursor];
+	writeOwnerIdentity(
+		cursors,
+		component,
+		identityPath,
+		key,
+		cursor + (record === undefined ? 0 : 1),
+	);
+	return record;
+}
+
+function adoptChildOwner(
+	parent: DraftOwner,
+	record: UniversalOwnerRecord,
+	component: UniversalComponent<any> | null,
+	identityPath: readonly unknown[],
+	key: unknown,
+): DraftOwner {
+	const attempt = currentAttempt();
+	parent.claimedChildren.add(record);
+	const draft = draftOwner(record, parent, childReplayPath(parent, component, identityPath, key));
+	parent.children.push(draft);
+	attempt.owners.push(draft);
+	return draft;
+}
+
 function claimChildOwner(
 	parent: DraftOwner,
 	component: UniversalComponent<any> | null,
 	identityPath: readonly unknown[],
 	key: unknown,
 ): DraftOwner {
-	const attempt = currentAttempt();
-	let record: UniversalOwnerRecord | undefined;
-	const bucket = childOwnerBucket(parent, component, identityPath, key);
-	if (bucket !== undefined) {
-		const cursors = (parent.childClaimCursors ??= createOwnerIdentityIndex());
-		let cursor = readOwnerIdentity(cursors, component, identityPath, key) ?? 0;
-		while (cursor < bucket.length && parent.claimedChildren.has(bucket[cursor])) cursor++;
-		record = bucket[cursor];
-		writeOwnerIdentity(
-			cursors,
-			component,
-			identityPath,
-			key,
-			cursor + (record === undefined ? 0 : 1),
-		);
+	const record =
+		findClaimableChildRecord(parent, component, identityPath, key) ??
+		createOwnerRecord(currentAttempt().root, component, parent.record, identityPath, key);
+	return adoptChildOwner(parent, record, component, identityPath, key);
+}
+
+// Whether every context value observable from `owner` still matches the last
+// commit. Anything an in-scope provider changed this attempt shows up as a
+// draft contextValues entry that differs from its committed record; providers
+// outside the scope could not have re-rendered, so their values are unchanged.
+function ancestorContextsStable(owner: DraftOwner): boolean {
+	if (owner.contextStable !== null) return owner.contextStable;
+	let stable = owner.parent === null ? true : ancestorContextsStable(owner.parent);
+	if (stable && owner.contextValues !== null) {
+		const committed = owner.record.mounted ? owner.record.contextValues : null;
+		if (committed === null) {
+			stable = owner.contextValues.size === 0;
+		} else if (committed.size !== owner.contextValues.size) {
+			stable = false;
+		} else {
+			for (const [context, value] of owner.contextValues) {
+				if (!committed.has(context) || !Object.is(committed.get(context), value)) {
+					stable = false;
+					break;
+				}
+			}
+		}
 	}
-	record ??= createOwnerRecord(attempt.root, component, parent.record, identityPath, key);
-	parent.claimedChildren.add(record);
-	const draft = draftOwner(record, parent, childReplayPath(parent, component, identityPath, key));
-	parent.children.push(draft);
-	attempt.owners.push(draft);
-	return draft;
+	owner.contextStable = stable;
+	return stable;
+}
+
+// Whether a committed owner subtree can be adopted without re-rendering: no
+// pending hook updates, no active boundary episode, no retained-hidden
+// content, no warm-plan component, and no HMR revision drift anywhere below.
+function ownerSubtreeRetainable(owner: UniversalOwnerRecord): boolean {
+	if (
+		owner.updates.size !== 0 ||
+		owner.visibility !== 'visible' ||
+		(owner.isBoundary && (owner.hasBoundaryError || owner.boundaryThenable !== null)) ||
+		(owner.component as any)?.__warm !== undefined ||
+		(owner.component !== null &&
+			universalComponentRevision(owner.component) !== owner.componentRevision)
+	) {
+		return false;
+	}
+	for (const child of owner.children) {
+		if (!ownerSubtreeRetainable(child)) return false;
+	}
+	return true;
 }
 
 function activateLazyLeafOwner(): DraftOwner | null {
@@ -1874,6 +2441,15 @@ function readOwnerContext<T>(
 			return value;
 		}
 	}
+	if (currentAttempt().scope !== null) {
+		for (let current = owner?.record.parent ?? null; current !== null; current = current.parent) {
+			if (current.contextValues?.has(context)) {
+				value = current.contextValues.get(context) as T;
+				if (trackMemoRead) CURRENT_MEMO_CONTEXT_READS?.set(context, value);
+				return value;
+			}
+		}
+	}
 	value = currentAttempt().root.readBridgeContext(context);
 	if (trackMemoRead) CURRENT_MEMO_CONTEXT_READS?.set(context, value);
 	return value;
@@ -1893,9 +2469,12 @@ function executeOwner(
 		if (renderCount > 0) resetDraftChildren(owner);
 		owner.seenEffects = [];
 		owner.children = [];
+		owner.retainedChildren = null;
 		owner.claimedChildren = new Set();
+		owner.sequentialClaimCursor = 0;
 		owner.childClaimCursors = null;
 		owner.childReplayOrdinals = null;
+		owner.contextStable = null;
 		owner.needsRender = false;
 		owner.implicitSlot = 0;
 		const previousOwner = CURRENT_OWNER;
@@ -1903,11 +2482,19 @@ function executeOwner(
 		CURRENT_OWNER = owner;
 		attempt.owner = owner;
 		const component = owner.record.component;
-		if (component !== null) __profileTrackComponent(owner.record, component);
+		if (
+			typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' &&
+			__OCTANE_PROFILE_ENABLED__ &&
+			component !== null
+		) {
+			__profileTrackComponent(owner.record, component);
+		}
 		const profileFrame =
-			component === null
-				? null
-				: __profileBeginRender(owner.record, component, owner.record.mounted);
+			typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' &&
+			__OCTANE_PROFILE_ENABLED__ &&
+			component !== null
+				? __profileBeginRender(owner.record, component, owner.record.mounted)
+				: null;
 		let didThrow = false;
 		let thrown: unknown;
 		try {
@@ -1917,7 +2504,9 @@ function executeOwner(
 			thrown = error;
 			throw error;
 		} finally {
-			__profileEndRender(profileFrame, didThrow, thrown);
+			if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+				__profileEndRender(profileFrame, didThrow, thrown);
+			}
 			ACTIVE_UNIVERSAL_WARM_PLANS.length = warmPlanCheckpoint;
 			CURRENT_OWNER = previousOwner;
 			attempt.owner = previousAttemptOwner;
@@ -1957,24 +2546,47 @@ function renderLazyLeafItem(
 		}
 		return rendered;
 	} finally {
-		ACTIVE_UNIVERSAL_WARM_PLANS.length = warmPlanCheckpoint;
+		if (ACTIVE_UNIVERSAL_WARM_PLANS.length !== warmPlanCheckpoint) {
+			ACTIVE_UNIVERSAL_WARM_PLANS.length = warmPlanCheckpoint;
+		}
 		CURRENT_LAZY_LEAF_OWNER = previousScope;
-		CURRENT_OWNER = previousOwner;
-		scope.attempt.owner = previousAttemptOwner;
+		if (scope.owner !== null) {
+			CURRENT_OWNER = previousOwner;
+			scope.attempt.owner = previousAttemptOwner;
+		}
 	}
 }
 
 function ownerRange(owner: DraftOwner, children: BlueprintNode[]): BlueprintNode[] {
-	return [{ kind: 'range', key: owner.record.rangeKey, children }];
+	return [{ kind: 'range', key: owner.record.rangeKey, owner: owner.record, children }];
+}
+
+function readComponentContext<T>(context: UniversalContext<T>): T {
+	return readOwnerContext(activateLazyLeafOwner(), context);
+}
+
+function componentInsertionEffect(
+	create: () => void | (() => void),
+	deps?: readonly unknown[],
+): void {
+	enqueueUniversalEffect('insertion', create, deps);
+}
+
+function componentLayoutEffect(create: () => void | (() => void), deps?: readonly unknown[]): void {
+	enqueueUniversalEffect('layout', create, deps);
+}
+
+function componentEffect(create: () => void | (() => void), deps?: readonly unknown[]): void {
+	enqueueUniversalEffect('passive', create, deps);
 }
 
 function componentContext(renderer: string): UniversalRenderContext {
 	return {
 		renderer,
-		readContext: (context) => readOwnerContext(activateLazyLeafOwner(), context),
-		insertionEffect: (create, deps) => enqueueUniversalEffect('insertion', create, deps),
-		layoutEffect: (create, deps) => enqueueUniversalEffect('layout', create, deps),
-		effect: (create, deps) => enqueueUniversalEffect('passive', create, deps),
+		readContext: readComponentContext,
+		insertionEffect: componentInsertionEffect,
+		layoutEffect: componentLayoutEffect,
+		effect: componentEffect,
 	};
 }
 
@@ -1997,8 +2609,63 @@ function materializeComponentValue(
 	const parent = CURRENT_OWNER;
 	if (parent === null) throw new Error('A nested universal component requires an owner.');
 	const normalized = normalizePropsValue(value.props);
-	const owner = claimChildOwner(parent, value.component, path, value.hasKey ? value.key : null);
+	const host = trustedUniversalHostComponent(value.component, expectedRenderer);
+	if (host !== null) {
+		// Certified adapters cannot own hooks or context; the ordinary host
+		// materializer still classifies their refs, callbacks, events, and children.
+		const nodes = materializeNode(host.plan.root, [normalized], expectedRenderer, path);
+		if (value.hasKey) nodes[0].key = normalizeUniversalKey(value.key);
+		return nodes;
+	}
+	const key = value.hasKey ? value.key : null;
+	const attempt = currentAttempt();
+	const record = findClaimableChildRecord(parent, value.component, path, key);
+	if (
+		attempt.retainEligible &&
+		record !== undefined &&
+		record.mounted &&
+		!record.disposed &&
+		record.dirtyEpoch !== attempt.dirtyEpoch &&
+		record.visibility === 'visible' &&
+		parent.visibility === 'visible' &&
+		record.componentProps !== null &&
+		universalShallowEqual(record.componentProps, normalized.props) &&
+		record.range !== null &&
+		record.range.owner === record &&
+		ancestorContextsStable(parent) &&
+		ownerSubtreeRetainable(record)
+	) {
+		const features = logicalTreeFeatures(record.range);
+		if ((features & (UNIVERSAL_TREE_PORTAL | UNIVERSAL_TREE_REGION)) === 0) {
+			// Adopt the committed subtree wholesale: the claim is recorded so the
+			// records survive reconciliation, but no draft is created and nothing
+			// below re-renders. The committed features join the attempt's so the
+			// commit keeps every staging branch those features rely on.
+			parent.claimedChildren.add(record);
+			(parent.retainedChildren ??= []).push({ record, position: parent.children.length });
+			attempt.treeFeatures |= features;
+			attempt.retainedCount++;
+			return [
+				{
+					kind: 'range',
+					key: record.range.key,
+					owner: record,
+					retained: record.range,
+					children: [],
+				},
+			];
+		}
+	}
+	const owner = adoptChildOwner(
+		parent,
+		record ?? createOwnerRecord(attempt.root, value.component, parent.record, path, key),
+		value.component,
+		path,
+		key,
+	);
+	owner.componentRevision = universalComponentRevision(value.component);
 	const props = { ...normalized.props };
+	owner.componentProps = props;
 	const nodes = executeOwner(owner, () => {
 		const rendered = value.component(props, componentContext(expectedRenderer));
 		return materializeValue(rendered, expectedRenderer, null, [...path, 'output']);
@@ -2035,6 +2702,8 @@ function disposeUncommittedDraft(owner: DraftOwner): void {
 	for (const child of owner.children) disposeUncommittedDraft(child);
 	if (!owner.record.mounted) {
 		owner.record.disposed = true;
+		owner.record.componentProps = null;
+		owner.record.range = null;
 		owner.record.updates.clear();
 		for (const hook of owner.hooks.values()) {
 			if (hook.kind === 'effect-event') hook.cell.active = false;
@@ -2045,7 +2714,9 @@ function disposeUncommittedDraft(owner: DraftOwner): void {
 function resetDraftChildren(owner: DraftOwner): void {
 	for (const child of owner.children) disposeUncommittedDraft(child);
 	owner.children = [];
+	owner.retainedChildren = null;
 	owner.claimedChildren = new Set();
+	owner.sequentialClaimCursor = 0;
 	owner.childClaimCursors = null;
 	owner.childReplayOrdinals = null;
 }
@@ -2056,7 +2727,9 @@ function retainCommittedOwnerTree(owner: DraftOwner): void {
 	owner.contextValues =
 		owner.record.contextValues === null ? null : new Map(owner.record.contextValues);
 	owner.children = [];
+	owner.retainedChildren = null;
 	owner.claimedChildren = new Set(owner.record.children);
+	owner.sequentialClaimCursor = 0;
 	owner.childClaimCursors = null;
 	owner.childReplayOrdinals = null;
 	for (const childRecord of owner.record.children) {
@@ -2085,6 +2758,7 @@ function blueprintFromLogical(record: LogicalRecord): BlueprintNode {
 		return {
 			kind: 'range',
 			key: record.key,
+			...(record.owner === null ? null : { owner: record.owner }),
 			children: record.children.map(blueprintFromLogical),
 		};
 	}
@@ -2296,6 +2970,35 @@ function materializeOwnerlessLeafValue(
 	};
 }
 
+function materializeRawUniversalListValue(
+	list: UniversalForValue,
+	value: UniversalRenderable,
+	renderer: string,
+): UniversalRenderable {
+	if (
+		list.leafPlan !== undefined &&
+		(list.hostComponent === undefined ||
+			list.leafSignature === undefined ||
+			trustedUniversalHostComponent(list.hostComponent, renderer) !== null)
+	) {
+		return universalValue(list.leafPlan, value as readonly unknown[]);
+	}
+	if (list.leafSignature === undefined) return value;
+	if (list.hostComponent === undefined) {
+		throw new TypeError('A specialized universal host list requires its original component.');
+	}
+	const values = value as readonly unknown[];
+	const names = parseUniversalHostComponentSignature(list.leafSignature);
+	if (names.length !== values.length) {
+		throw new TypeError('A universal host component signature and its values must match.');
+	}
+	return universalComponent(
+		renderer,
+		list.hostComponent,
+		universalProps(names.map((name, index) => ['set', name, values[index]] as const)),
+	);
+}
+
 function materializeValue(
 	value: unknown,
 	expectedRenderer: string,
@@ -2407,10 +3110,27 @@ function materializeValue(
 	if ((value as UniversalForValue)?.$$kind === UNIVERSAL_FOR) {
 		const list = value as UniversalForValue;
 		const output: BlueprintNode[] = [];
-		const keys = new Set<UniversalKey>();
+		const certifiedHost =
+			list.hostComponent === undefined ||
+			trustedUniversalHostComponent(list.hostComponent, expectedRenderer) !== null;
 		const compilerLeafProps =
-			list.ownerless && currentAttempt().root.driverCapabilities().compilerLeafProps === true;
-		if (list.ownerless && list.compact && currentAttempt().root.canCompactCompilerLeafProps()) {
+			list.ownerless &&
+			certifiedHost &&
+			currentAttempt().root.driverCapabilities().compilerLeafProps === true;
+		const compilerTemplateTree =
+			list.template === true &&
+			currentAttempt().root.driverCapabilities().templateProgramMount === true &&
+			CURRENT_OWNER?.visibility === 'visible';
+		const compilerComponentScope =
+			list.componentScope === true &&
+			currentAttempt().root.driverCapabilities().templateProgramRuns === true &&
+			CURRENT_OWNER?.visibility === 'visible';
+		if (
+			list.ownerless &&
+			list.compact &&
+			certifiedHost &&
+			currentAttempt().root.canCompactCompilerLeafProps()
+		) {
 			const attempt = currentAttempt();
 			const parent = CURRENT_OWNER!;
 			const lazyOwnerScope: LazyLeafOwnerScope = {
@@ -2422,63 +3142,96 @@ function materializeValue(
 			};
 			const compactKeys: UniversalKey[] = [];
 			const compactValues: (readonly unknown[])[] = [];
+			let compactSeenKeys: Set<UniversalKey> | null = null;
+			let previousNumericKey = Number.NEGATIVE_INFINITY;
 			let compactOwners: Array<UniversalOwnerRecord | undefined> | null = null;
-			let compactPlan: UniversalPlan | null = null;
-			let compactHost: UniversalHostPlan | null = null;
+			const rawLeafValues = list.leafPlan !== undefined;
+			let compactPlan: UniversalPlan | null = list.leafPlan ?? null;
+			let compactHost: UniversalHostPlan | null =
+				compactPlan === null ? null : ownerlessLeafHostPlan(compactPlan);
+			if (compactPlan !== null) {
+				if (compactPlan.renderer !== expectedRenderer) {
+					throw new Error(
+						`Universal renderer mismatch: root expects ${JSON.stringify(expectedRenderer)} but the plan targets ${JSON.stringify(compactPlan.renderer)}.`,
+					);
+				}
+				if (compactHost === null) {
+					throw new Error(
+						'Compact universal lists require one stable intrinsic leaf plan per item.',
+					);
+				}
+			}
 			let compactIndex = 0;
 			for (const item of list.items) {
 				const itemIndex = compactIndex++;
 				const itemKey = list.key(item, itemIndex);
-				if (keys.has(itemKey)) {
-					throw new Error(`Duplicate universal list key ${String(itemKey)}.`);
+				if (
+					compactSeenKeys === null &&
+					typeof itemKey === 'number' &&
+					itemKey > previousNumericKey
+				) {
+					previousNumericKey = itemKey;
+				} else {
+					const seen = (compactSeenKeys ??= new Set(compactKeys));
+					if (seen.has(itemKey)) {
+						throw new Error(`Duplicate universal list key ${String(itemKey)}.`);
+					}
+					seen.add(itemKey);
 				}
-				keys.add(itemKey);
 				const rendered = renderLazyLeafItem(lazyOwnerScope, list.render, item, itemIndex, itemKey);
 				if (lazyOwnerScope.owner !== null) {
 					(compactOwners ??= [])[itemIndex] = lazyOwnerScope.owner.record;
 				}
-				if ((rendered as UniversalPlanValue)?.$$kind !== UNIVERSAL_VALUE) {
-					throw new Error(
-						'Compact universal lists require one compiler-proven intrinsic leaf host per item.',
-					);
+				let values: readonly unknown[];
+				if (rawLeafValues) {
+					values = rendered as readonly unknown[];
+				} else {
+					if ((rendered as UniversalPlanValue)?.$$kind !== UNIVERSAL_VALUE) {
+						throw new Error(
+							'Compact universal lists require one compiler-proven intrinsic leaf host per item.',
+						);
+					}
+					const planValue = rendered as UniversalPlanValue;
+					if (planValue.plan !== compactPlan) {
+						if (planValue.plan.renderer !== expectedRenderer) {
+							throw new Error(
+								`Universal renderer mismatch: root expects ${JSON.stringify(expectedRenderer)} but the plan targets ${JSON.stringify(planValue.plan.renderer)}.`,
+							);
+						}
+						if (compactPlan !== null) {
+							throw new Error(
+								'Compact universal lists require one stable intrinsic leaf plan per item.',
+							);
+						}
+						compactPlan = planValue.plan;
+						compactHost = ownerlessLeafHostPlan(compactPlan);
+					}
+					if (planValue.key !== null || compactHost === null) {
+						throw new Error(
+							'Compact universal lists require one stable intrinsic leaf plan per item.',
+						);
+					}
+					values = planValue.values;
 				}
-				const planValue = rendered as UniversalPlanValue;
-				if (planValue.plan.renderer !== expectedRenderer) {
-					throw new Error(
-						`Universal renderer mismatch: root expects ${JSON.stringify(expectedRenderer)} but the plan targets ${JSON.stringify(planValue.plan.renderer)}.`,
-					);
-				}
-				if (compactPlan !== null && compactPlan !== planValue.plan) {
-					throw new Error(
-						'Compact universal lists require one stable intrinsic leaf plan per item.',
-					);
-				}
-				const host: UniversalHostPlan | null =
-					compactPlan === null ? ownerlessLeafHostPlan(planValue.plan) : compactHost;
-				if (planValue.key !== null || host === null) {
-					throw new Error(
-						'Compact universal lists require one stable intrinsic leaf plan per item.',
-					);
-				}
-				if (compactPlan === null) {
-					compactPlan = planValue.plan;
-					compactHost = host;
-					if (host.props !== undefined) {
-						for (const name of Object.keys(host.props)) {
-							if (isRendererRegion(host.props[name])) {
-								markUniversalTreeFeature(UNIVERSAL_TREE_REGION);
-							}
+				const host = compactHost!;
+				if (itemIndex === 0 && host.props !== undefined) {
+					for (const name of Object.keys(host.props)) {
+						if (isRendererRegion(host.props[name])) {
+							markUniversalTreeFeature(UNIVERSAL_TREE_REGION);
 						}
 					}
 				}
-				for (const [, slot] of host.bindings ?? []) {
-					const binding = planValue.values[slot];
-					if (typeof binding === 'object' && binding !== null && isRendererRegion(binding)) {
-						markUniversalTreeFeature(UNIVERSAL_TREE_REGION);
+				const bindings = host.bindings;
+				if (bindings !== undefined) {
+					for (let bindingIndex = 0; bindingIndex < bindings.length; bindingIndex++) {
+						const binding = values[bindings[bindingIndex][1]];
+						if (typeof binding === 'object' && binding !== null && isRendererRegion(binding)) {
+							markUniversalTreeFeature(UNIVERSAL_TREE_REGION);
+						}
 					}
 				}
 				compactKeys.push(itemKey);
-				compactValues.push(planValue.values);
+				compactValues.push(values);
 			}
 			if (compactIndex === 0 && list.empty !== null) {
 				return materializeScoped(CURRENT_OWNER!, [...path, 'for-empty'], null, list.empty);
@@ -2507,14 +3260,32 @@ function materializeValue(
 		}
 		const parent = CURRENT_OWNER!;
 		const attempt = currentAttempt();
-		const lazyOwnerScope: LazyLeafOwnerScope | null = compilerLeafProps
-			? {
-					attempt,
-					parent,
-					identityPath: [...path, 'for'],
-					key: 0,
-					owner: null,
-				}
+		const keys = new Set<UniversalKey>();
+		let compactTemplateEnabled =
+			compilerTemplateTree && attempt.root.driverCapabilities().templateProgramRuns === true;
+		let compactTemplateList: BlueprintCompactTemplateList | null = null;
+		const lazyOwnerScope: LazyLeafOwnerScope | null =
+			compilerLeafProps || compilerTemplateTree || compilerComponentScope
+				? {
+						attempt,
+						parent,
+						identityPath: [...path, 'for'],
+						key: 0,
+						owner: null,
+					}
+				: null;
+		let componentScopeEnabled = compilerComponentScope;
+		if (componentScopeEnabled) {
+			const previous = parent.record.children[parent.sequentialClaimCursor];
+			if (
+				previous?.component === null &&
+				identityPathsEqual(previous.identityPath, lazyOwnerScope!.identityPath)
+			) {
+				componentScopeEnabled = false;
+			}
+		}
+		const componentPath = componentScopeEnabled
+			? [...lazyOwnerScope!.identityPath, 'output']
 			: null;
 		let index = 0;
 		for (const item of list.items) {
@@ -2522,8 +3293,135 @@ function materializeValue(
 			const itemKey = list.key(item, itemIndex);
 			if (keys.has(itemKey)) throw new Error(`Duplicate universal list key ${String(itemKey)}.`);
 			keys.add(itemKey);
-			if (compilerLeafProps) {
+			if (componentScopeEnabled) {
 				const rendered = renderLazyLeafItem(lazyOwnerScope!, list.render, item, itemIndex, itemKey);
+				const candidate = rendered as UniversalComponentValue;
+				if (
+					lazyOwnerScope!.owner === null &&
+					candidate?.$$kind === UNIVERSAL_COMPONENT_VALUE &&
+					candidate.renderer === expectedRenderer &&
+					!candidate.hasKey
+				) {
+					const keyed: UniversalComponentValue = {
+						...candidate,
+						key: itemKey,
+						hasKey: true,
+					};
+					output.push(...materializeComponentValue(keyed, expectedRenderer, componentPath!));
+					continue;
+				}
+				if (lazyOwnerScope!.owner === null) {
+					output.push(
+						...materializeScoped(parent, lazyOwnerScope!.identityPath, itemKey, () => rendered),
+					);
+					continue;
+				}
+				const itemOwner = lazyOwnerScope!.owner;
+				const previousOwner = CURRENT_OWNER;
+				const previousAttemptOwner = attempt.owner;
+				CURRENT_OWNER = itemOwner;
+				attempt.owner = itemOwner;
+				let nodes: BlueprintNode[];
+				try {
+					nodes = materializeValue(rendered, expectedRenderer, null, componentPath!);
+				} finally {
+					CURRENT_OWNER = previousOwner;
+					attempt.owner = previousAttemptOwner;
+				}
+				output.push(...ownerRange(itemOwner, nodes));
+			} else if (compilerTemplateTree) {
+				const rendered = renderLazyLeafItem(lazyOwnerScope!, list.render, item, itemIndex, itemKey);
+				if (compactTemplateEnabled) {
+					const candidate = rendered as UniversalPlanValue;
+					const candidatePlan = candidate?.$$kind === UNIVERSAL_VALUE ? candidate.plan : null;
+					const compiled =
+						candidatePlan?.root.kind === 'host'
+							? compiledCollapsedTemplateProgram(candidatePlan.root)
+							: null;
+					const prepared =
+						compiled === null ? null : attempt.root.prepareCollapsedTemplateProgram(compiled);
+					const dense =
+						compiled === null || prepared === null
+							? null
+							: prepareCollapsedTemplateValues(candidate, attempt.root, compiled, prepared);
+					if (
+						lazyOwnerScope!.owner === null &&
+						candidatePlan !== null &&
+						candidatePlan.renderer === expectedRenderer &&
+						candidate.key === null &&
+						compiled !== null &&
+						prepared !== null &&
+						dense !== null &&
+						(compactTemplateList === null || compactTemplateList.plan === candidatePlan)
+					) {
+						compactTemplateList ??= {
+							plan: candidatePlan,
+							compiled,
+							program: prepared,
+							keys: [],
+							values: [],
+							captures: [],
+							owner: parent.record,
+						};
+						compactTemplateList.keys.push(itemKey);
+						compactTemplateList.values.push(dense);
+						compactTemplateList.captures.push(candidate.values);
+						if (prepared.events.length !== 0) markUniversalTreeFeature(UNIVERSAL_TREE_EVENT);
+						continue;
+					}
+					compactTemplateEnabled = false;
+					if (compactTemplateList !== null) {
+						for (
+							let compactIndex = 0;
+							compactIndex < compactTemplateList.keys.length;
+							compactIndex++
+						) {
+							const host = preparedCollapsedTemplateBlueprint(
+								compactTemplateList.plan,
+								compactTemplateList.compiled,
+								compactTemplateList.program,
+								compactTemplateList.values[compactIndex],
+								compactTemplateList.captures[compactIndex],
+								compactTemplateList.owner,
+							);
+							host.key = compactTemplateList.keys[compactIndex];
+							output.push(host);
+						}
+						compactTemplateList = null;
+					}
+				}
+				const itemOwner = lazyOwnerScope!.owner ?? parent;
+				const previousOwner = CURRENT_OWNER;
+				const previousAttemptOwner = attempt.owner;
+				CURRENT_OWNER = itemOwner;
+				attempt.owner = itemOwner;
+				let nodes: BlueprintNode[];
+				try {
+					nodes = materializeValue(rendered, expectedRenderer, null, path);
+				} finally {
+					CURRENT_OWNER = previousOwner;
+					attempt.owner = previousAttemptOwner;
+				}
+				if (nodes.length !== 1 || nodes[0].kind !== 'host' || nodes[0].key !== null) {
+					throw new Error(
+						'Program-backed universal lists require one compiler-proven intrinsic host tree per item.',
+					);
+				}
+				if (lazyOwnerScope!.owner === null) {
+					nodes[0].key = itemKey;
+					output.push(nodes[0]);
+				} else {
+					output.push(...ownerRange(itemOwner, nodes));
+				}
+			} else if (compilerLeafProps) {
+				const rawOutput = renderLazyLeafItem(
+					lazyOwnerScope!,
+					list.render,
+					item,
+					itemIndex,
+					itemKey,
+				);
+				const rendered = materializeRawUniversalListValue(list, rawOutput, expectedRenderer);
 				const itemOwner = lazyOwnerScope!.owner ?? parent;
 				const leaf = materializeOwnerlessLeafValue(
 					rendered,
@@ -2561,11 +3459,18 @@ function materializeValue(
 				output.push(nodes[0]);
 			} else {
 				output.push(
-					...materializeScoped(parent, [...path, 'for'], itemKey, () =>
-						list.render(item, itemIndex),
-					),
+					...materializeScoped(parent, [...path, 'for'], itemKey, () => {
+						return materializeRawUniversalListValue(
+							list,
+							list.render(item, itemIndex),
+							expectedRenderer,
+						);
+					}),
 				);
 			}
+		}
+		if (compactTemplateEnabled && compactTemplateList !== null) {
+			return [{ kind: 'range', key: null, children: [], compactTemplateList }];
 		}
 		if (index === 0 && list.empty !== null) {
 			return materializeScoped(CURRENT_OWNER!, [...path, 'for-empty'], null, list.empty);
@@ -2653,6 +3558,10 @@ function materializeValue(
 			resetDraftChildren(owner);
 			owner.hasBoundaryError = true;
 			owner.boundaryError = error;
+			// The catch arm claims this render error here, in the throwing attempt
+			// itself. Replays of an already-claimed error (the hasBoundaryError
+			// branch above) do not re-report.
+			reportUniversalCaughtError(owner.record.root, error);
 			const nodes = materializeScoped(owner, [...path, 'try-arm'], 'catch', () =>
 				boundary.catch!(error, () => {
 					owner.record.hasBoundaryError = false;
@@ -2698,9 +3607,9 @@ function materializeValue(
 				props: { value: String(value) },
 				ref: null,
 				owner: CURRENT_OWNER!.record,
-				events: new Map(),
-				lifecycles: new Map(),
-				localCallbacks: new Map(),
+				events: EMPTY_BLUEPRINT_EVENTS,
+				lifecycles: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+				localCallbacks: EMPTY_BLUEPRINT_HOST_CALLBACKS,
 				visibility: CURRENT_OWNER!.visibility,
 				children: [],
 			},
@@ -2801,30 +3710,36 @@ function materializeNode(
 			);
 		}
 	}
-	const props: Record<string, unknown> = { ...(node.props ?? {}) };
-	for (const [name, slot] of node.bindings ?? []) props[name] = values[slot];
+	const attempt = currentAttempt();
+	const root = attempt.root;
+	const staticProps = root.materializeStaticHostProps(node);
+	const props: Record<string, unknown> = staticProps ?? { ...(node.props ?? {}) };
+	if (staticProps === null) {
+		for (const [name, slot] of node.bindings ?? []) props[name] = values[slot];
+	}
 	let propsValue: UniversalPropsValue | null = null;
 	if (node.propsSlot !== undefined) {
 		propsValue = normalizePropsValue(values[node.propsSlot] as any);
 		Object.assign(props, propsValue.props);
 	}
-	const hasKey = propsValue?.hasKey || Object.prototype.hasOwnProperty.call(props, 'key');
+	const hasKey = staticProps === null && (propsValue?.hasKey || hasOwnProp.call(props, 'key'));
 	const hostKey = normalizeUniversalKey(
 		propsValue?.hasKey ? propsValue.key : hasKey ? props.key : null,
 	);
-	const ref = Object.prototype.hasOwnProperty.call(props, 'ref') ? props.ref : null;
-	const dynamicChildren = Object.prototype.hasOwnProperty.call(props, 'children')
-		? props.children
-		: undefined;
-	delete props.ref;
-	delete props.key;
-	delete props.children;
+	const ref = staticProps === null && hasOwnProp.call(props, 'ref') ? props.ref : null;
+	const dynamicChildren =
+		staticProps === null && hasOwnProp.call(props, 'children') ? props.children : undefined;
+	if (staticProps === null) {
+		delete props.ref;
+		delete props.key;
+		delete props.children;
+	}
 	let events: Map<string, BlueprintEvent> | null = null;
 	let lifecycles: Map<string, BlueprintHostCallback> | null = null;
 	let localCallbacks: Map<string, BlueprintHostCallback> | null = null;
-	for (const name of Object.keys(props)) {
+	for (const name of staticProps === null ? Object.keys(props) : EMPTY_STATIC_PROP_NAMES) {
 		const handler = props[name];
-		const lifecycle = currentAttempt().root.classifyLifecycle(name, handler);
+		const lifecycle = root.classifyLifecycle(name, handler);
 		if (lifecycle !== null) {
 			delete props[name];
 			if (handler == null) continue;
@@ -2841,10 +3756,10 @@ function materializeNode(
 			});
 			continue;
 		}
-		const local = currentAttempt().root.classifyLocalCallback(name, handler);
+		const local = root.classifyLocalCallback(name, handler);
 		if (local !== null) {
 			delete props[name];
-			if (currentAttempt().root.driverCapabilities().localHostCallbacks !== true) {
+			if (root.driverCapabilities().localHostCallbacks !== true) {
 				throw new Error(
 					`Universal renderer ${JSON.stringify(renderer)} does not declare the local-host-callback capability.`,
 				);
@@ -2863,7 +3778,7 @@ function materializeNode(
 			});
 			continue;
 		}
-		const definition = currentAttempt().root.classifyEvent(name);
+		const definition = root.classifyEvent(name);
 		if (definition !== null) {
 			delete props[name];
 			if (handler == null) continue;
@@ -2882,7 +3797,7 @@ function materializeNode(
 			continue;
 		}
 		if (isRendererRegion(handler)) markUniversalTreeFeature(UNIVERSAL_TREE_REGION);
-		props[name] = currentAttempt().root.encodeHostProp(node.type, name, handler);
+		props[name] = root.encodeHostProp(node.type, name, handler);
 	}
 	if (events !== null && events.size !== 0) markUniversalTreeFeature(UNIVERSAL_TREE_EVENT);
 	if (lifecycles !== null && lifecycles.size !== 0)
@@ -2928,13 +3843,262 @@ function materializePlanValue(
 			`Universal renderer mismatch: root expects ${JSON.stringify(expectedRenderer)} but the plan targets ${JSON.stringify(value.plan.renderer)}.`,
 		);
 	}
+	const collapsed = materializeCollapsedTemplate(value);
+	if (collapsed !== null) {
+		if (value.key !== null) collapsed.key = value.key;
+		return [collapsed];
+	}
 	const nodes = materializeNode(value.plan.root, value.values, expectedRenderer, [...path, 'plan']);
+	if (
+		currentAttempt().root.driverCapabilities().templateMount === true &&
+		value.plan.root.kind === 'host' &&
+		nodes.length === 1 &&
+		nodes[0].kind === 'host'
+	) {
+		nodes[0].templatePlan = value.plan.root;
+	}
 	if (value.key === null) return nodes;
 	if (nodes.length === 1) {
 		nodes[0].key = value.key;
 		return nodes;
 	}
 	return [{ kind: 'range', key: value.key, children: nodes }];
+}
+
+function materializeCollapsedTemplate(value: UniversalPlanValue): BlueprintHost | null {
+	const owner = CURRENT_OWNER!;
+	const root = currentAttempt().root;
+	const capabilities = root.driverCapabilities();
+	if (
+		capabilities.templateMount !== true ||
+		capabilities.collapsedTemplateMount !== true ||
+		owner.visibility !== 'visible' ||
+		value.plan.root.kind !== 'host'
+	) {
+		return null;
+	}
+	const program = compiledCollapsedTemplateProgram(value.plan.root);
+	if (program === null) return null;
+	const prepared = root.prepareCollapsedTemplateProgram(program);
+	if (prepared !== null) {
+		const fast = materializePreparedCollapsedTemplate(value, owner, root, program, prepared);
+		if (fast !== null) return fast;
+	}
+	for (const node of program.plans) {
+		if (node.kind === 'slot' || (node.kind === 'text' && node.slot !== undefined)) {
+			const entry = value.values[node.slot!];
+			if (
+				(typeof entry !== 'string' && typeof entry !== 'number' && typeof entry !== 'bigint') ||
+				root.textPolicy() !== 'host'
+			) {
+				return null;
+			}
+		} else if (node.kind === 'text' && root.textPolicy() !== 'host') {
+			return null;
+		}
+	}
+	const nodes: BlueprintCollapsedTemplateNode[] = new Array(program.plans.length);
+	for (let index = 0; index < program.plans.length; index++) {
+		const node = program.plans[index];
+		if (node.kind === 'slot' || node.kind === 'text') {
+			const text =
+				node.kind === 'slot'
+					? value.values[node.slot]
+					: node.slot === undefined
+						? (node.value ?? '')
+						: value.values[node.slot];
+			nodes[index] = { props: { value: String(text) } };
+			continue;
+		}
+		const staticProps = root.materializeStaticHostProps(node);
+		if (staticProps === null && (node.bindings?.length ?? 0) === 0) return null;
+		if (staticProps !== null) {
+			nodes[index] = { props: staticProps };
+			continue;
+		}
+		const props: Record<string, unknown> = { ...(node.props ?? EMPTY_STATIC_HOST_PROPS) };
+		for (const [name, slot] of node.bindings ?? []) props[name] = value.values[slot];
+		let events: BlueprintEvent[] | undefined;
+		for (const name of Object.keys(props)) {
+			const current = props[name];
+			if (
+				root.classifyLifecycle(name, current) !== null ||
+				root.classifyLocalCallback(name, current) !== null ||
+				isRendererRegion(current)
+			) {
+				return null;
+			}
+			const definition = root.classifyEvent(name);
+			if (definition !== null) {
+				delete props[name];
+				if (current == null) continue;
+				if (typeof current !== 'function') return null;
+				(events ??= []).push({
+					prop: name,
+					type: definition.type,
+					priority: definition.priority ?? 'default',
+					handler: current as (...args: any[]) => any,
+					owner: owner.record,
+				});
+				continue;
+			}
+			props[name] = root.encodeHostProp(node.type, name, current);
+		}
+		if (events !== undefined) markUniversalTreeFeature(UNIVERSAL_TREE_EVENT);
+		nodes[index] = events === undefined ? { props } : { props, events };
+	}
+	const first = nodes[0];
+	return {
+		kind: 'host',
+		key: null,
+		type: value.plan.root.type,
+		props: first.props,
+		ref: null,
+		owner: owner.record,
+		events:
+			first.events === undefined
+				? EMPTY_BLUEPRINT_EVENTS
+				: new Map(first.events.map((event) => [event.type, event])),
+		lifecycles: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+		localCallbacks: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+		visibility: 'visible',
+		children: [],
+		templatePlan: value.plan.root,
+		collapsedTemplate: { program, nodes, ids: null },
+	};
+}
+
+function materializePreparedCollapsedTemplate(
+	value: UniversalPlanValue,
+	owner: DraftOwner,
+	root: UniversalRootImpl<any, any>,
+	program: CompiledCollapsedTemplateProgram,
+	prepared: PreparedCollapsedTemplateProgram,
+): BlueprintHost | null {
+	const values = prepareCollapsedTemplateValues(value, root, program, prepared);
+	if (values === null) return null;
+	if (prepared.events.length !== 0) markUniversalTreeFeature(UNIVERSAL_TREE_EVENT);
+	return preparedCollapsedTemplateBlueprint(
+		value.plan,
+		program,
+		prepared,
+		values,
+		value.values,
+		owner.record,
+	);
+}
+
+function prepareCollapsedTemplateValues(
+	value: UniversalPlanValue,
+	root: UniversalRootImpl<any, any>,
+	program: CompiledCollapsedTemplateProgram,
+	prepared: PreparedCollapsedTemplateProgram,
+): readonly UniversalHostTemplateProgramValue[] | null {
+	for (const site of prepared.events) {
+		if (typeof value.values[site.slot] !== 'function') return null;
+	}
+	const values: UniversalHostTemplateProgramValue[] = new Array(prepared.values.length);
+	for (let index = 0; index < prepared.values.length; index++) {
+		const binding = prepared.values[index];
+		const source = value.values[binding.slot];
+		if (binding.text) {
+			if (typeof source !== 'string' && typeof source !== 'number' && typeof source !== 'bigint') {
+				return null;
+			}
+			values[index] = String(source);
+			continue;
+		}
+		if (
+			!isUniversalHostTemplateProgramValue(source) ||
+			root.classifyLifecycle(binding.name, source) !== null ||
+			root.classifyLocalCallback(binding.name, source) !== null
+		) {
+			return null;
+		}
+		const encoded = root.encodeHostProp(program.shape[binding.node].type, binding.name, source);
+		if (!isUniversalHostTemplateProgramValue(encoded)) return null;
+		values[index] = encoded;
+	}
+	return Object.freeze(values);
+}
+
+function preparedCollapsedTemplateBlueprint(
+	plan: UniversalPlan,
+	program: CompiledCollapsedTemplateProgram,
+	prepared: PreparedCollapsedTemplateProgram,
+	values: readonly UniversalHostTemplateProgramValue[],
+	captures: readonly unknown[],
+	owner: UniversalOwnerRecord,
+): BlueprintHost {
+	const props = materializePreparedCollapsedHostProps(prepared, values, 0);
+	return {
+		kind: 'host',
+		key: null,
+		type: plan.root.kind === 'host' ? plan.root.type : '',
+		props,
+		ref: null,
+		owner,
+		events: EMPTY_BLUEPRINT_EVENTS,
+		lifecycles: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+		localCallbacks: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+		visibility: 'visible',
+		children: [],
+		templatePlan: plan.root as UniversalHostPlan,
+		collapsedTemplate: {
+			program,
+			nodes: null,
+			prepared,
+			values,
+			captures,
+			owner,
+			ids: null,
+		},
+	};
+}
+
+function materializePreparedCollapsedHostProps(
+	program: PreparedCollapsedTemplateProgram,
+	values: readonly UniversalHostTemplateProgramValue[],
+	index: number,
+): Record<string, unknown> {
+	const node = program.wire.nodes[index];
+	if (node.bindings === undefined) return node.props as Record<string, unknown>;
+	const props: Record<string, unknown> = { ...node.props };
+	for (const binding of node.bindings) props[binding.name] = values[binding.valueIndex];
+	return Object.freeze(props);
+}
+
+function materializeCollapsedBlueprintNode(
+	collapsed: BlueprintCollapsedTemplate,
+	index: number,
+	owner: UniversalOwnerRecord,
+): BlueprintCollapsedTemplateNode {
+	if (collapsed.nodes !== null) return collapsed.nodes[index];
+	const program = collapsed.prepared!;
+	const props = materializePreparedCollapsedHostProps(program, collapsed.values!, index);
+	let events: BlueprintEvent[] | undefined;
+	for (const site of program.events) {
+		if (site.node !== index) continue;
+		(events ??= []).push({
+			prop: site.prop,
+			type: site.type,
+			priority: site.priority,
+			handler: collapsed.captures![site.slot] as (...args: any[]) => any,
+			owner,
+		});
+	}
+	return events === undefined ? { props } : { props, events };
+}
+
+function materializeCommittedCollapsedNode(
+	state: CommittedCollapsedTemplate,
+	index: number,
+): { readonly id?: number; readonly props: Readonly<Record<string, unknown>> } {
+	if (state.nodes !== null) return state.nodes[index];
+	return {
+		id: state.firstId! + index,
+		props: materializePreparedCollapsedHostProps(state.prepared!, state.values!, index),
+	};
 }
 
 function sameRecordShape(record: LogicalRecord, blueprint: BlueprintNode): boolean {
@@ -2951,7 +4115,7 @@ function createLogicalRecord(id: number, blueprint: BlueprintNode): LogicalRecor
 		kind: blueprint.kind,
 		key: blueprint.key,
 		type: blueprint.kind === 'host' ? blueprint.type : null,
-		props: {},
+		props: EMPTY_STATIC_HOST_PROPS,
 		ref: null,
 		refCleanup: null,
 		refAttached: false,
@@ -2966,25 +4130,123 @@ function createLogicalRecord(id: number, blueprint: BlueprintNode): LogicalRecor
 	};
 }
 
+/**
+ * Cross-realm plain-object test — the universal-side twin of
+ * `packages/lynx/src/core/plain-object.ts`.
+ *
+ * A transported renderer can hand either side values built with a foreign
+ * `Object.prototype` (an engine main thread hosted in an iframe realm, an
+ * Electron process split, `node:vm`), so an identity test against this realm's
+ * prototype misclassifies every structurally plain value that crossed a
+ * boundary. Accept a null prototype, or any prototype one hop from null — the
+ * shape of every realm's `Object.prototype`; class and built-in instances are
+ * still rejected. `value` must already be a non-null, non-array object.
+ */
+export function hasCrossRealmPlainPrototype(value: object): boolean {
+	const prototype = Object.getPrototypeOf(value);
+	return prototype === null || Object.getPrototypeOf(prototype) === null;
+}
+
+/**
+ * Whether a host prop value is unchanged — THE definition of "equal" for
+ * deciding whether a committed host prop needs an update command.
+ *
+ * Identity is the fast path but cannot be the whole answer: on a transported
+ * root every object-valued prop is re-encoded through `cloneSerializableValue`
+ * each render, so two renders of the same value never share identity, and an
+ * identity-only diff emits an update for every object-carrying host in the
+ * tree on every commit — wire cost proportional to tree size instead of
+ * change size. Equality is therefore the value semantics the wire itself
+ * preserves: primitives by `Object.is`, arrays and plain records (from any
+ * realm — see `hasCrossRealmPlainPrototype`) element-by-element, to a bounded
+ * depth. The default depth of 2 covers the compiler's slot shapes — class
+ * arrays, style records, and one level of nesting inside them — while deeper
+ * or exotic values (class instances, functions, handles) fall back to
+ * identity, so a pathological tree never turns the per-prop diff into an
+ * unbounded walk.
+ */
+export function sameUniversalHostPropValue(left: unknown, right: unknown, depth = 2): boolean {
+	if (Object.is(left, right)) return true;
+	if (depth === 0) return false;
+	if (typeof left !== 'object' || typeof right !== 'object' || left === null || right === null) {
+		return false;
+	}
+	if (Array.isArray(left)) {
+		if (!Array.isArray(right) || left.length !== right.length) return false;
+		for (let index = 0; index < left.length; index++) {
+			if (!sameUniversalHostPropValue(left[index], right[index], depth - 1)) return false;
+		}
+		return true;
+	}
+	if (Array.isArray(right)) return false;
+	if (!hasCrossRealmPlainPrototype(left) || !hasCrossRealmPlainPrototype(right)) return false;
+	if (
+		Object.getOwnPropertySymbols(left).length !== 0 ||
+		Object.getOwnPropertySymbols(right).length !== 0
+	) {
+		return false;
+	}
+	let leftCount = 0;
+	for (const key in left) {
+		if (!hasOwnProp.call(left, key)) continue;
+		leftCount++;
+		if (!hasOwnProp.call(right, key)) return false;
+		if (
+			!sameUniversalHostPropValue(
+				(left as Record<string, unknown>)[key],
+				(right as Record<string, unknown>)[key],
+				depth - 1,
+			)
+		) {
+			return false;
+		}
+	}
+	let rightCount = 0;
+	for (const key in right) {
+		if (hasOwnProp.call(right, key)) rightCount++;
+	}
+	return leftCount === rightCount;
+}
+
 function shallowPropsEqual(
 	left: Readonly<Record<string, unknown>>,
 	right: Readonly<Record<string, unknown>>,
 	rightCountHint = -1,
 ): boolean {
+	if (left === right) return true;
 	let leftCount = 0;
 	for (const key in left) {
-		if (!Object.prototype.hasOwnProperty.call(left, key)) continue;
+		if (!hasOwnProp.call(left, key)) continue;
 		leftCount++;
-		if (!Object.prototype.hasOwnProperty.call(right, key) || !Object.is(left[key], right[key])) {
+		if (!hasOwnProp.call(right, key) || !sameUniversalHostPropValue(left[key], right[key])) {
 			return false;
 		}
 	}
 	if (rightCountHint >= 0) return leftCount === rightCountHint;
 	let rightCount = 0;
 	for (const key in right) {
-		if (Object.prototype.hasOwnProperty.call(right, key)) rightCount++;
+		if (hasOwnProp.call(right, key)) rightCount++;
 	}
 	return leftCount === rightCount;
+}
+
+function collapsedTemplateRootPropsEqual(
+	previous: CommittedCollapsedTemplate | undefined,
+	next: BlueprintCollapsedTemplate | undefined,
+): boolean | null {
+	if (
+		previous?.prepared === undefined ||
+		previous.prepared !== next?.prepared ||
+		previous.values === undefined ||
+		next.values === undefined
+	) {
+		return null;
+	}
+	for (let index = 0; index < previous.prepared.values.length; index++) {
+		if (previous.prepared.values[index].node !== 0) break;
+		if (!Object.is(previous.values[index], next.values[index])) return false;
+	}
+	return true;
 }
 
 function physicalRecords(records: readonly LogicalRecord[]): LogicalRecord[] {
@@ -2996,13 +4258,254 @@ function physicalRecords(records: readonly LogicalRecord[]): LogicalRecord[] {
 	return output;
 }
 
-function physicalDrafts(records: readonly DraftRecord[]): DraftRecord[] {
-	const output: DraftRecord[] = [];
-	for (const record of records) {
-		if (record.record.kind === 'host') output.push(record);
-		else if (record.record.kind === 'range') output.push(...physicalDrafts(record.children));
+function physicalDrafts(drafts: readonly DraftRecord[]): LogicalRecord[] {
+	const output: LogicalRecord[] = [];
+	for (const draft of drafts) {
+		if (draft.record.kind === 'host') output.push(draft.record);
+		else if (draft.retained === true) output.push(...physicalRecords(draft.record.children));
+		else if (draft.record.kind === 'range') output.push(...physicalDrafts(draft.children));
 	}
 	return output;
+}
+
+/**
+ * Mark the new-order positions belonging to a longest increasing sequence of
+ * old physical positions. Entries of -1 are fresh hosts and never participate.
+ * The caller first proves that the survivor order is not already increasing,
+ * keeping the predecessor/tail allocations off append and filtered-list paths.
+ */
+function stableUniversalPlacementPositions(sources: Int32Array): Uint8Array {
+	const predecessors = new Int32Array(sources.length);
+	const tails = new Int32Array(sources.length);
+	let size = 0;
+	for (let index = 0; index < sources.length; index++) {
+		const source = sources[index];
+		if (source === -1) continue;
+		let low = 0;
+		let high = size;
+		while (low < high) {
+			const middle = (low + high) >> 1;
+			if (sources[tails[middle]] < source) low = middle + 1;
+			else high = middle;
+		}
+		predecessors[index] = low === 0 ? -1 : tails[low - 1];
+		tails[low] = index;
+		if (low === size) size++;
+	}
+	const stable = new Uint8Array(sources.length);
+	let index = size === 0 ? -1 : tails[size - 1];
+	while (index !== -1) {
+		stable[index] = 1;
+		index = predecessors[index];
+	}
+	return stable;
+}
+
+const UNIVERSAL_HOST_TEMPLATE_SHAPES = new WeakMap<
+	UniversalHostPlan,
+	readonly UniversalHostTemplateShapeNode[] | null
+>();
+
+function universalHostTemplateShape(
+	plan: UniversalHostPlan,
+): readonly UniversalHostTemplateShapeNode[] | null {
+	const cached = UNIVERSAL_HOST_TEMPLATE_SHAPES.get(plan);
+	if (cached !== undefined) return cached;
+	const output: UniversalHostTemplateShapeNode[] = [];
+	const visit = (node: UniversalPlanNode, parent: number): boolean => {
+		if (node.kind === 'range') {
+			for (const child of node.children) if (!visit(child, parent)) return false;
+			return true;
+		}
+		if (node.kind === 'text' || node.kind === 'slot') {
+			output.push(Object.freeze({ type: '#text', parent }));
+			return true;
+		}
+		if (node.kind !== 'host') return false;
+		if (node.type === 'list' || node.type === 'list-item') return false;
+		const index = output.length;
+		output.push(Object.freeze({ type: node.type, parent }));
+		for (const child of node.children ?? []) if (!visit(child, index)) return false;
+		return true;
+	};
+	const shape = visit(plan, -1) && output.length > 1 ? Object.freeze(output) : null;
+	UNIVERSAL_HOST_TEMPLATE_SHAPES.set(plan, shape);
+	return shape;
+}
+
+interface CompiledCollapsedTemplateProgram {
+	readonly shape: readonly UniversalHostTemplateShapeNode[];
+	readonly plans: readonly (UniversalHostPlan | UniversalTextPlan | UniversalSlotPlan)[];
+}
+
+interface PreparedCollapsedTemplateValue {
+	readonly node: number;
+	readonly name: string;
+	readonly slot: number;
+	readonly text: boolean;
+}
+
+interface PreparedCollapsedTemplateEvent {
+	readonly node: number;
+	readonly prop: string;
+	readonly slot: number;
+	readonly type: string;
+	readonly priority: UniversalEventPriority;
+}
+
+interface PreparedCollapsedTemplateProgram {
+	readonly wire: UniversalHostTemplateProgram;
+	readonly values: readonly PreparedCollapsedTemplateValue[];
+	readonly events: readonly PreparedCollapsedTemplateEvent[];
+	readonly sharedNodes: readonly (BlueprintCollapsedTemplateNode | null)[];
+}
+
+const COMPILED_COLLAPSED_TEMPLATE_PROGRAMS = new WeakMap<
+	UniversalHostPlan,
+	CompiledCollapsedTemplateProgram | null
+>();
+
+function compiledCollapsedTemplateProgram(
+	plan: UniversalHostPlan,
+): CompiledCollapsedTemplateProgram | null {
+	const cached = COMPILED_COLLAPSED_TEMPLATE_PROGRAMS.get(plan);
+	if (cached !== undefined) return cached;
+	const shape = universalHostTemplateShape(plan);
+	if (shape === null) {
+		COMPILED_COLLAPSED_TEMPLATE_PROGRAMS.set(plan, null);
+		return null;
+	}
+	const plans: (UniversalHostPlan | UniversalTextPlan | UniversalSlotPlan)[] = [];
+	const visit = (node: UniversalPlanNode): boolean => {
+		if (node.kind === 'slot' || node.kind === 'text') {
+			plans.push(node);
+			return true;
+		}
+		if (node.kind !== 'host' || node.propsSlot !== undefined) return false;
+		for (const name of Object.keys(node.props ?? EMPTY_STATIC_HOST_PROPS)) {
+			if (
+				name === 'ref' ||
+				name === 'key' ||
+				name === 'children' ||
+				name.startsWith('main-thread:')
+			) {
+				return false;
+			}
+		}
+		for (const [name] of node.bindings ?? []) {
+			if (
+				name === 'ref' ||
+				name === 'key' ||
+				name === 'children' ||
+				name.startsWith('main-thread:')
+			) {
+				return false;
+			}
+		}
+		plans.push(node);
+		for (const child of node.children ?? []) if (!visit(child)) return false;
+		return true;
+	};
+	const program =
+		visit(plan) && plans.length === shape.length
+			? Object.freeze({ shape, plans: Object.freeze(plans) })
+			: null;
+	COMPILED_COLLAPSED_TEMPLATE_PROGRAMS.set(plan, program);
+	return program;
+}
+
+interface PendingUniversalHostTemplateMount {
+	readonly shape: readonly UniversalHostTemplateShapeNode[];
+	readonly drafts: readonly DraftRecord[];
+	readonly nodes: UniversalHostTemplateNode[] | null;
+	readonly collapsed?: BlueprintCollapsedTemplate;
+	range?: {
+		op: 'mount-template-range';
+		parent: UniversalHostParent;
+		before: number | null;
+		program: UniversalHostTemplateProgram;
+		firstId: number;
+		values: readonly UniversalHostTemplateProgramValue[];
+		firstListenerId: number | null;
+	};
+	run?: {
+		op: 'mount-template-run';
+		parent: UniversalHostParent;
+		before: number | null;
+		program: UniversalHostTemplateProgram;
+		firstId: number;
+		firstListenerId: number | null;
+		count: number;
+		values: UniversalHostTemplateProgramValue[];
+	};
+	runIndex?: number;
+}
+
+function collectUniversalHostTemplateDrafts(
+	root: DraftRecord,
+	shape: readonly UniversalHostTemplateShapeNode[],
+): readonly DraftRecord[] | null {
+	const output: DraftRecord[] = [];
+	const visit = (draft: DraftRecord, parent: number): boolean => {
+		if (draft.retained === true) return false;
+		if (draft.record.kind === 'range') {
+			if ((draft.blueprint as BlueprintRange).owner !== undefined) return false;
+			for (const child of draft.children) if (!visit(child, parent)) return false;
+			return true;
+		}
+		if (draft.record.kind !== 'host' || !draft.isNew) return false;
+		const host = draft.blueprint as BlueprintHost;
+		const index = output.length;
+		const expected = shape[index];
+		if (
+			expected === undefined ||
+			expected.type !== host.type ||
+			expected.parent !== parent ||
+			host.type === 'list' ||
+			host.type === 'list-item' ||
+			host.ref != null ||
+			host.visibility !== 'visible' ||
+			host.lifecycles.size !== 0 ||
+			host.localCallbacks.size !== 0
+		) {
+			return false;
+		}
+		for (const name of Object.keys(host.props)) {
+			if (name.startsWith('main-thread:')) return false;
+		}
+		output.push(draft);
+		for (const child of draft.children) if (!visit(child, index)) return false;
+		return true;
+	};
+	return visit(root, -1) && output.length === shape.length ? output : null;
+}
+
+function expandCollapsedTemplateBlueprint(host: BlueprintHost): void {
+	const collapsed = host.collapsedTemplate;
+	if (collapsed === undefined) return;
+	const blueprints: BlueprintHost[] = [host];
+	for (let index = 1; index < collapsed.program.shape.length; index++) {
+		const node = materializeCollapsedBlueprintNode(collapsed, index, host.owner);
+		const blueprint: BlueprintHost = {
+			kind: 'host',
+			key: null,
+			type: collapsed.program.shape[index].type,
+			props: node.props,
+			ref: null,
+			owner: host.owner,
+			events:
+				node.events === undefined
+					? EMPTY_BLUEPRINT_EVENTS
+					: new Map(node.events.map((event) => [event.type, event])),
+			lifecycles: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+			localCallbacks: EMPTY_BLUEPRINT_HOST_CALLBACKS,
+			visibility: host.visibility,
+			children: [],
+		};
+		blueprints.push(blueprint);
+		blueprints[collapsed.program.shape[index].parent].children.push(blueprint);
+	}
+	delete host.collapsedTemplate;
 }
 
 function walkLogical(record: LogicalRecord, visit: (record: LogicalRecord) => void): void {
@@ -3018,6 +4521,81 @@ function walkDraft(record: DraftRecord, visit: (record: DraftRecord) => void): v
 function walkDraftPostOrder(record: DraftRecord, visit: (record: DraftRecord) => void): void {
 	for (const child of record.children) walkDraftPostOrder(child, visit);
 	visit(record);
+}
+
+function logicalTreeFeatures(record: LogicalRecord): number {
+	let features = 0;
+	walkLogical(record, (current) => {
+		if (current.kind === 'portal') {
+			features |= UNIVERSAL_TREE_PORTAL;
+			return;
+		}
+		if (current.kind !== 'host') return;
+		if (current.events.size !== 0) features |= UNIVERSAL_TREE_EVENT;
+		if (current.lifecycles.size !== 0) features |= UNIVERSAL_TREE_LIFECYCLE;
+		if (current.localCallbacks.size !== 0) features |= UNIVERSAL_TREE_LOCAL_CALLBACK;
+		if (current.ref != null) features |= UNIVERSAL_TREE_REF;
+		if (current.visibility !== 'visible') features |= UNIVERSAL_TREE_HIDDEN;
+		for (const value of Object.values(current.props)) {
+			if (isRendererRegion(value)) {
+				features |= UNIVERSAL_TREE_REGION;
+				break;
+			}
+		}
+	});
+	return features;
+}
+
+function ownerTreeHasWarmPlan(owner: UniversalOwnerRecord): boolean {
+	if ((owner.component as any)?.__warm !== undefined) return true;
+	for (const child of owner.children) {
+		if (ownerTreeHasWarmPlan(child)) return true;
+	}
+	return false;
+}
+
+function commonOwnerAncestor(
+	left: UniversalOwnerRecord,
+	right: UniversalOwnerRecord,
+): UniversalOwnerRecord | null {
+	let leftDepth = 0;
+	for (let current = left.parent; current !== null; current = current.parent) leftDepth++;
+	let rightDepth = 0;
+	for (let current = right.parent; current !== null; current = current.parent) rightDepth++;
+	let a: UniversalOwnerRecord | null = left;
+	let b: UniversalOwnerRecord | null = right;
+	for (; leftDepth > rightDepth; leftDepth--) a = a!.parent;
+	for (; rightDepth > leftDepth; rightDepth--) b = b!.parent;
+	while (a !== null && a !== b) {
+		a = a.parent;
+		b = b!.parent;
+	}
+	return a;
+}
+
+function stableLogicalChildren(
+	records: readonly LogicalRecord[],
+	blueprints: readonly BlueprintNode[],
+): boolean {
+	if (records.length !== blueprints.length) return false;
+	for (let index = 0; index < records.length; index++) {
+		const record = records[index];
+		const blueprint = blueprints[index];
+		if (blueprint.kind === 'range' && blueprint.retained !== undefined) {
+			// An adopted committed subtree is shape-stable exactly when it stands
+			// for the record already in this position.
+			if (blueprint.retained === record) continue;
+			return false;
+		}
+		if (
+			(blueprint.kind === 'range' && blueprint.compactLeafList !== undefined) ||
+			!sameRecordShape(record, blueprint) ||
+			!stableLogicalChildren(record.children, blueprint.children)
+		) {
+			return false;
+		}
+	}
+	return true;
 }
 
 function collectRemovedPostOrder(record: LogicalRecord, output: LogicalRecord[]): void {
@@ -3413,12 +4991,14 @@ function enqueueUniversalHookUpdate(
 
 function scheduleOwner(owner: UniversalOwnerRecord, slot?: unknown): void {
 	if (owner.disposed) return;
-	__profileSchedule(
-		owner,
-		'state',
-		typeof slot === 'symbol' || typeof slot === 'number' ? slot : undefined,
-	);
-	owner.root.schedule();
+	if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+		__profileSchedule(
+			owner,
+			'state',
+			typeof slot === 'symbol' || typeof slot === 'number' ? slot : undefined,
+		);
+	}
+	owner.root.scheduleOwned(owner);
 }
 
 function currentDraftOwner(): DraftOwner {
@@ -3633,6 +5213,237 @@ export function useState<T>(
 }
 
 export const __useStateWithGetter = useState;
+
+function universalLinkedStateHook<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	optionsOrSlot: LinkedStateOptions<Source, Value> | unknown,
+	maybeSlot: unknown,
+	withGetter: boolean,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, (() => Value)?] {
+	const options =
+		optionsOrSlot !== null && typeof optionsOrSlot === 'object'
+			? (optionsOrSlot as LinkedStateOptions<Source, Value>)
+			: undefined;
+	const slot = maybeSlot ?? (options === undefined ? optionsOrSlot : undefined);
+	const owner = currentDraftOwner();
+	const resolved = resolveHookSlot(slot);
+	let hook = owner.hooks.get(resolved) as LinkedStateHook<Source, Value> | undefined;
+	const sourceEqual = options?.sourceEqual ?? Object.is;
+	const valueEqual = options?.valueEqual ?? Object.is;
+
+	if (hook?.linked !== true) {
+		const record = owner.record;
+		const initialValue = reconcile(source, undefined);
+		const current: LinkedStateHook<Source, Value> = {
+			kind: 'state',
+			linked: true,
+			source,
+			generation: 0,
+			generationBase: initialValue,
+			value: initialValue,
+			valueEqual,
+			set(update) {
+				if (record.disposed) return;
+				const draft = findDraftOwner(record);
+				if (draft !== null) {
+					const live = cloneStateHook<Value>(draft, resolved) as
+						LinkedStateHook<Source, Value> | undefined;
+					if (live?.linked !== true) return;
+					const next =
+						typeof update === 'function'
+							? (update as (previous: Value) => Value)(live.value)
+							: update;
+					if (live.valueEqual(live.value, next)) return;
+					live.value = next;
+					draft.needsRender = true;
+					return;
+				}
+
+				const committed = record.hooks.get(resolved) as LinkedStateHook<Source, Value> | undefined;
+				if (committed?.linked !== true) return;
+				const transition = universalTransitionBatchForUpdate();
+				const parked = PARKED_UNIVERSAL_LINKED_DRAFTS?.get(committed) as
+					ParkedUniversalLinkedDraft<Source, Value> | undefined;
+				if (
+					transition === null &&
+					record.visibility === 'suspense-hidden' &&
+					parked !== undefined &&
+					parked.generation === committed.generation
+				) {
+					const next =
+						typeof update === 'function'
+							? (update as (previous: Value) => Value)(parked.value)
+							: update;
+					if (parked.valueEqual(parked.value, next)) return;
+					parked.value = next;
+					parked.updated = true;
+					scheduleOwner(record, resolved);
+					return;
+				}
+				const previous =
+					transition === null
+						? visibleStateValue(record, resolved, committed.value)
+						: projectedStateValue(record, resolved, committed.value);
+				const next =
+					typeof update === 'function' ? (update as (previous: Value) => Value)(previous) : update;
+				const queue = record.updates.get(resolved);
+				const needsUrgentRebase =
+					transition === null && queue?.batches?.some((batch) => batch !== null) === true;
+				if (committed.valueEqual(previous, next) && !needsUrgentRebase) return;
+
+				const generation = committed.generation;
+				const apply = (previousValue: Value): Value => {
+					const latest = record.hooks.get(resolved) as LinkedStateHook<Source, Value> | undefined;
+					if (latest?.linked !== true) return previousValue;
+					// Source reconciliation publishes a new generation only on host
+					// acceptance. An old lane may still carry its former base state;
+					// replace it with the newly committed value instead of replaying
+					// a draft that belonged to the abandoned source.
+					if (latest.generation !== generation) return latest.generationBase;
+					const candidate =
+						typeof update === 'function'
+							? (update as (previous: Value) => Value)(previousValue)
+							: update;
+					return latest.valueEqual(previousValue, candidate) ? previousValue : candidate;
+				};
+				if (transition !== null) {
+					stageUniversalTransitionUpdate(transition, record, resolved, 'state', apply);
+					return;
+				}
+				enqueueUniversalHookUpdate(record, resolved, 'state', apply, null);
+				scheduleOwner(record, resolved);
+			},
+		};
+		owner.hooks.set(resolved, current);
+		owner.clonedHooks.add(resolved);
+		hook = current;
+	} else {
+		if (!owner.clonedHooks.has(resolved)) {
+			hook = { ...hook };
+			owner.hooks.set(resolved, hook);
+			owner.clonedHooks.add(resolved);
+			hook.value = applyUniversalHookUpdateQueue(
+				owner,
+				resolved,
+				'state',
+				hook.value,
+				(previous, update) =>
+					typeof update === 'function'
+						? (update as (previous: Value) => Value)(previous)
+						: (update as Value),
+			);
+		}
+		hook.valueEqual = valueEqual;
+		const committed = owner.record.hooks.get(resolved) as
+			LinkedStateHook<Source, Value> | undefined;
+		let parked =
+			committed === undefined
+				? undefined
+				: (PARKED_UNIVERSAL_LINKED_DRAFTS?.get(committed) as
+						ParkedUniversalLinkedDraft<Source, Value> | undefined);
+		if (parked !== undefined) {
+			if (committed?.generation !== parked.generation || !sourceEqual(parked.source, source)) {
+				PARKED_UNIVERSAL_LINKED_DRAFTS!.delete(committed!);
+				parked = undefined;
+			} else {
+				parked.valueEqual = valueEqual;
+			}
+		}
+		const sourceChanged = !sourceEqual(hook.source, source);
+		if (sourceChanged) {
+			const previous = { source: hook.source, value: hook.value };
+			const next = reconcile(source, previous);
+			const reconciled = valueEqual(hook.value, next) ? hook.value : next;
+			const reuseParked =
+				parked !== undefined &&
+				owner.record.visibility === 'suspense-hidden' &&
+				parked.updated &&
+				parked.generation === committed?.generation;
+			hook.value = reuseParked && parked !== undefined ? parked.value : reconciled;
+			if (!reuseParked && committed !== undefined) {
+				let boundary: DraftOwner | null = owner.parent;
+				while (boundary !== null && !(boundary.isBoundary && boundary.canHandleSuspense)) {
+					boundary = boundary.parent;
+				}
+				if (boundary !== null) {
+					(PARKED_UNIVERSAL_LINKED_DRAFTS ??= new WeakMap()).set(committed, {
+						source,
+						value: hook.value,
+						valueEqual,
+						generation: committed.generation,
+						updated: false,
+					});
+				}
+			}
+			hook.source = source;
+			hook.generation++;
+			hook.generationBase = hook.value;
+			const applied = owner.appliedUpdates.get(resolved);
+			if (applied?.lane) {
+				// Applied/queued updates exclude owner-only fast commits. The full
+				// transaction publishes this new linked origin to queue.baseState
+				// only after host acceptance; abandoned drafts leave both untouched.
+				owner.appliedUpdates.set(resolved, { ...applied, baseState: hook.value });
+			}
+		}
+	}
+
+	if (!withGetter) return [hook.value, hook.set];
+	const record = owner.record;
+	const initialValue = hook.value;
+	const getter = (hook.get ??= () => {
+		if (record.visibility === 'suspense-hidden' && findDraftOwner(record) === null) {
+			const committed = record.hooks.get(resolved) as LinkedStateHook<Source, Value> | undefined;
+			if (committed?.linked === true) {
+				const parked = PARKED_UNIVERSAL_LINKED_DRAFTS?.get(committed);
+				// Keep old-source lanes intact: an abandoned replacement must still
+				// apply its pending edit if the original source is restored.
+				if (parked?.generation === committed.generation) return committed.value;
+			}
+		}
+		return projectedStateValue(record, resolved, initialValue);
+	});
+	return [hook.value, hook.set, getter];
+}
+
+export function useLinkedState<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	options?: LinkedStateOptions<Source, Value>,
+	slot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value];
+export function useLinkedState<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	optionsOrSlot?: LinkedStateOptions<Source, Value> | unknown,
+	maybeSlot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value] {
+	return universalLinkedStateHook(source, reconcile, optionsOrSlot, maybeSlot, false) as [
+		Value,
+		(next: Value | ((previous: Value) => Value)) => void,
+		() => Value,
+	];
+}
+
+export function __useLinkedStateWithGetter<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	options?: LinkedStateOptions<Source, Value>,
+	slot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value];
+export function __useLinkedStateWithGetter<Source, Value>(
+	source: Source,
+	reconcile: (source: Source, previous: LinkedStatePrevious<Source, Value> | undefined) => Value,
+	optionsOrSlot?: LinkedStateOptions<Source, Value> | unknown,
+	maybeSlot?: unknown,
+): [Value, (next: Value | ((previous: Value) => Value)) => void, () => Value] {
+	return universalLinkedStateHook(source, reconcile, optionsOrSlot, maybeSlot, true) as [
+		Value,
+		(next: Value | ((previous: Value) => Value)) => void,
+		() => Value,
+	];
+}
 
 export function useReducer<S, A, I = S>(
 	reducer: (state: S, action: A) => S,
@@ -4282,22 +6093,6 @@ export function warmChild(component: any, props: any): void {
 	}
 }
 
-function universalLazyResolvedProps(
-	component: UniversalComponent<any>,
-	props: any,
-): Readonly<Record<string, unknown>> {
-	const defaults = (component as any).defaultProps;
-	if (defaults == null || typeof defaults !== 'object') return props;
-	let resolved = props;
-	for (const key of Object.keys(defaults)) {
-		if (props == null || props[key] === undefined) {
-			if (resolved === props) resolved = props == null ? {} : { ...props };
-			resolved[key] = defaults[key];
-		}
-	}
-	return resolved;
-}
-
 function resolveUniversalLazyModule(module: unknown, renderer: string): UniversalComponent<any> {
 	let component = module;
 	if (module != null) {
@@ -4367,14 +6162,14 @@ export function lazy<C extends UniversalComponent<any>>(
 		let settledStatus = status as 'pending' | 'fulfilled' | 'rejected';
 		if (settledStatus === 'fulfilled') {
 			const component = resolveUniversalLazyModule(result, context.renderer);
-			return component(universalLazyResolvedProps(component, props), context);
+			return component(resolveLazyDefaultProps(component, props), context);
 		}
 		if (settledStatus === 'rejected') throw result;
 		useBatch([thenable!]);
 		settledStatus = status as 'pending' | 'fulfilled' | 'rejected';
 		if (settledStatus === 'fulfilled') {
 			const component = resolveUniversalLazyModule(result, context.renderer);
-			return component(universalLazyResolvedProps(component, props), context);
+			return component(resolveLazyDefaultProps(component, props), context);
 		}
 		if (settledStatus === 'rejected') throw result;
 		throw new UniversalSuspense(thenable!);
@@ -4518,10 +6313,7 @@ function universalShallowEqual(previous: unknown, next: unknown): boolean {
 	const nextKeys = Object.keys(next);
 	if (previousKeys.length !== nextKeys.length) return false;
 	for (const key of previousKeys) {
-		if (
-			!Object.prototype.hasOwnProperty.call(next, key) ||
-			!Object.is((previous as any)[key], (next as any)[key])
-		) {
+		if (!hasOwnProp.call(next, key) || !Object.is((previous as any)[key], (next as any)[key])) {
 			return false;
 		}
 	}
@@ -4606,7 +6398,9 @@ export function memo<P>(
 	Object.defineProperty(wrapper, UNIVERSAL_COMPONENT_REVISION, {
 		get: () => universalComponentRevision(component),
 	});
-	__profileComponentSource(wrapper, component);
+	if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
+		__profileComponentSource(wrapper, component);
+	}
 	if ((component as any).__warm !== undefined) (wrapper as any).__warm = (component as any).__warm;
 	return wrapper;
 }
@@ -4633,6 +6427,61 @@ function runEffectCleanup(hook: EffectHook): void {
 	cleanup?.();
 }
 
+/**
+ * Root error-callback handlers live OFF the root's shape (mirroring the DOM
+ * runtime's Block-keyed WeakMap): registered only for roots created with at
+ * least one callback, so every other root pays a single module-null check on
+ * the (already cold) error paths and UniversalRootImpl's layout is untouched.
+ */
+interface UniversalRootErrorHandlers {
+	onCaughtError: ((error: unknown) => void) | undefined;
+	onUncaughtError: ((error: unknown) => void) | undefined;
+}
+
+let UNIVERSAL_ROOT_ERROR_HANDLERS: WeakMap<
+	UniversalRootImpl<any, any>,
+	UniversalRootErrorHandlers
+> | null = null;
+
+function registerUniversalRootErrorHandlers(
+	root: UniversalRootImpl<any, any>,
+	options: UniversalRootOptions<any>,
+): void {
+	const { onCaughtError, onUncaughtError } = options;
+	if (onCaughtError === undefined && onUncaughtError === undefined) return;
+	(UNIVERSAL_ROOT_ERROR_HANDLERS ??= new WeakMap()).set(root, { onCaughtError, onUncaughtError });
+}
+
+function universalRootErrorHandlersFor(
+	root: UniversalRootImpl<any, any>,
+): UniversalRootErrorHandlers | null {
+	if (UNIVERSAL_ROOT_ERROR_HANDLERS === null) return null;
+	return UNIVERSAL_ROOT_ERROR_HANDLERS.get(root) ?? null;
+}
+
+/** A throwing report callback must not corrupt recovery — report it and move on. */
+function invokeUniversalRootErrorHandler(handler: (error: unknown) => void, err: unknown): void {
+	try {
+		handler(err);
+	} catch (handlerErr) {
+		console.error(handlerErr);
+	}
+}
+
+/** Report a boundary-claimed error to the owning root's onCaughtError, if any. */
+function reportUniversalCaughtError(root: UniversalRootImpl<any, any>, err: unknown): void {
+	const h = universalRootErrorHandlersFor(root)?.onCaughtError;
+	if (h !== undefined) invokeUniversalRootErrorHandler(h, err);
+}
+
+/** True when the owning root's onUncaughtError consumed the report (callers skip their default). */
+function reportUniversalUncaughtError(root: UniversalRootImpl<any, any>, err: unknown): boolean {
+	const h = universalRootErrorHandlersFor(root)?.onUncaughtError;
+	if (h === undefined) return false;
+	invokeUniversalRootErrorHandler(h, err);
+	return true;
+}
+
 function routeUniversalOwnerError(owner: UniversalOwnerRecord, error: unknown): boolean {
 	for (let current = owner.parent; current !== null; current = current.parent) {
 		if (!current.isBoundary || current.disposed) continue;
@@ -4640,6 +6489,9 @@ function routeUniversalOwnerError(owner: UniversalOwnerRecord, error: unknown): 
 		current.boundaryError = error;
 		current.hasBoundaryError = true;
 		current.root.schedule();
+		// The boundary took ownership of the error episode; its catch-arm replay
+		// deliberately does not re-report, so this is the claim's single report.
+		reportUniversalCaughtError(current.root, error);
 		return true;
 	}
 	return false;
@@ -4670,7 +6522,8 @@ function runOwnedEffectCreate(hook: EffectHook): void {
 	try {
 		runEffectCreate(hook);
 	} catch (error) {
-		if (!routeUniversalOwnerError(hook.owner, error)) throw error;
+		if (routeUniversalOwnerError(hook.owner, error)) return;
+		if (!reportUniversalUncaughtError(hook.owner.root, error)) throw error;
 	}
 }
 
@@ -4678,7 +6531,8 @@ function runOwnedEffectCleanup(hook: EffectHook): void {
 	try {
 		runEffectCleanup(hook);
 	} catch (error) {
-		if (!routeUniversalOwnerError(hook.owner, error)) throw error;
+		if (routeUniversalOwnerError(hook.owner, error)) return;
+		if (!reportUniversalUncaughtError(hook.owner.root, error)) throw error;
 	}
 }
 
@@ -4686,7 +6540,9 @@ function runOwnedCommit(owner: UniversalOwnerRecord | null, work: () => void): v
 	try {
 		work();
 	} catch (error) {
-		if (owner === null || !routeUniversalOwnerError(owner, error)) throw error;
+		if (owner === null) throw error;
+		if (routeUniversalOwnerError(owner, error)) return;
+		if (!reportUniversalUncaughtError(owner.root, error)) throw error;
 	}
 }
 
@@ -4716,8 +6572,7 @@ function cloneSerializableValue(
 		if (Array.isArray(value)) {
 			return Object.freeze(value.map((entry) => cloneSerializableValue(entry, seen)));
 		}
-		const prototype = Object.getPrototypeOf(value);
-		if (prototype !== Object.prototype && prototype !== null) {
+		if (!hasCrossRealmPlainPrototype(value)) {
 			throw new TypeError(
 				`Serializable host values require plain objects, received ${Object.prototype.toString.call(value)}.`,
 			);
@@ -4838,12 +6693,22 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 	private asyncWork: Promise<void> = Promise.resolve();
 	private asyncWorkError: unknown = NO_PENDING_PASSIVE_ERROR;
 	private nextId = 1;
+	private nextLogicalRangeId = -1;
 	private nextUniversalId = 1;
 	private nextListener = NEXT_EVENT_ROOT++ * 1_000_000;
 	private nextBatchVersion = 1;
 	private acceptedBatchVersion = 0;
 	private treeFeatures = 0;
 	private handlers = new Map<number, CommittedEvent>();
+	private eventDefinitions: Map<string, UniversalEventDefinition | null> | null = null;
+	private staticHostProps: WeakMap<
+		UniversalHostPlan,
+		Readonly<Record<string, unknown>> | null
+	> | null = null;
+	private templatePrograms: WeakMap<
+		CompiledCollapsedTemplateProgram,
+		PreparedCollapsedTemplateProgram | null
+	> | null = null;
 	private localCallbacks = new Map<number, CommittedHostCallback>();
 	private readonly publishedListeners = new Set<number>();
 	private pending: UniversalTransactionImpl<Container, PublicInstance> | null = null;
@@ -4857,7 +6722,15 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 	private retryRenderInput: readonly [UniversalComponent<any>, any] | null = null;
 	private scheduled = false;
 	private scheduledUrgent = false;
+	private scheduledFullRoot = false;
+	private readonly scheduledOwners = new Set<UniversalOwnerRecord>();
 	private scheduledPreparationDepth = 0;
+	// The current dirty epoch: scheduleOwned() stamps it on the scheduled owner
+	// and its ancestors, and prepare() bumps it as it consumes the batch, so an
+	// attempt recognizes exactly the owners scheduled into it.
+	private dirtyEpoch = 1;
+	private attemptDirtyEpoch = 0;
+	private attemptFullRootScheduled = false;
 	private readonly scheduledTransitionBatches = new Set<UniversalTransitionBatch>();
 	private readonly unattemptedTransitionBatches = new Set<UniversalTransitionBatch>();
 	private eventScopeDepth = 0;
@@ -4866,6 +6739,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 	private passiveScheduled = false;
 	private readonly passiveTasks: (() => void)[] = [];
 	private hostAttachments: UniversalHostAttachmentState | null = null;
+	private collapsedTemplates: Set<LogicalRecord> | null = null;
 
 	constructor(
 		private readonly container: Container,
@@ -5271,7 +7145,223 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 	}
 
 	classifyEvent(name: string): UniversalEventDefinition | null {
-		return this.driver.events?.classify(name) ?? null;
+		const capability = this.driver.events;
+		if (capability === undefined) return null;
+		const definitions = (this.eventDefinitions ??= new Map());
+		const cached = definitions.get(name);
+		if (cached !== undefined) return cached;
+		const definition = capability.classify(name) ?? null;
+		if (definitions.size < 128) definitions.set(name, definition);
+		return definition;
+	}
+
+	materializeStaticHostProps(node: UniversalHostPlan): Record<string, unknown> | null {
+		if (node.propsSlot !== undefined || (node.bindings?.length ?? 0) !== 0) return null;
+		const source = node.props ?? EMPTY_STATIC_HOST_PROPS;
+		if (source === EMPTY_STATIC_HOST_PROPS) return EMPTY_STATIC_HOST_PROPS;
+		if (
+			this.driver.props !== undefined &&
+			this.driver.capabilities?.stableStaticHostProps !== true
+		) {
+			return null;
+		}
+		const cache = (this.staticHostProps ??= new WeakMap());
+		const cached = cache.get(node);
+		if (cached !== undefined) return cached as Record<string, unknown> | null;
+		if (Object.getOwnPropertySymbols(source).length !== 0) {
+			cache.set(node, null);
+			return null;
+		}
+		const names = Object.keys(source);
+		for (const name of names) {
+			const value = source[name];
+			if (
+				name === 'ref' ||
+				name === 'key' ||
+				name === 'children' ||
+				name.startsWith('main-thread:') ||
+				(value !== null &&
+					(typeof value === 'object' ||
+						typeof value === 'function' ||
+						typeof value === 'symbol')) ||
+				this.classifyLifecycle(name, value) !== null ||
+				this.classifyLocalCallback(name, value) !== null ||
+				this.classifyEvent(name) !== null
+			) {
+				cache.set(node, null);
+				return null;
+			}
+		}
+		let props = source as Record<string, unknown>;
+		for (const name of names) {
+			const encoded = this.encodeHostProp(node.type, name, source[name]);
+			if (!Object.is(encoded, source[name])) {
+				if (props === source) props = { ...source };
+				props[name] = encoded;
+			}
+		}
+		Object.freeze(props);
+		cache.set(node, props);
+		return props;
+	}
+
+	prepareCollapsedTemplateProgram(
+		compiled: CompiledCollapsedTemplateProgram,
+	): PreparedCollapsedTemplateProgram | null {
+		if (
+			this.driver.capabilities?.templateProgramMount !== true ||
+			this.driver.capabilities?.stableStaticHostProps !== true ||
+			this.textPolicy() !== 'host'
+		) {
+			return null;
+		}
+		const cache = (this.templatePrograms ??= new WeakMap());
+		const cached = cache.get(compiled);
+		if (cached !== undefined) return cached;
+		const wireNodes: UniversalHostTemplateProgramNode[] = [];
+		const wireEvents: UniversalHostTemplateProgramEvent[] = [];
+		const values: PreparedCollapsedTemplateValue[] = [];
+		const events: PreparedCollapsedTemplateEvent[] = [];
+		const sharedNodes: (BlueprintCollapsedTemplateNode | null)[] = [];
+		const reject = (): null => {
+			cache.set(compiled, null);
+			return null;
+		};
+		for (let index = 0; index < compiled.plans.length; index++) {
+			const node = compiled.plans[index];
+			const shape = compiled.shape[index];
+			if (node.kind === 'slot' || node.kind === 'text') {
+				if (node.kind === 'text' && node.slot === undefined) {
+					const props = Object.freeze({ value: String(node.value ?? '') });
+					wireNodes.push(Object.freeze({ type: shape.type, parent: shape.parent, props }));
+					sharedNodes.push(Object.freeze({ props }));
+				} else {
+					const valueIndex = values.length;
+					values.push({ node: index, name: 'value', slot: node.slot!, text: true });
+					const binding = Object.freeze({ name: 'value', valueIndex });
+					wireNodes.push(
+						Object.freeze({
+							type: shape.type,
+							parent: shape.parent,
+							props: EMPTY_STATIC_HOST_PROPS,
+							bindings: Object.freeze([binding]),
+						}),
+					);
+					sharedNodes.push(null);
+				}
+				continue;
+			}
+			const source = node.props ?? EMPTY_STATIC_HOST_PROPS;
+			const overwritten = new Set<string>();
+			for (const [name] of node.bindings ?? []) {
+				if (overwritten.has(name)) return reject();
+				overwritten.add(name);
+			}
+			let staticProps: Record<string, unknown>;
+			if (overwritten.size === 0) {
+				const shared = this.materializeStaticHostProps(node);
+				if (shared === null) return reject();
+				staticProps = shared;
+			} else {
+				let output: Record<string, unknown> | null = null;
+				for (const name of Object.keys(source)) {
+					if (overwritten.has(name)) continue;
+					const entry = source[name];
+					if (
+						!isUniversalHostTemplateProgramValue(entry) ||
+						this.classifyLifecycle(name, entry) !== null ||
+						this.classifyLocalCallback(name, entry) !== null ||
+						this.classifyEvent(name) !== null
+					) {
+						return reject();
+					}
+					const encoded = this.encodeHostProp(node.type, name, entry);
+					if (!isUniversalHostTemplateProgramValue(encoded)) return reject();
+					(output ??= {})[name] = encoded;
+				}
+				staticProps = output === null ? EMPTY_STATIC_HOST_PROPS : Object.freeze(output);
+			}
+			const bindings: UniversalHostTemplateProgramBinding[] = [];
+			let eventful = false;
+			const types = new Set<string>();
+			for (const [name, slot] of node.bindings ?? []) {
+				const definition = this.classifyEvent(name);
+				if (definition !== null) {
+					if (index === 0 || types.has(definition.type)) return reject();
+					types.add(definition.type);
+					const priority = definition.priority ?? 'default';
+					wireEvents.push(Object.freeze({ node: index, type: definition.type, priority }));
+					events.push({ node: index, prop: name, slot, type: definition.type, priority });
+					eventful = true;
+					continue;
+				}
+				const valueIndex = values.length;
+				values.push({ node: index, name, slot, text: false });
+				bindings.push(Object.freeze({ name, valueIndex }));
+			}
+			wireNodes.push(
+				Object.freeze({
+					type: shape.type,
+					parent: shape.parent,
+					props: staticProps,
+					...(bindings.length === 0 ? null : { bindings: Object.freeze(bindings) }),
+				}),
+			);
+			sharedNodes.push(
+				bindings.length === 0 && !eventful ? Object.freeze({ props: staticProps }) : null,
+			);
+		}
+		const prepared = Object.freeze({
+			wire: Object.freeze({ nodes: Object.freeze(wireNodes), events: Object.freeze(wireEvents) }),
+			values: Object.freeze(values),
+			events: Object.freeze(events),
+			sharedNodes: Object.freeze(sharedNodes),
+		});
+		cache.set(compiled, prepared);
+		return prepared;
+	}
+
+	private expandCollapsedTemplate(record: LogicalRecord): void {
+		const state = record.collapsedTemplate;
+		if (state === undefined) return;
+		const events = new Map<number, Map<string, CommittedEvent>>();
+		for (const entry of state.events) {
+			let current = events.get(entry.index);
+			if (current === undefined) events.set(entry.index, (current = new Map()));
+			current.set(entry.event.type, entry.event);
+		}
+		const records: LogicalRecord[] = [record];
+		for (let index = 1; index < state.shape.length; index++) {
+			const node = materializeCommittedCollapsedNode(state, index);
+			const child: LogicalRecord = {
+				id: node.id ?? state.firstId! + index,
+				kind: 'host',
+				key: null,
+				type: state.shape[index].type,
+				props: node.props as Record<string, unknown>,
+				ref: null,
+				refCleanup: null,
+				refAttached: false,
+				owner: state.owner,
+				events: events.get(index) ?? EMPTY_COMMITTED_EVENTS,
+				lifecycles: EMPTY_COMMITTED_HOST_CALLBACKS,
+				localCallbacks: EMPTY_COMMITTED_HOST_CALLBACKS,
+				visibility: 'visible',
+				portalRegistration: null,
+				parent: records[state.shape[index].parent],
+				children: [],
+			};
+			records.push(child);
+			child.parent!.children.push(child);
+		}
+		delete record.collapsedTemplate;
+		this.collapsedTemplates?.delete(record);
+	}
+
+	private expandCollapsedTemplates(): void {
+		const records = this.collapsedTemplates;
+		if (records === null || records.size === 0) return;
+		for (const record of [...records]) this.expandCollapsedTemplate(record);
 	}
 
 	classifyLifecycle(name: string, value: unknown): UniversalHostCallbackDefinition | null {
@@ -5691,7 +7781,17 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				if (this.unmounted) return;
 				const input = this.scheduledRenderInput();
 				if (input === null) return;
-				const attempt = this.__prepareScheduled(input[0], input[1]);
+				let attempt: UniversalPreparedAttempt;
+				try {
+					attempt = this.__prepareScheduled(input[0], input[1]);
+				} catch (error) {
+					// Scheduled work has no direct caller to observe the throw — without
+					// a handler it surfaces through flushTransport()'s async-work error.
+					// A root created with onUncaughtError consumes its own report; the
+					// failed attempt is already discarded and recovery is unchanged.
+					if (!reportUniversalUncaughtError(this, error)) throw error;
+					return;
+				}
 				if (attempt.status === 'prepared') {
 					try {
 						await attempt.commitAsync();
@@ -5704,7 +7804,17 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		} else {
 			const input = this.scheduledRenderInput();
 			if (input === null) return;
-			const attempt = this.__prepareScheduled(input[0], input[1]);
+			let attempt: UniversalPreparedAttempt;
+			try {
+				attempt = this.__prepareScheduled(input[0], input[1]);
+			} catch (error) {
+				// Scheduled work has no direct caller to observe the throw — without a
+				// handler it escapes into the host's microtask channel. A root created
+				// with onUncaughtError consumes its own report; the failed attempt is
+				// already discarded and recovery is unchanged.
+				if (!reportUniversalUncaughtError(this, error)) throw error;
+				return;
+			}
 			if (attempt.status === 'prepared') attempt.commit();
 		}
 	}
@@ -5722,13 +7832,34 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		this.__scheduleMicrotask(() => this.flushScheduledWork());
 	}
 
-	schedule(): void {
+	private markUrgentScheduled(): void {
 		if (this.unmounted || this.owner?.disposed || this.lastComponent === null) return;
 		this.scheduledUrgent = true;
 		if (this.scheduled) return;
 		this.scheduled = true;
 		SCHEDULED_UNIVERSAL_ROOTS.add(this);
 		if (this.eventScopeDepth === 0 && UNIVERSAL_SYNC_DEPTH === 0) this.queueScheduledWork();
+	}
+
+	scheduleOwned(owner: UniversalOwnerRecord): void {
+		if (owner.root !== this || owner.disposed) return;
+		this.scheduledOwners.add(owner);
+		// Stamp the owner and its ancestors so retained-subtree adoption can see
+		// scheduled work with one integer compare. The early stop bounds repeat
+		// schedules and converging chains to O(1) amortized per call.
+		for (
+			let current: UniversalOwnerRecord | null = owner;
+			current !== null && current.dirtyEpoch !== this.dirtyEpoch;
+			current = current.parent
+		) {
+			current.dirtyEpoch = this.dirtyEpoch;
+		}
+		this.markUrgentScheduled();
+	}
+
+	schedule(): void {
+		this.scheduledFullRoot = true;
+		this.markUrgentScheduled();
 	}
 
 	/** @internal Associates promoted transition work with its accepting transaction. */
@@ -5939,12 +8070,16 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 							replay.entries,
 							replay.transitionBatches,
 							replay.transitionRender,
+							false,
 						);
 					} catch (error) {
 						const batches = new Set(replay.transitionBatches);
 						for (const batch of this.takeScheduledTransitionBatches()) batches.add(batch);
 						this.finishTransitionBatches(batches);
-						throw error;
+						// A resumed replay is scheduler-owned work like any other scheduled
+						// render — a root created with onUncaughtError consumes its report.
+						if (!reportUniversalUncaughtError(this, error)) throw error;
+						return;
 					}
 					// Commit errors have transaction-owned acceptance semantics. In
 					// particular, do not cancel unrelated blocked transitions after a
@@ -5976,12 +8111,16 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				replay.entries,
 				replay.transitionBatches,
 				replay.transitionRender,
+				false,
 			);
 		} catch (error) {
 			const batches = new Set(replay.transitionBatches);
 			for (const batch of this.takeScheduledTransitionBatches()) batches.add(batch);
 			this.finishTransitionBatches(batches);
-			throw error;
+			// A resumed replay is scheduler-owned work like any other scheduled
+			// render — a root created with onUncaughtError consumes its report.
+			if (!reportUniversalUncaughtError(this, error)) throw error;
+			return;
 		}
 		if (attempt.status === 'prepared') attempt.commit();
 		else this.ensureScheduledTransitionWork();
@@ -6156,6 +8295,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		for (const draft of owners) {
 			if (committed.has(draft.record)) continue;
 			draft.record.disposed = true;
+			draft.record.componentProps = null;
+			draft.record.range = null;
 			draft.record.updates.clear();
 			for (const hook of draft.hooks.values()) {
 				if (hook.kind === 'effect-event') hook.cell.active = false;
@@ -6221,9 +8362,268 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		};
 	}
 
+	// A local state update may replay only the component range that owns its hook.
+	// The retained topology check keeps reconciliation atomic: features that need
+	// root-wide coordination, or any structural change, fall back to the ordinary
+	// full-root attempt before a host batch is prepared.
+	private prepareOwnedUpdate(
+		target: UniversalOwnerRecord,
+		component: UniversalComponent<any>,
+		props: any,
+	): UniversalPreparedAttempt | null {
+		const range = target.range;
+		// Transported and bridged roots stay on the full-root path: their commits
+		// are acknowledged (or invalidated) against a whole-tree version, so a
+		// scoped batch would need its own ACK/rollback protocol on the far side
+		// before it could be accepted independently.
+		if (
+			this.transport !== null ||
+			this.bridge !== null ||
+			target.component === null ||
+			target.componentProps === null ||
+			ownerTreeHasWarmPlan(target) ||
+			range === null ||
+			range.kind !== 'range' ||
+			range.owner !== target ||
+			target.visibility === 'suspense-hidden'
+		) {
+			return null;
+		}
+		// An idle ancestor boundary needs no coordination: a scoped render that
+		// suspends or throws below it falls back to the full-root attempt, where
+		// the boundary handles the episode exactly as it always has. Only an
+		// already-active episode keeps its subtree on the full-root path.
+		for (let ancestor = target.parent; ancestor !== null; ancestor = ancestor.parent) {
+			if (
+				ancestor.isBoundary &&
+				(ancestor.hasBoundaryError || ancestor.boundaryThenable !== null)
+			) {
+				return null;
+			}
+		}
+		const unsupported = UNIVERSAL_TREE_PORTAL | UNIVERSAL_TREE_REGION;
+		// A root-scoped update covers the whole committed tree, whose feature union
+		// the last full commit already recorded; walking the tree again per update
+		// would reintroduce the O(tree) cost this path exists to avoid.
+		const scopeFeatures =
+			range === this.rootRecord ? this.treeFeatures : logicalTreeFeatures(range);
+		if ((scopeFeatures & unsupported) !== 0) return null;
+
+		this.flushPassivesBeforeRender();
+		this.pending?.abort();
+		const owner = draftOwner(target, null, [
+			{
+				component: target.component,
+				identityPath: target.identityPath,
+				key: target.key,
+				ordinal: 0,
+			},
+		]);
+		owner.componentRevision = universalComponentRevision(target.component);
+		const previousAttempt = CURRENT_ATTEMPT;
+		const previousOwner = CURRENT_OWNER;
+		const previousWarm = CURRENT_UNIVERSAL_WARM;
+		const previousWarmClaims = CURRENT_UNIVERSAL_WARM_CLAIMS;
+		const previousWarmPlans = ACTIVE_UNIVERSAL_WARM_PLANS.slice();
+		const attempt: RenderAttempt = {
+			root: this,
+			owner,
+			scope: target,
+			owners: [owner],
+			treeFeatures: 0,
+			replayEntries: [],
+			retryThenables: new Set(),
+			nextUniversalId: this.nextUniversalId,
+			implicitSlot: 0,
+			transitionBatches: EMPTY_UNIVERSAL_TRANSITION_BATCHES,
+			transitionRender: false,
+			bridgeContextReads: null,
+			// The owned-update guards already require a plain urgent local-driver
+			// attempt, which is exactly the retain-eligible shape.
+			retainEligible: true,
+			retainedCount: 0,
+			dirtyEpoch: this.attemptDirtyEpoch,
+		};
+		ACTIVE_UNIVERSAL_WARM_PLANS.length = 0;
+		CURRENT_UNIVERSAL_WARM = null;
+		CURRENT_UNIVERSAL_WARM_CLAIMS = null;
+		CURRENT_ATTEMPT = attempt;
+		CURRENT_OWNER = owner;
+		let nodes: BlueprintNode[];
+		try {
+			nodes = executeOwner(owner, () => {
+				const value = target.component!(target.componentProps, componentContext(this.renderer));
+				return materializeValue(value, this.renderer, null, [...target.identityPath, 'output']);
+			});
+		} catch (error) {
+			this.discardDraftOwners(attempt.owners);
+			if (error instanceof UniversalSuspense) {
+				UNIVERSAL_WARM_CACHES.delete(this);
+				return null;
+			}
+			// An error that escapes the scope can only be handled by a boundary
+			// above it. Fall back so the full-root attempt reaches that boundary's
+			// materialize-time handling; without one the error is the caller's.
+			for (let ancestor = target.parent; ancestor !== null; ancestor = ancestor.parent) {
+				if (ancestor.isBoundary) {
+					UNIVERSAL_WARM_CACHES.delete(this);
+					return null;
+				}
+			}
+			throw error;
+		} finally {
+			ACTIVE_UNIVERSAL_WARM_PLANS.length = 0;
+			ACTIVE_UNIVERSAL_WARM_PLANS.push(...previousWarmPlans);
+			CURRENT_UNIVERSAL_WARM = previousWarm;
+			CURRENT_UNIVERSAL_WARM_CLAIMS = previousWarmClaims;
+			CURRENT_ATTEMPT = previousAttempt;
+			CURRENT_OWNER = previousOwner;
+		}
+		if (attempt.retryThenables.size !== 0 || (attempt.treeFeatures & unsupported) !== 0) {
+			this.discardDraftOwners(attempt.owners);
+			UNIVERSAL_WARM_CACHES.delete(this);
+			return null;
+		}
+
+		const blueprint: BlueprintRange = {
+			kind: 'range',
+			// The committed range key: rangeKey for an ownerRange() scope, null for
+			// the root range, so the reapplied key never drifts from what the full
+			// render path would commit.
+			key: range.key,
+			owner: target,
+			children: nodes,
+		};
+		// Retained compact rows are ordinary expanded host records, so the scoped
+		// blueprint expands the same way before it is compared or reconciled.
+		this.expandCompactLeafLists(blueprint);
+		// Structural changes commit through a physical frame for the scope. A
+		// portal or detached ancestor has no such frame, so those scopes fall
+		// back once their shape changes; shape-stable updates need no frame.
+		let scopePlacement: { parent: number | null; endAnchor: number | null } | null = null;
+		// The root scope has no out-of-scope siblings: commit plans its placements
+		// against the container directly, so it needs no precomputed frame.
+		if (range !== this.rootRecord && !stableLogicalChildren(range.children, blueprint.children)) {
+			scopePlacement = this.scopePhysicalPlacement(range);
+			if (scopePlacement === null) {
+				this.discardDraftOwners(attempt.owners);
+				UNIVERSAL_WARM_CACHES.delete(this);
+				return null;
+			}
+		}
+		try {
+			const transaction = this.createPreparedTransaction(
+				blueprint,
+				attempt,
+				component,
+				props,
+				new Set(),
+				range,
+				scopeFeatures,
+				scopePlacement,
+			);
+			this.pending = transaction;
+			return transaction;
+		} catch (error) {
+			this.discardDraftOwners(attempt.owners);
+			throw error;
+		}
+	}
+
+	// The physical frame a scoped range commits into: its nearest host (or
+	// container) ancestor plus the first physical host that follows the scope
+	// inside that parent. Untouched siblings cannot move during a scoped commit,
+	// so both stay valid anchors for inserted or reordered scope content. A
+	// portal or detached ancestor owns a separate physical tree: no frame.
+	private scopePhysicalPlacement(
+		scope: LogicalRecord,
+	): { parent: number | null; endAnchor: number | null } | null {
+		let endAnchor: number | null = null;
+		let current = scope;
+		for (let parent = current.parent; parent !== null; current = parent, parent = current.parent) {
+			if (parent.kind !== 'host' && parent.kind !== 'range') return null;
+			if (endAnchor === null) {
+				const siblings = parent.children;
+				for (let index = siblings.indexOf(current) + 1; index < siblings.length; index++) {
+					const found = physicalRecords([siblings[index]]);
+					if (found.length !== 0) {
+						endAnchor = found[0].id;
+						break;
+					}
+				}
+			}
+			if (parent.kind === 'host') return { parent: parent.id, endAnchor };
+			if (parent === this.rootRecord) return { parent: null, endAnchor };
+		}
+		return null;
+	}
+
+	// A scheduled owner that cannot replay alone (an anonymous @for-item owner,
+	// or several owners raised by one event scope) still has one smallest
+	// ancestor whose retained props and range can replay every queued update:
+	// the nearest enclosing component owner of their common ancestor.
+	private resolveScopedTarget(): UniversalOwnerRecord | undefined {
+		let scope: UniversalOwnerRecord | null = null;
+		for (const owner of this.scheduledOwners) {
+			if (owner.disposed) continue;
+			// Retained-hidden content belongs to a boundary episode; only the
+			// full-root attempt coordinates its retention and reveal.
+			if (owner.visibility === 'suspense-hidden') return undefined;
+			scope = scope === null ? owner : commonOwnerAncestor(scope, owner);
+			if (scope === null) return undefined;
+		}
+		let target: UniversalOwnerRecord | null = null;
+		for (let current = scope; current !== null; current = current.parent) {
+			if (current.component !== null && current.componentProps !== null && current.range !== null) {
+				target = current;
+				break;
+			}
+		}
+		if (target === null) return undefined;
+		// Hoisting may carry the replay across boundaries the scheduled owner sits
+		// under. An idle boundary re-renders its body inline like any other owner,
+		// but an active episode (pending thenable or routed error) owns retained
+		// arms whose replay and reveal are coordinated from the root.
+		for (const owner of this.scheduledOwners) {
+			if (owner.disposed) continue;
+			for (
+				let current: UniversalOwnerRecord | null = owner;
+				current !== target;
+				current = current.parent
+			) {
+				if (
+					current === null ||
+					(current.isBoundary && (current.hasBoundaryError || current.boundaryThenable !== null))
+				) {
+					return undefined;
+				}
+			}
+		}
+		return target;
+	}
+
 	prepare(component: UniversalComponent<any>, props: any): UniversalPreparedAttempt {
+		const ownedTarget =
+			this.scheduledPreparationDepth > 0 &&
+			this.scheduledUrgent &&
+			!this.scheduledFullRoot &&
+			this.scheduledOwners.size !== 0
+				? this.resolveScopedTarget()
+				: undefined;
 		const scheduledUrgent = this.scheduledUrgent || this.scheduledPreparationDepth === 0;
+		// Scheduling is not always a hook update: a boundary invalidation (resolved
+		// thenable, routed error, Activity reveal) re-renders its owner with an
+		// empty update queue. scheduleOwned() already epoch-stamped every
+		// scheduled owner and its ancestors; consuming the batch here just
+		// records that epoch for the attempt and opens the next one, so stale
+		// stamps expire without walking or clearing anything. Never retain at
+		// all when a full-root refresh was demanded.
+		this.attemptFullRootScheduled = this.scheduledFullRoot;
+		this.attemptDirtyEpoch = this.dirtyEpoch;
+		this.dirtyEpoch++;
 		this.scheduledUrgent = false;
+		this.scheduledFullRoot = false;
+		this.scheduledOwners.clear();
 		if (scheduledUrgent) this.urgentBoundarySuspension = null;
 		const bridgeReplay = this.bridge === null ? null : this.queuedReplay;
 		if (
@@ -6263,6 +8663,14 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		// update or remount that returns to the same dependency values.
 		UNIVERSAL_WARM_CACHES.delete(this);
 		try {
+			if (
+				ownedTarget !== undefined &&
+				component === this.lastComponent &&
+				universalShallowEqual(props, this.lastProps)
+			) {
+				const ownedAttempt = this.prepareOwnedUpdate(ownedTarget, component, props);
+				if (ownedAttempt !== null) return ownedAttempt;
+			}
 			const attempt = this.prepareWithReplay(
 				component,
 				props,
@@ -6292,6 +8700,9 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		replayEntries: readonly SuspendedMemoEntry[],
 		transitionBatches: ReadonlySet<UniversalTransitionBatch>,
 		transitionRender: boolean,
+		// A queued replay re-renders content a boundary retained while suspended;
+		// its attempt must rebuild that content even where inputs look unchanged.
+		allowRetain = true,
 	): UniversalPreparedAttempt {
 		if (this.unmounted || this.unmounting) {
 			throw new Error('Cannot render an unmounted universal root.');
@@ -6316,6 +8727,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			{ component, identityPath: ownerRecord.identityPath, key: ownerRecord.key, ordinal: 0 },
 		];
 		const owner = draftOwner(ownerRecord, null, rootPath);
+		owner.componentProps = props;
+		owner.componentRevision = universalComponentRevision(component);
 		const previousAttempt = CURRENT_ATTEMPT;
 		const previousOwner = CURRENT_OWNER;
 		const previousWarm = CURRENT_UNIVERSAL_WARM;
@@ -6324,6 +8737,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const attempt: RenderAttempt = {
 			root: this,
 			owner,
+			scope: null,
 			owners: [owner],
 			treeFeatures: 0,
 			replayEntries,
@@ -6333,6 +8747,19 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			transitionBatches,
 			transitionRender,
 			bridgeContextReads: null,
+			// Replay, transition, and bridge attempts re-execute every owner for
+			// their own bookkeeping. An ordinary transported full-root commit can
+			// adopt unchanged subtrees: its acknowledgement still covers the whole
+			// tree, and committed hosts and listeners remain published.
+			retainEligible:
+				allowRetain &&
+				this.bridge === null &&
+				!this.attemptFullRootScheduled &&
+				replayEntries.length === 0 &&
+				transitionBatches.size === 0 &&
+				!transitionRender,
+			retainedCount: 0,
+			dirtyEpoch: this.attemptDirtyEpoch,
 		};
 		// A nested universal root is a separate render attempt. Do not let the
 		// caller's active component plans or speculative cache leak into it; child
@@ -6346,10 +8773,19 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		try {
 			nodes = executeOwner(owner, () => {
 				const value = component(props, componentContext(this.renderer));
-				return materializeValue(value, this.renderer, null, ['root-output']);
+				// The same `[identityPath, 'output']` shape materializeComponentValue
+				// uses, so a later owner-scoped replay of the root claims the exact
+				// child identities this render committed.
+				return materializeValue(value, this.renderer, null, [
+					...ownerRecord.identityPath,
+					'output',
+				]);
 			});
 		} catch (error) {
-			const suspendedMemos = collectSuspendedMemos(attempt);
+			// Replay ordinals count only drafted children, so an attempt that adopted
+			// retained subtrees cannot produce replay paths a full retry (which
+			// drafts everything) would resolve identically. Retry cold instead.
+			const suspendedMemos = attempt.retainedCount !== 0 ? [] : collectSuspendedMemos(attempt);
 			this.discardDraftOwners(attempt.owners);
 			if (error instanceof UniversalSuspense) {
 				return this.suspend(
@@ -6372,7 +8808,15 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			CURRENT_OWNER = previousOwner;
 		}
 		try {
-			const rootBlueprint: BlueprintRange = { kind: 'range', key: null, children: nodes };
+			// The root range carries its owner exactly like every ownerRange() child,
+			// so resolveScopedTarget() can hoist to the root component when state
+			// lives at the top of the app.
+			const rootBlueprint: BlueprintRange = {
+				kind: 'range',
+				key: null,
+				owner: owner.record,
+				children: nodes,
+			};
 			const transaction = this.createTransaction(rootBlueprint, attempt, component, props);
 			this.pending = transaction;
 			return transaction;
@@ -6493,7 +8937,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		for (let index = 0; index < node.children.length; index++) {
 			const child = node.children[index];
 			const list = child.kind === 'range' ? child.compactLeafList : undefined;
-			if (list === undefined) {
+			const templates = child.kind === 'range' ? child.compactTemplateList : undefined;
+			if (list === undefined && templates === undefined) {
 				this.expandCompactLeafLists(child);
 				if (expanded !== null) expanded.push(child);
 				continue;
@@ -6501,20 +8946,33 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 
 			expanded ??= node.children.slice(0, index);
 			const hosts: BlueprintHost[] = [];
-			if (list.host !== null) {
-				const host = list.host;
-				for (let leafIndex = 0; leafIndex < list.keys.length; leafIndex++) {
+			if (templates !== undefined) {
+				for (let templateIndex = 0; templateIndex < templates.keys.length; templateIndex++) {
+					const host = preparedCollapsedTemplateBlueprint(
+						templates.plan,
+						templates.compiled,
+						templates.program,
+						templates.values[templateIndex],
+						templates.captures[templateIndex],
+						templates.owner,
+					);
+					host.key = templates.keys[templateIndex];
+					hosts.push(host);
+				}
+			} else if (list!.host !== null) {
+				const host = list!.host;
+				for (let leafIndex = 0; leafIndex < list!.keys.length; leafIndex++) {
 					hosts.push({
 						kind: 'host',
-						key: list.keys[leafIndex],
+						key: list!.keys[leafIndex],
 						type: host.type,
-						props: this.compactLeafProps(list, leafIndex),
+						props: this.compactLeafProps(list!, leafIndex),
 						ref: null,
-						owner: list.owners?.[leafIndex] ?? list.owner,
+						owner: list!.owners?.[leafIndex] ?? list!.owner,
 						events: EMPTY_BLUEPRINT_EVENTS,
 						lifecycles: EMPTY_BLUEPRINT_HOST_CALLBACKS,
 						localCallbacks: EMPTY_BLUEPRINT_HOST_CALLBACKS,
-						visibility: list.visibility,
+						visibility: list!.visibility,
 						children: [],
 					});
 				}
@@ -6523,6 +8981,340 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			else expanded.push({ kind: 'range', key: child.key, children: hosts });
 		}
 		if (expanded !== null) node.children = expanded;
+	}
+
+	private tryCreateCompactTemplateUpdateTransaction(
+		blueprint: BlueprintRange,
+		attempt: RenderAttempt,
+		component: UniversalComponent<any>,
+		props: any,
+	): UniversalTransactionImpl<Container, PublicInstance> | null {
+		const owner = this.owner;
+		const draftOwner = attempt.owner;
+		if (
+			this.driver.capabilities?.templateProgramRuns !== true ||
+			owner === null ||
+			draftOwner.record !== owner ||
+			attempt.owners.length !== 1 ||
+			owner.children.length !== 0 ||
+			draftOwner.children.length !== 0 ||
+			owner.effectOrder.length !== 0 ||
+			draftOwner.seenEffects.length !== 0 ||
+			owner.contextValues !== null ||
+			draftOwner.contextValues !== null ||
+			owner.visibility !== 'visible' ||
+			draftOwner.visibility !== 'visible' ||
+			owner.isBoundary ||
+			draftOwner.isBoundary ||
+			owner.componentRevision !== draftOwner.componentRevision ||
+			owner.hooks.size !== draftOwner.hooks.size ||
+			attempt.scope !== null ||
+			attempt.retryThenables.size !== 0 ||
+			attempt.replayEntries.length !== 0 ||
+			attempt.transitionBatches.size !== 0 ||
+			attempt.transitionRender ||
+			this.bridge !== null ||
+			((this.treeFeatures | attempt.treeFeatures) & ~UNIVERSAL_TREE_EVENT) !== 0
+		) {
+			return null;
+		}
+		for (const [slot, hook] of draftOwner.hooks) {
+			const previous = owner.hooks.get(slot);
+			if (
+				previous === undefined ||
+				previous.kind !== hook.kind ||
+				(hook.kind !== 'state' && hook.kind !== 'reducer') ||
+				(hook.kind === 'state' && 'linked' in hook)
+			) {
+				return null;
+			}
+		}
+		for (const [slot, queue] of owner.updates) {
+			const applied = draftOwner.appliedUpdates.get(slot);
+			if (applied === undefined || applied.lane || applied.queue !== queue || queue.batches) {
+				return null;
+			}
+		}
+		const shells: { record: LogicalRecord; blueprint: BlueprintHost }[] = [];
+		const lists: {
+			list: BlueprintCompactTemplateList;
+			records: readonly LogicalRecord[];
+			start: number;
+		}[] = [];
+		const pair = (
+			records: readonly LogicalRecord[],
+			blueprints: readonly BlueprintNode[],
+		): boolean => {
+			let recordIndex = 0;
+			for (const next of blueprints) {
+				const list = next.kind === 'range' ? next.compactTemplateList : undefined;
+				if (list !== undefined) {
+					if (
+						next.key !== null ||
+						list.owner !== owner ||
+						list.keys.length !== list.values.length ||
+						list.keys.length !== list.captures.length
+					) {
+						return false;
+					}
+					const start = recordIndex;
+					for (let index = 0; index < list.keys.length; index++) {
+						const record = records[recordIndex++];
+						const state = record?.collapsedTemplate;
+						if (
+							record === undefined ||
+							record.kind !== 'host' ||
+							!Object.is(record.key, list.keys[index]) ||
+							record.type !== list.program.wire.nodes[0].type ||
+							record.owner !== owner ||
+							record.children.length !== 0 ||
+							record.ref != null ||
+							record.events.size !== 0 ||
+							state?.prepared !== list.program ||
+							state.values === undefined ||
+							state.firstId === undefined ||
+							state.events.length !== list.program.events.length
+						) {
+							return false;
+						}
+					}
+					lists.push({ list, records, start });
+					continue;
+				}
+				const record = records[recordIndex++];
+				if (record === undefined || !sameRecordShape(record, next) || record.kind === 'portal') {
+					return false;
+				}
+				if (record.kind === 'range') {
+					if (
+						next.kind !== 'range' ||
+						next.compactLeafList !== undefined ||
+						record.owner !== (next.owner ?? null) ||
+						!pair(record.children, next.children)
+					) {
+						return false;
+					}
+					continue;
+				}
+				if (
+					next.kind !== 'host' ||
+					record.owner !== next.owner ||
+					record.ref != null ||
+					next.ref != null ||
+					record.events.size !== 0 ||
+					next.events.size !== 0 ||
+					record.lifecycles.size !== 0 ||
+					next.lifecycles.size !== 0 ||
+					record.localCallbacks.size !== 0 ||
+					next.localCallbacks.size !== 0 ||
+					record.visibility !== 'visible' ||
+					next.visibility !== 'visible' ||
+					record.collapsedTemplate !== undefined ||
+					next.collapsedTemplate !== undefined ||
+					!pair(record.children, next.children)
+				) {
+					return false;
+				}
+				shells.push({ record, blueprint: next });
+			}
+			return recordIndex === records.length;
+		};
+		if (!pair(this.rootRecord.children, blueprint.children) || lists.length === 0) return null;
+		const commands: UniversalHostCommand[] = [];
+		const rowUpdates: { record: LogicalRecord; props: Record<string, unknown> }[] = [];
+		const recreatedEvents: {
+			id: number;
+			type: string;
+			listener: UniversalEventListenerDescriptor;
+		}[] = [];
+		const stageUpdate = (
+			type: string,
+			id: number,
+			previous: Readonly<Record<string, unknown>>,
+			next: Record<string, unknown>,
+		): UniversalHostUpdateKind => {
+			const kind = this.driver.updates?.classify(type, previous, next) ?? 'update';
+			if (kind !== 'update' && kind !== 'recreate') {
+				throw new TypeError(
+					`Universal update classifier returned invalid kind ${JSON.stringify(kind)}.`,
+				);
+			}
+			commands.push(
+				kind === 'recreate'
+					? { op: 'recreate', id, type, props: Object.freeze(next) }
+					: { op: 'update', id, props: Object.freeze(next) },
+			);
+			return kind;
+		};
+		for (const { record, blueprint: host } of shells) {
+			if (!shallowPropsEqual(record.props, host.props)) {
+				stageUpdate(host.type, record.id, record.props, host.props);
+			}
+		}
+		for (const { list, records, start } of lists) {
+			const program = list.program;
+			for (let row = 0; row < list.keys.length; row++) {
+				const record = records[start + row];
+				const accepted = record.collapsedTemplate!;
+				const values = list.values[row];
+				let previousChangedNode = -1;
+				for (let valueIndex = 0; valueIndex < program.values.length; valueIndex++) {
+					if (Object.is(accepted.values![valueIndex], values[valueIndex])) continue;
+					const index = program.values[valueIndex].node;
+					if (previousChangedNode === index) continue;
+					previousChangedNode = index;
+					const next = materializePreparedCollapsedHostProps(program, values, index);
+					const previous =
+						index === 0
+							? record.props
+							: materializePreparedCollapsedHostProps(program, accepted.values!, index);
+					const id = accepted.firstId! + index;
+					const kind = stageUpdate(program.wire.nodes[index].type, id, previous, next);
+					if (index === 0) rowUpdates.push({ record, props: next });
+					if (kind === 'recreate') {
+						for (let eventIndex = 0; eventIndex < program.events.length; eventIndex++) {
+							const site = program.events[eventIndex];
+							if (site.node !== index) continue;
+							const event = accepted.events[eventIndex].event;
+							recreatedEvents.push({
+								id,
+								type: site.type,
+								listener: { id: event.listener, priority: site.priority },
+							});
+						}
+					}
+				}
+				for (let eventIndex = 0; eventIndex < program.events.length; eventIndex++) {
+					const site = program.events[eventIndex];
+					const previous = accepted.events[eventIndex];
+					if (
+						previous.index !== site.node ||
+						previous.event.type !== site.type ||
+						typeof list.captures[row][site.slot] !== 'function'
+					) {
+						return null;
+					}
+				}
+			}
+		}
+		for (const event of recreatedEvents) commands.push({ op: 'event', ...event });
+		const batch = freezeUniversalHostBatch(this.renderer, this.nextBatchVersion++, commands);
+		const identity = this.transportIdentity(batch.version);
+		const prepareHost = (value: UniversalHostBatch) =>
+			this.driver.prepareBatch(this.container, value, {
+				invokeLocalCallback: (listener, args) => this.invokeLocalCallback(listener, args),
+			});
+		let sync: UniversalPreparedHostBatch | null = null;
+		let async: UniversalAsyncPreparedHostBatch | null = null;
+		if (this.transport?.mode === 'async') {
+			async = this.transport.prepareBatch(this.container, batch, identity);
+		} else {
+			sync =
+				this.transport === null
+					? prepareHost(batch)
+					: this.transport.prepareBatch(this.container, batch, prepareHost);
+		}
+		const prepared = sync ?? async;
+		if (!isValidPreparedHostBatch(prepared)) {
+			throw new TypeError('A universal host driver must return a valid prepared batch token.');
+		}
+		return new UniversalTransactionImpl(
+			this,
+			batch,
+			sync === null ? null : () => sync!.apply(),
+			async === null ? null : (acknowledge) => async!.apply(acknowledge),
+			identity,
+			() => {
+				for (const { record, blueprint: host } of shells) record.props = host.props;
+				for (const update of rowUpdates) update.record.props = update.props;
+				for (const { list, records, start } of lists) {
+					const program = list.program;
+					for (let row = 0; row < list.keys.length; row++) {
+						const state = records[start + row].collapsedTemplate!;
+						(state as { values: readonly UniversalHostTemplateProgramValue[] }).values =
+							list.values[row];
+						for (let eventIndex = 0; eventIndex < program.events.length; eventIndex++) {
+							const site = program.events[eventIndex];
+							const previous = state.events[eventIndex].event;
+							const handler = list.captures[row][site.slot] as (...args: any[]) => any;
+							if (previous.handler === handler && previous.owner === list.owner) continue;
+							const event: CommittedEvent = {
+								prop: site.prop,
+								type: site.type,
+								priority: site.priority,
+								handler,
+								owner: list.owner,
+								listener: previous.listener,
+							};
+							(state.events as CommittedCollapsedTemplateEvent[])[eventIndex] = {
+								index: site.node,
+								event,
+							};
+							this.handlers.set(event.listener, event);
+						}
+					}
+				}
+				owner.componentProps = draftOwner.componentProps;
+				owner.componentRevision = draftOwner.componentRevision;
+				owner.hooks = draftOwner.hooks;
+				for (const [slot, applied] of draftOwner.appliedUpdates) {
+					const queue = owner.updates.get(slot);
+					if (queue !== applied.queue || applied.lane) continue;
+					queue.splice(0, applied.consumed);
+					if (queue.length === 0) owner.updates.delete(slot);
+				}
+				this.owner = owner;
+				this.lastComponent = component;
+				this.lastProps = props;
+				this.retryRenderInput = null;
+				this.urgentBoundarySuspension = null;
+				this.bridgeContextReads = attempt.bridgeContextReads;
+				this.nextUniversalId = attempt.nextUniversalId;
+				this.treeFeatures = attempt.treeFeatures;
+			},
+			() => prepared.afterAccept?.(),
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
+			null,
+			() => prepared.abort(),
+			() => this.discardDraftOwners(attempt.owners),
+			attempt.transitionBatches,
+		);
+	}
+
+	/** Publish stable owner records only after their compact host batch is accepted. */
+	private publishAcceptedCompactOwners(
+		attempt: RenderAttempt,
+		component: UniversalComponent<any>,
+		props: any,
+	): void {
+		for (const draft of attempt.owners) {
+			const record = draft.record;
+			record.componentProps = draft.componentProps;
+			record.componentRevision = draft.componentRevision;
+			record.parent = draft.parent?.record ?? null;
+			record.hooks = draft.hooks;
+			record.effectOrder = [...draft.seenEffects];
+			record.children = draft.children.map((child) => child.record);
+			record.contextValues = draft.contextValues;
+			record.isBoundary = draft.isBoundary;
+			record.canHandleSuspense = draft.canHandleSuspense;
+			record.boundaryError = draft.boundaryError;
+			record.hasBoundaryError = draft.hasBoundaryError;
+			record.boundaryThenable = draft.boundaryThenable;
+			record.visibility = draft.visibility;
+			record.mounted = true;
+			record.disposed = false;
+		}
+		this.owner = attempt.owner.record;
+		this.lastComponent = component;
+		this.lastProps = props;
+		this.retryRenderInput = null;
+		this.urgentBoundarySuspension = null;
+		this.bridgeContextReads = attempt.bridgeContextReads;
+		this.nextUniversalId = attempt.nextUniversalId;
+		this.treeFeatures = 0;
 	}
 
 	private tryCreateCompactLeafUpdateTransaction(
@@ -6537,8 +9329,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			attempt.owner.record !== this.owner ||
 			this.treeFeatures !== 0 ||
 			attempt.treeFeatures !== 0 ||
-			attempt.retryThenables.size !== 0 ||
-			!this.stableAttemptOwnersEqual(attempt)
+			attempt.retryThenables.size !== 0
 		) {
 			return null;
 		}
@@ -6593,7 +9384,11 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			}
 			return recordIndex === records.length;
 		};
-		if (!pairChildren(this.rootRecord.children, blueprint.children) || !sawCompactList) {
+		if (
+			!pairChildren(this.rootRecord.children, blueprint.children) ||
+			!sawCompactList ||
+			!this.stableAttemptOwnersEqual(attempt)
+		) {
 			return null;
 		}
 
@@ -6603,10 +9398,21 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const commands: UniversalHostCommand[] = [];
 		for (const { list, records, start } of matches) {
 			const host = list.host!;
+			const bindings = host.bindings;
+			const lastBinding =
+				bindings === undefined || bindings.length === 0 ? null : bindings[bindings.length - 1][0];
 			for (let index = 0; index < list.keys.length; index++) {
 				const record = records[start + index];
 				const hostProps = list.props[index]!;
-				if (shallowPropsEqual(record.props, hostProps, list.propCount)) continue;
+				if (
+					(lastBinding === null ||
+						!hasOwnProp.call(record.props, lastBinding) ||
+						!hasOwnProp.call(hostProps, lastBinding) ||
+						Object.is(record.props[lastBinding], hostProps[lastBinding])) &&
+					shallowPropsEqual(record.props, hostProps, list.propCount)
+				) {
+					continue;
+				}
 				const kind = this.driver.updates?.classify(host.type, record.props, hostProps) ?? 'update';
 				const frozenProps = Object.freeze(hostProps);
 				if (kind === 'update') {
@@ -6631,13 +9437,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const preparedHost = this.driver.prepareBatch(this.container, batch, {
 			invokeLocalCallback: (listener, args) => this.invokeLocalCallback(listener, args),
 		});
-		if (
-			preparedHost === null ||
-			typeof preparedHost !== 'object' ||
-			typeof preparedHost.apply !== 'function' ||
-			typeof preparedHost.abort !== 'function' ||
-			(preparedHost.afterAccept !== undefined && typeof preparedHost.afterAccept !== 'function')
-		) {
+		if (!isValidPreparedHostBatch(preparedHost)) {
 			throw new TypeError('A universal host driver must return a valid prepared batch token.');
 		}
 		return new UniversalTransactionImpl(
@@ -6652,35 +9452,12 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 						records[start + index].props = list.props[index]!;
 					}
 				}
-				for (const draft of attempt.owners) {
-					const record = draft.record;
-					record.parent = draft.parent?.record ?? null;
-					record.hooks = draft.hooks;
-					record.effectOrder = [...draft.seenEffects];
-					record.children = draft.children.map((child) => child.record);
-					record.contextValues = draft.contextValues;
-					record.isBoundary = draft.isBoundary;
-					record.canHandleSuspense = draft.canHandleSuspense;
-					record.boundaryError = draft.boundaryError;
-					record.hasBoundaryError = draft.hasBoundaryError;
-					record.boundaryThenable = draft.boundaryThenable;
-					record.visibility = draft.visibility;
-					record.mounted = true;
-					record.disposed = false;
-				}
-				this.owner = attempt.owner.record;
-				this.lastComponent = component;
-				this.lastProps = props;
-				this.retryRenderInput = null;
-				this.urgentBoundarySuspension = null;
-				this.bridgeContextReads = attempt.bridgeContextReads;
-				this.nextUniversalId = attempt.nextUniversalId;
-				this.treeFeatures = 0;
+				this.publishAcceptedCompactOwners(attempt, component, props);
 			},
 			() => preparedHost.afterAccept?.(),
-			() => {},
-			() => {},
-			() => {},
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
 			null,
 			() => preparedHost.abort(),
 			() => this.discardDraftOwners(attempt.owners),
@@ -6764,13 +9541,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const preparedHost = this.driver.prepareBatch(this.container, batch, {
 			invokeLocalCallback: (listener, args) => this.invokeLocalCallback(listener, args),
 		});
-		if (
-			preparedHost === null ||
-			typeof preparedHost !== 'object' ||
-			typeof preparedHost.apply !== 'function' ||
-			typeof preparedHost.abort !== 'function' ||
-			(preparedHost.afterAccept !== undefined && typeof preparedHost.afterAccept !== 'function')
-		) {
+		if (!isValidPreparedHostBatch(preparedHost)) {
 			throw new TypeError('A universal host driver must return a valid prepared batch token.');
 		}
 		const transaction = new UniversalTransactionImpl(
@@ -6786,35 +9557,12 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					record.props = host.props;
 					record.owner = host.owner;
 				}
-				for (const draft of attempt.owners) {
-					const record = draft.record;
-					record.parent = draft.parent?.record ?? null;
-					record.hooks = draft.hooks;
-					record.effectOrder = [...draft.seenEffects];
-					record.children = draft.children.map((child) => child.record);
-					record.contextValues = draft.contextValues;
-					record.isBoundary = draft.isBoundary;
-					record.canHandleSuspense = draft.canHandleSuspense;
-					record.boundaryError = draft.boundaryError;
-					record.hasBoundaryError = draft.hasBoundaryError;
-					record.boundaryThenable = draft.boundaryThenable;
-					record.visibility = draft.visibility;
-					record.mounted = true;
-					record.disposed = false;
-				}
-				this.owner = attempt.owner.record;
-				this.lastComponent = component;
-				this.lastProps = props;
-				this.retryRenderInput = null;
-				this.urgentBoundarySuspension = null;
-				this.bridgeContextReads = attempt.bridgeContextReads;
-				this.nextUniversalId = attempt.nextUniversalId;
-				this.treeFeatures = 0;
+				this.publishAcceptedCompactOwners(attempt, component, props);
 			},
 			() => preparedHost.afterAccept?.(),
-			() => {},
-			() => {},
-			() => {},
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
+			noopUniversalCommitTask,
 			null,
 			() => preparedHost.abort(),
 			() => this.discardDraftOwners(attempt.owners),
@@ -6829,6 +9577,13 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		component: UniversalComponent<any>,
 		props: any,
 	): UniversalTransactionImpl<Container, PublicInstance> {
+		const compactTemplateUpdate = this.tryCreateCompactTemplateUpdateTransaction(
+			blueprint,
+			attempt,
+			component,
+			props,
+		);
+		if (compactTemplateUpdate !== null) return compactTemplateUpdate;
 		const compactLeafUpdate = this.tryCreateCompactLeafUpdateTransaction(
 			blueprint,
 			attempt,
@@ -6888,15 +9643,122 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		component: UniversalComponent<any>,
 		props: any,
 		stagedPortalRegistrations: Set<UniversalPortalTargetRegistration>,
+		scopeRecord: LogicalRecord = this.rootRecord,
+		scopeFeatures = 0,
+		scopePlacement: { parent: number | null; endAnchor: number | null } | null = null,
 	): UniversalTransactionImpl<Container, PublicInstance> {
 		let nextId = this.nextId;
-		const treeFeatures = this.treeFeatures | attempt.treeFeatures;
-		const used = new Set<LogicalRecord>([this.rootRecord]);
+		let nextLogicalRangeId = this.nextLogicalRangeId;
+		const scoped = scopeRecord !== this.rootRecord;
+		const treeFeatures = (scoped ? scopeFeatures : this.treeFeatures) | attempt.treeFeatures;
+		const templateExcludedFeatures =
+			UNIVERSAL_TREE_PORTAL | UNIVERSAL_TREE_REGION | UNIVERSAL_TREE_HIDDEN;
+		// Owner ranges never reach the host, but interleaving their logical IDs
+		// with host IDs splits component-owned template instances into separate
+		// runs. Keep their transactional identity in a disjoint namespace only
+		// when this renderer can consume the resulting contiguous host ranges.
+		const compactLogicalRangeIds =
+			this.driver.capabilities?.templateProgramRuns === true &&
+			(treeFeatures & templateExcludedFeatures) === 0;
+		if ((treeFeatures & templateExcludedFeatures) !== 0) {
+			const expandBlueprint = (node: BlueprintNode): void => {
+				if (node.kind === 'host') expandCollapsedTemplateBlueprint(node);
+				for (const child of node.children) expandBlueprint(child);
+			};
+			expandBlueprint(blueprint);
+		}
+		const used = new Set<LogicalRecord>([scopeRecord]);
+		const changedRangeOwners: DraftRecord[] = [];
 		let topologyChanged = false;
+		const retainedScopes = new Set<LogicalRecord>();
+		// A retained marker matched to its own committed record adopts the whole
+		// subtree in place. A marker whose record could not be matched (its
+		// physical parent changed shape) expands into an ordinary blueprint built
+		// from the committed records: the hosts recreate under the new parent
+		// while the owner records, and therefore all hook state, carry over.
+		const retainedDraft = (record: LogicalRecord, blueprint: BlueprintRange): DraftRecord => {
+			retainedScopes.add(record);
+			return { record, blueprint, children: [], isNew: false, hostUpdate: null, retained: true };
+		};
+		const expandRetained = (marker: BlueprintRange): BlueprintRange => {
+			// blueprintFromLogical reports tree features against the active attempt.
+			const previousAttempt = CURRENT_ATTEMPT;
+			CURRENT_ATTEMPT = attempt;
+			try {
+				return blueprintFromLogical(marker.retained!) as BlueprintRange;
+			} finally {
+				CURRENT_ATTEMPT = previousAttempt;
+			}
+		};
+		const reconcileCollapsedTemplate = (record: LogicalRecord, next: BlueprintNode): void => {
+			if (record.kind !== 'host' || next.kind !== 'host') return;
+			const previous = record.collapsedTemplate;
+			const collapsed = next.collapsedTemplate;
+			if (previous !== undefined) {
+				if (collapsed === undefined || previous.shape !== collapsed.program.shape) {
+					this.expandCollapsedTemplate(record);
+					if (collapsed !== undefined) expandCollapsedTemplateBlueprint(next);
+				}
+			} else if (collapsed !== undefined) {
+				expandCollapsedTemplateBlueprint(next);
+			}
+		};
+		const reserveCollapsedTemplateIds = (record: LogicalRecord, next: BlueprintNode): void => {
+			if (next.kind !== 'host' || next.collapsedTemplate === undefined) return;
+			const collapsed = next.collapsedTemplate;
+			if (collapsed.prepared !== undefined) {
+				collapsed.firstId = record.id;
+				nextId += collapsed.program.shape.length - 1;
+				return;
+			}
+			const ids = new Array<number>(collapsed.program.shape.length);
+			ids[0] = record.id;
+			for (let index = 1; index < ids.length; index++) ids[index] = nextId++;
+			collapsed.ids = ids;
+		};
 		const reconcileChildren = (
 			oldChildren: readonly LogicalRecord[],
 			blueprints: readonly BlueprintNode[],
 		): DraftRecord[] => {
+			if (oldChildren.length === 0) {
+				if (blueprints.length === 0) return [];
+				topologyChanged = true;
+				const output: DraftRecord[] = new Array(blueprints.length);
+				let keys: Set<UniversalKey> | undefined;
+				for (let index = 0; index < blueprints.length; index++) {
+					let child = blueprints[index];
+					if (child.key !== null) {
+						keys ??= new Set();
+						if (keys.has(child.key)) {
+							throw new Error(`Duplicate universal child key ${String(child.key)}.`);
+						}
+						keys.add(child.key);
+					}
+					if (child.kind === 'range' && child.retained !== undefined) {
+						child = expandRetained(child);
+					}
+					const record = createLogicalRecord(
+						compactLogicalRangeIds && child.kind === 'range' ? nextLogicalRangeId-- : nextId++,
+						child,
+					);
+					reserveCollapsedTemplateIds(record, child);
+					const draft: DraftRecord = {
+						record,
+						blueprint: child,
+						children: reconcileChildren(record.children, child.children),
+						isNew: true,
+						hostUpdate: null,
+					};
+					if (
+						record.kind === 'range' &&
+						record.owner !== ((child as BlueprintRange).owner ?? null)
+					) {
+						changedRangeOwners.push(draft);
+					}
+					output[index] = draft;
+				}
+				return output;
+			}
 			if (
 				(treeFeatures & UNIVERSAL_TREE_PORTAL) === 0 &&
 				oldChildren.length === blueprints.length &&
@@ -6904,14 +9766,26 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			) {
 				return oldChildren.map((record, index) => {
 					used.add(record);
-					const blueprint = blueprints[index];
-					return {
+					let blueprint = blueprints[index];
+					if (blueprint.kind === 'range' && blueprint.retained !== undefined) {
+						if (blueprint.retained === record) return retainedDraft(record, blueprint);
+						blueprint = expandRetained(blueprint);
+					}
+					reconcileCollapsedTemplate(record, blueprint);
+					const draft: DraftRecord = {
 						record,
 						blueprint,
 						children: reconcileChildren(record.children, blueprint.children),
 						isNew: false,
 						hostUpdate: null,
 					};
+					if (
+						record.kind === 'range' &&
+						record.owner !== ((blueprint as BlueprintRange).owner ?? null)
+					) {
+						changedRangeOwners.push(draft);
+					}
+					return draft;
 				});
 			}
 			const keyed = new Map<UniversalKey, LogicalRecord>();
@@ -6920,7 +9794,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			const nextKeys = new Set<UniversalKey>();
 			const output: DraftRecord[] = [];
 			for (let childIndex = 0; childIndex < blueprints.length; childIndex++) {
-				const child = blueprints[childIndex];
+				let child = blueprints[childIndex];
 				let record: LogicalRecord | undefined;
 				if (child.key !== null) {
 					if (nextKeys.has(child.key)) {
@@ -6946,6 +9820,15 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 						record = candidate;
 					}
 				}
+				if (child.kind === 'range' && child.retained !== undefined) {
+					if (record === child.retained && record !== undefined) {
+						claimed.add(record);
+						used.add(record);
+						output.push(retainedDraft(record, child));
+						continue;
+					}
+					child = expandRetained(child);
+				}
 				if (record?.kind === 'portal' && child.kind === 'portal') {
 					const previousRegistration = record.portalRegistration;
 					const nextRegistration = child.registration;
@@ -6967,16 +9850,25 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					}
 				}
 				const isNew = record === undefined;
-				record ??= createLogicalRecord(nextId++, child);
+				record ??= createLogicalRecord(
+					compactLogicalRangeIds && child.kind === 'range' ? nextLogicalRangeId-- : nextId++,
+					child,
+				);
+				if (isNew) reserveCollapsedTemplateIds(record, child);
+				else reconcileCollapsedTemplate(record, child);
 				claimed.add(record);
 				used.add(record);
-				output.push({
+				const draft: DraftRecord = {
 					record,
 					blueprint: child,
 					children: reconcileChildren(record.children, child.children),
 					isNew,
 					hostUpdate: null,
-				});
+				};
+				if (record.kind === 'range' && record.owner !== ((child as BlueprintRange).owner ?? null)) {
+					changedRangeOwners.push(draft);
+				}
+				output.push(draft);
 			}
 			if (
 				oldChildren.length !== output.length ||
@@ -6988,20 +9880,33 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		};
 
 		const draftRoot: DraftRecord = {
-			record: this.rootRecord,
+			record: scopeRecord,
 			blueprint,
-			children: reconcileChildren(this.rootRecord.children, blueprint.children),
+			children: reconcileChildren(scopeRecord.children, blueprint.children),
 			isNew: false,
 			hostUpdate: null,
 		};
+		// The scope record itself never passes through reconcileChildren, so its
+		// owner link (the root range adopting the root component owner, or a new
+		// root owner after the rendered component changed) is staged here.
+		if (scopeRecord.kind === 'range' && scopeRecord.owner !== (blueprint.owner ?? null)) {
+			changedRangeOwners.push(draftRoot);
+		}
 		const removedRoots: LogicalRecord[] = [];
 		const findRemoved = (parent: LogicalRecord) => {
 			for (const child of parent.children) {
+				// A retained scope's descendants have no drafts, so they are absent
+				// from `used` while remaining fully committed: never descend.
 				if (!used.has(child)) removedRoots.push(child);
-				else findRemoved(child);
+				else if (!retainedScopes.has(child)) findRemoved(child);
 			}
 		};
-		if (topologyChanged) findRemoved(this.rootRecord);
+		if (topologyChanged) findRemoved(scopeRecord);
+		for (const removed of removedRoots) {
+			walkLogical(removed, (record) => {
+				if (record.collapsedTemplate !== undefined) this.expandCollapsedTemplate(record);
+			});
+		}
 		const previousPortalRegistrations = new Set<UniversalPortalTargetRegistration>();
 		const nextPortalRegistrations = new Set<UniversalPortalTargetRegistration>();
 		let reorderedPortalRecords: Set<LogicalRecord> | null = null;
@@ -7009,7 +9914,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			const previousPortalsByTarget = topologyChanged
 				? new Map<UniversalPortalTargetHandle, LogicalRecord[]>()
 				: null;
-			for (const child of this.rootRecord.children) {
+			for (const child of scopeRecord.children) {
 				walkLogical(child, (record) => {
 					if (record.kind === 'portal' && record.portalRegistration !== null) {
 						previousPortalRegistrations.add(record.portalRegistration);
@@ -7069,7 +9974,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		}[] = [];
 		const nextRegionBridges = new Set<UniversalRendererRegionOwnerBridge>();
 		if ((treeFeatures & UNIVERSAL_TREE_REGION) !== 0) {
-			for (const child of this.rootRecord.children) {
+			for (const child of scopeRecord.children) {
 				walkLogical(child, (record) => {
 					if (record.kind !== 'host') return;
 					for (const value of Object.values(record.props)) {
@@ -7115,19 +10020,75 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const updates: UniversalHostCommand[] = [];
 		const recreated = new Set<LogicalRecord>();
 		const hostDrafts: DraftRecord[] = [];
+		const collapsedUpdates: {
+			record: LogicalRecord;
+			previous: CommittedCollapsedTemplate;
+			next: BlueprintCollapsedTemplate;
+		}[] = [];
+		const templateMounts = new Map<LogicalRecord, PendingUniversalHostTemplateMount>();
+		const templatedRecords = new Set<LogicalRecord>();
+		const canMountTemplates =
+			this.driver.capabilities?.templateMount === true &&
+			(treeFeatures & templateExcludedFeatures) === 0;
 		walkDraft(draftRoot, (draft) => {
 			if (draft.record.kind !== 'host') return;
 			hostDrafts.push(draft);
 			const blueprintHost = draft.blueprint as BlueprintHost;
-			const props = Object.freeze({ ...blueprintHost.props });
-			if (draft.isNew) {
-				creates.push({
-					op: 'create',
-					id: draft.record.id,
-					type: blueprintHost.type,
-					props,
+			if (canMountTemplates && draft.isNew && !templatedRecords.has(draft.record)) {
+				const collapsed = blueprintHost.collapsedTemplate;
+				if (collapsed !== undefined) {
+					templateMounts.set(draft.record, {
+						shape: collapsed.program.shape,
+						drafts: [draft],
+						nodes:
+							collapsed.prepared === undefined ? new Array(collapsed.program.shape.length) : null,
+						collapsed,
+					});
+					templatedRecords.add(draft.record);
+				} else if (blueprintHost.templatePlan !== undefined) {
+					const plan = blueprintHost.templatePlan;
+					const shape = universalHostTemplateShape(plan);
+					if (shape !== null) {
+						const drafts = collectUniversalHostTemplateDrafts(draft, shape);
+						if (drafts !== null) {
+							templateMounts.set(draft.record, {
+								shape,
+								drafts,
+								nodes: new Array(drafts.length),
+							});
+							for (const templated of drafts) templatedRecords.add(templated.record);
+						}
+					}
+				}
+			}
+			if (
+				!draft.isNew &&
+				draft.record.collapsedTemplate !== undefined &&
+				blueprintHost.collapsedTemplate !== undefined
+			) {
+				collapsedUpdates.push({
+					record: draft.record,
+					previous: draft.record.collapsedTemplate,
+					next: blueprintHost.collapsedTemplate,
 				});
-			} else if (!shallowPropsEqual(draft.record.props, blueprintHost.props)) {
+			}
+			if (draft.isNew) {
+				Object.freeze(blueprintHost.props);
+				if (!templatedRecords.has(draft.record)) {
+					creates.push({
+						op: 'create',
+						id: draft.record.id,
+						type: blueprintHost.type,
+						props: blueprintHost.props,
+					});
+				}
+			} else if (!(
+				collapsedTemplateRootPropsEqual(
+					draft.record.collapsedTemplate,
+					blueprintHost.collapsedTemplate,
+				) ?? shallowPropsEqual(draft.record.props, blueprintHost.props)
+			)) {
+				const props = Object.freeze(blueprintHost.props);
 				const kind =
 					this.driver.updates?.classify(
 						blueprintHost.type,
@@ -7156,50 +10117,166 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 
 		const removes: UniversalHostCommand[] = [];
 		const placements: UniversalHostCommand[] = [];
+		const templateRuns: NonNullable<PendingUniversalHostTemplateMount['run']>[] = [];
+		const placeTemplate = (
+			template: PendingUniversalHostTemplateMount,
+			parent: UniversalHostParent,
+			before: number | null,
+		): void => {
+			const collapsed = template.collapsed;
+			if (collapsed?.prepared !== undefined) {
+				if (this.driver.capabilities?.templateProgramRuns === true) {
+					const previous = placements[placements.length - 1];
+					if (
+						previous?.op === 'mount-template-run' &&
+						previous.program === collapsed.prepared.wire &&
+						Object.is(previous.parent, parent) &&
+						previous.before === before &&
+						previous.firstId + previous.count * previous.program.nodes.length === collapsed.firstId
+					) {
+						const run = previous as NonNullable<PendingUniversalHostTemplateMount['run']>;
+						template.runIndex = run.count++;
+						run.values.push(...collapsed.values!);
+						template.run = run;
+						return;
+					}
+					const run = {
+						op: 'mount-template-run' as const,
+						parent,
+						before,
+						program: collapsed.prepared.wire,
+						firstId: collapsed.firstId!,
+						firstListenerId: null as number | null,
+						count: 1,
+						values: [...collapsed.values!],
+					};
+					template.run = run;
+					template.runIndex = 0;
+					templateRuns.push(run);
+					placements.push(run);
+					return;
+				}
+				const range = {
+					op: 'mount-template-range' as const,
+					parent,
+					before,
+					program: collapsed.prepared.wire,
+					firstId: collapsed.firstId!,
+					values: collapsed.values!,
+					firstListenerId: null as number | null,
+				};
+				template.range = range;
+				placements.push(range);
+				return;
+			}
+			placements.push({
+				op: 'mount-template',
+				parent,
+				before,
+				shape: template.shape,
+				nodes: template.nodes!,
+			});
+		};
 		const planPlacements = (
 			parentId: UniversalHostParent,
 			oldRecords: readonly LogicalRecord[],
 			newDrafts: readonly DraftRecord[],
 			sourceParentId: UniversalHostParent = parentId,
 			forceMove = false,
+			endAnchor: number | null = null,
 		) => {
+			if (oldRecords.length === 0 && !forceMove) {
+				if (newDrafts.length === 0) return;
+				for (const record of physicalDrafts(newDrafts)) {
+					const template = templateMounts.get(record);
+					if (template !== undefined) {
+						placeTemplate(template, parentId, endAnchor);
+					} else if (!templatedRecords.has(record)) {
+						placements.push({
+							op: 'insert',
+							parent: parentId,
+							id: record.id,
+							before: endAnchor,
+						});
+					}
+				}
+				return;
+			}
 			const oldPhysical = physicalRecords(oldRecords);
 			const newPhysical = physicalDrafts(newDrafts);
-			const desiredIds = new Set(newPhysical.map((entry) => entry.record.id));
-			for (const old of oldPhysical) {
+			if (oldPhysical.length === 0 && newPhysical.length === 0) return;
+			const desiredIds = new Set<number>();
+			for (const entry of newPhysical) desiredIds.add(entry.id);
+			const previousPositions = new Map<number, number>();
+			for (let index = 0; index < oldPhysical.length; index++) {
+				const old = oldPhysical[index];
+				previousPositions.set(old.id, index);
 				if (!desiredIds.has(old.id)) {
 					removes.push({ op: 'remove', parent: sourceParentId, id: old.id });
 				}
 			}
-			const previousIds = new Set(oldPhysical.map((entry) => entry.id));
-			const current = forceMove
-				? []
-				: oldPhysical.filter((entry) => desiredIds.has(entry.id)).map((entry) => entry.id);
-			for (let index = 0; index < newPhysical.length; index++) {
-				const draft = newPhysical[index];
-				const id = draft.record.id;
-				if (current[index] === id) continue;
-				const currentIndex = current.indexOf(id);
-				const before = current[index] ?? null;
-				if (currentIndex === -1) {
+			if (forceMove) {
+				for (const record of newPhysical) {
 					placements.push({
-						op: forceMove && previousIds.has(id) ? 'move' : 'insert',
+						op: previousPositions.has(record.id) ? 'move' : 'insert',
 						parent: parentId,
-						id,
-						before,
+						id: record.id,
+						before: endAnchor,
 					});
+				}
+				return;
+			}
+			const sources = new Int32Array(newPhysical.length);
+			let previousSource = -1;
+			let reordered = false;
+			for (let index = 0; index < newPhysical.length; index++) {
+				const source = previousPositions.get(newPhysical[index].id) ?? -1;
+				sources[index] = source;
+				if (source === -1) continue;
+				if (source < previousSource) reordered = true;
+				previousSource = source;
+			}
+			const stable = reordered ? stableUniversalPlacementPositions(sources) : null;
+			const isStable = (index: number): boolean =>
+				stable === null ? sources[index] !== -1 : stable[index] === 1;
+			let nextStable = 0;
+			while (nextStable < newPhysical.length && !isStable(nextStable)) nextStable++;
+			for (let index = 0; index < newPhysical.length; index++) {
+				if (index === nextStable) {
+					nextStable++;
+					while (nextStable < newPhysical.length && !isStable(nextStable)) nextStable++;
+					continue;
+				}
+				const record = newPhysical[index];
+				const id = record.id;
+				const before = nextStable < newPhysical.length ? newPhysical[nextStable].id : endAnchor;
+				if (sources[index] === -1) {
+					const template = templateMounts.get(record);
+					if (template !== undefined) placeTemplate(template, parentId, before);
+					else placements.push({ op: 'insert', parent: parentId, id, before });
 				} else {
-					current.splice(currentIndex, 1);
 					placements.push({ op: 'move', parent: parentId, id, before });
 				}
-				current.splice(index, 0, id);
 			}
 		};
 		if (topologyChanged) {
 			walkDraftPostOrder(draftRoot, (draft) => {
 				if (draft.record === this.rootRecord) {
 					planPlacements(null, this.rootRecord.children, draft.children);
+				} else if (scoped && draft === draftRoot && scopePlacement !== null) {
+					// The scope's own top-level hosts sit inside a physical parent that
+					// also holds untouched out-of-scope siblings; the precomputed frame
+					// anchors appends before the first host that follows the scope.
+					planPlacements(
+						scopePlacement.parent,
+						draft.record.children,
+						draft.children,
+						scopePlacement.parent,
+						false,
+						scopePlacement.endAnchor,
+					);
 				} else if (draft.record.kind === 'host') {
+					if (templatedRecords.has(draft.record)) return;
 					planPlacements(draft.record.id, draft.record.children, draft.children);
 				} else if (draft.record.kind === 'portal') {
 					const nextRegistration = (draft.blueprint as BlueprintPortal).registration!;
@@ -7271,10 +10348,10 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const stagedEvents = new Map<LogicalRecord, Map<string, CommittedEvent>>();
 		const stagedVisibleEventRecords = new Set<LogicalRecord>();
 		if ((treeFeatures & UNIVERSAL_TREE_EVENT) !== 0) {
-			walkDraft(draftRoot, (draft) => {
-				if (draft.record.kind !== 'host') return;
+			for (const draft of hostDrafts) {
 				const blueprintHost = draft.blueprint as BlueprintHost;
 				const blueprintEvents = blueprintHost.events;
+				if (blueprintEvents.size === 0 && draft.record.events.size === 0) continue;
 				const wasVisible = draft.record.visibility === 'visible';
 				const isVisible = blueprintHost.visibility === 'visible';
 				if (isVisible) stagedVisibleEventRecords.add(draft.record);
@@ -7284,12 +10361,20 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					const listener = previous?.listener ?? nextListener++;
 					const committed = { ...event, listener };
 					nextEvents.set(type, committed);
-					const changed =
+					// A fresh handler closure is not a wire change: the listener ID it
+					// dispatches through is stable, and the dispatch table below rebinds
+					// to the newest closure whether or not a command is emitted. Only
+					// what the host can observe — a new listener, its priority, or its
+					// owning scope — re-announces the binding.
+					const descriptorChanged =
 						previous === undefined ||
-						previous.handler !== event.handler ||
 						previous.priority !== event.priority ||
 						previous.owner !== event.owner;
-					if (isVisible && (!wasVisible || changed)) {
+					if (
+						isVisible &&
+						(!wasVisible || descriptorChanged) &&
+						!templatedRecords.has(draft.record)
+					) {
 						eventCommands.push({
 							op: 'event',
 							id: draft.record.id,
@@ -7304,7 +10389,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					}
 				}
 				stagedEvents.set(draft.record, nextEvents);
-			});
+			}
 			for (const record of removedHosts) {
 				if (record.visibility !== 'visible') continue;
 				for (const [type] of record.events) {
@@ -7312,6 +10397,327 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				}
 			}
 		}
+		const stagedCollapsedTemplates = new Map<LogicalRecord, CommittedCollapsedTemplate>();
+		const previousCollapsedEventListeners = new Set<number>();
+		const nextCollapsedEvents: CommittedEvent[] = [];
+		for (const update of collapsedUpdates) {
+			const { previous, next } = update;
+			if (
+				previous.prepared !== undefined &&
+				previous.prepared === next.prepared &&
+				previous.values !== undefined &&
+				next.values !== undefined
+			) {
+				const program = previous.prepared;
+				let nodes = previous.nodes;
+				let events = previous.events;
+				let changed = false;
+				let previousChangedNode = -1;
+				let recreatedNodes: Set<number> | null = null;
+				for (let valueIndex = 0; valueIndex < program.values.length; valueIndex++) {
+					if (Object.is(previous.values[valueIndex], next.values[valueIndex])) continue;
+					const index = program.values[valueIndex].node;
+					if (index === previousChangedNode) continue;
+					previousChangedNode = index;
+					const sourceProps = materializePreparedCollapsedHostProps(program, next.values, index);
+					const accepted = previous.nodes?.[index];
+					const acceptedProps =
+						accepted?.props ??
+						materializePreparedCollapsedHostProps(program, previous.values, index);
+					if (index !== 0) {
+						const kind =
+							this.driver.updates?.classify(
+								previous.shape[index].type,
+								acceptedProps,
+								sourceProps,
+							) ?? 'update';
+						if (kind !== 'update' && kind !== 'recreate') {
+							throw new TypeError(
+								`Universal update classifier returned invalid kind ${JSON.stringify(kind)}.`,
+							);
+						}
+						const id = accepted?.id ?? previous.firstId! + index;
+						if (kind === 'recreate') {
+							(recreatedNodes ??= new Set()).add(index);
+							updates.push({
+								op: 'recreate',
+								id,
+								type: previous.shape[index].type,
+								props: sourceProps,
+							});
+						} else {
+							updates.push({ op: 'update', id, props: sourceProps });
+						}
+					}
+					if (nodes !== null) {
+						if (nodes === previous.nodes) nodes = nodes.slice();
+						(nodes as { id?: number; props: Readonly<Record<string, unknown>> }[])[index] =
+							Object.freeze({ ...accepted, props: sourceProps });
+					}
+					changed = true;
+				}
+				for (let eventIndex = 0; eventIndex < program.events.length; eventIndex++) {
+					const site = program.events[eventIndex];
+					const prior = previous.events[eventIndex];
+					const handler = next.captures?.[site.slot];
+					if (
+						prior === undefined ||
+						prior.index !== site.node ||
+						prior.event.type !== site.type ||
+						typeof handler !== 'function'
+					) {
+						throw new Error('A universal template program lost an accepted event site.');
+					}
+					if (
+						prior.event.handler !== handler ||
+						prior.event.owner !== next.owner ||
+						prior.event.priority !== site.priority
+					) {
+						const committed: CommittedEvent = {
+							prop: site.prop,
+							type: site.type,
+							priority: site.priority,
+							handler: handler as (...args: any[]) => any,
+							owner: next.owner!,
+							listener: prior.event.listener,
+						};
+						if (events === previous.events) events = previous.events.slice();
+						(events as CommittedCollapsedTemplateEvent[])[eventIndex] = {
+							index: site.node,
+							event: committed,
+						};
+						nextCollapsedEvents.push(committed);
+						changed = true;
+					}
+					if (prior.event.priority !== site.priority || recreatedNodes?.has(site.node)) {
+						eventCommands.push({
+							op: 'event',
+							id: previous.nodes?.[site.node].id ?? previous.firstId! + site.node,
+							type: site.type,
+							listener: { id: prior.event.listener, priority: site.priority },
+						});
+					}
+				}
+				if (changed) {
+					if (nodes !== null && nodes !== previous.nodes) Object.freeze(nodes);
+					stagedCollapsedTemplates.set(update.record, {
+						shape: previous.shape,
+						nodes,
+						events,
+						owner: (update.record.owner ?? attempt.owner.record) as UniversalOwnerRecord,
+						...(previous.firstId === undefined ? null : { firstId: previous.firstId }),
+						prepared: program,
+						values: previousChangedNode === -1 ? previous.values : next.values,
+					});
+				}
+				continue;
+			}
+			const previousNodes =
+				previous.nodes ??
+				previous.shape.map((_shape, index) => materializeCommittedCollapsedNode(previous, index));
+			const nextNodes =
+				next.nodes ??
+				next.program.shape.map((_shape, index) =>
+					materializeCollapsedBlueprintNode(next, index, next.owner!),
+				);
+			let nodes = previousNodes;
+			const committedEvents: CommittedCollapsedTemplateEvent[] = [];
+			let changed = false;
+			for (let index = 0; index < nextNodes.length; index++) {
+				const source = nextNodes[index];
+				const accepted = previousNodes[index];
+				const acceptedId = accepted.id ?? previous.firstId! + index;
+				const propsChanged = !shallowPropsEqual(accepted.props, source.props);
+				let recreatedNode = false;
+				if (propsChanged) {
+					Object.freeze(source.props);
+					if (index !== 0) {
+						const kind =
+							this.driver.updates?.classify(
+								previous.shape[index].type,
+								accepted.props,
+								source.props,
+							) ?? 'update';
+						if (kind !== 'update' && kind !== 'recreate') {
+							throw new TypeError(
+								`Universal update classifier returned invalid kind ${JSON.stringify(kind)}.`,
+							);
+						}
+						recreatedNode = kind === 'recreate';
+						updates.push(
+							recreatedNode
+								? {
+										op: 'recreate',
+										id: acceptedId,
+										type: previous.shape[index].type,
+										props: source.props,
+									}
+								: { op: 'update', id: acceptedId, props: source.props },
+						);
+					}
+					if (nodes === previousNodes) nodes = previousNodes.slice();
+					(nodes as { id?: number; props: Readonly<Record<string, unknown>> }[])[index] =
+						Object.freeze({
+							...accepted,
+							props: source.props,
+						});
+					changed = true;
+				}
+				if (index === 0) continue;
+				const events = source.events;
+				if (events === undefined) continue;
+				for (const event of events) {
+					const prior = previous.events.find(
+						(candidate) => candidate.index === index && candidate.event.type === event.type,
+					)?.event;
+					const listener = prior?.listener ?? nextListener++;
+					const committed = { ...event, listener };
+					committedEvents.push({ index, event: committed });
+					if (
+						prior === undefined ||
+						prior.handler !== event.handler ||
+						prior.owner !== event.owner ||
+						prior.priority !== event.priority
+					) {
+						changed = true;
+						nextCollapsedEvents.push(committed);
+					}
+					if (prior === undefined || prior.priority !== event.priority || recreatedNode) {
+						eventCommands.push({
+							op: 'event',
+							id: acceptedId,
+							type: event.type,
+							listener: { id: listener, priority: event.priority },
+						});
+					}
+				}
+			}
+			for (const accepted of previous.events) {
+				const nextEvents = nextNodes[accepted.index].events;
+				if (nextEvents?.some((event) => event.type === accepted.event.type) === true) continue;
+				previousCollapsedEventListeners.add(accepted.event.listener);
+				eventCommands.push({
+					op: 'event',
+					id: previousNodes[accepted.index].id ?? previous.firstId! + accepted.index,
+					type: accepted.event.type,
+					listener: null,
+				});
+				changed = true;
+			}
+			if (changed) {
+				if (nodes !== previousNodes) Object.freeze(nodes);
+				stagedCollapsedTemplates.set(update.record, {
+					shape: previous.shape,
+					nodes,
+					events: committedEvents,
+					owner: (update.record.owner ?? attempt.owner.record) as UniversalOwnerRecord,
+					...(previous.firstId === undefined ? null : { firstId: previous.firstId }),
+					...(next.prepared === undefined
+						? null
+						: { prepared: next.prepared, values: next.values }),
+				});
+			}
+		}
+		for (const template of templateMounts.values()) {
+			const collapsed = template.collapsed;
+			const count = collapsed?.program.shape.length ?? template.drafts.length;
+			const collapsedEvents: CommittedCollapsedTemplateEvent[] = [];
+			if (
+				(template.range !== undefined || template.run !== undefined) &&
+				collapsed?.prepared !== undefined
+			) {
+				const sites = collapsed.prepared.events;
+				if (template.range !== undefined) {
+					template.range.firstListenerId = sites.length === 0 ? null : nextListener;
+				} else if (sites.length !== 0) {
+					const run = template.run!;
+					if (run.firstListenerId === null) run.firstListenerId = nextListener;
+					if (run.firstListenerId + template.runIndex! * sites.length !== nextListener) {
+						throw new Error('A universal template run requires consecutive listener IDs.');
+					}
+				}
+				for (const site of sites) {
+					const handler = collapsed.captures?.[site.slot];
+					if (typeof handler !== 'function') {
+						throw new Error('A universal template program lost a prepared event site.');
+					}
+					const committed: CommittedEvent = {
+						prop: site.prop,
+						type: site.type,
+						priority: site.priority,
+						handler: handler as (...args: any[]) => any,
+						owner: collapsed.owner!,
+						listener: nextListener++,
+					};
+					collapsedEvents.push({ index: site.node, event: committed });
+					nextCollapsedEvents.push(committed);
+				}
+				stagedCollapsedTemplates.set(template.drafts[0].record, {
+					shape: template.shape,
+					nodes: null,
+					events: collapsedEvents,
+					owner: (template.drafts[0].blueprint as BlueprintHost).owner,
+					firstId: collapsed.firstId!,
+					prepared: collapsed.prepared,
+					values: collapsed.values,
+				});
+				continue;
+			}
+			for (let index = 0; index < count; index++) {
+				const draft = template.drafts[collapsed === undefined ? index : 0];
+				const host = draft.blueprint as BlueprintHost;
+				const staged =
+					index === 0 || collapsed === undefined ? stagedEvents.get(draft.record) : undefined;
+				const source = collapsed?.nodes?.[index];
+				const id = collapsed === undefined ? draft.record.id : collapsed.ids![index];
+				let events: readonly UniversalHostTemplateEvent[] | undefined;
+				if (staged !== undefined && staged.size !== 0) {
+					const nextEvents: UniversalHostTemplateEvent[] = [];
+					for (const event of staged.values()) {
+						nextEvents.push(
+							Object.freeze({
+								type: event.type,
+								listener: Object.freeze({ id: event.listener, priority: event.priority }),
+							}),
+						);
+					}
+					events = Object.freeze(nextEvents);
+				} else if (source?.events !== undefined && index !== 0) {
+					const nextEvents: UniversalHostTemplateEvent[] = [];
+					for (const event of source.events) {
+						const committed = { ...event, listener: nextListener++ };
+						collapsedEvents.push({ index, event: committed });
+						nextCollapsedEvents.push(committed);
+						nextEvents.push(
+							Object.freeze({
+								type: committed.type,
+								listener: Object.freeze({
+									id: committed.listener,
+									priority: committed.priority,
+								}),
+							}),
+						);
+					}
+					events = Object.freeze(nextEvents);
+				}
+				template.nodes![index] = Object.freeze({
+					id,
+					props: Object.freeze(source?.props ?? host.props),
+					...(events === undefined ? null : { events }),
+				});
+			}
+			Object.freeze(template.nodes);
+			if (collapsed !== undefined) {
+				const draft = template.drafts[0];
+				stagedCollapsedTemplates.set(draft.record, {
+					shape: template.shape,
+					nodes: template.nodes!,
+					events: collapsedEvents,
+					owner: (draft.blueprint as BlueprintHost).owner,
+				});
+			}
+		}
+		for (const run of templateRuns) Object.freeze(run.values);
 		const stageHostCallbacks = (
 			op: 'lifecycle' | 'local-callback',
 			readBlueprint: (host: BlueprintHost) => Map<string, BlueprintHostCallback>,
@@ -7321,8 +10727,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			const staged = new Map<LogicalRecord, Map<string, CommittedHostCallback>>();
 			const feature = op === 'lifecycle' ? UNIVERSAL_TREE_LIFECYCLE : UNIVERSAL_TREE_LOCAL_CALLBACK;
 			if ((treeFeatures & feature) === 0) return { commands, staged };
-			walkDraft(draftRoot, (draft) => {
-				if (draft.record.kind !== 'host') return;
+			for (const draft of hostDrafts) {
 				const blueprintCallbacks = readBlueprint(draft.blueprint as BlueprintHost);
 				const previousCallbacks = readCommitted(draft.record);
 				const nextCallbacks = new Map<string, CommittedHostCallback>();
@@ -7330,6 +10735,9 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					const previous = previousCallbacks.get(type);
 					const listener = previous?.listener ?? nextListener++;
 					nextCallbacks.set(type, { ...callback, listener });
+					// Unlike events, a host callback's closure identity is observable:
+					// an attach callback re-runs (detach + attach) when its handler is
+					// replaced, so a changed closure must re-announce.
 					if (
 						previous === undefined ||
 						previous.handler !== callback.handler ||
@@ -7344,7 +10752,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					}
 				}
 				staged.set(draft.record, nextCallbacks);
-			});
+			}
 			for (const record of removedHosts) {
 				for (const [type] of readCommitted(record)) {
 					commands.push({ op, id: record.id, type, listener: null });
@@ -7362,6 +10770,20 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			(host) => host.localCallbacks,
 			(record) => record.localCallbacks,
 		);
+		const publicInstanceCommands: UniversalHostCommand[] = [];
+		if (
+			this.driver.capabilities?.lazyPublicInstances === true &&
+			(treeFeatures &
+				(UNIVERSAL_TREE_REF | UNIVERSAL_TREE_LIFECYCLE | UNIVERSAL_TREE_LOCAL_CALLBACK)) !==
+				0
+		) {
+			for (const draft of hostDrafts) {
+				const host = draft.blueprint as BlueprintHost;
+				if (host.ref != null || host.lifecycles.size !== 0 || host.localCallbacks.size !== 0) {
+					publicInstanceCommands.push({ op: 'ensure-public-instance', id: draft.record.id });
+				}
+			}
+		}
 		const destroys: UniversalHostCommand[] = removedHosts.map((record) => ({
 			op: 'destroy',
 			id: record.id,
@@ -7369,6 +10791,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		const commands: UniversalHostCommand[] = [
 			...creates,
 			...updates,
+			...publicInstanceCommands,
 			...eventCommands,
 			...lifecycleStage.commands,
 			...localCallbackStage.commands,
@@ -7387,18 +10810,27 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			cleanup: (() => void) | null;
 		}[] = [];
 		const refAttaches: DraftRecord[] = [];
-		const hostDraftsById = new Map<number, DraftRecord>();
-		const lifecycleDrafts = new Set<DraftRecord>();
+		const lifecycleHosts = new Set<LogicalRecord>();
 		if ((treeFeatures & UNIVERSAL_TREE_LIFECYCLE) !== 0) {
+			const hostsById = new Map<number, LogicalRecord>();
 			walkDraft(draftRoot, (draft) => {
+				if (draft.retained === true) {
+					// A retained subtree re-renders nothing, but a reorder around it can
+					// still move its top-level hosts; their committed lifecycle
+					// callbacks must observe that placement like any drafted host's.
+					for (const host of physicalRecords(draft.record.children)) {
+						hostsById.set(host.id, host);
+					}
+					return;
+				}
 				if (draft.record.kind !== 'host') return;
-				hostDraftsById.set(draft.record.id, draft);
-				if (draft.isNew || draft.hostUpdate !== null) lifecycleDrafts.add(draft);
+				hostsById.set(draft.record.id, draft.record);
+				if (draft.isNew || draft.hostUpdate !== null) lifecycleHosts.add(draft.record);
 			});
 			for (const placement of placements) {
 				if (placement.op !== 'move') continue;
-				const draft = hostDraftsById.get(placement.id);
-				if (draft !== undefined) lifecycleDrafts.add(draft);
+				const host = hostsById.get(placement.id);
+				if (host !== undefined) lifecycleHosts.add(host);
 			}
 		}
 		if ((treeFeatures & UNIVERSAL_TREE_REF) !== 0) {
@@ -7463,13 +10895,22 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			}
 		}
 		const draftedRecords = new Set(draftOwnersParentFirst.map((owner) => owner.record));
+		// Owners the render adopted without re-drafting stay committed exactly as
+		// they are: neither they nor their descendants may be treated as removed.
+		const retainedOwnerRoots = new Set<UniversalOwnerRecord>();
+		for (const draft of draftOwnersParentFirst) {
+			if (draft.retainedChildren === null) continue;
+			for (const entry of draft.retainedChildren) retainedOwnerRoots.add(entry.record);
+		}
 		const committedOwnersParentFirst: UniversalOwnerRecord[] = [];
 		const walkCommittedOwners = (owner: UniversalOwnerRecord | null) => {
 			if (owner === null) return;
 			committedOwnersParentFirst.push(owner);
-			for (const child of owner.children) walkCommittedOwners(child);
+			for (const child of owner.children) {
+				if (!retainedOwnerRoots.has(child)) walkCommittedOwners(child);
+			}
 		};
-		walkCommittedOwners(this.owner);
+		walkCommittedOwners(scoped ? attempt.owner.record : this.owner);
 		const removedOwners = committedOwnersParentFirst.filter((owner) => !draftedRecords.has(owner));
 		const removedEffectEventCells = collectEffectEventCells(removedOwners);
 		const orderedEffectCleanups: { phase: EffectPhase; hook: EffectHook }[] = [];
@@ -7554,20 +10995,40 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				record.localCallbacks = localCallbackStage.staged.get(record) ?? record.localCallbacks;
 				record.visibility = host.visibility;
 			};
+			const applyRangeOwner = (draft: DraftRecord) => {
+				const record = draft.record;
+				const nextOwner = (draft.blueprint as BlueprintRange).owner ?? null;
+				if (record.owner !== nextOwner && record.owner?.range === record) {
+					record.owner.range = null;
+				}
+				record.owner = nextOwner;
+				if (nextOwner !== null) nextOwner.range = record;
+			};
 			const apply = (draft: DraftRecord, parent: LogicalRecord | null) => {
 				const record = draft.record;
+				if (draft.retained === true) {
+					// The adopted subtree is already committed; only its attachment
+					// point may have moved.
+					record.parent = parent;
+					return;
+				}
 				record.parent = parent;
 				record.key = draft.blueprint.key;
 				if (record.kind === 'host') {
 					applyHost(draft);
+				} else if (record.kind === 'range') {
+					applyRangeOwner(draft);
 				} else if (record.kind === 'portal') {
 					record.portalRegistration = (draft.blueprint as BlueprintPortal).registration;
 				}
 				record.children = draft.children.map((child) => child.record);
 				for (const child of draft.children) apply(child, record);
 			};
-			if (topologyChanged) apply(draftRoot, null);
-			else for (const draft of hostDrafts) applyHost(draft);
+			if (topologyChanged) apply(draftRoot, scoped ? scopeRecord.parent : null);
+			else {
+				for (const draft of hostDrafts) applyHost(draft);
+				for (const draft of changedRangeOwners) applyRangeOwner(draft);
+			}
 			stagedPortalRegistrations.clear();
 			for (const registration of previousPortalRegistrations) {
 				if (nextPortalRegistrations.has(registration)) continue;
@@ -7578,16 +11039,40 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				}
 			}
 		};
-		const lifecycleOrder: DraftRecord[] = [];
-		if (lifecycleDrafts.size !== 0) {
+		const lifecycleOrder: LogicalRecord[] = [];
+		if (lifecycleHosts.size !== 0) {
 			walkDraftPostOrder(draftRoot, (draft) => {
-				if (lifecycleDrafts.has(draft)) lifecycleOrder.push(draft);
+				if (draft.retained === true) {
+					for (const host of physicalRecords(draft.record.children)) {
+						if (lifecycleHosts.has(host)) lifecycleOrder.push(host);
+					}
+					return;
+				}
+				if (lifecycleHosts.has(draft.record)) lifecycleOrder.push(draft.record);
 			});
 		}
 		const hasPassiveWork =
 			removedEffectEventCells.length !== 0 ||
 			orderedEffectCleanups.some((cleanup) => cleanup.phase === 'passive') ||
 			effectChanges.some(({ next, changed }) => changed && next.phase === 'passive');
+		// Listeners to retire: those owned by hosts this commit re-staged or
+		// removed. Hosts inside retained subtrees have no drafts and keep their
+		// committed listeners registered as-is.
+		const previousReplacedEventListeners = new Set<number>();
+		const previousReplacedLocalCallbacks = new Set<number>();
+		if ((treeFeatures & (UNIVERSAL_TREE_EVENT | UNIVERSAL_TREE_LOCAL_CALLBACK)) !== 0) {
+			const collectReplaced = (record: LogicalRecord) => {
+				if (record.kind !== 'host') return;
+				for (const event of record.events.values()) {
+					previousReplacedEventListeners.add(event.listener);
+				}
+				for (const callback of record.localCallbacks.values()) {
+					previousReplacedLocalCallbacks.add(callback.listener);
+				}
+			};
+			for (const draft of hostDrafts) collectReplaced(draft.record);
+			for (const removed of removedHosts) collectReplaced(removed);
+		}
 		const prepareHost = (value: UniversalHostBatch) =>
 			this.driver.prepareBatch(this.container, value, {
 				invokeLocalCallback: (listener, args) => this.invokeLocalCallback(listener, args),
@@ -7597,14 +11082,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		let preparedAsyncHost: UniversalAsyncPreparedHostBatch | null = null;
 		if (this.transport?.mode === 'async') {
 			preparedAsyncHost = this.transport.prepareBatch(this.container, batch, identity);
-			if (
-				preparedAsyncHost === null ||
-				typeof preparedAsyncHost !== 'object' ||
-				typeof preparedAsyncHost.apply !== 'function' ||
-				typeof preparedAsyncHost.abort !== 'function' ||
-				(preparedAsyncHost.afterAccept !== undefined &&
-					typeof preparedAsyncHost.afterAccept !== 'function')
-			) {
+			if (!isValidPreparedHostBatch(preparedAsyncHost)) {
 				throw new TypeError(
 					'A universal async transport must return a valid prepared batch token.',
 				);
@@ -7614,13 +11092,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				this.transport === null
 					? prepareHost(batch)
 					: this.transport.prepareBatch(this.container, batch, prepareHost);
-			if (
-				preparedHost === null ||
-				typeof preparedHost !== 'object' ||
-				typeof preparedHost.apply !== 'function' ||
-				typeof preparedHost.abort !== 'function' ||
-				(preparedHost.afterAccept !== undefined && typeof preparedHost.afterAccept !== 'function')
-			) {
+			if (!isValidPreparedHostBatch(preparedHost)) {
 				throw new TypeError('A universal host driver must return a valid prepared batch token.');
 			}
 		}
@@ -7633,16 +11105,36 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			identity,
 			() => {
 				applyLogicalTopology();
-				if (this.hostAttachments !== null) {
+				if (stagedCollapsedTemplates.size !== 0) {
+					const collapsed = (this.collapsedTemplates ??= new Set());
+					for (const [record, state] of stagedCollapsedTemplates) {
+						record.collapsedTemplate = state;
+						collapsed.add(record);
+					}
+				}
+				if (this.hostAttachments !== null && (treeFeatures & UNIVERSAL_TREE_REF) !== 0) {
 					for (const record of removedHosts) this.hostAttachments.records.delete(record.id);
 					for (const draft of hostDrafts) {
 						this.hostAttachments.records.set(draft.record.id, draft.record);
 					}
 				}
 				if ((treeFeatures & UNIVERSAL_TREE_EVENT) !== 0) {
-					for (const listener of this.publishedListeners) EVENT_DISPATCHERS.delete(listener);
-					this.publishedListeners.clear();
-					const handlers = new Map<number, CommittedEvent>();
+					// The accepted listener table is edited in place: this closure is
+					// already the accept point (EVENT_DISPATCHERS mutates here either
+					// way), retiring only the listeners of re-staged or removed hosts.
+					// Rebuilding from staged events would drop the live listeners of
+					// retained subtrees, which this commit never re-staged.
+					const handlers = this.handlers;
+					for (const listener of previousReplacedEventListeners) {
+						EVENT_DISPATCHERS.delete(listener);
+						this.publishedListeners.delete(listener);
+						handlers.delete(listener);
+					}
+					for (const listener of previousCollapsedEventListeners) {
+						EVENT_DISPATCHERS.delete(listener);
+						this.publishedListeners.delete(listener);
+						handlers.delete(listener);
+					}
 					for (const [record, events] of stagedEvents) {
 						if (!stagedVisibleEventRecords.has(record)) continue;
 						for (const event of events.values()) {
@@ -7653,28 +11145,61 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 							);
 						}
 					}
-					this.handlers = handlers;
+					for (const event of nextCollapsedEvents) {
+						handlers.set(event.listener, event);
+						if (!this.publishedListeners.has(event.listener)) {
+							this.publishedListeners.add(event.listener);
+							EVENT_DISPATCHERS.set(event.listener, (payload) =>
+								this.dispatchEvent(event.listener, payload),
+							);
+						}
+					}
 				}
 				if ((treeFeatures & UNIVERSAL_TREE_LOCAL_CALLBACK) !== 0) {
-					const localCallbacks = new Map<number, CommittedHostCallback>();
+					const localCallbacks = this.localCallbacks;
+					for (const listener of previousReplacedLocalCallbacks) {
+						localCallbacks.delete(listener);
+					}
 					for (const callbacks of localCallbackStage.staged.values()) {
 						for (const callback of callbacks.values()) {
 							localCallbacks.set(callback.listener, callback);
 						}
 					}
-					this.localCallbacks = localCallbacks;
 				}
 				for (const owner of removedOwners) {
 					owner.disposed = true;
 					owner.mounted = false;
+					owner.componentProps = null;
+					owner.range = null;
 					owner.updates.clear();
 				}
 				for (const draft of draftOwnersParentFirst) {
 					const record = draft.record;
-					record.parent = draft.parent?.record ?? null;
+					record.componentProps = draft.componentProps;
+					record.componentRevision = draft.componentRevision;
+					if (!scoped || draft !== attempt.owner) {
+						record.parent = draft.parent?.record ?? null;
+					}
 					record.hooks = draft.hooks;
 					record.effectOrder = [...draft.seenEffects];
-					record.children = draft.children.map((child) => child.record);
+					if (draft.retainedChildren === null) {
+						record.children = draft.children.map((child) => child.record);
+					} else {
+						// Interleave adopted committed children back at the drafted-child
+						// index each was claimed at, restoring exact claim order.
+						const merged: UniversalOwnerRecord[] = [];
+						let retainedIndex = 0;
+						for (let index = 0; index <= draft.children.length; index++) {
+							while (
+								retainedIndex < draft.retainedChildren.length &&
+								draft.retainedChildren[retainedIndex].position === index
+							) {
+								merged.push(draft.retainedChildren[retainedIndex++].record);
+							}
+							if (index < draft.children.length) merged.push(draft.children[index].record);
+						}
+						record.children = merged;
+					}
 					record.contextValues = draft.contextValues;
 					record.isBoundary = draft.isBoundary;
 					record.canHandleSuspense = draft.canHandleSuspense;
@@ -7731,19 +11256,22 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 						}
 					}
 				}
-				this.owner = attempt.owner.record;
+				if (!scoped) this.owner = attempt.owner.record;
 				this.lastComponent = component;
 				this.lastProps = props;
 				this.retryRenderInput = null;
 				this.urgentBoundarySuspension = null;
-				this.bridgeContextReads = attempt.bridgeContextReads;
+				if (!scoped) this.bridgeContextReads = attempt.bridgeContextReads;
 				if (retryThenables.length > 0) {
 					this.publishLocalReplay(retryThenables, retryMemos, component, props);
 				}
 				this.nextId = nextId;
+				this.nextLogicalRangeId = nextLogicalRangeId;
 				this.nextUniversalId = attempt.nextUniversalId;
 				this.nextListener = nextListener;
-				this.treeFeatures = attempt.treeFeatures;
+				this.treeFeatures = scoped
+					? this.treeFeatures | attempt.treeFeatures
+					: attempt.treeFeatures;
 				for (const context of changedContexts) context.$$version++;
 				const retainedRegionCells = new Set<RendererRegionBridgeCell>();
 				for (const { next, previous } of stagedRegionBridges) {
@@ -7783,8 +11311,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			},
 			() => {
 				const tasks: (() => void)[] = [];
-				for (const draft of lifecycleOrder) {
-					const record = draft.record;
+				for (const record of lifecycleOrder) {
 					for (const callback of record.lifecycles.values()) {
 						tasks.push(() =>
 							runOwnedCommit(callback.owner, () =>
@@ -7953,13 +11480,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			this.resumeAfterRejectedUnmount();
 			return Promise.reject(error);
 		}
-		if (
-			prepared === null ||
-			typeof prepared !== 'object' ||
-			typeof prepared.apply !== 'function' ||
-			typeof prepared.abort !== 'function' ||
-			(prepared.afterAccept !== undefined && typeof prepared.afterAccept !== 'function')
-		) {
+		if (!isValidPreparedHostBatch(prepared)) {
 			this.resumeAfterRejectedUnmount();
 			return Promise.reject(
 				new TypeError('A universal async transport must return a valid prepared batch token.'),
@@ -8049,6 +11570,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 		} catch (error) {
 			pendingAbortError = error;
 		}
+		this.expandCollapsedTemplates();
 		const owners: UniversalOwnerRecord[] = [];
 		const collectOwners = (owner: UniversalOwnerRecord | null) => {
 			if (owner === null) return;
@@ -8137,6 +11659,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 			finalize: (acceptedHostError) => {
 				this.scheduled = false;
 				this.scheduledUrgent = false;
+				this.scheduledFullRoot = false;
+				this.scheduledOwners.clear();
 				SCHEDULED_UNIVERSAL_ROOTS.delete(this);
 				const transitionBatches = new Set(this.takeScheduledTransitionBatches());
 				for (const transition of stagedTransitionBatches) transitionBatches.add(transition);
@@ -8147,6 +11671,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				// root. Teardown owns the final scheduler state and drops that stale wave.
 				this.scheduled = false;
 				this.scheduledUrgent = false;
+				this.scheduledFullRoot = false;
+				this.scheduledOwners.clear();
 				SCHEDULED_UNIVERSAL_ROOTS.delete(this);
 				let attachmentUnsubscribeError: unknown = NO_PENDING_PASSIVE_ERROR;
 				if (this.hostAttachments !== null) {
@@ -8157,6 +11683,7 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 					}
 				}
 				this.rootRecord.children = [];
+				this.rootRecord.owner = null;
 				let portalReleaseError: unknown = NO_PENDING_PASSIVE_ERROR;
 				for (const registration of portalRegistrations) {
 					try {
@@ -8173,6 +11700,8 @@ class UniversalRootImpl<Container, PublicInstance> implements UniversalRoot<any>
 				for (const owner of owners) {
 					owner.disposed = true;
 					owner.mounted = false;
+					owner.componentProps = null;
+					owner.range = null;
 					owner.updates.clear();
 				}
 				const deactivatedRegionCells = new Set<RendererRegionBridgeCell>();
@@ -8503,6 +12032,11 @@ export type UniversalSyncFlusher = <T>(run: () => T) => T;
 
 const INLINE_UNIVERSAL_FLUSHER: UniversalSyncFlusher = (run) => run();
 
+/** Discover a mounted owner scheduler without retaining the owner renderer. */
+export function getUniversalHostFlusher(): UniversalSyncFlusher | undefined {
+	return getRendererHostFlusher();
+}
+
 function runUniversalSyncBoundary<T>(
 	run: () => T,
 	flushOwner: UniversalSyncFlusher,
@@ -8589,7 +12123,14 @@ export function createUniversalRoot<Container, PublicInstance>(
 			'Universal roots require options.scheduleMicrotask when the host has no global queueMicrotask.',
 		);
 	}
-	return new UniversalRootImpl(container, driver, options.transport ?? null, scheduleMicrotask);
+	const root = new UniversalRootImpl(
+		container,
+		driver,
+		options.transport ?? null,
+		scheduleMicrotask,
+	);
+	registerUniversalRootErrorHandlers(root, options);
+	return root;
 }
 
 function readGlobalMicrotaskScheduler(): ((callback: () => void) => void) | undefined {
@@ -8611,6 +12152,7 @@ export interface ObjectHostInstance {
 
 interface ObjectDriverState {
 	instances: Map<number, ObjectHostInstance>;
+	parents: Map<number, number | null>;
 	events: Map<number, Map<string, UniversalEventListenerDescriptor>>;
 	lifecycles: Map<number, Map<string, UniversalListenerDescriptor>>;
 	localCallbacks: Map<number, Map<string, UniversalListenerDescriptor>>;
@@ -8631,6 +12173,7 @@ export function createObjectContainer(renderer = 'object'): ObjectHostContainer 
 	assertRendererId(renderer, 'Object container renderer');
 	const state: ObjectDriverState = {
 		instances: new Map(),
+		parents: new Map(),
 		events: new Map(),
 		lifecycles: new Map(),
 		localCallbacks: new Map(),
@@ -8707,20 +12250,24 @@ export function createObjectDriver(
 				);
 			}
 			const state = container[OBJECT_DRIVER_STATE];
-			const simulated = new Map<
-				number,
-				{
-					type: string;
-					props: Readonly<Record<string, unknown>>;
-					visible: boolean;
-					children: number[];
-					events: Map<string, UniversalEventListenerDescriptor>;
-					lifecycles: Map<string, UniversalListenerDescriptor>;
-					localCallbacks: Map<string, UniversalListenerDescriptor>;
-				}
-			>();
-			for (const [id, instance] of state.instances) {
-				simulated.set(id, {
+			type SimulatedInstance = {
+				type: string;
+				props: Readonly<Record<string, unknown>>;
+				visible: boolean;
+				children: number[];
+				events: Map<string, UniversalEventListenerDescriptor>;
+				lifecycles: Map<string, UniversalListenerDescriptor>;
+				localCallbacks: Map<string, UniversalListenerDescriptor>;
+			};
+			const simulated = new Map<number, SimulatedInstance>();
+			const destroyed = new Set<number>();
+			const readSimulated = (id: number): SimulatedInstance | undefined => {
+				if (destroyed.has(id)) return undefined;
+				let value = simulated.get(id);
+				if (value !== undefined) return value;
+				const instance = state.instances.get(id);
+				if (instance === undefined) return undefined;
+				value = {
 					type: instance.type,
 					props: instance.props,
 					visible: instance.visible,
@@ -8728,8 +12275,12 @@ export function createObjectDriver(
 					events: new Map(state.events.get(id)),
 					lifecycles: new Map(state.lifecycles.get(id)),
 					localCallbacks: new Map(state.localCallbacks.get(id)),
-				});
-			}
+				};
+				simulated.set(id, value);
+				return value;
+			};
+			const hasSimulated = (id: number): boolean =>
+				!destroyed.has(id) && (simulated.has(id) || state.instances.has(id));
 			const stagedInstances = new Map<number, ObjectHostInstance>();
 			const cleanupKeys = new Set<string>();
 			const invokeKeys = new Set<string>();
@@ -8738,17 +12289,36 @@ export function createObjectDriver(
 				const separator = key.indexOf(':');
 				return [Number(key.slice(0, separator)), key.slice(separator + 1)];
 			};
-			const rootChildren = container.children.map((child) => child.id);
+			const DETACHED = Symbol('octane.object-driver.detached');
+			type SimulatedParent = number | null | typeof DETACHED;
+			const parentChanges = new Map<number, SimulatedParent>();
+			let rootChildren: number[] | null = null;
+			const readParent = (id: number): SimulatedParent => {
+				if (parentChanges.has(id)) return parentChanges.get(id)!;
+				return state.parents.has(id) ? state.parents.get(id)! : DETACHED;
+			};
 			const simulatedChildren = (parent: number | null) => {
-				if (parent === null) return rootChildren;
-				const value = simulated.get(parent);
+				if (parent === null) {
+					return (rootChildren ??= container.children.map((child) => child.id));
+				}
+				const value = readSimulated(parent);
 				if (value === undefined) throw new Error(`Object driver: unknown parent ${parent}.`);
 				return value.children;
 			};
+			const detachSimulated = (id: number): void => {
+				const parent = readParent(id);
+				if (parent === DETACHED) return;
+				const children = simulatedChildren(parent);
+				const index = children.indexOf(id);
+				if (index === -1) throw new Error(`Object driver: child ${id} is not attached.`);
+				children.splice(index, 1);
+				parentChanges.set(id, DETACHED);
+			};
 			for (const command of batch.commands) {
 				if (command.op === 'create') {
-					if (simulated.has(command.id))
+					if (hasSimulated(command.id))
 						throw new Error(`Object driver: duplicate id ${command.id}.`);
+					destroyed.delete(command.id);
 					simulated.set(command.id, {
 						type: command.type,
 						props: command.props,
@@ -8766,11 +12336,11 @@ export function createObjectDriver(
 						children: [],
 					});
 				} else if (command.op === 'update') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					if (value === undefined) throw new Error(`Object driver: unknown update ${command.id}.`);
 					value.props = command.props;
 				} else if (command.op === 'recreate') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					const current = state.instances.get(command.id);
 					if (value === undefined || current === undefined) {
 						throw new Error(`Object driver: unknown recreate ${command.id}.`);
@@ -8791,25 +12361,25 @@ export function createObjectDriver(
 						invokeKeys.add(keyFor(command.id, type));
 					}
 				} else if (command.op === 'visibility') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					if (value === undefined) {
 						throw new Error(`Object driver: unknown visibility target ${command.id}.`);
 					}
 					value.visible = command.state === 'visible';
 				} else if (command.op === 'event') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					if (value === undefined)
 						throw new Error(`Object driver: unknown event target ${command.id}.`);
 					if (command.listener === null) value.events.delete(command.type);
 					else value.events.set(command.type, command.listener);
 				} else if (command.op === 'lifecycle') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					if (value === undefined)
 						throw new Error(`Object driver: unknown lifecycle target ${command.id}.`);
 					if (command.listener === null) value.lifecycles.delete(command.type);
 					else value.lifecycles.set(command.type, command.listener);
 				} else if (command.op === 'local-callback') {
-					const value = simulated.get(command.id);
+					const value = readSimulated(command.id);
 					if (value === undefined)
 						throw new Error(`Object driver: unknown local callback target ${command.id}.`);
 					const key = keyFor(command.id, command.type);
@@ -8823,22 +12393,17 @@ export function createObjectDriver(
 					if (command.parent !== null && typeof command.parent !== 'number') {
 						throw new Error('Object driver does not support portal target parents.');
 					}
-					if (!simulated.has(command.id))
+					if (!hasSimulated(command.id))
 						throw new Error(`Object driver: unknown child ${command.id}.`);
-					for (const value of [
-						rootChildren,
-						...[...simulated.values()].map((entry) => entry.children),
-					]) {
-						const old = value.indexOf(command.id);
-						if (old !== -1) value.splice(old, 1);
-					}
+					detachSimulated(command.id);
 					const children = simulatedChildren(command.parent);
 					const before =
 						command.before === null ? children.length : children.indexOf(command.before);
 					if (before === -1) throw new Error(`Object driver: unknown before id ${command.before}.`);
 					children.splice(before, 0, command.id);
+					parentChanges.set(command.id, command.parent);
 					if (command.op === 'move') {
-						for (const type of simulated.get(command.id)!.localCallbacks.keys()) {
+						for (const type of readSimulated(command.id)!.localCallbacks.keys()) {
 							const key = keyFor(command.id, type);
 							cleanupKeys.add(key);
 							invokeKeys.add(key);
@@ -8852,26 +12417,22 @@ export function createObjectDriver(
 					const index = children.indexOf(command.id);
 					if (index === -1) throw new Error(`Object driver: child ${command.id} is not attached.`);
 					children.splice(index, 1);
-					for (const type of simulated.get(command.id)!.localCallbacks.keys()) {
+					parentChanges.set(command.id, DETACHED);
+					for (const type of readSimulated(command.id)!.localCallbacks.keys()) {
 						cleanupKeys.add(keyFor(command.id, type));
 					}
 				} else if (command.op === 'destroy') {
-					const instance = simulated.get(command.id);
+					const instance = readSimulated(command.id);
 					if (instance === undefined)
 						throw new Error(`Object driver: unknown destroy ${command.id}.`);
-					for (const value of [
-						rootChildren,
-						...[...simulated.values()].map((entry) => entry.children),
-					]) {
-						const attached = value.indexOf(command.id);
-						if (attached !== -1) value.splice(attached, 1);
-					}
+					detachSimulated(command.id);
+					for (const child of instance.children) parentChanges.set(child, DETACHED);
 					instance.children.length = 0;
-					simulated.delete(command.id);
+					destroyed.add(command.id);
 				}
 			}
 			for (const [id, instance] of stagedInstances) {
-				const staged = simulated.get(id);
+				const staged = readSimulated(id);
 				if (staged === undefined) continue;
 				instance.visible = staged.visible;
 				instance.children.splice(
@@ -8884,6 +12445,17 @@ export function createObjectDriver(
 			}
 			let status: 'prepared' | 'applied' | 'aborted' = 'prepared';
 			let acceptedCallbacksRan = false;
+			const liveChildren = (parent: number | null): ObjectHostInstance[] =>
+				objectChildren(container, parent, state.instances);
+			const detachLive = (id: number): void => {
+				if (!state.parents.has(id)) return;
+				const parent = state.parents.get(id)!;
+				const instance = state.instances.get(id)!;
+				const children = liveChildren(parent);
+				const index = children.indexOf(instance);
+				if (index !== -1) children.splice(index, 1);
+				state.parents.delete(id);
+			};
 			return {
 				apply() {
 					if (status !== 'prepared') return;
@@ -8900,7 +12472,11 @@ export function createObjectDriver(
 					tasks.push(() => {
 						for (const command of batch.commands) {
 							if (command.op === 'create') {
-								state.instances.set(command.id, stagedInstances.get(command.id)!);
+								const instance = stagedInstances.get(command.id)!;
+								state.instances.set(command.id, instance);
+								for (const child of instance.children) {
+									state.parents.set(child.id, command.id);
+								}
 								state.events.set(command.id, new Map());
 								state.lifecycles.set(command.id, new Map());
 								state.localCallbacks.set(command.id, new Map());
@@ -8910,10 +12486,8 @@ export function createObjectDriver(
 							} else if (command.op === 'recreate') {
 								const previous = state.instances.get(command.id)!;
 								const replacement = stagedInstances.get(command.id)!;
-								for (const parent of [
-									container.children,
-									...[...state.instances.values()].map((entry) => entry.children),
-								]) {
+								if (state.parents.has(command.id)) {
+									const parent = liveChildren(state.parents.get(command.id)!);
 									const index = parent.indexOf(previous);
 									if (index !== -1) parent[index] = replacement;
 								}
@@ -8938,36 +12512,28 @@ export function createObjectDriver(
 									throw new Error('Object driver does not support portal target parents.');
 								}
 								const instance = state.instances.get(command.id)!;
-								for (const parent of [
-									container.children,
-									...[...state.instances.values()].map((entry) => entry.children),
-								]) {
-									const old = parent.indexOf(instance);
-									if (old !== -1) parent.splice(old, 1);
-								}
-								const children = objectChildren(container, command.parent, state.instances);
+								detachLive(command.id);
+								const children = liveChildren(command.parent);
 								const before =
 									command.before === null
 										? children.length
 										: children.indexOf(state.instances.get(command.before)!);
 								children.splice(before, 0, instance);
+								state.parents.set(command.id, command.parent);
 							} else if (command.op === 'remove') {
 								if (command.parent !== null && typeof command.parent !== 'number') {
 									throw new Error('Object driver does not support portal target parents.');
 								}
-								const children = objectChildren(container, command.parent, state.instances);
+								const children = liveChildren(command.parent);
 								children.splice(children.indexOf(state.instances.get(command.id)!), 1);
+								state.parents.delete(command.id);
 							} else if (command.op === 'destroy') {
 								const instance = state.instances.get(command.id)!;
-								for (const parent of [
-									container.children,
-									...[...state.instances.values()].map((entry) => entry.children),
-								]) {
-									const attached = parent.indexOf(instance);
-									if (attached !== -1) parent.splice(attached, 1);
-								}
+								detachLive(command.id);
+								for (const child of instance.children) state.parents.delete(child.id);
 								instance.children.length = 0;
 								state.instances.delete(command.id);
+								state.parents.delete(command.id);
 								state.events.delete(command.id);
 								state.lifecycles.delete(command.id);
 								state.localCallbacks.delete(command.id);
@@ -8988,13 +12554,8 @@ export function createObjectDriver(
 						const listener = state.localCallbacks.get(id)?.get(type);
 						if (instance === undefined || listener === undefined) continue;
 						tasks.push(() => {
-							let parent: ObjectHostInstance | null = null;
-							for (const candidate of state.instances.values()) {
-								if (candidate.children.includes(instance)) {
-									parent = candidate;
-									break;
-								}
-							}
+							const parentId = state.parents.get(id);
+							const parent = parentId == null ? null : (state.instances.get(parentId) ?? null);
 							const cleanup = context.invokeLocalCallback(listener.id, [parent, instance]);
 							if (cleanup == null) return;
 							if (typeof cleanup !== 'function') {

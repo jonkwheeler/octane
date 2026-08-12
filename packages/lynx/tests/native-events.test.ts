@@ -61,6 +61,31 @@ describe('Lynx native event boundary', () => {
 		}
 	});
 
+	it('keeps native and main-thread event classifications correct across many distinct event names', () => {
+		for (let index = 0; index < 300; index++) {
+			const suffix =
+				String.fromCharCode(97 + (index % 26)) + String.fromCharCode(97 + Math.floor(index / 26));
+			expect(parseLynxNativeEventProp(`bind${suffix}`)).toEqual({
+				prefix: 'bind',
+				type: 'bindEvent',
+				name: suffix,
+			});
+			expect(parseLynxMainThreadEventProp(`main-thread:catch${suffix}`)).toEqual({
+				prop: `main-thread:catch${suffix}`,
+				prefix: 'catch',
+				type: 'catchEvent',
+				name: suffix,
+			});
+		}
+		expect(parseLynxNativeEventProp('bindtap')).toEqual({
+			prefix: 'bind',
+			type: 'bindEvent',
+			name: 'tap',
+		});
+		expect(parseLynxNativeEventProp('bindtap2')).toBeNull();
+		expect(parseLynxMainThreadEventProp('main-thread:gesture')).toBeNull();
+	});
+
 	it('round-trips one versionless root, host generation, and listener identity', () => {
 		const identity = {
 			root: 7,
@@ -106,6 +131,22 @@ describe('Lynx native event boundary', () => {
 		]) {
 			expect(() => decodeLynxNativeEventToken(token)).toThrow(/native event token/);
 		}
+	});
+
+	it('rejects accessor-backed token identities without executing untrusted getters', () => {
+		let reads = 0;
+		const identity = {
+			root: 1,
+			get id() {
+				reads += 1;
+				return 2;
+			},
+			generation: 1,
+			listener: 3,
+			priority: 'default' as const,
+		};
+		expect(() => encodeLynxNativeEventToken(identity)).toThrow(/own data property/);
+		expect(reads).toBe(0);
 	});
 
 	it('snapshots event data without retaining live targets, prototypes, or methods', () => {
@@ -223,6 +264,26 @@ describe('Lynx native event boundary', () => {
 		});
 		expect(snapshot.currentTarget).not.toBe(currentTarget);
 		expect(Object.getPrototypeOf(snapshot.currentTarget as object)).toBeNull();
+	});
+
+	it('snapshots an element with no author id to a null target id, from either host convention', () => {
+		// @lynx-js/web-core delivers `id: null` for an element with no id attribute;
+		// a plain host object simply omits the field (`id: undefined`). Both mean
+		// "no id" and must snapshot to null, not throw and not coerce to '' — the
+		// null keeps "no author id" distinct from an author-assigned empty id.
+		const fromWebCore = snapshotLynxNativeEventPayload({
+			type: 'tap',
+			target: { id: null, uid: 7, dataset: { role: 'row' } },
+			currentTarget: { id: null, $$uiSign: 8, dataset: {} },
+		});
+		expect(fromWebCore.target).toEqual({ id: null, uid: 7, dataset: { role: 'row' } });
+		expect(fromWebCore.currentTarget).toEqual({ id: null, uid: 8, dataset: {} });
+
+		const fromOmittedField = snapshotLynxNativeEventPayload({
+			type: 'tap',
+			target: { uid: 9, dataset: { role: 'cell' } },
+		});
+		expect(fromOmittedField.target).toEqual({ id: null, uid: 9, dataset: { role: 'cell' } });
 	});
 
 	it('strips non-data array entries without shifting native payload indexes', () => {

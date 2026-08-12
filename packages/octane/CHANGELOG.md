@@ -1,5 +1,752 @@
 # octane
 
+## 0.1.36
+
+### Patch Changes
+
+- 972fdd3: Reduce temporary allocations during keyed list reorders by safely reusing
+  bounded numeric scratch buffers across reconciliations.
+- 4a792e3: Allow universal renderers to route compiler-emitted thread-function helpers through an optional cold runtime module.
+
+  Lynx now uses that boundary to omit main-thread worklet registries and call bridges from applications that compile no worklets, while retaining late-chunk activation and the existing worklet-enabled behavior.
+
+- 581b8bd: Reduce hydratable server-rendered HTML by reusing component-owned keyed-list
+  ranges, self-delimiting pure-host descriptor items, and proven host-only
+  conditional or switch ranges. Keep streamed Suspense segments parser-safe
+  without expanding ordinary HTML tags or hydration comments.
+- 24aa236: Skip unchanged keyed-list rows in production when their nested conditional
+  content contains only host elements and every captured dependency is stable.
+  Preserve conditional ownership, hydration, transitions, and existing keyed
+  selection behavior while avoiding redundant DOM updates in TodoMVC-shaped apps.
+- 9c397a2: Publish executable CommonJS conditions for Octane core, Floating UI, Base UI, and Radix while preserving their existing ESM and source-first entry points.
+- 24aa236: Reduce server-rendered HTML escaping time and temporary allocations while
+  preserving iterable snapshots, text security, streaming output, and hydration.
+- 5377ef3: React Float behavioral parity: hoist exclusions and hint semantics.
+
+  Document-metadata hoisting now honors React's exclusions — `itemProp`-bearing
+  `<meta>`/`<link>` stay with their `itemScope` host, and metadata/resources that
+  are direct children of `<noscript>` stay in the fallback content — on the
+  client and the server, so hydration adopts the identical shape.
+
+  Resource hints gain React's option semantics: font preloads always fetch
+  anonymously (`crossorigin=""`), preload-seeded connection/integrity options
+  transfer onto the matching `preinit`'s real tag (the server coalesces the
+  redundant preload out of the head fold), `preconnect` identity includes the
+  CORS mode, responsive image preloads omit the fallback `href`, unknown option
+  keys are dropped, and non-string hrefs warn in development and no-op. A module
+  src is one executable identity across `preinitModule` and
+  `<script async type="module" src>` in both the server pass and the hydrating
+  client — no more duplicate module scripts in the cross pairings.
+
+- 6b65644: Minimize universal-renderer keyed placements with a longest-increasing-subsequence plan so distant swaps move only displaced hosts while preserving survivor identity, events, and lifecycle behavior.
+- f12a9a9: Type native HTML attribute spellings alongside React-compatible aliases, support
+  native numeric attribute strings and SVG visibility attributes, and recognize
+  native `readonly` spelling when checking text-input change handlers.
+- 972fdd3: Add compiler-visible descriptor children for bindings that inspect or clone ordinary TSЯX children.
+- 1039b7d: Reduce duplicated client, server, and universal-renderer logic while sharing
+  specialized compiled ref and server-spread helpers through renderer-isolated
+  private runtime entry points. Preserve existing public helper exports, ref
+  cleanup semantics, server rendering, hydration, and hot-path specializations.
+- ffadd39: React 19 parity: the implementation-gap tranche from the outstanding-work issue.
+
+  - **Nested document metadata**: `<title>`/`<meta>`/`<link>` and Float resources
+    now hoist from ANY depth on the server too (React's model; the client always
+    did) — a nested hoist serializes into the head channel at its authored
+    position, the host body keeps only real children, and hydration adopts
+    without mismatches. A hoist inside a conditional arm registers only while
+    that arm renders.
+  - **`prerenderToNodeStream`**: `octane/static` gains the stream variant —
+    resolves after the await-everything render completes; `prelude` streams the
+    complete document bytes (scoped-style tags, then folded html). No
+    `postponed` field: postpone/resume stays a documented non-goal.
+  - **Teardown errors reach the root callbacks**: effect-cleanup and ref-detach
+    throws during unmount report through `onCaughtError` (boundary-claimed) or
+    `onUncaughtError` (unclaimed) with routing semantics unchanged.
+  - **Resource hints share the Float identity model**: `preinit(as:'style')` IS a
+    stylesheet resource (honors `precedence`, joins the groups, dedupes against
+    the rendered form), `preinit(as:'script')` dedupes against
+    `<script async src>`, `preload`/`preloadModule` after the matching init
+    no-op, image preloads with `imageSrcSet` key on the srcset+sizes pair, and
+    malformed calls warn in development.
+  - **Universal renderer**: `onCaughtError`/`onUncaughtError` now apply to
+    `octane/universal` roots (boundary claims and scheduler-owned work; a direct
+    `render()` throw remains the documented result channel, and there is no
+    `onRecoverableError` — the universal renderer has no hydration channel).
+
+- a03ff0f: React 19 parity tranche: Float resources, root error callbacks, module resource hints, and partial-prerender/formState dispositions.
+
+  `<link rel="stylesheet" href precedence>` and `<script async src>` rendered at
+  a component's body root are now React Float resources: hoisted into
+  `document.head`, deduped by href/src across the page, stylesheet groups ordered
+  by precedence (first-encounter group order, appended within a group), retained
+  after unmount, emitted into buffered and streamed SSR head output, and
+  hydration-deduped via the first client call's DOM seed. Suspend-until-loaded
+  commits and `<style href precedence>` style resources remain documented
+  non-goals — `<style>` in a component belongs to Octane's scoped-CSS system.
+
+  `preloadModule` and `preinitModule` join the resource-hint set on both the
+  client and server entries. `createRoot`/`hydrateRoot` accept React 19's
+  `onCaughtError`, `onUncaughtError`, and `onRecoverableError` options
+  (error-only signature — no `errorInfo`/`componentStack`; defaults are unchanged
+  when the options are absent). `unstable_Activity` is aliased to `Activity` for
+  React experimental-channel ports.
+
+  React 19.2 partial pre-rendering (`resume`/`resumeAndPrerender` and the
+  postpone/prelude protocol), `cache()`/`cacheSignal()`, and `hydrateRoot`'s
+  `formState` option are recorded as documented non-goals in the parity ledger,
+  and `docs/differences-from-react.md` now documents the previously unlisted
+  divergences: `Context.Consumer`, `<title>` child handling, per-compile-site
+  metadata dedupe, hidden-`<Activity>` scheduling, dropped stream options,
+  `prerender`'s return shape, the `useId` format, and the `version` string.
+
+- 4c1ecd1: React Float style resources, and the Context.Consumer decision made concrete.
+
+  `<style href precedence>` rendered at a component's body root is now a React
+  Float STYLE RESOURCE: its plain CSS ships by href identity, sharing the
+  stylesheet dedupe namespace and precedence-group ordering with link resources
+  (`data-precedence`/`data-href` marked, SSR-emitted, hydration-deduped, retained
+  after unmount). Every other `<style>` keeps Octane's scoped-CSS behavior.
+  Octane emits one tag per resource (no same-precedence merging), and CSS
+  containing `</style` fails closed in SSR with a development diagnostic.
+
+  Context.Consumer stays modern-only, now with teeth: accessing `.Consumer` in
+  development logs a one-time migration diagnostic (and still returns
+  `undefined`, so feature probes match production), the upstream Consumer
+  scenarios protecting observable behavior are ported as `useContext`-reading
+  conformance tests, and the render-prop-surface-only cases are recorded as
+  parity-ledger non-goals.
+
+## 0.1.35
+
+### Patch Changes
+
+- 50b7988: Cache proven immutable state-array filter projections and skip redundant
+  single-token class updates while preserving controlled field restoration.
+- 6daa380: Start independent asynchronous children in proven bounded keyed lists during
+  the same discovery wave while preserving existing suspense and request reuse.
+- d2c9e1c: Reuse delegated-event accessors and capture paths, and omit redundant component
+  markers for proven exhaustive switch-root components.
+- 01240e6: Speed up universal and Lynx rendering with shared compiled host-template
+  programs, range-based host and listener identities, compiler-proven ownership
+  elision, capability-negotiated compact transport acknowledgements, lazy public
+  handles and query selectors, and lower-allocation reconciliation. Preserve
+  native events, late refs, worklets, lists, portals, first-screen adoption,
+  public handles, and rendered output.
+- 59a35ae: Batch component-owned universal host templates after Lynx first-screen adoption,
+  preserving component hooks, effects, keyed identity, native events, and safe
+  cross-thread public handles while reducing large-list creation overhead.
+- a8b432b: Retain unchanged keyed component subtrees for asynchronous universal renderers,
+  avoiding redundant Lynx row renders while preserving context updates, native
+  listeners, host identity, effect lifetimes, and accepted-commit ordering.
+- 910c240: Specialize proven mixed inline styles so static declarations enter the template
+  and only changed dynamic properties update the DOM.
+- db5687e: Start provably reachable lazy component imports alongside independent suspended
+  work without eagerly loading dormant deferred-hydration islands.
+- e2466a5: Reuse already-warmed asynchronous resources across promoted transition retries
+  without duplicating request creators or exposing partially committed screens.
+- 2d06817: Preserve active IME composition and focus through controlled-input updates,
+  keyed reorders, and deferred hydration; improve Samsung Internet and Android
+  browser compatibility, scheduling, and browser build targets.
+
+## 0.1.34
+
+### Patch Changes
+
+- 78316b4: Publish executable CommonJS conditions for Octane core, Floating UI, Base UI, and Radix while preserving their existing ESM and source-first entry points. Source-package discovery still recognizes those packages when the CommonJS build has not been generated yet.
+- 4e53ef4: Complete React Fragment ref parity across JSX aliases and spreads, direct element descriptors, server rendering and hydration, strongly typed refs, text and portal ownership, events, observers, focus, geometry, document positioning, and scrolling.
+- 4cc7840: Reuse server-provided hydration data before creating compiler-owned async
+  requests, preventing duplicate client fetches while preserving Suspense and
+  external hydration ownership.
+- 39b3e19: Reuse proven stable returned-JSX component regions inside context providers while
+  preserving context updates, component state, and server-rendered DOM adoption.
+- 8c29020: Reuse unchanged derived JSX descriptor arrays inside context providers, avoiding
+  unnecessary keyed reconciliation and memo comparisons while preserving context
+  updates, component state, and hydration.
+- 97e65b9: Skip compiler-proven stable hookful child component call sites during unchanged
+  parent updates while preserving independently scheduled child state, context,
+  refs, effects, and hydration.
+
+## 0.1.33
+
+### Patch Changes
+
+- 1fe297e: Match React's autofocus behavior during server rendering, client mounting, and hydration, and restore focus and text selection after DOM updates.
+- db0d495: Add behavior-only roots for server-rendered and externally streamed DOM, with explicit range ownership, readiness, trusted native event adoption, cancellation, and DOM-preserving disposal.
+- 677182d: Avoid reconciling unchanged compiler-cached renderable children while preserving
+  context and hidden-tree effect lifecycles, cache safe derived values in
+  hook-using JSX components, and omit fetch-warming scaffolding from component
+  trees proven to contain no asynchronous work.
+- 3fb96df: Fix a sibling-ordering bug in hosts whose children are all components: a hookless child that rendered nothing at mount (for example a sole `@if` with no `@else`) inserted content produced by a later render after its later siblings instead of at its own source position. The compiler now keeps per-child anchors for such hosts, while hosts whose children provably hold their position keep the marker-elided form.
+- 677182d: Reduce server-runtime initialization retention and production compiler output while preserving
+  hydration, streaming, component-owned events and styles, View Transitions, and callback identity.
+- 4653a2e: Fix a dev-only crash ("Cannot read properties of undefined (reading 'block')") when a component is invoked as a plain function — for example `Row({ label })` inside another component's render or a `.map` callback. The HMR wrapper now stays transparent to scope-less direct calls, matching production behavior, and an edit still refreshes the call site's output through the caller's hot update.
+- 7282555: Preserve React-compatible inline placement and event propagation for resource
+  links with explicit load or error handlers. Keep dynamically hoisted metadata
+  listeners synchronized across capture and bubble updates, hydration, and unmount.
+- 3d09348: The compiler now lowers React-style conditional JSX returns
+  (`if (c) return <A/>; return <B/>;`, including ternary returns) to the same
+  template control flow as `@if`/`@else` when the branch shapes are provably
+  remount-equivalent under React semantics, so branch-selected output stops
+  running through the de-opt descriptor renderer on both client and server.
+  Hooks, direct-call helpers, fragment arms, same-type arms, self-recursive
+  arms, and every other return shape keep the established value ABI.
+- 8cb40df: The compiler's single-root proof is now transitive: a component whose `@{}` body is an `@if`/`@else` tree where every arm renders exactly one plain host element or one qualifying same-module component call is proven single-root through a fixed point, so its call sites (including multiple component children of one host) mount with the existing anchorless self-marked regime instead of minting a `<!--comp-->`/`<!--/comp-->` pair each. Client-mount elision only — SSR output and hydration adoption are unchanged. On the spa-navigation benchmark's 1024-leaf route this removes all 4,092 per-slot marker comments and their insertions.
+- 677182d: Preserve compiler-hook registration and TanStack Start client hydration when
+  their bootstrap entrypoints are imported for side effects in production bundles,
+  while keeping unrelated package modules tree-shakeable.
+- fc1c146: Tree-shake unused Three.js constructors from compiled scenes and keep direct
+  Three renderer roots independent of the DOM runtime while preserving full
+  Canvas catalogues, context providers, and mixed-renderer scheduling.
+- a84fcaa: Avoid unnecessary asynchronous warming for synchronous components that read plain
+  props, preventing speculative getter evaluation and reducing generated render work.
+- 217a0b5: Unmount teardown now removes a deleted subtree's DOM once at the outermost
+  detached block instead of per-descendant range (portals still self-detach from
+  their foreign targets), and the de-opt ref-detach walk is skipped for subtrees
+  that never stamped a descriptor ref. A full-page teardown drops from thousands
+  of `removeChild` calls to one per top-level node, and deletion cleanups now
+  observe the entire deleted subtree still attached — matching React's
+  commitDeletionEffects order.
+
+## 0.1.32
+
+### Patch Changes
+
+- d453832: Reduce server-rendering overhead and managed document metadata while preserving streaming, hydration, and router asset identity.
+- 3152f0b: Reduce universal keyed-scene reconciliation and Three renderer lifecycle and
+  frame-subscriber overhead while preserving object identity, transactional
+  cleanup, and priority ordering.
+- 1c44117: Reduce production application and package-version bundle sizes while preserving profiling, transition, and hydration behavior.
+- cbd55ca: Make transported commit payloads proportional to change size, not tree size.
+
+  On a transported root (Lynx's dual-thread renderer, any process split), every
+  object-valued host prop is re-encoded through the wire clone on every render,
+  so the identity-based prop diff could never certify sameness: a single-row
+  select over a 10,000-row table shipped a ~2.4MB commit of ~30,000 commands —
+  one spurious `update` for every row's freshly rebuilt class array plus two
+  `event` re-binds per row — identical in size to a commit where every tenth
+  row actually changed. Three cuts fix it:
+
+  - The prop diff now uses `sameUniversalHostPropValue`, an exported,
+    depth-limited structural equality over the value semantics the wire itself
+    preserves: primitives by `Object.is`, arrays and plain records (from any
+    realm, via the universal-side `hasCrossRealmPlainPrototype`) element-by-
+    element to depth 2, everything deeper or exotic by identity. Equal values
+    emit no command, and `cloneSerializableValue` accepts cross-realm plain
+    objects through the same predicate.
+  - The universal compiler lowers `class={[…]}` arrays whose elements are
+    statically string-or-falsy to their clsx-composed string expression (an
+    all-literal array folds to a static plan prop), and folds string-literal
+    expression children and literal attribute values into the frozen plan, so
+    the hottest per-row slot values are primitives instead of fresh
+    allocations.
+  - A re-created but equivalent event handler closure no longer re-announces
+    its listener on the wire: the listener ID is stable and the background
+    dispatch table always rebinds to the newest closure, so only a new
+    listener, a priority change, or an owner change emits a command. Host
+    callbacks (attach) keep closure-identity announcement — their re-run on
+    handler replacement is an observable contract.
+
+  The same select commit now carries 2 commands / ~225 bytes at any table
+  size, and update-every-10th carries exactly one text update per changed row
+  (the `lynx-table` ratio guards tighten from 1500× the changed-rows floor to
+  1.0×). The "renders scheduled while a commit awaits acknowledgement coalesce
+  into one commit carrying the latest state, intermediate states never cross"
+  transport behavior is now a tested contract — it previously held only as a
+  side effect of acknowledgement timing, and becomes load-bearing for storm
+  throughput once commits stop saturating the main thread.
+
+- cdb501c: Preserve proven single-root memo component shapes and keep catch-only error boundaries independent of optional Suspense and transition startup capabilities.
+
+## 0.1.31
+
+### Patch Changes
+
+- 80a9c7e: Compiler-inferred component memoization now admits destructured props
+  parameters. `function Child({ rows })` is the same one-props snapshot as
+  `function Child(props)`, so production call sites of such components gain the
+  whole-region dependency cache and skip the child entirely when their props are
+  reference-stable — patterns that evaluate expressions of their own (defaults,
+  computed keys), bind `current`, or use array destructuring still fall back.
+  Call-site eligibility is also no longer vetoed body-wide by an unrelated
+  `ref.current` or live-import member read elsewhere in the parent: the reads
+  that actually flow into a site (directly or laundered through a local) still
+  reject that site, everything else keeps its region.
+- 62d7f13: Compiler-inferred component memoization now admits spread bags on host
+  elements. `<path d={e.d} {...e.attrs}>` inside a component body no longer
+  disqualifies that component's region cache or its keyed-list caches: a host
+  spread is one runtime-diffed binding whose bag is reachable only from
+  dependencies the region guard already witnesses, so skipping on unchanged
+  dependencies is exactly the no-op a re-entry would have been. Re-entries keep
+  full spread semantics — changed keys apply, vanished keys clear, and
+  spread-supplied refs and event handlers attach, swap, and detach as before.
+  Spreads on component tags keep failing closed: they build the child's props
+  snapshot, which cached call sites must never construct from a getter-bearing
+  bag.
+- 16df26e: Skip unchanged keyed rows containing nested host-only lists or conditionals
+  while preserving imported dependency invalidation and structured row ownership.
+
+## 0.1.30
+
+### Patch Changes
+
+- 10011bb: Reduce temporary allocations during keyed list reorders by safely reusing
+  bounded numeric scratch buffers across reconciliations.
+- 081fa1e: Avoid reconciling unchanged compiler-cached renderable children while preserving
+  context and hidden-tree effect lifecycles, cache safe derived values in
+  hook-using JSX components, and omit fetch-warming scaffolding from component
+  trees proven to contain no asynchronous work.
+- 60004f0: Reduce component-render bookkeeping when mounting compiler-certified keyed host
+  rows while preserving ordinary DOM insertion, hydration, row identity,
+  delegated events, lifecycle behavior, and existing public APIs.
+- 27758f5: Skip unchanged keyed-list rows in production when their nested conditional
+  content contains only host elements and every captured dependency is stable.
+  Preserve conditional ownership, hydration, transitions, and existing keyed
+  selection behavior while avoiding redundant DOM updates in TodoMVC-shaped apps.
+- 136b0e3: Reduce server-runtime initialization retention and production compiler output while preserving
+  hydration, streaming, component-owned events and styles, View Transitions, and callback identity.
+- d69ab86: Reduce server-rendered HTML escaping time and temporary allocations while
+  preserving iterable snapshots, text security, streaming output, and hydration.
+- 1a27e19: Update only the previously selected and newly selected keyed-list rows when the
+  production compiler can prove that a row's selection depends solely on its own
+  key. Preserve component rerenders, immutable updates, and existing lifecycle
+  behavior without requiring a new public API.
+- 7f6a134: Preserve compiler-hook registration and TanStack Start client hydration when
+  their bootstrap entrypoints are imported for side effects in production bundles,
+  while keeping unrelated package modules tree-shakeable.
+- ce68bb8: Stop rebuilding a component's children when an unrelated context updates.
+
+  A component's children resolve lazily, in the scope they render in, so the
+  compiler wraps each one in a thunk that builds its element and its props object
+  on demand. That thunk was rebuilt whenever a single global context epoch moved,
+  and the epoch moved on every provider value change anywhere in the tree. A
+  rebuild re-runs the thunk, so the props object came back new, and with it every
+  inline callback and object literal written at that call site, even though the
+  component that authored them never rendered again.
+
+  Anything keyed on those identities churned: `useEffect`, `useCallback`, and
+  `useMemo` dependency arrays compared unequal every time, and `memo()` on such a
+  child could not bail out. Where one of those effects wrote state that fed the
+  same provider, the cycle never converged. `@octanejs/radix` `Form` hit exactly
+  that: a `Form.Message` with a function `match` re-registered and unregistered its
+  matcher forever, one round per frame, for as long as the form stayed mounted.
+
+  The rebuild is now keyed on the contexts a record actually read while resolving.
+  Reads are collected during resolution and re-checked against their context's
+  version, so a record that reads no context is never rebuilt by a provider update
+  and keeps the props it was given. The resolving scope is still honoured for
+  records that do read context, which is what keeps one shared descriptor from
+  serving two providers, and a lazily read context value still refreshes on the
+  render after it changes.
+
+  Scope alone no longer forces a rebuild either. Host classification resolves a
+  child in the parent block before the child block renders it, so the two scopes
+  alternate every render; combined with the check above that alternation was
+  re-creating props on its own.
+
+- fbe0d39: Enforce Strong-mode render purity inside lazy state initializers, linked-state
+  reconcilers, and their source/value equality callbacks without restricting
+  deferred work or compatibility-mode applications.
+- 9fa0b47: Reduce production JSX rendering overhead for compiler-proven nested components
+  while preserving authored component returns, hooks, context, hydration, and
+  existing public APIs.
+
+## 0.1.29
+
+### Patch Changes
+
+- 8fb7990: Fix hydration of sibling `@if` and `@switch` blocks at fragment roots, including components rendered inside keyed `@for` lists.
+
+## 0.1.28
+
+### Patch Changes
+
+- 2b98a33: Universal target: the root component now carries a committed range, so a state
+  update in the root component itself replays through the scoped path instead of
+  falling back to a whole-root attempt (issue #574 follow-up). Replays also adopt
+  committed component subtrees whose props, state, contexts, and code revision
+  are provably unchanged instead of re-rendering and re-drafting them, and child
+  owner claims resolve through a positional fast path when the render keeps its
+  committed order. In the issue's repro shape with state at the root, one press
+  beside 4,000 untouched siblings drops from ~55 ms to ~10 ms, and clean-subtree
+  adoption also flattens the cost of large in-scope replays such as list
+  components re-rendering unchanged items.
+
+## 0.1.27
+
+### Patch Changes
+
+- 46e1833: Keep freshly mounted Suspense content hidden when hydration resumes inside a hidden Activity.
+- 5a8e807: Keep hidden Activity DOM hidden when a descendant independently replaces its output.
+
+  State updates, error and Suspense retries, and accepted hot-module updates now reapply the nearest
+  hidden Activity's visibility after rendering. Replacement elements and text remain hidden until the
+  Activity reveals, while authored display and text values are restored correctly on reveal. Activity
+  and Suspense now share hide ownership for overlapping DOM, so either boundary can reveal first
+  without capturing the other's temporary hidden styles.
+
+## 0.1.26
+
+### Patch Changes
+
+- 1f01b08: Refresh compiled component output correctly after accepted hot updates.
+
+  Hot refresh now discards the outgoing compiler-owned template and slot layout before mounting the
+  new body, while retaining the component block and its hook state. Exclusively owned markerless
+  output is promoted to a durable component range during refresh, so static markup edits and newly
+  added component calls update immediately in both mounted and hydrated applications instead of
+  leaving stale DOM or throwing during insertion. When an enclosing control-flow branch shares that
+  root as its boundary, the update safely falls back to a page reload instead.
+
+- 48e2397: Keep universal state updates proportional to their retained owner subtree: a leaf `setState` replays only its owning component, keyed-list item state and several owners updated by one event replay their nearest shared component ancestor instead of the root, updates under an idle `@try`/Suspense boundary stay scoped (active episodes and retained-hidden content still replay from the root, and a scoped render error falls back so the boundary catches it), structural updates that insert, reorder, or remove hosts commit through the scope's physical frame, compact leaf rows driven by list state update within their owning list component, and scoped commits edit the accepted listener tables in place instead of cloning them. Also avoid cloning the object driver's full instance map when preparing a small host batch, and expose the corresponding benchmark through the MCP server.
+
+## 0.1.25
+
+### Patch Changes
+
+- bd8bb1b: Require Node.js 22.22.2 or newer across Octane's published packages.
+
+  Add the `octane/compiler/register` preload for running server and SSG scripts
+  directly with Node or Bun. It compiles imported `.tsrx`/`.tsx` modules and
+  plain TypeScript custom hooks in server mode without a Vite build. Bun also
+  targets bare `octane` imports at `octane/server` in pass-through authored source
+  dependencies, including packages that manage their hook slots manually.
+
+## 0.1.24
+
+### Patch Changes
+
+- ec77602: Fix Rspack and Rsbuild development builds crashing while evaluating hot `.tsrx` modules by aliasing webpack HMR metadata before reading dispose data.
+- 29c5bdb: Track the receiver of one-level method calls in inferred hook dependencies
+  (#542).
+
+  `useMemo(() => count.toFixed(2))` used to infer `[count.toFixed]` — a function
+  that lives on `Number.prototype` and therefore never changes identity, so the
+  memo stayed frozen at its first value while `count` moved. The same hazard
+  applied to any prototype method called on a one-level receiver, including
+  instance methods of replaced class instances.
+
+  Neither static alternative is right for every program: depending on `count`
+  fixes primitives but would re-run `props.onChange(...)` hooks on every parent
+  render, because `props` is a fresh container whose own function property is the
+  real dependency. The inferred array now compiles such calls to
+  `__methodDep(root, 'name')`, a new semi-public runtime helper that picks the
+  comparable value per render: the member when it is an own property of the
+  receiver, the receiver when the method is inherited, and `undefined` when the
+  property is absent (so `props.onReady?.()` stays inert until a handler is
+  passed). Own-property callbacks and absent optional handlers keep exactly their
+  previous recompute behavior; inherited-method calls now correctly recompute
+  when the receiver changes.
+
+  Deeper callees (`a.b.c(...)`) and computed callees (`a[k](...)`) already
+  tracked their receivers and are unchanged, as are explicit dependency arrays.
+
+- 9b032d8: Treat closures marked with an other-context directive as opaque to dependency
+  inference (#542, problem 2).
+
+  A nested function whose directive prologue declares that its body executes
+  outside render — `'use gpu'` (TypeGPU shader code) or `'worklet'`
+  (Reanimated/worklets-core UI-thread code) — now contributes only its root
+  captures to an inferred dependency array. Previously the array hoisted the
+  closure's member reads to render time, which evaluated context-bound getters
+  such as TypeGPU's `.$` where they are illegal, forcing an explicit dependency
+  array. The TypeGPU example from the issue now infers `[root, timeUniform,
+hueUniform]` with no array written.
+
+  The directive list is a deliberate allowlist and can grow. Same-context hints
+  (`'use strict'`, React Compiler's `'use memo'`/`'use no memo'`) and directives
+  reserved for other semantics (`'use server'`, `'use client'`, `'use cache'`,
+  `'use workflow'`) never truncate; closures without a listed directive keep
+  today's member-path inference.
+
+- f9b2731: Observe promises recreated by plain async components during server replay, so rejected components render their `@catch` arm without emitting duplicate unhandled rejections.
+- 6714914: Keep host refs unpublished while an initial Suspense primary is hidden, and avoid detaching replacement refs that never committed before a suspended update.
+
+## 0.1.23
+
+### Patch Changes
+
+- c1ad31b: Compile a `@{ … }` body that returns without reaching an output node.
+
+  A shorthand block whose statements return but which never reaches a trailing
+  JSX node crashed the client compiler with `Cannot read properties of undefined
+(reading 'type')`:
+
+  ```tsx
+  export function CoreGameFunction(props) @{
+  	const [boardData, setBoardData] = useState([null, null, null]);
+  	return null;
+  }
+  ```
+
+  `@{ … }` desugars to a trailing return, so a body carrying any value return is
+  compiled as one whose output is a returned value rather than an emitted
+  template. That classification is driven by the returns alone, but lowering the
+  tail assumed the block also had a render node to lower, and the parser leaves
+  that node null when the block ends on a statement. The crash was not specific to
+  `useState` or to `null`: a block holding only `return <div />` failed the same
+  way, as did one holding only `return 1`. It was client-only — the server
+  compiler already treated the same shape as having an empty tail.
+
+  A block with no output node now compiles as what it is: the body's own returns
+  are the whole output, and falling off the end renders nothing. Setup still runs,
+  so slot-keyed hooks keep their state across whichever value the body returned.
+  This is the shape a component is in while it is being written, and the shape a
+  React-style `return <jsx>` inside a block already had.
+
+  The synthesized tail is dropped where it cannot be reached — when the block ends
+  in a `return` or a `throw`, or in an `if`/`else` whose arms both do. Reachability
+  is proven syntactically and nothing subtler is attempted, because keeping the
+  tail is always correct: a body that falls through to `undefined` is how a
+  compiled body reports that it already emitted its template.
+
+## 0.1.22
+
+### Patch Changes
+
+- 43df1f9: Evaluate an inline event handler's arguments when the event fires, not on every
+  render. `onClick={() => setData(makeData(1000))}` compiled to a `{ fn, args }`
+  bundle whose argument was lifted into the component body, so `makeData(1000)`
+  ran on mount and on every subsequent render even if the button was never
+  clicked. An argument is now bundled only when evaluating it early is
+  observationally equivalent to evaluating it on the event: identifiers, plain
+  member paths, literals, and operators over those. Calls, fresh array/object/regex
+  literals, mutations, `ref.current` (the ref attaches after the mount that would
+  read it, so the first event received the pre-attach `null`), and computed member
+  keys keep the ordinary closure handler.
+
+  Inline handlers that read nothing which can change between renders are now
+  installed once at mount instead of being rebuilt and reassigned on every render,
+  matching what a named handler already received. Handlers inside a keyed `@for`
+  row are excluded, since a surviving row can be handed a different item without
+  remounting.
+
+- 7a112b4: Reuse scoped JSX value records when host classification hands them directly to the host's child block, avoiding duplicate descriptor construction while preserving context-scoped resolution.
+
+## 0.1.21
+
+### Patch Changes
+
+- 10efc28: Fix hydration mismatch recovery corrupting the DOM when a branch adopts a
+  non-spanning server range.
+
+  When an `@if`/`@switch` (or an `@if`-lowered ternary) hydrates a slot whose
+  server content leads with a nested `<!--[-->…<!--]-->` pair, the branch adopted
+  that first pair as its own range without checking that the pair spans the whole
+  slot. Against a differently-encoded server shape — for example a legacy
+  value-hole list serialized as an outer pair plus one pair per keyed item — the
+  branch then owned only a prefix of the slot: the next branch swap left the
+  stranded remainder on screen next to the new arm, and re-entering the original
+  arm mounted into detached anchors, rendering nothing (or throwing
+  `NotFoundError` on insertion, depending on the shape). Recovery must never
+  crash or leak — it is the production safety net for stale server HTML.
+
+  The branch adoption now verifies the nested pair reaches the slot's close
+  marker. When it does not, the runtime treats it as a structural hydration
+  mismatch: it warns in development, discards the server range, and client-builds
+  the branch fresh with hydration suspended for that subtree, so cursor-greedy
+  adoption (such as a keyed list's markerless item path) cannot claim the slot's
+  own close marker.
+
+- 39bfc49: Fix a crash when a sole-child value hole leaves and re-enters array mode.
+
+  An element whose only child is a `{expr}` hole renders markerless (the slot
+  owns the whole element), and an array value lazily mints a comment marker pair
+  inside the element to anchor the keyed list. Clearing the slot on a later kind
+  flip swept those markers out of the DOM but kept the slot's references to
+  them, so the next mount anchored on detached comments: flipping
+  array → text/null/host → array crashed with
+  `Cannot read properties of null (reading 'nodeType')`, and array → component
+  threw `NotFoundError` while inserting the new content. The owns-parent clear
+  now forgets the swept marker pair, so re-entering array mode re-mints a live
+  pair and every other regime returns to the markerless baseline.
+
+- 4863b39: Render the non-JSX arm of a ternary child hole instead of discarding it, and
+  stop crashing on a `null` consequent.
+
+  `{cond ? A : B}` at a JSX child position lowers to an ifBlock when either arm
+  is a JSX literal. The other arm's value — a keyed `.map(…)` array, a string, a
+  variable holding an element, a nested ternary, a falsy primitive — was compiled
+  into the branch helper as a bare expression statement, so its value was
+  evaluated and dropped and the hole rendered empty. React renders that arm's
+  value, and server rendering already did too, so the same component could ship
+  content from the server that the hydrating client blanked out. A `null`
+  consequent (`{cond ? null : <Jsx/>}`) did not compile at all: the lowering
+  crashed reading the missing branch.
+
+  A non-JSX arm now lowers to the authored-equivalent `<>{expr}</>`, so the
+  branch renders the value through the fragment's child hole: keyed `.map` arms
+  take the same keyed fast path as `@for`, nested ternaries become nested
+  ifBlocks, and primitives (including `0`) render as text. A `null`/`false`
+  consequent compiles to an ifBlock with an empty then branch, mirroring the
+  long-supported `null` alternate. The server now claims template-form ternary
+  holes symmetrically (`ssrControl` + arm ranges, exactly like an authored
+  `@if`), so the hydrating client adopts the taken arm's DOM — including keyed
+  list arms — instead of relying on shape coincidence. Value-form positions
+  (returned `.tsx` trees, whose holes the client folds into descriptor value
+  holes) keep their existing `ssrChild` output byte-for-byte.
+
+- ef82ba3: Defer a held synchronous transition's whole commit.
+
+  A transition that suspends now holds the entire screen — including everything
+  it patched outside the suspended boundary. Shell text, attributes, controlled
+  form state and keyed structure revert with the hold, `isPending` stays on, and
+  the new screen lands in one step when the data arrives, matching what async
+  Actions already did. The composition benchmark records zero exposed
+  intermediate states for a transition update, level with React.
+
+  A value hole that leaves array mode during a held transition now re-asserts
+  the held rows instead of showing the flipped-in content early, and a
+  sole-child hole that flips array to text and back no longer crashes on the
+  wiped list markers.
+
+  One residual is pinned at its own benchmark ceiling: the promoted round after
+  a dependent request resolves re-creates warm-started fetches (served by the
+  application cache, so nothing refetches over the network) until the follow-up
+  resume work restores the exact creation floor.
+
+## 0.1.20
+
+### Patch Changes
+
+- c6370b6: Add `octane/testing` with `clampJsdomScrollTop()`, an opt-in helper that clamps
+  jsdom's stored scroll position to its reported range and dispatches the
+  resulting native scroll event.
+- dd272ad: Expose a stable native error-boundary reset ref for renderer adapters.
+- c151b71: Add optional Strong mode for clearer state and ref behavior. Enable it across an
+  application with `compiler: { strong: true }`, in one module with `"use strong"`,
+  or through the Vite, Rspack, and Rsbuild plugin options. Strong modules reject
+  state updates during render, direct state updates while setting up an effect, and
+  render-time writes to refs, with `useLinkedState` available for state that
+  should follow another value.
+- 66b51d8: Run the mount effects of components a boundary rendered but never committed.
+
+  A `useEffect` could be lost outright. When a Suspense boundary suspended on
+  something rendered _after_ a sibling — a `@for` of children followed by a
+  component that calls `use()` on a pending promise, say — those earlier siblings
+  had already run their hooks before the attempt was abandoned. Their effects were
+  queued and then dropped along with the rest of the aborted attempt, but the
+  slots kept the dependency arrays that attempt had stamped. When the promise
+  resolved and the content was revealed, the re-render compared those deps, found
+  them unchanged, and enqueued nothing. The mount body never ran, and neither did
+  the cleanup it would have returned, so subscriptions, timers, and observers set
+  up in `useEffect` silently never started. `useLayoutEffect` was unaffected.
+
+  Hiding a boundary behind its fallback still leaves passive effects subscribed,
+  which is what React does for content that is on screen and merely hidden. That
+  now applies only to effects that actually ran. One that never ran has no
+  subscription to preserve, so it resets like a layout effect and fires when the
+  boundary finally commits — React fires every mount effect in the subtree when a
+  suspended mount lands.
+
+  This also covers a boundary that commits, then re-renders with a new child and
+  suspends: the new child's effects mount on reveal while its already-committed
+  siblings keep the subscriptions they had.
+
+- a57c32a: Hold a Suspense boundary whole through a transition.
+
+  A transition that suspended used to leave part of the new screen on top of the
+  old one. Rendering and mutating happen in one walk, so a component patched its
+  own attributes and text on the way down and only afterwards found that a child
+  below it was still loading — the boundary kept its old content but the markup
+  around it had already moved on. The same thing happened when a held boundary
+  replayed its body and only some of the data had arrived: the resolved parts
+  committed and the rest stayed behind.
+
+  A suspended attempt now undoes its own binding writes, so the boundary either
+  updates completely or not at all. The undo runs in the same flush as the change,
+  so nothing intermediate is ever painted and transitions stay monotonic — no
+  visible rollback, no invalid intermediate structure.
+
+  `benchmarks/async-composition` records zero exposed intermediate states for a
+  transition update, level with React, with its ceiling tightened from one to zero.
+
+  Controlled `value`, `checked` and `selected` are held too, along with their
+  `default*` mirrors and the record of what was last projected.
+
+  Two things a transition can still change early: content it patched outside a
+  suspended boundary, and a structural change above one such as a keyed list
+  reordering.
+
+- e38a557: Hold a keyed list whole through a suspended transition.
+
+  A transition that dropped a row and then suspended used to lose the row from the
+  held screen: the list reconciled first, the boundary decided to hold second, and
+  by then the row's DOM, state and cleanups were already gone. A list the boundary
+  was supposed to be holding frozen showed up with rows missing.
+
+  Removals inside a boundary now defer their teardown while a hold is still
+  possible. The nodes come out of the way so the reconcile can finish, but they
+  are kept, and the row's scope — its state, its effects, its cleanups — is left
+  untouched until the outcome is known. If the boundary holds, the rows come back
+  exactly as they were, cleanups never having run; once the transition commits,
+  the removal goes through for real and cleanups fire then.
+
+  The list restores as a whole — order, membership and the `@empty` branch
+  together — so reorders roll back alongside removals.
+
+- bd90e27: Keyed-list parking only defers what a hold can restore.
+
+  A value-position keyed list whose slot leaves array mode (the value stops
+  being an array) discards the slot itself, so rows removed by that flip have
+  nothing to be restored into. They no longer park for a possible hold — their
+  teardown runs inline with the attempt that removed them, exactly as it did
+  before rows learned to wait — instead of being deferred past the rest of the
+  render as unrestorable.
+
+  The rollback that puts a held list back also stops if a teardown cleanup
+  flips the enclosing boundary to `@catch` mid-restore, instead of writing into
+  a disposed range.
+
+- ae6811d: Add `useLinkedState` for local state that can be edited independently but should
+  reset or adjust when an input changes. The new value is available immediately,
+  without an effect or a state update during render. Calculations can inspect the
+  previous source and value, choose custom equality checks, and use the same
+  optional latest-value getter as `useState`.
+- 62d81b8: Guard `hot.data` in the universal webpack-HMR handoff: webpack and rspack leave `module.hot.data` undefined until a previous instance of the module has disposed, so the emitted `hot.data.__octaneUniversalComponents` read crashed every dev bundle on its first evaluation.
+
+## 0.1.19
+
+### Patch Changes
+
+- 9d5d642: fix(compiler): keep `octane/compiler` free of Node builtins
+
+  `octane/compiler` re-exported the `octane` Vite plugin, which pulls `node:fs`,
+  `node:path`, `node:crypto`, and `node:module` into the subpath's module graph
+  through `vite.js` and `bundler.js`. Bundled consumers never noticed — Vite and
+  Rollup tree-shake the unused re-export — but consumers that import the subpath
+  unbundled do: browsers and CDNs like esm.sh and jsdelivr resolve the whole
+  graph, so `octane/compiler` arrived with ~38KB of bundler code and Node
+  polyfill shims attached, and had to be worked around with a deep path into
+  `dist/compiler/compile.js`.
+
+  The plugin keeps its two existing homes, `@octanejs/vite-plugin` and
+  `octane/compiler/vite`, both of which still export it with types.
+
+  `import { octane } from 'octane/compiler'` no longer resolves. Switch to:
+
+  ```js
+  import { octane } from '@octanejs/vite-plugin';
+  // or
+  import { octane } from 'octane/compiler/vite';
+  ```
+
+- f469b3f: Use the current TypeScript module-declaration `kind` field throughout Octane's
+  compiler. Runtime client and server output continues to erase ambient global
+  declarations, while editor `to_ts` output preserves `declare global` as a valid,
+  type-checkable global augmentation.
+- ac2ae2f: Enable the existing keyed-list purity and automatic memoization optimizations for
+  components authored with ordinary TSX/JSX returns. JSX lists now reuse unchanged
+  items like equivalent TSRX templates while preserving context updates, captured
+  values, component boundaries, and JSX children semantics. Native dense Arrays
+  retain the optimized path; custom or overridden map methods, sparse Arrays, and
+  additional map arguments preserve normal JavaScript behavior.
+- 3aada64: Keep JSX values in the render scope represented by their element tree, including
+  implicit getter, Proxy, coercion, iterator, and computed-key evaluation. Preserve
+  context, Suspense, error-boundary, SSR, hydration, and element-descriptor
+  compatibility when JSX moves into a variable, prop, array, or another value
+  position. Render deeply nested server component trees without exhausting the
+  JavaScript call stack across buffered and streaming server-rendering APIs.
+
 ## 0.1.18
 
 ### Patch Changes

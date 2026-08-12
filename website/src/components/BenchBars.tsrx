@@ -34,6 +34,15 @@ function fmtX(value: unknown): string {
 	return n.toFixed(2) + '×';
 }
 
+// Deterministic operation counters (format: 'count') — exact integers with
+// thousands separators; no unit suffix and no decimal padding.
+function fmtCount(value: unknown): string {
+	const n =
+		typeof value === 'number' ? value : Number(value);
+	if (!Number.isFinite(n)) return '—';
+	return Math.round(n).toLocaleString('en-US');
+}
+
 function fmtBytes(value: unknown): string {
 	const n =
 		typeof value === 'number' ? value : Number(value);
@@ -43,10 +52,14 @@ function fmtBytes(value: unknown): string {
 	return Math.round(n) + ' B';
 }
 
-// Bar labels drop trailing version tokens ("React 19" → "React") — the full
-// versioned label stays in the data table header.
+// Bar labels drop framework versions while preserving meaningful qualifiers:
+// "React 19 + Compiler" becomes "React + Compiler", while an explicitly
+// uncompiled control remains visibly distinct. Full labels stay in the table.
 function shortLabel(label: string): string {
-	return label.replace(/\s+[\d][\d.]*.*$/, '');
+	return label.replace(
+		/\s+[\d][\d.]*(?:\s+beta)?(?=\s+(?:\+ Compiler|\(uncompiled control\))|$)/,
+		'',
+	).replace(' (uncompiled control)', ' (uncompiled)');
 }
 
 // The picker's synthetic first entry — no suite has an operation named this.
@@ -81,13 +94,17 @@ export function BenchBars(props: { card: BenchCard }) @{
 			? fmtX
 			: card.format === 'bytes'
 				? fmtBytes
-				: fmt;
+				: card.format === 'count'
+					? fmtCount
+					: fmt;
 	const tableCaption =
 		card.format === 'x'
 			? 'Data table (× vs Octane, geometric mean across operations)'
 			: card.format === 'bytes'
 				? 'Data table (production build bytes)'
-				: 'Data table (score ms, ' + card.iterations + ' iterations)';
+				: card.format === 'count'
+					? 'Data table (deterministic counts)'
+					: 'Data table (score ms, ' + card.iterations + ' iterations)';
 	// Multi-series cards compare frameworks within one operation at a time —
 	// opening on the "overall" summary (each series' geometric mean across the
 	// card's operations, × vs the first series). Single-series cards compare

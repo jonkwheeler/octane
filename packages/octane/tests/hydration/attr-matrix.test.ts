@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compile } from 'octane/compiler';
@@ -10,6 +10,7 @@ import {
 	EnumeratedAndAria,
 	NamedAndAliased,
 	FormAttrs,
+	AutoFocusSpread,
 	NamespacedTags,
 	WhitespaceSensitive,
 	ClassComposition,
@@ -29,7 +30,7 @@ const FIXTURE = join(process.cwd(), 'packages/octane/tests/hydration/_fixtures/a
 function serverModule(): Record<string, any> {
 	let { code } = compile(readFileSync(FIXTURE, 'utf8'), 'attr-matrix.tsrx', { mode: 'server' });
 	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane\/server['"];?/g,
+		/import\s*\{([^}]*)\}\s*from\s*['"]octane\/(?:server|internal\/server)['"];?/g,
 		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
 	);
 	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
@@ -104,4 +105,79 @@ describe('client and SSR attribute policy agree', () => {
 			});
 		}
 	}
+});
+
+describe('server autofocus survives hydration without stealing focus', () => {
+	// Per ReactServerRenderingHydration-test.js:161, the server attribute enables
+	// browser autofocus before hydration, but adoption must never call focus().
+	it('adopts a direct server autofocus attribute and preserves existing focus', () => {
+		const props = { on: true, text: '#form' };
+		const { html } = ServerRT.renderToString(server.FormAttrs, props);
+		const container = document.createElement('div');
+		const outside = document.createElement('button');
+		document.body.append(container, outside);
+		container.innerHTML = html;
+		const input = container.querySelector('.f3') as HTMLInputElement;
+		expect(input.getAttribute('autofocus')).toBe('');
+		outside.focus();
+		let root: ReturnType<typeof hydrateRoot> | undefined;
+		try {
+			root = hydrateRoot(container, FormAttrs, props);
+			flushSync(() => {});
+			expect(container.querySelector('.f3')).toBe(input);
+			expect(input.getAttribute('autofocus')).toBe('');
+			expect(document.activeElement).toBe(outside);
+
+			flushSync(() => root!.render(FormAttrs, { on: false, text: '#form' }));
+			flushSync(() => root!.render(FormAttrs, props));
+			expect(document.activeElement).toBe(outside);
+		} finally {
+			root?.unmount();
+			container.remove();
+			outside.remove();
+		}
+	});
+
+	it('adopts spread-supplied autofocus without focusing the server element', () => {
+		const props = { attributes: { autoFocus: true } };
+		const { html } = ServerRT.renderToString(server.AutoFocusSpread, props);
+		const container = document.createElement('div');
+		const outside = document.createElement('button');
+		document.body.append(container, outside);
+		container.innerHTML = html;
+		const input = container.querySelector('input') as HTMLInputElement;
+		expect(input.getAttribute('autofocus')).toBe('');
+		outside.focus();
+		let root: ReturnType<typeof hydrateRoot> | undefined;
+		try {
+			root = hydrateRoot(container, AutoFocusSpread, props);
+			flushSync(() => {});
+			expect(container.querySelector('input')).toBe(input);
+			expect(input.getAttribute('autofocus')).toBe('');
+			expect(document.activeElement).toBe(outside);
+		} finally {
+			root?.unmount();
+			container.remove();
+			outside.remove();
+		}
+	});
+
+	it('still focuses a fresh client element replacing mismatched server markup', () => {
+		const props = { attributes: { autoFocus: true } };
+		const container = document.createElement('div');
+		document.body.appendChild(container);
+		container.innerHTML = '<span id="stale-server-element"></span>';
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+		let root: ReturnType<typeof hydrateRoot> | undefined;
+		try {
+			root = hydrateRoot(container, AutoFocusSpread, props);
+			flushSync(() => {});
+			expect(document.activeElement).toBe(container.querySelector('input'));
+			expect(container.querySelector('#stale-server-element')).toBeNull();
+		} finally {
+			root?.unmount();
+			error.mockRestore();
+			container.remove();
+		}
+	});
 });
