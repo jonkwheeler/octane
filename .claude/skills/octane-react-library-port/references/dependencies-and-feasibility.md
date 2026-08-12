@@ -51,6 +51,11 @@ Classify every unresolved runtime edge as exactly one of:
   required range and use `--classify package=react-coupled`. Preflight resolves
   a supported range to the highest exact stable published version and records it
   as a prerequisite rather than a user-requested target.
+- `reimplemented`: the parent uses a bounded public behavior that can be
+  independently re-authored without copying or adapting prerequisite source.
+  Use this when that source cannot pass the approved-license gate but the public
+  contract can be proven with differential parity tests. This satisfies the
+  graph edge only; it grants no permission to inspect and copy unapproved code.
 - `unsupported`: relies on React private internals, `react-reconciler`, a custom
   renderer, or a specific public behavior proven to require an absent Octane
   primitive. Use `--classify package=unsupported` and record the owning repair
@@ -136,8 +141,9 @@ The batch manifest captures paths already changed at intake. Before each unit:
 1. derive the exact package and generated paths it may write;
 2. compare them with `baseline` and current `git status`;
 3. ignore unrelated dirty paths but never reset, stage, or reformat them;
-4. if a planned path overlaps, either block or explicitly adopt it after proving
-   its upstream identity, license, and intended owner;
+4. if a planned path overlaps, prove its upstream identity, license, and intended
+   owner; when they match, rerun preflight with `--adopt-binding` and continue
+   without asking the user;
 5. record adopted paths in the node evidence before continuing.
 
 Re-run the graph whenever identity, dependency classification, existing binding

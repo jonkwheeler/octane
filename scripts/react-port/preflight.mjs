@@ -28,7 +28,8 @@ Options:
   --fixture-evidence <file>  Read deterministic local evidence; disables networking
   --prerequisite <input>     Add a discovered prerequisite without marking it requested
   --classify <package=kind>  Classify a dependency as framework-neutral,
-                             react-coupled, or unsupported (repeatable)
+                             react-coupled, reimplemented, or unsupported (repeatable)
+  --adopt-binding <package>  Adopt matching partial binding work after provenance review
   --batch <id>               Use a stable batch identifier (derived by default)
   --work-root <directory>    Store state below this directory (default: .react-port-work)
   --recover-stale-lock       Explicitly recover a lock older than 30 minutes
@@ -46,6 +47,7 @@ function parseArguments(arguments_) {
 	let noState = false;
 	let recoverStaleLock = false;
 	const dependencyClassifications = {};
+	const adoptedBindings = [];
 	for (let index = 0; index < arguments_.length; index += 1) {
 		const argument = arguments_[index];
 		if (argument === '-h' || argument === '--help') {
@@ -79,10 +81,22 @@ function parseArguments(arguments_) {
 			const separator = classification?.lastIndexOf('=') ?? -1;
 			const packageName = separator > 0 ? classification.slice(0, separator) : '';
 			const kind = separator > 0 ? classification.slice(separator + 1) : '';
-			if (!packageName || !['framework-neutral', 'react-coupled', 'unsupported'].includes(kind)) {
-				throw new Error('--classify requires package=framework-neutral|react-coupled|unsupported');
+			if (
+				!packageName ||
+				!['framework-neutral', 'react-coupled', 'reimplemented', 'unsupported'].includes(kind)
+			) {
+				throw new Error(
+					'--classify requires package=framework-neutral|react-coupled|reimplemented|unsupported',
+				);
 			}
 			dependencyClassifications[packageName] = kind;
+			index += 1;
+			continue;
+		}
+		if (argument === '--adopt-binding') {
+			const packageName = arguments_[index + 1];
+			if (!packageName) throw new Error('--adopt-binding requires a package name');
+			adoptedBindings.push(packageName);
 			index += 1;
 			continue;
 		}
@@ -121,6 +135,7 @@ function parseArguments(arguments_) {
 		noState,
 		recoverStaleLock,
 		dependencyClassifications,
+		adoptedBindings,
 	};
 }
 
@@ -203,6 +218,7 @@ async function main() {
 		targets: report.targets,
 		inventory,
 		dependencyClassifications: parsedArguments.dependencyClassifications,
+		adoptedBindings: parsedArguments.adoptedBindings,
 	});
 	report.capabilityInventory = {
 		fingerprint: inventory.fingerprint,

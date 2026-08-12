@@ -338,7 +338,12 @@ function orderComponents(nodes, components) {
 	return ordered;
 }
 
-export function planPortGraph({ targets, inventory, dependencyClassifications = {} }) {
+export function planPortGraph({
+	targets,
+	inventory,
+	dependencyClassifications = {},
+	adoptedBindings = [],
+}) {
 	const nodes = {};
 	const targetByPackage = new Map();
 	const workspacePackageNames = new Set(
@@ -490,6 +495,16 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			node.action = 'reuse-package';
 			continue;
 		}
+		if (!node.requested && classification === 'reimplemented') {
+			node.state = 'verified';
+			node.action = 'reimplement-in-parent';
+			node.reimplementation = {
+				copySource: false,
+				requirement:
+					'Re-author only the public behavior used by each dependent and prove it with differential parity evidence.',
+			};
+			continue;
+		}
 		if (classification === 'unsupported') {
 			node.state = 'blocked';
 			node.action = 'feasibility-blocker';
@@ -505,6 +520,15 @@ export function planPortGraph({ targets, inventory, dependencyClassifications = 
 			const occupiedBinding = inventory.bindings[node.binding];
 			const occupiedPackageName = workspacePackageNames.has(node.binding);
 			const occupiedDirectory = workspaceDirectories.has(node.bindingDirectory);
+			if (
+				(occupiedBinding || occupiedPackageName || occupiedDirectory) &&
+				adoptedBindings.includes(node.packageName)
+			) {
+				node.state = 'ready';
+				node.action = 'adopt-binding';
+				node.evidenceFingerprint = target.evidenceFingerprint;
+				continue;
+			}
 			if (occupiedBinding || occupiedPackageName || occupiedDirectory) {
 				blockBindingName(
 					node,

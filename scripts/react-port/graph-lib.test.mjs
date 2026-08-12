@@ -112,6 +112,33 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.executionOrder.slice(0, 2), ['pkg:react-covered', 'pkg:thin-core']);
 	});
 
+	test('allows a React-coupled prerequisite to be clean-room reimplemented in its parent', () => {
+		const graph = planPortGraph({
+			targets: [licensedTarget('react-parent', '1.0.0', { 'react-helper': '^1.0.0' })],
+			inventory: fixtureInventory(),
+			dependencyClassifications: { 'react-helper': 'reimplemented' },
+		});
+
+		assert.equal(graph.nodes['pkg:react-helper'].state, 'verified');
+		assert.equal(graph.nodes['pkg:react-helper'].action, 'reimplement-in-parent');
+		assert.equal(graph.nodes['pkg:react-parent'].state, 'ready');
+		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
+	});
+
+	test('adopts a provenance-matched partial binding instead of leaving a terminal collision', () => {
+		const inventory = fixtureInventory();
+		inventory.workspacePackages = [...Object.keys(inventory.bindings), '@octanejs/widget'];
+		inventory.workspaceDirectories = ['packages/widget'];
+		const graph = planPortGraph({
+			targets: [licensedTarget('react-widget', '1.0.0')],
+			inventory,
+			adoptedBindings: ['react-widget'],
+		});
+
+		assert.equal(graph.nodes['pkg:react-widget'].state, 'ready');
+		assert.equal(graph.nodes['pkg:react-widget'].action, 'adopt-binding');
+	});
+
 	test('treats an incomplete existing binding as an extension prerequisite, never a duplicate', () => {
 		const graph = planPortGraph({
 			targets: [licensedTarget('consumer', '1.0.0', { 'react-partial': '^1.0.0' })],

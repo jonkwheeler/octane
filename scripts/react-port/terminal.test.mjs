@@ -65,7 +65,7 @@ test('rejects requested targets that have not reached a terminal disposition', (
 	]);
 });
 
-test('accepts only verified, satisfied, or hard-blocked requested targets', () => {
+test('accepts verified, satisfied, and immutable hard-blocks but queues binding adoption', () => {
 	const report = terminalBatchReport({
 		schemaVersion: 1,
 		batchId: 'fixture',
@@ -73,13 +73,19 @@ test('accepts only verified, satisfied, or hard-blocked requested targets', () =
 			verified: node('verified', { state: 'verified', disposition: 'actionable' }),
 			satisfied: node('satisfied', { state: 'verified', disposition: 'satisfied' }),
 			hard: node('hard', { state: 'blocked', disposition: 'hard-blocked' }),
+			collision: node('collision', {
+				state: 'blocked',
+				disposition: 'hard-blocked',
+				action: 'binding-name-conflict',
+			}),
 		},
 	});
 
-	assert.equal(report.status, 'terminal');
-	assert.deepEqual(report.unfinished, []);
+	assert.equal(report.status, 'unfinished');
+	assert.deepEqual(report.unfinished, ['collision']);
+	assert.equal(report.nextActions[0].kind, 'resolve-collision');
 	assert.deepEqual(
 		report.requested.map(({ disposition }) => disposition),
-		['verified', 'satisfied', 'hard-blocked'],
+		['verified', 'satisfied', 'hard-blocked', 'hard-blocked'],
 	);
 });
