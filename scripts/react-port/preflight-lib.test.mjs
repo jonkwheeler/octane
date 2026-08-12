@@ -538,6 +538,14 @@ describe('resolved evidence', () => {
 				sha: gitBlobSha(sourceSymlinkBytes),
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/symlink',
 			},
+			{
+				path: 'vendor/incidental-submodule',
+				mode: '160000',
+				type: 'commit',
+				size: 0,
+				sha: 'c'.repeat(40),
+				url: 'https://api.github.com/repos/example/widgets/git/commits/submodule',
+			},
 		];
 		const githubTreeResponse = (entries = sourceTree) =>
 			Response.json({ sha: tree, truncated: false, tree: entries });

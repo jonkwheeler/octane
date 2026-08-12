@@ -873,10 +873,10 @@ async function resolveGitHubSource(repository, ref, options) {
 	if (treeResponse.tree.length > 50_000)
 		throw new Error('GitHub source tree exceeds the entry limit');
 	const sourceEntries = treeResponse.tree
-		.filter((entry) => !(entry.type === 'blob' && entry.mode === '120000'))
+		.filter((entry) => entry.type === 'tree' || isGitHubRegularBlob(entry))
 		.map((entry) => ({
 			path: entry.path,
-			type: entry.type === 'tree' ? 'directory' : isGitHubRegularBlob(entry) ? 'file' : 'link',
+			type: entry.type === 'tree' ? 'directory' : 'file',
 			size: entry.size ?? 0,
 		}));
 	validateArchiveEntries(sourceEntries, { maxFiles: 50_000 });
