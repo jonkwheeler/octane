@@ -455,6 +455,7 @@ export function planPortGraph({
 			node.state === 'blocked' &&
 			!node.requested &&
 			node.action === 'repair-preflight' &&
+			!node.blockers.some(isRetryableRemoteFailure) &&
 			['react-coupled', 'reimplemented'].includes(classification)
 		) {
 			node.state = 'verified';

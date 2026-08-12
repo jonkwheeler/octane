@@ -155,6 +155,35 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
 	});
 
+	for (const blocker of [
+		'Remote request timed out after 30000ms',
+		'Remote request failed with HTTP 403',
+		'Remote request failed with HTTP 429',
+		'Remote request failed with HTTP 503',
+	]) {
+		test(`keeps a transient React prerequisite pending instead of forcing clean-room: ${blocker}`, () => {
+			const prerequisite = {
+				input: 'react-helper@1.0.0',
+				requested: false,
+				status: 'blocked',
+				identity: { packageName: 'react-helper', version: '1.0.0' },
+				blockers: [blocker],
+			};
+			const graph = planPortGraph({
+				targets: [
+					licensedTarget('react-parent', '1.0.0', { 'react-helper': '^1.0.0' }),
+					prerequisite,
+				],
+				inventory: fixtureInventory(),
+				dependencyClassifications: { 'react-helper': 'react-coupled' },
+			});
+
+			assert.equal(graph.nodes['pkg:react-helper'].state, 'blocked');
+			assert.equal(graph.nodes['pkg:react-helper'].disposition, 'pending-intake');
+			assert.equal(graph.nodes['pkg:react-parent'].disposition, 'pending-intake');
+		});
+	}
+
 	test('adopts a provenance-matched partial binding instead of leaving a terminal collision', () => {
 		const inventory = fixtureInventory();
 		inventory.bindings['@octanejs/widget'] = {
