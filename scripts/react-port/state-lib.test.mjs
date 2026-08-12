@@ -19,6 +19,9 @@ function fixtureManifest() {
 	return createBatchManifest({
 		batchId: 'fixture-batch',
 		inventoryFingerprint: 'inventory-a',
+		executionUnits: [['pkg:base'], ['pkg:leaf'], ['pkg:other']],
+		actionableExecutionUnits: [['pkg:leaf']],
+		executionOrder: ['pkg:base', 'pkg:leaf', 'pkg:other'],
 		nodes: {
 			'pkg:base': { state: 'verified', evidenceFingerprint: 'base-a', dependsOn: [] },
 			'pkg:leaf': { state: 'verified', evidenceFingerprint: 'leaf-a', dependsOn: ['pkg:base'] },
@@ -29,6 +32,25 @@ function fixtureManifest() {
 }
 
 describe('batch state', () => {
+	test('persists graph execution metadata and resumes schema-v1 manifests that predate it', () => {
+		const next = fixtureManifest();
+		assert.deepEqual(next.executionUnits, [['pkg:base'], ['pkg:leaf'], ['pkg:other']]);
+		assert.deepEqual(next.actionableExecutionUnits, [['pkg:leaf']]);
+		assert.deepEqual(next.executionOrder, ['pkg:base', 'pkg:leaf', 'pkg:other']);
+
+		const legacy = structuredClone(next);
+		delete legacy.executionUnits;
+		delete legacy.actionableExecutionUnits;
+		delete legacy.executionOrder;
+		assert.equal(validateBatchManifest(legacy), legacy);
+
+		const resumed = reconcileBatchManifest(legacy, next);
+		assert.deepEqual(resumed.executionUnits, next.executionUnits);
+		assert.deepEqual(resumed.actionableExecutionUnits, next.actionableExecutionUnits);
+		assert.deepEqual(resumed.executionOrder, next.executionOrder);
+		assert.deepEqual(resumed.resume.invalidated, []);
+	});
+
 	test('rejects unknown schemas and non-monotonic transitions', () => {
 		assert.throws(() => validateBatchManifest({ schemaVersion: 2 }), /newer schema/i);
 		const manifest = createBatchManifest({

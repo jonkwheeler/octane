@@ -29,6 +29,11 @@ export function validateBatchManifest(manifest) {
 	}
 	if (!manifest.nodes || typeof manifest.nodes !== 'object')
 		throw new Error('Batch manifest has no nodes');
+	for (const field of ['executionUnits', 'actionableExecutionUnits', 'executionOrder']) {
+		if (manifest[field] !== undefined && !Array.isArray(manifest[field])) {
+			throw new Error(`Batch manifest ${field} must be an array`);
+		}
+	}
 	for (const [id, node] of Object.entries(manifest.nodes)) {
 		if (!NEXT_STATES[node.state])
 			throw new Error(`Batch node ${id} has invalid state ${node.state}`);
@@ -43,6 +48,9 @@ export function createBatchManifest({
 	nodes,
 	baseline = {},
 	graphFingerprint = null,
+	executionUnits = [],
+	actionableExecutionUnits = [],
+	executionOrder = executionUnits.flat(),
 }) {
 	const manifest = {
 		schemaVersion: SCHEMA_VERSION,
@@ -50,6 +58,9 @@ export function createBatchManifest({
 		inventoryFingerprint,
 		graphFingerprint,
 		nodes: structuredClone(nodes),
+		executionUnits: structuredClone(executionUnits),
+		actionableExecutionUnits: structuredClone(actionableExecutionUnits),
+		executionOrder: structuredClone(executionOrder),
 		baseline: structuredClone(baseline),
 		history: [],
 	};

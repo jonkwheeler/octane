@@ -1,9 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sanitizeForReport } from './report-lib.mjs';
 import { validateBatchManifest } from './state-lib.mjs';
 
 export function parseArguments(argv) {
+	if (argv[0] === '--') argv = argv.slice(1);
 	const options = { workRoot: '.react-port-work' };
 	for (let index = 0; index < argv.length; index += 1) {
 		const argument = argv[index];
@@ -18,16 +20,82 @@ export function parseArguments(argv) {
 	return options;
 }
 
+function orderedNodeIds(manifest) {
+	const nodeIds = Object.keys(manifest.nodes).sort();
+	const configuredOrder = Array.isArray(manifest.executionOrder)
+		? manifest.executionOrder.filter((nodeId) => Object.hasOwn(manifest.nodes, nodeId))
+		: [];
+	const configured = new Set(configuredOrder);
+	return [...configuredOrder, ...nodeIds.filter((nodeId) => !configured.has(nodeId))];
+}
+
+function executionPosition(manifest, nodeId, order) {
+	const configuredUnitIndex = Array.isArray(manifest.executionUnits)
+		? manifest.executionUnits.findIndex((unit) => unit.includes(nodeId))
+		: -1;
+	const index = order.indexOf(nodeId);
+	return {
+		index,
+		unitIndex: configuredUnitIndex === -1 ? index : configuredUnitIndex,
+		unit: configuredUnitIndex === -1 ? [nodeId] : [...manifest.executionUnits[configuredUnitIndex]],
+	};
+}
+
+function dependencyPacket(manifest, nodeId, order) {
+	const node = manifest.nodes[nodeId];
+	if (!node) return { nodeId, missing: true };
+	return {
+		nodeId,
+		packageName: node.packageName ?? node.identity?.packageName ?? null,
+		state: node.state,
+		disposition: node.disposition ?? null,
+		action: node.action ?? null,
+		binding: node.binding ?? null,
+		bindingDirectory: node.bindingDirectory ?? null,
+		requiredSubpaths: [...(node.requiredSubpaths ?? [])],
+		vanillaCore: node.vanillaCore ?? null,
+		copyPermission: node.copyPermission ?? null,
+		reimplementation: node.reimplementation ?? null,
+		feasibility: node.feasibility ?? null,
+		executionIndex: order.indexOf(nodeId),
+	};
+}
+
+function implementationPacket(manifest, node, order) {
+	const dependsOn = [...node.dependsOn];
+	return {
+		packageName: node.packageName ?? node.identity?.packageName ?? null,
+		identity: node.identity ?? null,
+		binding: node.binding ?? null,
+		bindingDirectory: node.bindingDirectory ?? null,
+		constraints: [...(node.constraints ?? [])],
+		requiredSubpaths: [...(node.requiredSubpaths ?? [])],
+		vanillaCore: node.vanillaCore ?? null,
+		dependsOn,
+		dependencies: dependsOn.map((nodeId) => dependencyPacket(manifest, nodeId, order)),
+		execution: executionPosition(manifest, node.id, order),
+		feasibility: node.feasibility ?? null,
+		copyPermission: node.copyPermission ?? null,
+		reimplementation: node.reimplementation ?? null,
+	};
+}
+
 export function terminalBatchReport(manifest) {
 	validateBatchManifest(manifest);
 	const requested = Object.values(manifest.nodes).filter((node) => node.requested);
 	if (requested.length === 0) throw new Error('Batch manifest has no requested targets');
-	const unfinished = requested.filter(
-		(node) =>
-			node.state !== 'verified' &&
-			node.disposition !== 'satisfied' &&
-			(node.disposition !== 'hard-blocked' || node.collisionKind === 'adoptable-binding'),
-	);
+	const order = orderedNodeIds(manifest);
+	const unfinished = order
+		.map((nodeId) => manifest.nodes[nodeId])
+		.filter((node) => {
+			if (node.state === 'ready' || node.state === 'implementing') return true;
+			return (
+				node.requested &&
+				node.state !== 'verified' &&
+				node.disposition !== 'satisfied' &&
+				(node.disposition !== 'hard-blocked' || node.collisionKind === 'adoptable-binding')
+			);
+		});
 	const nextActions = unfinished.map((node) => {
 		if (node.disposition === 'pending-intake') {
 			return {
@@ -52,11 +120,22 @@ export function terminalBatchReport(manifest) {
 				.filter(([, gate]) => !['passed', 'inapplicable'].includes(gate.status))
 				.map(([gateId]) => gateId)
 				.sort();
-			return { nodeId: node.id, kind: 'complete-evidence', gates };
+			return {
+				nodeId: node.id,
+				kind: 'complete-evidence',
+				action: node.action ?? null,
+				...implementationPacket(manifest, node, order),
+				gates,
+			};
 		}
-		return { nodeId: node.id, kind: 'implement', action: node.action ?? null };
+		return {
+			nodeId: node.id,
+			kind: 'implement',
+			action: node.action ?? null,
+			...implementationPacket(manifest, node, order),
+		};
 	});
-	return {
+	return sanitizeForReport({
 		schemaVersion: 1,
 		status: unfinished.length === 0 ? 'terminal' : 'unfinished',
 		requested: requested.map((node) => ({
@@ -71,7 +150,7 @@ export function terminalBatchReport(manifest) {
 		})),
 		unfinished: unfinished.map((node) => node.id),
 		nextActions,
-	};
+	});
 }
 
 function main() {

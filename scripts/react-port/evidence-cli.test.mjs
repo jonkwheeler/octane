@@ -105,6 +105,31 @@ function createCompletePackage(root) {
 }
 
 describe('evidence CLI', () => {
+	test('accepts one leading pnpm separator while preserving the run command separator', () => {
+		const { workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		const initialized = runEvidence(['--', 'init', ...common, '--category', 'thin-core']);
+		assert.equal(initialized.status, 0, initialized.stderr);
+
+		const recorded = runEvidence([
+			'--',
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			process.execPath,
+			'-e',
+			"process.stdout.write('separator preserved')",
+		]);
+		assert.equal(recorded.status, 0, recorded.stderr);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
+			'separator preserved',
+		);
+	});
+
 	test('moves a ready node to implementing and records observed gate evidence', () => {
 		const { workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];

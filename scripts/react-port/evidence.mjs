@@ -45,6 +45,7 @@ without a shell. Record accepts existing --artifact evidence, blocked rows with
 }
 
 function parseArguments(arguments_) {
+	if (arguments_[0] === '--') arguments_ = arguments_.slice(1);
 	const separatorIndex = arguments_.indexOf('--');
 	const optionArguments = separatorIndex === -1 ? arguments_ : arguments_.slice(0, separatorIndex);
 	const commandArguments = separatorIndex === -1 ? [] : arguments_.slice(separatorIndex + 1);

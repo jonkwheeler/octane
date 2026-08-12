@@ -39,6 +39,7 @@ Options:
 }
 
 function parseArguments(arguments_) {
+	if (arguments_[0] === '--') arguments_ = arguments_.slice(1);
 	const inputs = [];
 	const prerequisiteInputs = [];
 	let fixtureEvidencePath = null;
@@ -255,6 +256,9 @@ async function main() {
 				inventoryFingerprint: inventory.fingerprint,
 				graphFingerprint: graph.fingerprint,
 				nodes: graph.nodes,
+				executionUnits: graph.executionUnits,
+				actionableExecutionUnits: graph.actionableExecutionUnits,
+				executionOrder: graph.executionOrder,
 				baseline: captureWorktreeBaseline(),
 			});
 			const manifestPath = path.join(batchDirectory, 'manifest.json');

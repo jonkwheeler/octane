@@ -673,6 +673,7 @@ describe('preflight CLI', () => {
 			process.execPath,
 			[
 				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				'--',
 				'--no-state',
 				'--classify',
 				'fixture-core=framework-neutral',
@@ -730,7 +731,14 @@ describe('preflight CLI', () => {
 		assert.equal(first.status, 0, first.stderr);
 		const manifestPath = path.join(workRoot, 'fixture-batch', 'manifest.json');
 		const firstManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		const firstReport = JSON.parse(first.stdout);
 		assert.equal(firstManifest.nodes['pkg:fixture-widget'].state, 'ready');
+		assert.deepEqual(firstManifest.executionUnits, firstReport.graph.executionUnits);
+		assert.deepEqual(
+			firstManifest.actionableExecutionUnits,
+			firstReport.graph.actionableExecutionUnits,
+		);
+		assert.deepEqual(firstManifest.executionOrder, firstReport.graph.executionOrder);
 
 		const second = spawnSync(process.execPath, arguments_, { encoding: 'utf8' });
 		assert.equal(second.status, 0, second.stderr);
