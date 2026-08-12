@@ -838,6 +838,10 @@ function applicableSourceEvidence(entryPath, subdirectory) {
 	);
 }
 
+function isGitHubRegularBlob(entry) {
+	return entry.type === 'blob' && entry.mode !== '120000';
+}
+
 async function resolveGitHubSource(repository, ref, options) {
 	const apiRoot = `https://api.github.com/repos/${repository.owner}/${repository.repo}`;
 	const commitResponse = await fetchJson(
@@ -868,23 +872,20 @@ async function resolveGitHubSource(repository, ref, options) {
 	}
 	if (treeResponse.tree.length > 50_000)
 		throw new Error('GitHub source tree exceeds the entry limit');
-	const sourceEntries = treeResponse.tree.map((entry) => ({
-		path: entry.path,
-		type:
-			entry.type === 'tree'
-				? 'directory'
-				: entry.type === 'blob' && entry.mode !== '120000'
-					? 'file'
-					: 'link',
-		size: entry.size ?? 0,
-	}));
+	const sourceEntries = treeResponse.tree
+		.filter((entry) => !(entry.type === 'blob' && entry.mode === '120000'))
+		.map((entry) => ({
+			path: entry.path,
+			type: entry.type === 'tree' ? 'directory' : isGitHubRegularBlob(entry) ? 'file' : 'link',
+			size: entry.size ?? 0,
+		}));
 	validateArchiveEntries(sourceEntries, { maxFiles: 50_000 });
 
 	const manifestPath = repository.subdirectory
 		? `${repository.subdirectory}/package.json`
 		: 'package.json';
 	const manifestEntry = treeResponse.tree.find(
-		(entry) => entry.path === manifestPath && entry.type === 'blob',
+		(entry) => entry.path === manifestPath && isGitHubRegularBlob(entry),
 	);
 	if (!manifestEntry) throw new Error(`Immutable source has no ${manifestPath}`);
 	const manifestBytes = await fetchGitHubBlob(manifestEntry, options);
@@ -898,7 +899,7 @@ async function resolveGitHubSource(repository, ref, options) {
 
 	const candidates = treeResponse.tree.filter(
 		(entry) =>
-			entry.type === 'blob' && applicableSourceEvidence(entry.path, repository.subdirectory),
+			isGitHubRegularBlob(entry) && applicableSourceEvidence(entry.path, repository.subdirectory),
 	);
 	const reference = /^SEE LICENSE IN (.+)$/i.exec(manifest.license ?? '')?.[1];
 	if (reference) {
@@ -909,7 +910,7 @@ async function resolveGitHubSource(repository, ref, options) {
 			throw new Error('Immutable source manifest references a license outside the repository');
 		}
 		const referencedEntry = treeResponse.tree.find(
-			(entry) => entry.path === referencePath && entry.type === 'blob',
+			(entry) => entry.path === referencePath && isGitHubRegularBlob(entry),
 		);
 		if (referencedEntry && !candidates.includes(referencedEntry)) candidates.push(referencedEntry);
 	}

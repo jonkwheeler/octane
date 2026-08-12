@@ -504,8 +504,43 @@ describe('resolved evidence', () => {
 		};
 		const sourceManifestBytes = Buffer.from(JSON.stringify(manifest));
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
+		const sourceSymlinkBytes = Buffer.from('../NOTICE');
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
+		const sourceTree = [
+			{
+				path: 'packages/react-widget/package.json',
+				type: 'blob',
+				size: Buffer.byteLength(JSON.stringify(manifest)),
+				sha: gitBlobSha(sourceManifestBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/manifest',
+			},
+			{
+				path: 'LICENSE',
+				type: 'blob',
+				size: Buffer.byteLength(MIT_TEXT),
+				sha: gitBlobSha(sourceLicenseBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/license',
+			},
+			{
+				path: 'packages/react-widget/current',
+				mode: '120000',
+				type: 'blob',
+				size: sourceSymlinkBytes.length,
+				sha: gitBlobSha(sourceSymlinkBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/symlink',
+			},
+			{
+				path: 'packages/react-widget/NOTICE',
+				mode: '120000',
+				type: 'blob',
+				size: sourceSymlinkBytes.length,
+				sha: gitBlobSha(sourceSymlinkBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/symlink',
+			},
+		];
+		const githubTreeResponse = (entries = sourceTree) =>
+			Response.json({ sha: tree, truncated: false, tree: entries });
 		const responses = new Map([
 			['https://registry.npmjs.org/react-widget', Response.json(packument)],
 			['https://registry.npmjs.org/react-widget/1.2.3', Response.json(fullVersionMetadata)],
@@ -516,26 +551,7 @@ describe('resolved evidence', () => {
 			],
 			[
 				`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
-				Response.json({
-					sha: tree,
-					truncated: false,
-					tree: [
-						{
-							path: 'packages/react-widget/package.json',
-							type: 'blob',
-							size: Buffer.byteLength(JSON.stringify(manifest)),
-							sha: gitBlobSha(sourceManifestBytes),
-							url: 'https://api.github.com/repos/example/widgets/git/blobs/manifest',
-						},
-						{
-							path: 'LICENSE',
-							type: 'blob',
-							size: Buffer.byteLength(MIT_TEXT),
-							sha: gitBlobSha(sourceLicenseBytes),
-							url: 'https://api.github.com/repos/example/widgets/git/blobs/license',
-						},
-					],
-				}),
+				githubTreeResponse(),
 			],
 			[
 				'https://api.github.com/repos/example/widgets/git/blobs/manifest',
@@ -595,6 +611,26 @@ describe('resolved evidence', () => {
 		});
 		assert.equal(fromGitHub.identity.packageName, 'react-widget');
 		assert.equal(fromGitHub.identity.commit, commit);
+		assert.deepEqual(fromGitHub.license.source.notices, []);
+
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(
+				sourceTree.map((entry) =>
+					entry.path === 'packages/react-widget/package.json'
+						? { ...entry, mode: '120000' }
+						: entry,
+				),
+			),
+		);
+		await assert.rejects(
+			resolveRemoteInput(parseInput(githubInput), githubInput, { fetchImpl }),
+			/Immutable source has no packages\/react-widget\/package\.json/,
+		);
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(),
+		);
 
 		responses.set(
 			'https://registry.npmjs.org/react-widget/1.2.3',
