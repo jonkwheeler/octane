@@ -15,6 +15,10 @@ function licensedTarget(packageName, version, runtimeDependencies = {}) {
 		identity: { packageName, version, commit: 'a'.repeat(40), integrity: 'sha512-fixture' },
 		evidenceFingerprint: `${packageName}-${version}`,
 		runtimeDependencies,
+		license: {
+			published: { spdx: 'MIT' },
+			source: { spdx: 'MIT' },
+		},
 	};
 }
 
@@ -125,9 +129,46 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
 	});
 
+	test('automatically clean-room reimplements a blocked React prerequisite', () => {
+		const prerequisite = {
+			input: 'react-helper@1.0.0',
+			requested: false,
+			status: 'blocked',
+			identity: { packageName: 'react-helper', version: '1.0.0' },
+			blockers: ['Published artifact: No license file was found in the applicable package scope.'],
+		};
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('react-parent', '1.0.0', { 'react-helper': '^1.0.0' }),
+				prerequisite,
+			],
+			inventory: fixtureInventory(),
+			dependencyClassifications: { 'react-helper': 'react-coupled' },
+		});
+
+		assert.equal(graph.nodes['pkg:react-helper'].state, 'verified');
+		assert.equal(graph.nodes['pkg:react-helper'].action, 'reimplement-in-parent');
+		assert.equal(graph.nodes['pkg:react-helper'].copyPermission, 'denied-or-unproven');
+		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copySource, false);
+		assert.equal(graph.nodes['pkg:react-helper'].reimplementation.copyTests, false);
+		assert.equal(graph.nodes['pkg:react-parent'].state, 'ready');
+		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
+	});
+
 	test('adopts a provenance-matched partial binding instead of leaving a terminal collision', () => {
 		const inventory = fixtureInventory();
-		inventory.workspacePackages = [...Object.keys(inventory.bindings), '@octanejs/widget'];
+		inventory.bindings['@octanejs/widget'] = {
+			name: '@octanejs/widget',
+			status: {
+				upstream: {
+					package: 'react-widget',
+					version: '1.0.0',
+					commit: 'a'.repeat(40),
+					license: 'MIT',
+				},
+			},
+		};
+		inventory.workspacePackages = [...Object.keys(inventory.bindings)];
 		inventory.workspaceDirectories = ['packages/widget'];
 		const graph = planPortGraph({
 			targets: [licensedTarget('react-widget', '1.0.0')],
@@ -137,6 +178,31 @@ describe('union prerequisite graph', () => {
 
 		assert.equal(graph.nodes['pkg:react-widget'].state, 'ready');
 		assert.equal(graph.nodes['pkg:react-widget'].action, 'adopt-binding');
+	});
+
+	test('does not adopt a binding whose recorded provenance does not match', () => {
+		const inventory = fixtureInventory();
+		inventory.bindings['@octanejs/widget'] = {
+			name: '@octanejs/widget',
+			status: {
+				upstream: {
+					package: 'another-widget',
+					version: '1.0.0',
+					commit: 'b'.repeat(40),
+					license: 'MIT',
+				},
+			},
+		};
+		inventory.workspacePackages = [...Object.keys(inventory.bindings)];
+		inventory.workspaceDirectories = ['packages/widget'];
+		const graph = planPortGraph({
+			targets: [licensedTarget('react-widget', '1.0.0')],
+			inventory,
+			adoptedBindings: ['react-widget'],
+		});
+
+		assert.equal(graph.nodes['pkg:react-widget'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-widget'].collisionKind, 'occupied-binding');
 	});
 
 	test('treats an incomplete existing binding as an extension prerequisite, never a duplicate', () => {
@@ -369,6 +435,8 @@ describe('union prerequisite graph', () => {
 			assert.equal(graph.nodes[`pkg:${packageName}`].state, 'blocked');
 			assert.equal(graph.nodes[`pkg:${packageName}`].action, 'binding-name-conflict');
 		}
+		assert.equal(graph.nodes['pkg:react-widget'].collisionKind, 'batch-binding-name');
+		assert.equal(graph.nodes['pkg:widget'].collisionKind, 'batch-binding-name');
 		assert.match(
 			graph.nodes['pkg:react-widget'].blockers.join('\n'),
 			/@octanejs\/widget.*react-widget.*widget/i,

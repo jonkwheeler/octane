@@ -17,8 +17,9 @@ package/output boundary and keep its evidence independently reviewable.
   record the adopted paths in its evidence. Adoption is part of the safe local
   workflow, not a separate user choice.
 - `reimplement-in-parent`: copy no prerequisite source. Re-author only the
-  public behavior the parent consumes and prove equivalence through the
-  pristine/adapted differential lanes and crosswalk.
+  public behavior the parent consumes. Do not vendor its tests; author
+  independent differential scenarios from the public contract and prove the
+  parent-visible behavior through the parity lanes and crosswalk.
 - Core/compiler/scheduler/SSR/hydration/build defects belong to their owning
   Octane package. Load `octane-core-extend` and `performance-audit` before those
   edits and retain the real binding scenario as end-to-end evidence.

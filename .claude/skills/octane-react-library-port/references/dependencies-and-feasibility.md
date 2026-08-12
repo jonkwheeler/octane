@@ -56,6 +56,9 @@ Classify every unresolved runtime edge as exactly one of:
   Use this when that source cannot pass the approved-license gate but the public
   contract can be proven with differential parity tests. This satisfies the
   graph edge only; it grants no permission to inspect and copy unapproved code.
+  Select this automatically when a non-requested React-coupled prerequisite
+  fails source-copy or source-identity evidence. Never propagate that failure to
+  the requested parent as a license blocker.
 - `unsupported`: relies on React private internals, `react-reconciler`, a custom
   renderer, or a specific public behavior proven to require an absent Octane
   primitive. Use `--classify package=unsupported` and record the owning repair
@@ -145,6 +148,12 @@ The batch manifest captures paths already changed at intake. Before each unit:
    owner; when they match, rerun preflight with `--adopt-binding` and continue
    without asking the user;
 5. record adopted paths in the node evidence before continuing.
+
+`--adopt-binding` is accepted only when the occupied binding's structured
+`status.json` records the same upstream package, exact version, immutable commit,
+and approved SPDX license as the preflight node. A batch-derived name collision,
+an unrelated workspace package/path, or incomplete/mismatched provenance is not
+adoptable and remains a terminal ownership conflict.
 
 Re-run the graph whenever identity, dependency classification, existing binding
 status/exports, Octane public capability, or planned source boundaries change.

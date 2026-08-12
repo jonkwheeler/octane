@@ -26,7 +26,7 @@ export function terminalBatchReport(manifest) {
 		(node) =>
 			node.state !== 'verified' &&
 			node.disposition !== 'satisfied' &&
-			(node.disposition !== 'hard-blocked' || node.action === 'binding-name-conflict'),
+			(node.disposition !== 'hard-blocked' || node.collisionKind === 'adoptable-binding'),
 	);
 	const nextActions = unfinished.map((node) => {
 		if (node.disposition === 'pending-intake') {
@@ -37,7 +37,7 @@ export function terminalBatchReport(manifest) {
 				repair: node.repair ?? 'Complete the node intake and rerun preflight.',
 			};
 		}
-		if (node.action === 'binding-name-conflict') {
+		if (node.collisionKind === 'adoptable-binding') {
 			return {
 				nodeId: node.id,
 				kind: 'resolve-collision',

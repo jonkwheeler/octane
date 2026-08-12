@@ -77,6 +77,7 @@ test('accepts verified, satisfied, and immutable hard-blocks but queues binding 
 				state: 'blocked',
 				disposition: 'hard-blocked',
 				action: 'binding-name-conflict',
+				collisionKind: 'adoptable-binding',
 			}),
 		},
 	});
@@ -88,4 +89,22 @@ test('accepts verified, satisfied, and immutable hard-blocks but queues binding 
 		report.requested.map(({ disposition }) => disposition),
 		['verified', 'satisfied', 'hard-blocked', 'hard-blocked'],
 	);
+});
+
+test('accepts non-adoptable binding conflicts as terminal hard blocks', () => {
+	const report = terminalBatchReport({
+		schemaVersion: 1,
+		batchId: 'fixture',
+		nodes: {
+			batchConflict: node('batchConflict', {
+				state: 'blocked',
+				disposition: 'hard-blocked',
+				action: 'binding-name-conflict',
+				collisionKind: 'batch-binding-name',
+			}),
+		},
+	});
+
+	assert.equal(report.status, 'terminal');
+	assert.deepEqual(report.nextActions, []);
 });

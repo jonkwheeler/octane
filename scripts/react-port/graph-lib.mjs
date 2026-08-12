@@ -164,6 +164,19 @@ function blockBindingName(node, reason) {
 		'Resolve the binding name or package-directory ownership collision explicitly, then rerun the union graph.';
 }
 
+function matchingAdoptionEvidence(node, occupiedBinding) {
+	const upstream = occupiedBinding?.status?.upstream;
+	const approvedSpdx = node.license?.published?.spdx;
+	return Boolean(
+		upstream?.package === node.packageName &&
+		upstream.version === node.version &&
+		upstream.commit === node.identity?.commit &&
+		upstream.license === approvedSpdx &&
+		approvedSpdx &&
+		node.license?.source?.spdx === approvedSpdx,
+	);
+}
+
 const PENDING_INTAKE_ACTIONS = new Set([
 	'audit-dependency',
 	'preflight-prerequisite',
@@ -419,6 +432,7 @@ export function planPortGraph({
 	}
 
 	for (const node of Object.values(nodes)) {
+		const classification = dependencyClassifications[node.packageName];
 		node.constraints.sort((left, right) =>
 			left.via === right.via
 				? left.range.localeCompare(right.range)
@@ -437,7 +451,26 @@ export function planPortGraph({
 				node.repair = 'Choose compatible upstream version lanes or split the batch explicitly.';
 			}
 		}
+		if (
+			node.state === 'blocked' &&
+			!node.requested &&
+			node.action === 'repair-preflight' &&
+			['react-coupled', 'reimplemented'].includes(classification)
+		) {
+			node.state = 'verified';
+			node.action = 'reimplement-in-parent';
+			node.copyPermission = 'denied-or-unproven';
+			node.reimplementation = {
+				copySource: false,
+				copyTests: false,
+				requirement:
+					'Re-author only the public behavior used by each dependent and prove it with independently authored differential parity evidence.',
+			};
+			node.blockers = [];
+			node.repair = null;
+		}
 		if (node.state === 'blocked') continue;
+		if (node.action === 'reimplement-in-parent') continue;
 
 		const existing = existingBindingAssessment(node, inventory);
 		const target = targetByPackage.get(node.packageName);
@@ -489,7 +522,6 @@ export function planPortGraph({
 			continue;
 		}
 
-		const classification = dependencyClassifications[node.packageName];
 		if (!node.requested && classification === 'framework-neutral') {
 			node.state = 'verified';
 			node.action = 'reuse-package';
@@ -500,8 +532,9 @@ export function planPortGraph({
 			node.action = 'reimplement-in-parent';
 			node.reimplementation = {
 				copySource: false,
+				copyTests: false,
 				requirement:
-					'Re-author only the public behavior used by each dependent and prove it with differential parity evidence.',
+					'Re-author only the public behavior used by each dependent and prove it with independently authored differential parity evidence.',
 			};
 			continue;
 		}
@@ -520,10 +553,8 @@ export function planPortGraph({
 			const occupiedBinding = inventory.bindings[node.binding];
 			const occupiedPackageName = workspacePackageNames.has(node.binding);
 			const occupiedDirectory = workspaceDirectories.has(node.bindingDirectory);
-			if (
-				(occupiedBinding || occupiedPackageName || occupiedDirectory) &&
-				adoptedBindings.includes(node.packageName)
-			) {
+			const adoptionMatches = matchingAdoptionEvidence(node, occupiedBinding);
+			if (adoptionMatches && adoptedBindings.includes(node.packageName)) {
 				node.state = 'ready';
 				node.action = 'adopt-binding';
 				node.evidenceFingerprint = target.evidenceFingerprint;
@@ -538,6 +569,11 @@ export function planPortGraph({
 							? `${node.binding} already exists as a workspace package; ${node.packageName} cannot overwrite it.`
 							: `${node.bindingDirectory} already exists as a workspace package directory; ${node.packageName} cannot overwrite it.`,
 				);
+				node.collisionKind = adoptionMatches
+					? 'adoptable-binding'
+					: occupiedBinding
+						? 'occupied-binding'
+						: 'occupied-workspace-path';
 				continue;
 			}
 			node.state = 'ready';
@@ -575,6 +611,7 @@ export function planPortGraph({
 				node,
 				`${bindingName} is the derived binding for multiple upstream packages: ${packageNames.join(', ')}.`,
 			);
+			node.collisionKind = 'batch-binding-name';
 		}
 	}
 

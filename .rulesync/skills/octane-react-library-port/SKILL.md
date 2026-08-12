@@ -1,7 +1,7 @@
 ---
 targets: ['*']
 name: octane-react-library-port
-description: Port, assess, or extend one or more React libraries from npm or GitHub into @octanejs bindings. Use for a library name, link, list, new binding, prerequisite audit, license check, or parity gap. Enforces immutable provenance, approved MIT-or-Unlicense policy, live Octane capability reuse, dependency ordering, guarded implementation, and evidence-backed readiness.
+description: Port, assess, or extend one or more React libraries from npm or GitHub into @octanejs bindings. Use for a library name, link, list, new binding, prerequisite audit, license check, or parity gap. Enforces immutable provenance, source-copy licensing, clean-room fallback, live Octane capability reuse, dependency ordering, guarded implementation, and evidence-backed readiness.
 ---
 
 # Port React libraries into Octane
@@ -48,10 +48,9 @@ execute every reported `nextActions` item, rerun it, and never return instead.
 - Never require the entire batch to be ready. Implement every reported
   `actionableExecutionUnit` even when another requested branch is pending intake
   or hard-blocked.
-- Require the repository's approved-license verdict for every copied, adapted,
-  or newly ported prerequisite. The allowlist is exact `MIT` and exact
-  `Unlicense`; ambiguous, mixed, conflicting, missing, or other license evidence
-  is not overridable within this workflow.
+- Require approved-license evidence for every copied or adapted byte. Missing,
+  conflicting, or unapproved evidence forbids copying; it does not forbid an
+  independent implementation of public behavior.
 - Reuse a framework-neutral core or adequate existing `@octanejs/*` binding.
   Extend an incomplete binding in place; never create a competing package.
 - Preserve pre-existing changes. Autonomously adopt a partial package only when
@@ -95,11 +94,9 @@ execute every reported `nextActions` item, rerun it, and never return instead.
      <input> [<input> ...]
    ```
 
-   Add every React-coupled prerequisite with `--prerequisite` so it receives its
-   own immutable identity and approved-license gate without becoming a
-   user-requested target.
-   When an unapproved prerequisite can be independently re-authored from its
-   public contract, use the reference's `reimplemented` path instead of copying it.
+   Add every React-coupled prerequisite with `--prerequisite`. When its source
+   cannot be copied, the graph must automatically use the reference's clean-room
+   path rather than block the requested parent.
    Do not classify by package name, README, or repository badge alone. Treat an
    unsupported internal as `unsupported`. Do not stop or ask the user to replace
    a target merely because dependency nodes are still `audit-dependency` or
