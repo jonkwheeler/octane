@@ -1,0 +1,170 @@
+---
+sidebar_position: 4
+title: "Disable/Enable Hotkeys"
+---
+
+# Disable/Enable Hotkeys
+
+So far we have covered registering hotkeys, scoping them to components, and preventing stale state. But hotkeys are active by default. Sometimes you need to control whether a hotkey should be enabled at all.
+
+There are several ways to disable a hotkey. Let's go through them.
+
+## Dynamically disable or enable
+
+### Toggle hotkeys with the `enabled` flag
+
+Use the `enabled` option to control whether a hotkey is active:
+
+```jsx live
+function ExampleComponent() {
+  const [enabled, setEnabled] = useState(false)
+  const [count, setCount] = useState(0)
+  useHotkeys('b', () => setCount(prevCount => prevCount + 1), {
+    enabled,
+  })
+
+  return (
+    <div>
+      <button onClick={() => setEnabled(prevValue => !prevValue)}>Toggle Hotkey</button>
+      <p>Hotkey is {!enabled && 'not'} enabled.</p>
+      <p>Pressed the 'b' key {count} times.</p>
+    </div>
+  )
+}
+```
+
+This is useful when you want to enable or disable a hotkey based on application state or user input. `enabled` accepts a `Trigger` type — either a boolean or a function that returns a boolean. See the [`enabled` API docs](/docs/api/use-hotkeys#enabled) for details.
+
+:::info Automatic scoping
+If you use the returned `ref` to scope a hotkey to a specific element, the hotkey automatically activates only when that element (or one of its children) has focus.
+:::
+
+***
+
+## Prevent default browser behavior
+
+Some shortcuts like `meta+s` are reserved by the browser — in this case, to save the current page. If you are building a text editor or any creation tool, you probably want to override `meta+s` with your own save logic.
+
+Set `preventDefault` to `true` to stop the browser from handling the shortcut:
+
+```jsx live
+function ExampleComponent() {
+  useHotkeys('meta+s', () => {
+    alert('We saved your progress!')
+    // ... your own save logic
+  }, { preventDefault: true })
+
+  return (
+    <div>
+      <p>Press cmd+s (or ctrl+s on non-Mac) to open the custom save dialog.</p>
+    </div>
+  )
+}
+```
+
+:::caution Browsers reserve some shortcuts
+Some shortcuts cannot be overridden because they are essential to the browser's safe browsing experience. In Chrome, for example:
+
+* `meta+w` — close tab
+* `meta+n` — new window
+* `meta+t` — new tab
+* `meta+shift+w` — close all tabs of the current window
+* `meta+shift+n` — open incognito window
+* `meta+shift+t` — reopen last closed tab
+* `meta+1..9` — focus corresponding tab
+:::
+
+***
+
+### Disable callback execution while keeping listeners
+
+Setting `enabled` to `false` removes the event listeners from the DOM entirely. If you want to keep the listeners active but skip the callback, pass a function that returns `false`:
+
+```jsx live
+function ExampleComponent() {
+  const [blockHotkey, setBlockHotkey] = useState(false)
+
+  useHotkeys('b', () => alert('Callback executed'), {
+    enabled: () => !blockHotkey,
+  })
+
+  return (
+    <div>
+      <button onClick={() => setBlockHotkey(prev => !prev)}>
+        {blockHotkey ? 'Unblock' : 'Block'} hotkey
+      </button>
+      <p>When blocked, the 'b' key does nothing. When unblocked, it triggers the alert.</p>
+    </div>
+  )
+}
+```
+
+You can combine `enabled` and `preventDefault`:
+
+```jsx
+function ExampleComponent() {
+  useHotkeys('meta+s', () => alert('We saved your progress!'), {
+    enabled: () => false,
+    preventDefault: true,
+  })
+
+  return (
+    <div>
+      <p>Press cmd+s (or ctrl+s on non-Mac) to open the custom save dialog.</p>
+    </div>
+  )
+}
+```
+
+:::info Different behavior for `enabled: false` vs `enabled: () => false`
+* `enabled: false` — the browser event is not captured at all. No browser behavior happens.
+* `enabled: () => false` — the event is still captured, so potential browser behavior still occurs, but your callback is skipped.
+:::
+
+***
+
+### Enable hotkeys on form fields
+
+By default, hotkeys do not trigger when the user is focused on a form field. This prevents accidents like typing the letter `p` into a review textarea and triggering a "print" hotkey.
+
+However, some shortcuts — like `meta+s` for saving — should still work while the user is typing. Use the `enableOnFormTags` option to allow specific form tags:
+
+```jsx
+function ExampleComponent() {
+  useHotkeys('meta+s', (e) => {
+    e.preventDefault()
+    alert('We saved your progress!')
+    // ... your own save logic
+  }, {
+    enableOnFormTags: ['input', 'select', 'textarea']
+  })
+
+  return (
+    <div>
+      <p>Press cmd+s (or ctrl+s on non-Mac) to open the custom save dialog.</p>
+    </div>
+  )
+}
+```
+
+Pass `true` to enable the hotkey on **all** form tags.
+
+***
+
+### Enable hotkeys on `contentEditable` elements
+
+The [`contentEditable`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable) attribute lets users edit text inside any element — like a `<div>`. By default, hotkeys are disabled on these elements too. To enable them, use the `enableOnContentEditable` option:
+
+```jsx live
+function ExampleComponent() {
+  useHotkeys('meta+b', () => alert('Hotkeys are still working'), {
+    enableOnContentEditable: true,
+  })
+
+  return (
+    <div contentEditable={true} style={{border: '1px solid #ccc', padding: '8px'}}>
+      You can edit this text and still use all active shortcuts.
+    </div>
+  )
+}
+```

@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+npm-debug.log
+.cache/
+dev
+lib
+dist
+temp
+lib/main.js
+codesandbox/default/yarn.lock

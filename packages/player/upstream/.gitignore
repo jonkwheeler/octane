@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+yarn-error.log
+.DS_Store
+/lib
+/lazy
+/demo
+/coverage
+/es6
+.idea/
+.vscode/
+/disttest/
+/dist/
+tsconfig.tsbuildinfo

@@ -3890,10 +3890,7 @@ export default defineConfig({
 				test: {
 					name: 'xyflow',
 					include: ['packages/xyflow/tests/**/*.test.ts'],
-					exclude: [
-						...configDefaults.exclude,
-						'packages/xyflow/tests/differential/**/*.test.ts',
-					],
+					exclude: [...configDefaults.exclude, 'packages/xyflow/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					globals: false,
@@ -3989,10 +3986,7 @@ export default defineConfig({
 				test: {
 					name: 'puck',
 					include: ['packages/puck/tests/**/*.test.ts'],
-					exclude: [
-						...configDefaults.exclude,
-						'packages/puck/tests/differential/**/*.test.ts',
-					],
+					exclude: [...configDefaults.exclude, 'packages/puck/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					setupFiles: ['packages/puck/tests/_setup.ts'],
@@ -4134,10 +4128,7 @@ export default defineConfig({
 				test: {
 					name: 'interior',
 					include: ['packages/interior/tests/**/*.test.ts'],
-					exclude: [
-						...configDefaults.exclude,
-						'packages/interior/tests/differential/**/*.test.ts',
-					],
+					exclude: [...configDefaults.exclude, 'packages/interior/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					globals: false,
@@ -7889,6 +7880,19 @@ export default defineConfig({
 					hookTimeout: 60_000,
 				},
 			},
+			...['hotkeys-hook', 'use', 'player', 'responsive-carousel'].map((name) => ({
+				test: {
+					name,
+					include: [`packages/${name}/tests/**/*.test.ts`],
+					exclude: [`packages/${name}/tests/types/**`],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.mjs', '.js', '.json'],
+				},
+			})),
 			...['pristine', 'adapted'].map((lane) => ({
 				testExecution: { group: 'react-parity' },
 				test: {

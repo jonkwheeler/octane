@@ -1,0 +1,131 @@
+---
+sidebar_position: 5
+title: "Grouping Hotkeys together"
+---
+
+# `HotkeysProvider`
+
+`HotkeysProvider` lets you group hotkeys into named scopes. This is useful when you want to disable or enable a whole group of hotkeys at once — for example, when opening a modal or switching between different application modes.
+
+Wrap your application (or the relevant part of it) with `HotkeysProvider`:
+
+```jsx
+import { HotkeysProvider } from 'react-hotkeys-hook';
+
+function App() {
+  return (
+    <HotkeysProvider>
+      <div>
+        <h1>My App</h1>
+      </div>
+    </HotkeysProvider>
+  )
+}
+```
+
+## Assigning hotkeys to scopes
+
+Use the `scopes` option to assign a hotkey to one or more scopes:
+
+```jsx
+import { useHotkeys } from 'react-hotkeys-hook';
+
+function MyComponent() {
+  useHotkeys('ctrl+a', () => console.log('ctrl+a'), { scopes: 'scopeA' })
+  useHotkeys('ctrl+b', () => console.log('ctrl+b'), { scopes: 'scopeB' })
+  useHotkeys('ctrl+c', () => console.log('ctrl+c'), { scopes: 'scopeA' })
+
+  return (
+    <div>
+      <h1>My App</h1>
+    </div>
+  )
+}
+```
+
+By default, all hotkeys are in the `*` (wildcard) scope. This means they are active regardless of which scopes are currently enabled. Wrapping your app with `HotkeysProvider` enables the wildcard scope automatically.
+
+If you assign a hotkey to a specific scope, it **leaves** the wildcard scope. It will only fire when that scope is active.
+
+## Activating and deactivating scopes
+
+Use the `useHotkeysContext` hook to control scopes programmatically:
+
+```jsx
+import { useHotkeysContext } from 'react-hotkeys-hook';
+
+function MyComponent() {
+  const { enableScope, disableScope, toggleScope } = useHotkeysContext();
+
+  return (
+    <div>
+      <button onClick={() => enableScope('scopeA')}>Enable scope A</button>
+      <button onClick={() => disableScope('scopeA')}>Disable scope A</button>
+      <button onClick={() => toggleScope('scopeA')}>Toggle scope A</button>
+    </div>
+  )
+}
+```
+
+:::tip Check active scopes
+If your application has dynamic scope switching, you can read `activeScopes` from the context to see which scopes are currently enabled.
+:::
+
+## Set initially active scopes
+
+Pass an array of scope names to the `initiallyActiveScopes` prop:
+
+```jsx
+import { HotkeysProvider } from 'react-hotkeys-hook';
+
+function App() {
+  return (
+    <HotkeysProvider initiallyActiveScopes={['scopeA']}>
+      <div>
+        <h1>My App</h1>
+      </div>
+    </HotkeysProvider>
+  )
+}
+```
+
+:::info Wildcard scope and `initiallyActiveScopes`
+When you set `initiallyActiveScopes`, the wildcard scope `*` is **not** active by default. To include it, explicitly add it to the array: `['scopeA', '*']`.
+:::
+
+## Common use case: modal dialogs
+
+A typical pattern is to disable application-level hotkeys when a modal opens, and enable a separate set of modal-specific hotkeys:
+
+```jsx
+function App() {
+  return (
+    <HotkeysProvider>
+      <Editor />
+      <SettingsModal />
+    </HotkeysProvider>
+  )
+}
+
+function Editor() {
+  useHotkeys('ctrl+s', saveDocument, { scopes: 'editor' })
+  // ...
+}
+
+function SettingsModal() {
+  const { enableScope, disableScope } = useHotkeysContext()
+
+  useEffect(() => {
+    enableScope('settings')
+    disableScope('editor')
+    return () => {
+      disableScope('settings')
+      enableScope('editor')
+    }
+  }, [enableScope, disableScope])
+
+  useHotkeys('esc', closeModal, { scopes: 'settings' })
+
+  return <div>{/* modal content */}</div>
+}
+```

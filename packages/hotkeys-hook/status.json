@@ -1,0 +1,12 @@
+{
+  "upstream": {
+    "package": "react-hotkeys-hook",
+    "version": "5.3.3",
+    "commit": "7f3fffdec3e3bd1aeeadb9d00827368c7eb83e04",
+    "license": "MIT"
+  },
+  "surface": "Complete published entrypoint for react-hotkeys-hook@5.3.3.",
+  "divergences": [],
+  "ssr": "Browser work is deferred to effects; server import is safe.",
+  "verified": "2026-08-12"
+}

@@ -1,0 +1,5 @@
+{
+  "runtimeDependencies": ["octane"],
+  "adaptedSources": [{ "packageName": "react-hotkeys-hook", "paths": ["src"] }],
+  "reimplementedDependencies": []
+}

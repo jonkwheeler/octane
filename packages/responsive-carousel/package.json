@@ -1,0 +1,52 @@
+{
+  "name": "@octanejs/responsive-carousel",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "description": "Responsive carousel components for Octane.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/responsive-carousel"
+  },
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md",
+    "LICENSE",
+    "LICENSE.upstream",
+    "status.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --config vitest.config.js --project responsive-carousel",
+    "typecheck": "tsrx-tsc --noEmit"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "octane": "workspace:*",
+    "vitest": "catalog:default",
+    "@octanejs/testing-library": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "esbuild": "catalog:default"
+  }
+}

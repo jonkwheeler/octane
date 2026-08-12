@@ -1,0 +1,12 @@
+{
+  "upstream": {
+    "package": "react-responsive-carousel",
+    "version": "3.2.23",
+    "commit": "6d0896aaf55780e5bd53d2ae30e8faa14845fce4",
+    "license": "MIT"
+  },
+  "surface": "Complete published entrypoint for react-responsive-carousel@3.2.23.",
+  "divergences": [],
+  "ssr": "Browser work is deferred to effects; server import is safe.",
+  "verified": "2026-08-12"
+}
