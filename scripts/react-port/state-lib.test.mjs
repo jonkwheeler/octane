@@ -104,6 +104,76 @@ describe('batch state', () => {
 		assert.deepEqual(resumed.resume.invalidated, ['pkg:base', 'pkg:leaf']);
 	});
 
+	test('invalidates legacy verified binding implementations without stored evidence', () => {
+		const implementationActions = ['create-binding', 'extend-binding', 'adopt-binding'];
+		const nodes = Object.fromEntries(
+			implementationActions.map((action) => [
+				`pkg:${action}`,
+				{
+					state: 'ready',
+					action,
+					nodeFingerprint: `${action}-plan`,
+					evidenceFingerprint: `${action}-evidence`,
+					dependsOn: [],
+				},
+			]),
+		);
+		nodes['pkg:verified-binding'] = {
+			state: 'ready',
+			action: 'create-binding',
+			nodeFingerprint: 'verified-binding-plan',
+			evidenceFingerprint: 'verified-binding-evidence',
+			dependsOn: [],
+		};
+		nodes['pkg:reuse-binding'] = {
+			state: 'verified',
+			action: 'reuse-binding',
+			nodeFingerprint: 'reuse-binding-plan',
+			evidenceFingerprint: 'reuse-binding-evidence',
+			dependsOn: [],
+		};
+		nodes['pkg:clean-room'] = {
+			state: 'verified',
+			action: 'reimplement-in-parent',
+			nodeFingerprint: 'clean-room-plan',
+			evidenceFingerprint: 'clean-room-evidence',
+			dependsOn: [],
+		};
+		const next = createBatchManifest({
+			batchId: 'legacy-evidence',
+			inventoryFingerprint: 'inventory',
+			nodes,
+		});
+		const previous = structuredClone(next);
+		for (const action of implementationActions) {
+			previous.nodes[`pkg:${action}`].state = 'verified';
+		}
+		previous.nodes['pkg:create-binding'].evidence = { readiness: { status: 'verified' } };
+		previous.nodes['pkg:extend-binding'].evidenceMatrix = { schemaVersion: 1, gates: {} };
+		Object.assign(previous.nodes['pkg:adopt-binding'], {
+			evidenceMatrix: { schemaVersion: 1, gates: {} },
+			evidence: { readiness: { status: 'blocked' } },
+		});
+		Object.assign(previous.nodes['pkg:verified-binding'], {
+			state: 'verified',
+			evidenceMatrix: { schemaVersion: 1, gates: {} },
+			evidence: { readiness: { status: 'verified' } },
+		});
+
+		const resumed = reconcileBatchManifest(previous, next);
+
+		for (const action of implementationActions) {
+			assert.equal(resumed.nodes[`pkg:${action}`].state, 'ready');
+		}
+		assert.equal(resumed.nodes['pkg:verified-binding'].state, 'verified');
+		assert.equal(resumed.nodes['pkg:reuse-binding'].state, 'verified');
+		assert.equal(resumed.nodes['pkg:clean-room'].state, 'verified');
+		assert.deepEqual(
+			resumed.resume.invalidated,
+			implementationActions.map((action) => `pkg:${action}`).sort(),
+		);
+	});
+
 	test('detects overlapping writes without treating unrelated worktree changes as collisions', () => {
 		assert.deepEqual(
 			detectWorktreeCollisions({

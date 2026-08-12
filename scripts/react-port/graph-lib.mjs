@@ -206,6 +206,15 @@ function isRetryableRemoteFailure(blocker) {
 	return statusCode === 403 || statusCode === 429 || (statusCode >= 500 && statusCode <= 599);
 }
 
+function isLicensePolicyBlocker(blocker) {
+	return (
+		/^(?:Published artifact|Immutable source): (?:The package manifest |The referenced license file |No license file |License evidence )/.test(
+			blocker,
+		) ||
+		/^Published artifact license \S+ does not match immutable source license \S+\.$/.test(blocker)
+	);
+}
+
 function blockedDisposition(nodeId, nodes, visiting = new Set()) {
 	const node = nodes[nodeId];
 	if (!node || node.state !== 'blocked') return null;
@@ -448,6 +457,7 @@ export function planPortGraph({
 
 	for (const node of Object.values(nodes)) {
 		const classification = dependencyClassifications[node.packageName];
+		const target = targetByPackage.get(node.packageName);
 		node.constraints.sort((left, right) =>
 			left.via === right.via
 				? left.range.localeCompare(right.range)
@@ -470,7 +480,8 @@ export function planPortGraph({
 			node.state === 'blocked' &&
 			!node.requested &&
 			node.action === 'repair-preflight' &&
-			!node.blockers.some(isRetryableRemoteFailure) &&
+			node.blockers.length > 0 &&
+			node.blockers.every(isLicensePolicyBlocker) &&
 			['react-coupled', 'reimplemented'].includes(classification)
 		) {
 			applyCleanRoomReimplementation(node);
@@ -479,7 +490,6 @@ export function planPortGraph({
 		if (node.action === 'reimplement-in-parent') continue;
 
 		const existing = existingBindingAssessment(node, inventory);
-		const target = targetByPackage.get(node.packageName);
 		if (existing?.adequate) {
 			node.state = 'verified';
 			node.action = 'reuse-binding';

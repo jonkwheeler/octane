@@ -2,7 +2,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sanitizeForReport } from './report-lib.mjs';
-import { validateBatchManifest } from './state-lib.mjs';
+import { needsBindingEvidenceRepair, validateBatchManifest } from './state-lib.mjs';
+
+const LEGACY_EVIDENCE_REPAIR =
+	'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.';
 
 export function parseArguments(argv) {
 	if (argv[0] === '--') argv = argv.slice(1);
@@ -97,6 +100,7 @@ export function terminalBatchReport(manifest) {
 	const unfinished = order
 		.map((nodeId) => manifest.nodes[nodeId])
 		.filter((node) => {
+			if (needsBindingEvidenceRepair(node)) return true;
 			if (node.state === 'ready' || node.state === 'implementing') return true;
 			return (
 				node.requested &&
@@ -106,6 +110,15 @@ export function terminalBatchReport(manifest) {
 			);
 		});
 	const nextActions = unfinished.map((node) => {
+		if (needsBindingEvidenceRepair(node)) {
+			return {
+				nodeId: node.id,
+				kind: 'repair-evidence',
+				action: node.action ?? null,
+				...implementationPacket(manifest, node, executionLookup),
+				repair: LEGACY_EVIDENCE_REPAIR,
+			};
+		}
 		if (node.disposition === 'pending-intake') {
 			return {
 				nodeId: node.id,

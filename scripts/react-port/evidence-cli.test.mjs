@@ -18,9 +18,10 @@ function sha256(content) {
 }
 
 function createReadyBatch({ cleanRoomDependency = false } = {}) {
-	const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
+	const workspaceRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
+	const workRoot = path.join(workspaceRoot, '.react-port-work');
 	const batchDirectory = path.join(workRoot, 'fixture-batch');
-	mkdirSync(batchDirectory);
+	mkdirSync(batchDirectory, { recursive: true });
 	const manifest = createBatchManifest({
 		batchId: 'fixture-batch',
 		inventoryFingerprint: 'inventory',
@@ -70,7 +71,7 @@ function createReadyBatch({ cleanRoomDependency = false } = {}) {
 		path.join(batchDirectory, 'manifest.json'),
 		`${JSON.stringify(manifest, null, 2)}\n`,
 	);
-	return { workRoot, batchDirectory };
+	return { workspaceRoot, workRoot, batchDirectory };
 }
 
 function runEvidence(arguments_) {
@@ -116,6 +117,26 @@ function createCompletePackage(root) {
 		}),
 	);
 	return packageDirectory;
+}
+
+function recordRequiredEvidence(batchDirectory) {
+	const manifestPath = path.join(batchDirectory, 'manifest.json');
+	const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+	const automated = new Set([
+		'upstream-crosswalk',
+		'package-contract',
+		'provenance',
+		'closure-audit',
+	]);
+	for (const gate of Object.values(manifest.nodes['pkg:widget'].evidenceMatrix.gates)) {
+		if (gate.status !== 'required' || automated.has(gate.id)) continue;
+		recordEvidence(manifest.nodes['pkg:widget'].evidenceMatrix, gate.id, {
+			status: 'passed',
+			artifact: 'fixture-evidence',
+			observed: 'fixture gate passed',
+		});
+	}
+	writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 }
 
 describe('evidence CLI', () => {
@@ -238,7 +259,7 @@ describe('evidence CLI', () => {
 	});
 
 	test('refuses verification while required evidence is missing', () => {
-		const { workRoot } = createReadyBatch();
+		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 
@@ -254,7 +275,7 @@ describe('evidence CLI', () => {
 			'verify',
 			...common,
 			'--package-dir',
-			path.join(inputRoot, 'missing-package'),
+			path.join(workspaceRoot, 'packages/widget'),
 			'--expected-directory',
 			'packages/widget',
 			'--registrations',
@@ -272,7 +293,7 @@ describe('evidence CLI', () => {
 	});
 
 	test('enforces clean-room dependency proof from the closure artifact during verification', () => {
-		const { workRoot } = createReadyBatch({ cleanRoomDependency: true });
+		const { workspaceRoot, workRoot } = createReadyBatch({ cleanRoomDependency: true });
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 
@@ -292,7 +313,7 @@ describe('evidence CLI', () => {
 			'verify',
 			...common,
 			'--package-dir',
-			path.join(inputRoot, 'missing-package'),
+			path.join(workspaceRoot, 'packages/widget'),
 			'--expected-directory',
 			'packages/widget',
 			'--registrations',
@@ -341,30 +362,48 @@ describe('evidence CLI', () => {
 		assert.match(verified.stderr, /graph plan: packages\/widget/i);
 	});
 
-	test('advances implementing to verified only after every machine and recorded gate passes', () => {
+	test('refuses a conforming package outside the planned workspace directory', () => {
 		const { workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
-		const manifestPath = path.join(batchDirectory, 'manifest.json');
-		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-		const automated = new Set([
-			'upstream-crosswalk',
-			'package-contract',
-			'provenance',
-			'closure-audit',
-		]);
-		for (const gate of Object.values(manifest.nodes['pkg:widget'].evidenceMatrix.gates)) {
-			if (gate.status !== 'required' || automated.has(gate.id)) continue;
-			recordEvidence(manifest.nodes['pkg:widget'].evidenceMatrix, gate.id, {
-				status: 'passed',
-				artifact: 'fixture-evidence',
-				observed: 'fixture gate passed',
-			});
+		recordRequiredEvidence(batchDirectory);
+
+		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-outside-'));
+		const packageDirectory = createCompletePackage(inputRoot);
+		for (const [name, value] of Object.entries({
+			'registrations.json': [],
+			'crosswalk.json': [],
+			'closure.json': { runtimeDependencies: ['octane'], adaptedSources: [] },
+		})) {
+			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
 		}
-		writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+		const verified = runEvidence([
+			'verify',
+			...common,
+			'--package-dir',
+			packageDirectory,
+			'--expected-directory',
+			'packages/widget',
+			'--registrations',
+			path.join(inputRoot, 'registrations.json'),
+			'--crosswalk',
+			path.join(inputRoot, 'crosswalk.json'),
+			'--closure',
+			path.join(inputRoot, 'closure.json'),
+		]);
+
+		assert.equal(verified.status, 2);
+		assert.match(verified.stderr, /planned workspace directory/i);
+	});
+
+	test('advances implementing to verified only after every machine and recorded gate passes', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		recordRequiredEvidence(batchDirectory);
 
 		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-success-'));
-		const packageDirectory = createCompletePackage(inputRoot);
+		const packageDirectory = createCompletePackage(workspaceRoot);
 		for (const [name, value] of Object.entries({
 			'registrations.json': [],
 			'crosswalk.json': [],

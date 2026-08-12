@@ -402,6 +402,7 @@ function hasApprovedLicenseEvidence(node) {
 export function auditShippedClosure({
 	nodeId,
 	graphNodes,
+	evidenceRoot,
 	runtimeDependencies,
 	adaptedSources,
 	reimplementedDependencies = [],
@@ -412,6 +413,7 @@ export function auditShippedClosure({
 	const plannedDependencies = new Set(
 		(node.dependsOn ?? []).flatMap((dependencyId) => {
 			const dependency = graphNodes[dependencyId];
+			if (dependency?.action === 'reimplement-in-parent') return [];
 			return [dependency?.packageName, dependency?.binding].filter(Boolean);
 		}),
 	);
@@ -425,6 +427,12 @@ export function auditShippedClosure({
 	);
 	const normalizedRuntimeDependencies = [...new Set(runtimeDependencies.map(packageRoot))].sort();
 	for (const dependency of normalizedRuntimeDependencies) {
+		if (plannedCleanRoomDependencies.has(dependency)) {
+			issues.push(
+				`${dependency} is planned for clean-room reimplementation and must not be retained as a runtime dependency.`,
+			);
+			continue;
+		}
 		if (
 			dependency === 'octane' ||
 			dependency === 'react' ||
@@ -487,6 +495,24 @@ export function auditShippedClosure({
 		);
 	const proofs = proofEntries.map(({ proof }) => proof);
 	const proofsByPackage = new Map();
+	const localEvidenceArtifacts = new Map();
+	let resolvedEvidenceRoot = null;
+	if (plannedCleanRoomDependencies.size > 0) {
+		if (typeof evidenceRoot !== 'string' || !evidenceRoot.trim()) {
+			issues.push('A package-local clean-room evidence root is required.');
+		} else {
+			try {
+				const candidateEvidenceRoot = realpathSync(evidenceRoot);
+				if (statSync(candidateEvidenceRoot).isDirectory()) {
+					resolvedEvidenceRoot = candidateEvidenceRoot;
+				} else {
+					issues.push(`Clean-room evidence root must be a directory: ${evidenceRoot}`);
+				}
+			} catch {
+				issues.push(`Clean-room evidence root is missing: ${evidenceRoot}`);
+			}
+		}
+	}
 	for (const { original, proof } of proofEntries) {
 		const label = proof.packageName || '<missing package>';
 		const packageProofs = proofsByPackage.get(proof.packageName) ?? [];
@@ -520,6 +546,36 @@ export function auditShippedClosure({
 			: []) {
 			if (!isSafeLocalEvidencePath(evidencePath)) {
 				issues.push(`Clean-room local evidence path is unsafe for ${label}: ${evidencePath}`);
+			} else if (resolvedEvidenceRoot) {
+				const normalizedEvidencePath = evidencePath.trim();
+				try {
+					const resolvedEvidencePath = realpathSync(
+						path.resolve(resolvedEvidenceRoot, normalizedEvidencePath),
+					);
+					const relativeEvidencePath = path.relative(resolvedEvidenceRoot, resolvedEvidencePath);
+					if (
+						relativeEvidencePath === '..' ||
+						relativeEvidencePath.startsWith(`..${path.sep}`) ||
+						path.isAbsolute(relativeEvidencePath)
+					) {
+						issues.push(
+							`Clean-room local evidence path ${normalizedEvidencePath} escapes the package root for ${label}.`,
+						);
+					} else if (statSync(resolvedEvidencePath).isFile()) {
+						localEvidenceArtifacts.set(normalizedEvidencePath, {
+							path: normalizedEvidencePath,
+							sha256: hashFile(resolvedEvidencePath),
+						});
+					} else {
+						issues.push(
+							`Clean-room local evidence path ${normalizedEvidencePath} must be a regular file for ${label}.`,
+						);
+					}
+				} catch {
+					issues.push(
+						`Clean-room local evidence path ${normalizedEvidencePath} is missing or unreadable for ${label}.`,
+					);
+				}
 			}
 		}
 	}
@@ -534,18 +590,27 @@ export function auditShippedClosure({
 		}
 	}
 	issues.sort();
-	return {
+	const sortedLocalEvidenceArtifacts = [...localEvidenceArtifacts.values()].sort((left, right) =>
+		left.path.localeCompare(right.path),
+	);
+	const report = {
 		status: issues.length === 0 ? 'passed' : 'blocked',
 		issues,
 		reimplementedDependencies: proofs,
-		fingerprint: fingerprint({
-			nodeId,
-			runtimeDependencies: normalizedRuntimeDependencies,
-			adaptedSources: normalizedAdaptedSources,
-			reimplementedDependencies: proofs,
-			issues,
-		}),
 	};
+	const fingerprintInput = {
+		nodeId,
+		runtimeDependencies: normalizedRuntimeDependencies,
+		adaptedSources: normalizedAdaptedSources,
+		reimplementedDependencies: proofs,
+		issues,
+	};
+	if (plannedCleanRoomDependencies.size > 0) {
+		report.localEvidenceArtifacts = sortedLocalEvidenceArtifacts;
+		fingerprintInput.localEvidenceArtifacts = sortedLocalEvidenceArtifacts;
+	}
+	report.fingerprint = fingerprint(fingerprintInput);
+	return report;
 }
 
 export function evaluateVerificationReadiness({

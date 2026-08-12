@@ -155,6 +155,116 @@ test('emits deterministic, redacted implementation packets in graph order', () =
 	assert.equal(Object.hasOwn(action, 'command'), false);
 });
 
+test('uses dependency-first execution order from legacy manifests without execution units', () => {
+	const report = terminalBatchReport({
+		schemaVersion: 1,
+		batchId: 'legacy-order',
+		executionOrder: ['pkg:dependency', 'pkg:target'],
+		nodes: {
+			'pkg:target': node('pkg:target', {
+				state: 'ready',
+				disposition: 'actionable',
+				action: 'create-binding',
+				dependsOn: ['pkg:dependency'],
+			}),
+			'pkg:dependency': node('pkg:dependency', {
+				requested: false,
+				state: 'ready',
+				disposition: 'actionable',
+				action: 'create-binding',
+			}),
+		},
+	});
+
+	assert.deepEqual(
+		report.nextActions.map(({ nodeId }) => nodeId),
+		['pkg:dependency', 'pkg:target'],
+	);
+});
+
+test('repairs legacy verified binding implementations without stored evidence', () => {
+	const report = terminalBatchReport({
+		schemaVersion: 1,
+		batchId: 'legacy-evidence',
+		executionOrder: [
+			'pkg:create-binding',
+			'pkg:extend-binding',
+			'pkg:adopt-binding',
+			'pkg:verified-binding',
+			'pkg:reuse-binding',
+			'pkg:clean-room',
+		],
+		nodes: {
+			'pkg:create-binding': node('pkg:create-binding', {
+				state: 'verified',
+				disposition: 'actionable',
+				action: 'create-binding',
+				evidence: { readiness: { status: 'verified' } },
+			}),
+			'pkg:extend-binding': node('pkg:extend-binding', {
+				state: 'verified',
+				disposition: 'actionable',
+				action: 'extend-binding',
+				evidenceMatrix: { schemaVersion: 1, gates: {} },
+			}),
+			'pkg:adopt-binding': node('pkg:adopt-binding', {
+				state: 'verified',
+				disposition: 'actionable',
+				action: 'adopt-binding',
+				evidenceMatrix: { schemaVersion: 1, gates: {} },
+				evidence: { readiness: { status: 'blocked' } },
+			}),
+			'pkg:verified-binding': node('pkg:verified-binding', {
+				state: 'verified',
+				disposition: 'actionable',
+				action: 'create-binding',
+				evidenceMatrix: { schemaVersion: 1, gates: {} },
+				evidence: { readiness: { status: 'verified' } },
+			}),
+			'pkg:reuse-binding': node('pkg:reuse-binding', {
+				state: 'verified',
+				disposition: 'satisfied',
+				action: 'reuse-binding',
+			}),
+			'pkg:clean-room': node('pkg:clean-room', {
+				state: 'verified',
+				disposition: 'satisfied',
+				action: 'reimplement-in-parent',
+			}),
+		},
+	});
+
+	assert.equal(report.status, 'unfinished');
+	assert.deepEqual(report.unfinished, [
+		'pkg:create-binding',
+		'pkg:extend-binding',
+		'pkg:adopt-binding',
+	]);
+	assert.deepEqual(
+		report.nextActions.map(({ nodeId, kind, repair }) => ({ nodeId, kind, repair })),
+		[
+			{
+				nodeId: 'pkg:create-binding',
+				kind: 'repair-evidence',
+				repair:
+					'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.',
+			},
+			{
+				nodeId: 'pkg:extend-binding',
+				kind: 'repair-evidence',
+				repair:
+					'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.',
+			},
+			{
+				nodeId: 'pkg:adopt-binding',
+				kind: 'repair-evidence',
+				repair:
+					'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.',
+			},
+		],
+	);
+});
+
 test('accepts verified, satisfied, and immutable hard-blocks but queues binding adoption', () => {
 	const report = terminalBatchReport({
 		schemaVersion: 1,

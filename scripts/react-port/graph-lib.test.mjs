@@ -175,6 +175,40 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'actionable');
 	});
 
+	test('keeps permanent prerequisite identity contradictions blocked', () => {
+		const prerequisite = {
+			input: 'react-helper@1.0.0',
+			requested: false,
+			status: 'blocked',
+			identity: {
+				packageName: 'react-helper',
+				version: '1.0.0',
+				commit: 'b'.repeat(40),
+				integrity: 'sha512-fixture',
+			},
+			license: {
+				published: { status: 'passed', spdx: 'MIT', reasons: [] },
+				source: { status: 'passed', spdx: 'MIT', reasons: [] },
+			},
+			blockers: [
+				`Published gitHead ${'a'.repeat(40)} does not match source commit ${'b'.repeat(40)}.`,
+			],
+		};
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('react-parent', '1.0.0', { 'react-helper': '^1.0.0' }),
+				prerequisite,
+			],
+			inventory: fixtureInventory(),
+			dependencyClassifications: { 'react-helper': 'react-coupled' },
+		});
+
+		assert.equal(graph.nodes['pkg:react-helper'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-helper'].action, 'repair-preflight');
+		assert.equal(graph.nodes['pkg:react-helper'].disposition, 'hard-blocked');
+		assert.equal(graph.nodes['pkg:react-parent'].disposition, 'hard-blocked');
+	});
+
 	for (const blocker of [
 		'Remote request timed out after 30000ms',
 		'Remote request failed with HTTP 403',

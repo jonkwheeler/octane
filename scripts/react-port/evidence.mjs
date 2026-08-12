@@ -262,6 +262,14 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	if (options.expectedDirectory !== node.bindingDirectory) {
 		throw new Error(`--expected-directory must match the graph plan: ${node.bindingDirectory}`);
 	}
+	const workspaceRoot = path.dirname(path.resolve(options.workRoot));
+	const plannedPackageDirectory = path.resolve(workspaceRoot, node.bindingDirectory);
+	const packageDirectory = path.resolve(options.packageDir);
+	if (packageDirectory !== plannedPackageDirectory) {
+		throw new Error(
+			`--package-dir must match the graph-planned workspace directory: ${plannedPackageDirectory}`,
+		);
+	}
 	const registrations = readJson(options.registrations, 'registrations');
 	const crosswalk = readJson(options.crosswalk, 'crosswalk');
 	const closure = readJson(options.closure, 'closure');
@@ -276,7 +284,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		};
 	}
 	const attribution = attributionHashes(node);
-	const packageReport = inspectBindingPackage(path.resolve(options.packageDir), {
+	const packageReport = inspectBindingPackage(plannedPackageDirectory, {
 		expectedPackageName: node.binding,
 		expectedDirectory: options.expectedDirectory,
 		identity: node.identity,
@@ -289,6 +297,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		runtimeDependencies: closure.runtimeDependencies ?? [],
 		adaptedSources: closure.adaptedSources ?? [],
 		reimplementedDependencies: closure.reimplementedDependencies ?? [],
+		evidenceRoot: plannedPackageDirectory,
 	});
 	setAutomatedGate(node.evidenceMatrix, 'upstream-crosswalk', crosswalkReport, {
 		artifact: path.resolve(options.crosswalk),
@@ -297,7 +306,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	});
 	for (const gateId of ['package-contract', 'provenance']) {
 		setAutomatedGate(node.evidenceMatrix, gateId, packageReport, {
-			artifact: path.resolve(options.packageDir),
+			artifact: plannedPackageDirectory,
 			passedObserved: 'Package shape and durable provenance passed inspection.',
 			repair: 'Complete the reported package/provenance artifacts and rerun verification.',
 		});

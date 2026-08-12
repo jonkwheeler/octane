@@ -14,6 +14,21 @@ const NEXT_STATES = Object.freeze({
 	verified: new Set(),
 	blocked: new Set(),
 });
+const BINDING_IMPLEMENTATION_ACTIONS = new Set([
+	'create-binding',
+	'extend-binding',
+	'adopt-binding',
+]);
+
+export function needsBindingEvidenceRepair(node) {
+	return Boolean(
+		node?.state === 'verified' &&
+		BINDING_IMPLEMENTATION_ACTIONS.has(node.action) &&
+		(!node.evidenceMatrix ||
+			typeof node.evidenceMatrix !== 'object' ||
+			node.evidence?.readiness?.status !== 'verified'),
+	);
+}
 
 export function validateBatchManifest(manifest) {
 	if (!manifest || typeof manifest !== 'object')
@@ -157,7 +172,8 @@ export function reconcileBatchManifest(previousManifest, nextManifest) {
 		if (
 			!previousNode ||
 			previousNode.nodeFingerprint !== nextNode.nodeFingerprint ||
-			previousNode.evidenceFingerprint !== nextNode.evidenceFingerprint
+			previousNode.evidenceFingerprint !== nextNode.evidenceFingerprint ||
+			needsBindingEvidenceRepair(previousNode)
 		) {
 			changedNodes.push(id);
 		}

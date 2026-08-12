@@ -39,6 +39,25 @@ function sha256(content) {
 	return createHash('sha256').update(content).digest('hex');
 }
 
+const CLEAN_ROOM_GRAPH_NODES = {
+	'pkg:widget': { packageName: 'widget', dependsOn: ['pkg:react-helper'] },
+	'pkg:react-helper': {
+		packageName: 'react-helper',
+		dependsOn: [],
+		action: 'reimplement-in-parent',
+		copyPermission: 'denied-or-unproven',
+		reimplementation: { copySource: false, copyTests: false },
+	},
+};
+
+function cleanRoomProof(localEvidence) {
+	return {
+		packageName: 'react-helper',
+		publicBehaviors: ['Formats the parent-visible label'],
+		localEvidence,
+	};
+}
+
 describe('evidence matrix', () => {
 	test('derives mandatory gates from the binding category', () => {
 		const matrix = createEvidenceMatrix({
@@ -220,20 +239,28 @@ describe('package and closure completion', () => {
 		assert.match(result.issues.join('\n'), /copied-helper.*approved-license/i);
 	});
 
-	test('requires independently authored proof for every direct clean-room dependency', () => {
-		const graphNodes = {
-			'pkg:widget': {
-				packageName: 'widget',
-				dependsOn: ['pkg:react-helper'],
+	test('does not require an evidence root without clean-room obligations', () => {
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes: {
+				'pkg:widget': { packageName: 'widget', dependsOn: [] },
 			},
-			'pkg:react-helper': {
-				packageName: 'react-helper',
-				dependsOn: [],
-				action: 'reimplement-in-parent',
-				copyPermission: 'denied-or-unproven',
-				reimplementation: { copySource: false, copyTests: false },
-			},
-		};
+			runtimeDependencies: ['octane'],
+			adaptedSources: [],
+		});
+
+		assert.equal(result.status, 'passed', result.issues.join('\n'));
+		assert.equal('localEvidenceArtifacts' in result, false);
+	});
+
+	test('requires independently authored proof for every direct clean-room dependency', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-clean-room-proof-'));
+		await mkdir(path.join(evidenceRoot, 'tests'));
+		await writeFile(
+			path.join(evidenceRoot, 'tests/react-helper-differential.test.tsrx'),
+			'export const independentlyAuthored = true;\n',
+		);
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
 		const missing = auditShippedClosure({
 			nodeId: 'pkg:widget',
 			graphNodes,
@@ -253,6 +280,7 @@ describe('package and closure completion', () => {
 		const valid = auditShippedClosure({
 			nodeId: 'pkg:widget',
 			graphNodes,
+			evidenceRoot,
 			runtimeDependencies: [],
 			adaptedSources: [],
 			reimplementedDependencies: [proof],
@@ -260,6 +288,7 @@ describe('package and closure completion', () => {
 		const reordered = auditShippedClosure({
 			nodeId: 'pkg:widget',
 			graphNodes,
+			evidenceRoot,
 			runtimeDependencies: [],
 			adaptedSources: [],
 			reimplementedDependencies: [
@@ -274,17 +303,124 @@ describe('package and closure completion', () => {
 		assert.equal(reordered.fingerprint, valid.fingerprint);
 	});
 
+	test('blocks a planned clean-room package retained as a runtime dependency', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-clean-room-runtime-'));
+		await mkdir(path.join(evidenceRoot, 'tests'));
+		await writeFile(
+			path.join(evidenceRoot, 'tests/react-helper.test.ts'),
+			'export const independentlyAuthored = true;\n',
+		);
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: ['react-helper'],
+			adaptedSources: [],
+			reimplementedDependencies: [cleanRoomProof(['tests/react-helper.test.ts'])],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /react-helper.*clean-room.*runtime dependency/i);
+	});
+
+	test('binds package-local clean-room evidence file bytes into the closure report', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-clean-room-evidence-'));
+		const evidencePath = 'tests/react-helper.test.ts';
+		const firstContents = "export const independentlyAuthored = 'first';\n";
+		await mkdir(path.join(evidenceRoot, 'tests'));
+		await writeFile(path.join(evidenceRoot, evidencePath), firstContents);
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
+		const proof = cleanRoomProof([evidencePath]);
+
+		const first = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [proof],
+		});
+		await writeFile(
+			path.join(evidenceRoot, evidencePath),
+			"export const independentlyAuthored = 'second';\n",
+		);
+		const second = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [proof],
+		});
+
+		assert.equal(first.status, 'passed', first.issues.join('\n'));
+		assert.deepEqual(first.localEvidenceArtifacts, [
+			{ path: evidencePath, sha256: sha256(firstContents) },
+		]);
+		assert.notEqual(second.fingerprint, first.fingerprint);
+	});
+
+	test('blocks a missing clean-room evidence path', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-missing-evidence-'));
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [cleanRoomProof(['tests/missing.test.ts'])],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /tests\/missing\.test\.ts.*missing/i);
+	});
+
+	test('blocks a directory used as clean-room evidence', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-directory-evidence-'));
+		await mkdir(path.join(evidenceRoot, 'tests'));
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [cleanRoomProof(['tests'])],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /tests.*regular file/i);
+	});
+
+	test('blocks a clean-room evidence symlink that escapes the package root', async () => {
+		const fixtureRoot = await mkdtemp(path.join(tmpdir(), 'react-port-symlink-evidence-'));
+		const evidenceRoot = path.join(fixtureRoot, 'package');
+		const outsidePath = path.join(fixtureRoot, 'outside.test.ts');
+		await mkdir(path.join(evidenceRoot, 'tests'), { recursive: true });
+		await writeFile(outsidePath, 'export const upstreamDerived = true;\n');
+		await symlink(outsidePath, path.join(evidenceRoot, 'tests/escaped.test.ts'));
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes,
+			evidenceRoot,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			reimplementedDependencies: [cleanRoomProof(['tests/escaped.test.ts'])],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /tests\/escaped\.test\.ts.*escapes/i);
+	});
+
 	test('blocks copied source and malformed or unplanned clean-room proof', () => {
-		const graphNodes = {
-			'pkg:widget': { packageName: 'widget', dependsOn: ['pkg:react-helper'] },
-			'pkg:react-helper': {
-				packageName: 'react-helper',
-				dependsOn: [],
-				action: 'reimplement-in-parent',
-				copyPermission: 'denied-or-unproven',
-				reimplementation: { copySource: false, copyTests: false },
-			},
-		};
+		const graphNodes = CLEAN_ROOM_GRAPH_NODES;
 		const result = auditShippedClosure({
 			nodeId: 'pkg:widget',
 			graphNodes,
