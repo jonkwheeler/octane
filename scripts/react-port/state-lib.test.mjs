@@ -49,6 +49,13 @@ describe('batch state', () => {
 		assert.deepEqual(resumed.actionableExecutionUnits, next.actionableExecutionUnits);
 		assert.deepEqual(resumed.executionOrder, next.executionOrder);
 		assert.deepEqual(resumed.resume.invalidated, []);
+
+		const divergent = structuredClone(next);
+		divergent.executionOrder = ['pkg:other', 'pkg:leaf', 'pkg:base'];
+		assert.throws(
+			() => validateBatchManifest(divergent),
+			/executionOrder must match executionUnits/i,
+		);
 	});
 
 	test('rejects unknown schemas and non-monotonic transitions', () => {

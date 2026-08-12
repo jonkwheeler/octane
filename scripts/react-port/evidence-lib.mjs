@@ -478,17 +478,16 @@ export function auditShippedClosure({
 		issues.push('reimplementedDependencies must be an array.');
 		reimplementedDependencies = [];
 	}
-	const proofs = reimplementedDependencies
-		.map(normalizeReimplementationProof)
+	const proofEntries = reimplementedDependencies
+		.map((original) => ({ original, proof: normalizeReimplementationProof(original) }))
 		.sort((left, right) =>
-			left.packageName === right.packageName
-				? JSON.stringify(left).localeCompare(JSON.stringify(right))
-				: left.packageName.localeCompare(right.packageName),
+			left.proof.packageName === right.proof.packageName
+				? JSON.stringify(left.proof).localeCompare(JSON.stringify(right.proof))
+				: left.proof.packageName.localeCompare(right.proof.packageName),
 		);
+	const proofs = proofEntries.map(({ proof }) => proof);
 	const proofsByPackage = new Map();
-	for (let index = 0; index < reimplementedDependencies.length; index += 1) {
-		const original = reimplementedDependencies[index];
-		const proof = normalizeReimplementationProof(original);
+	for (const { original, proof } of proofEntries) {
 		const label = proof.packageName || '<missing package>';
 		const packageProofs = proofsByPackage.get(proof.packageName) ?? [];
 		packageProofs.push(proof);

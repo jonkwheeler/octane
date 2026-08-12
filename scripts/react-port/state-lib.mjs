@@ -34,6 +34,18 @@ export function validateBatchManifest(manifest) {
 			throw new Error(`Batch manifest ${field} must be an array`);
 		}
 	}
+	for (const field of ['executionUnits', 'actionableExecutionUnits']) {
+		if (manifest[field]?.some((unit) => !Array.isArray(unit))) {
+			throw new Error(`Batch manifest ${field} must contain arrays`);
+		}
+	}
+	if (
+		manifest.executionUnits !== undefined &&
+		manifest.executionOrder !== undefined &&
+		JSON.stringify(manifest.executionOrder) !== JSON.stringify(manifest.executionUnits.flat())
+	) {
+		throw new Error('Batch manifest executionOrder must match executionUnits');
+	}
 	for (const [id, node] of Object.entries(manifest.nodes)) {
 		if (!NEXT_STATES[node.state])
 			throw new Error(`Batch node ${id} has invalid state ${node.state}`);

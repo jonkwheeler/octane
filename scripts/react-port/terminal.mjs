@@ -22,26 +22,34 @@ export function parseArguments(argv) {
 
 function orderedNodeIds(manifest) {
 	const nodeIds = Object.keys(manifest.nodes).sort();
-	const configuredOrder = Array.isArray(manifest.executionOrder)
-		? manifest.executionOrder.filter((nodeId) => Object.hasOwn(manifest.nodes, nodeId))
-		: [];
+	const persistedOrder = Array.isArray(manifest.executionUnits)
+		? manifest.executionUnits.flat()
+		: (manifest.executionOrder ?? []);
+	const configuredOrder = persistedOrder.filter((nodeId) => Object.hasOwn(manifest.nodes, nodeId));
 	const configured = new Set(configuredOrder);
 	return [...configuredOrder, ...nodeIds.filter((nodeId) => !configured.has(nodeId))];
 }
 
-function executionPosition(manifest, nodeId, order) {
-	const configuredUnitIndex = Array.isArray(manifest.executionUnits)
-		? manifest.executionUnits.findIndex((unit) => unit.includes(nodeId))
-		: -1;
-	const index = order.indexOf(nodeId);
+function buildExecutionLookup(manifest, order) {
+	const indexByNode = new Map(order.map((nodeId, index) => [nodeId, index]));
+	const unitByNode = new Map();
+	for (const [unitIndex, unit] of (manifest.executionUnits ?? []).entries()) {
+		for (const nodeId of unit) unitByNode.set(nodeId, { unitIndex, unit: [...unit] });
+	}
+	return { indexByNode, unitByNode };
+}
+
+function executionPosition(nodeId, executionLookup) {
+	const index = executionLookup.indexByNode.get(nodeId) ?? -1;
+	const configuredUnit = executionLookup.unitByNode.get(nodeId);
 	return {
 		index,
-		unitIndex: configuredUnitIndex === -1 ? index : configuredUnitIndex,
-		unit: configuredUnitIndex === -1 ? [nodeId] : [...manifest.executionUnits[configuredUnitIndex]],
+		unitIndex: configuredUnit?.unitIndex ?? index,
+		unit: configuredUnit?.unit ?? [nodeId],
 	};
 }
 
-function dependencyPacket(manifest, nodeId, order) {
+function dependencyPacket(manifest, nodeId, executionLookup) {
 	const node = manifest.nodes[nodeId];
 	if (!node) return { nodeId, missing: true };
 	return {
@@ -57,11 +65,11 @@ function dependencyPacket(manifest, nodeId, order) {
 		copyPermission: node.copyPermission ?? null,
 		reimplementation: node.reimplementation ?? null,
 		feasibility: node.feasibility ?? null,
-		executionIndex: order.indexOf(nodeId),
+		executionIndex: executionLookup.indexByNode.get(nodeId) ?? -1,
 	};
 }
 
-function implementationPacket(manifest, node, order) {
+function implementationPacket(manifest, node, executionLookup) {
 	const dependsOn = [...node.dependsOn];
 	return {
 		packageName: node.packageName ?? node.identity?.packageName ?? null,
@@ -72,8 +80,8 @@ function implementationPacket(manifest, node, order) {
 		requiredSubpaths: [...(node.requiredSubpaths ?? [])],
 		vanillaCore: node.vanillaCore ?? null,
 		dependsOn,
-		dependencies: dependsOn.map((nodeId) => dependencyPacket(manifest, nodeId, order)),
-		execution: executionPosition(manifest, node.id, order),
+		dependencies: dependsOn.map((nodeId) => dependencyPacket(manifest, nodeId, executionLookup)),
+		execution: executionPosition(node.id, executionLookup),
 		feasibility: node.feasibility ?? null,
 		copyPermission: node.copyPermission ?? null,
 		reimplementation: node.reimplementation ?? null,
@@ -85,6 +93,7 @@ export function terminalBatchReport(manifest) {
 	const requested = Object.values(manifest.nodes).filter((node) => node.requested);
 	if (requested.length === 0) throw new Error('Batch manifest has no requested targets');
 	const order = orderedNodeIds(manifest);
+	const executionLookup = buildExecutionLookup(manifest, order);
 	const unfinished = order
 		.map((nodeId) => manifest.nodes[nodeId])
 		.filter((node) => {
@@ -124,7 +133,7 @@ export function terminalBatchReport(manifest) {
 				nodeId: node.id,
 				kind: 'complete-evidence',
 				action: node.action ?? null,
-				...implementationPacket(manifest, node, order),
+				...implementationPacket(manifest, node, executionLookup),
 				gates,
 			};
 		}
@@ -132,7 +141,7 @@ export function terminalBatchReport(manifest) {
 			nodeId: node.id,
 			kind: 'implement',
 			action: node.action ?? null,
-			...implementationPacket(manifest, node, order),
+			...implementationPacket(manifest, node, executionLookup),
 		};
 	});
 	return sanitizeForReport({
