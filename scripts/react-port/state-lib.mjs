@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readlinkSync } from 'node:fs';
 import { open, mkdir, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { isCompleteEvidenceMatrix, isCurrentEvidenceMatrix } from './evidence-lib.mjs';
 
 const SCHEMA_VERSION = 1;
 const NEXT_STATES = Object.freeze({
@@ -21,12 +22,17 @@ const BINDING_IMPLEMENTATION_ACTIONS = new Set([
 ]);
 
 export function needsBindingEvidenceRepair(node) {
-	return Boolean(
-		node?.state === 'verified' &&
-		BINDING_IMPLEMENTATION_ACTIONS.has(node.action) &&
-		(!node.evidenceMatrix ||
-			typeof node.evidenceMatrix !== 'object' ||
-			node.evidence?.readiness?.status !== 'verified'),
+	if (
+		!BINDING_IMPLEMENTATION_ACTIONS.has(node?.action) ||
+		(node.state !== 'implementing' && node.state !== 'verified')
+	) {
+		return false;
+	}
+	if (!isCurrentEvidenceMatrix(node.evidenceMatrix)) return true;
+	return (
+		node.state === 'verified' &&
+		(!isCompleteEvidenceMatrix(node.evidenceMatrix) ||
+			node.evidence?.readiness?.status !== 'verified')
 	);
 }
 

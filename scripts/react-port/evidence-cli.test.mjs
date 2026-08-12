@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { recordEvidence } from './evidence-lib.mjs';
+import { EVIDENCE_MATRIX_SCHEMA_VERSION, recordEvidence } from './evidence-lib.mjs';
 import { createBatchManifest } from './state-lib.mjs';
 
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
@@ -225,7 +225,7 @@ describe('evidence CLI', () => {
 			'record',
 			...common,
 			'--gate',
-			'typecheck',
+			'authored-source-types',
 			'--status',
 			'passed',
 			'--command',
@@ -246,7 +246,7 @@ describe('evidence CLI', () => {
 			'run',
 			...common,
 			'--gate',
-			'typecheck',
+			'authored-source-types',
 			'--',
 			process.execPath,
 			'-e',
@@ -256,7 +256,201 @@ describe('evidence CLI', () => {
 
 		assert.equal(result.status, 0, result.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
-		assert.equal(manifest.nodes['pkg:widget'].evidenceMatrix.gates.typecheck.observed, literal);
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['authored-source-types'].observed,
+			literal,
+		);
+	});
+
+	test('executes one command once for multiple evidence gates', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const counterPath = path.join(workspaceRoot, 'type-command-count');
+
+		const result = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'packed-source-types-node',
+			'--gate',
+			'packed-source-types-browser',
+			'--gate',
+			'packed-source-types-node',
+			'--',
+			process.execPath,
+			'-e',
+			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'x'); process.stdout.write('both packed projects passed')`,
+		]);
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.equal(readFileSync(counterPath, 'utf8'), 'x');
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		const resultReport = JSON.parse(result.stdout);
+		assert.equal(resultReport.gates.length, 2);
+		for (const gateId of ['packed-source-types-node', 'packed-source-types-browser']) {
+			assert.equal(manifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].status, 'passed');
+			assert.match(
+				manifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].observed,
+				/both packed projects passed/,
+			);
+		}
+
+		const failed = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'upstream-types',
+			'--gate',
+			'public-types',
+			'--',
+			process.execPath,
+			'-e',
+			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'y'); process.stderr.write('type projects failed'); process.exit(3)`,
+		]);
+
+		assert.equal(failed.status, 2);
+		assert.equal(readFileSync(counterPath, 'utf8'), 'xy');
+		const failedManifest = JSON.parse(
+			readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'),
+		);
+		for (const gateId of ['upstream-types', 'public-types']) {
+			assert.equal(
+				failedManifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].status,
+				'failed',
+			);
+			assert.match(
+				failedManifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].observed,
+				/type projects failed/,
+			);
+		}
+	});
+
+	test('rejects invalid multi-gate requests before executing or mutating evidence', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+
+		const recorded = runEvidence([
+			'record',
+			...common,
+			'--gate',
+			'upstream-types',
+			'--gate',
+			'public-types',
+			'--status',
+			'blocked',
+			'--reason',
+			'fixture reason',
+			'--repair',
+			'fixture repair',
+		]);
+		assert.equal(recorded.status, 2);
+		assert.match(recorded.stderr, /exactly one --gate/i);
+
+		const counterPath = path.join(workspaceRoot, 'invalid-gate-command-count');
+		const run = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'authored-source-types',
+			'--gate',
+			'unknown-types',
+			'--',
+			process.execPath,
+			'-e',
+			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'x')`,
+		]);
+		assert.equal(run.status, 2);
+		assert.match(run.stderr, /unknown evidence gate/i);
+		assert.equal(existsSync(counterPath), false);
+
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		for (const gateId of ['upstream-types', 'public-types', 'authored-source-types']) {
+			assert.equal(manifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].status, 'required');
+		}
+	});
+
+	test('resets a stale implementing matrix only through matching init categories', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const manifestPath = path.join(batchDirectory, 'manifest.json');
+		const legacyManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		legacyManifest.nodes['pkg:widget'].evidenceMatrix = {
+			schemaVersion: 1,
+			categories: ['thin-core'],
+			gates: {
+				typecheck: {
+					id: 'typecheck',
+					status: 'passed',
+					allowInapplicable: false,
+					artifact: 'legacy-types.log',
+					observed: 'Legacy typecheck passed.',
+				},
+			},
+		};
+		legacyManifest.nodes['pkg:widget'].evidence = { readiness: { status: 'verified' } };
+		writeFileSync(manifestPath, `${JSON.stringify(legacyManifest, null, 2)}\n`);
+
+		const counterPath = path.join(workspaceRoot, 'stale-matrix-command-count');
+		const run = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'authored-source-types',
+			'--',
+			process.execPath,
+			'-e',
+			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'x')`,
+		]);
+		assert.equal(run.status, 2);
+		assert.match(run.stderr, /rerun init/i);
+		assert.equal(existsSync(counterPath), false);
+
+		const recorded = runEvidence([
+			'record',
+			...common,
+			'--gate',
+			'typecheck',
+			'--status',
+			'blocked',
+			'--reason',
+			'legacy evidence',
+			'--repair',
+			'reset evidence',
+		]);
+		assert.equal(recorded.status, 2);
+		assert.match(recorded.stderr, /rerun init/i);
+		const verified = runEvidence(['verify', ...common]);
+		assert.equal(verified.status, 2);
+		assert.match(verified.stderr, /rerun init/i);
+
+		const mismatched = runEvidence(['init', ...common, '--category', 'hooks-store']);
+		assert.equal(mismatched.status, 2);
+		assert.match(mismatched.stderr, /different evidence category/i);
+		assert.equal(
+			JSON.parse(readFileSync(manifestPath, 'utf8')).nodes['pkg:widget'].evidenceMatrix
+				.schemaVersion,
+			1,
+		);
+
+		const reset = runEvidence(['init', ...common, '--category', 'thin-core']);
+		assert.equal(reset.status, 0, reset.stderr);
+		const resetManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		const resetNode = resetManifest.nodes['pkg:widget'];
+		assert.equal(resetNode.evidenceMatrix.schemaVersion, EVIDENCE_MATRIX_SCHEMA_VERSION);
+		assert.equal(resetNode.evidenceMatrix.gates.typecheck, undefined);
+		assert.equal(Object.hasOwn(resetNode, 'evidence'), false);
+		for (const gateId of [
+			'upstream-types',
+			'authored-source-types',
+			'public-types',
+			'packed-source-types-node',
+			'packed-source-types-browser',
+		]) {
+			assert.equal(resetNode.evidenceMatrix.gates[gateId].status, 'required');
+		}
 	});
 
 	test('refuses verification while required evidence is missing', () => {

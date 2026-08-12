@@ -114,11 +114,13 @@ authority.
    regression, retaining the binding scenario as integration evidence.
 
 7. **Complete artifacts and evidence.** Inventory and crosswalk every upstream
-   runtime/type case, register pristine/adapted lanes, run the applicable matrix
-   commands, and fix discovery or command failures. Add the complete package
-   contract, `UPSTREAM.md`, exact license/notices, README, `status.json`, generated
-   catalogs, and a patch changeset for user-facing behavior. Re-audit actual
-   shipped imports and copied/adapted paths. Then run:
+   runtime/type case, register pristine/adapted lanes, and prove direct authored
+   source, precise public declarations, and packed Node plus browser/no-Node type
+   consumers. Run the applicable matrix commands and fix discovery or command
+   failures. Add the complete package contract, `UPSTREAM.md`, exact
+   license/notices, README, `status.json`, generated catalogs, and a patch
+   changeset for user-facing behavior. Re-audit actual shipped imports and
+   copied/adapted paths. Then run:
 
    ```bash
    pnpm react-port:evidence verify --batch <id> --node pkg:<name> \

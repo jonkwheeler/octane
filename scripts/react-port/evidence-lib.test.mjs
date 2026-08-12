@@ -6,7 +6,9 @@ import path from 'node:path';
 import { describe, test } from 'node:test';
 import {
 	auditShippedClosure,
+	assertCurrentEvidenceMatrix,
 	createEvidenceMatrix,
+	EVIDENCE_MATRIX_SCHEMA_VERSION,
 	evaluateVerificationReadiness,
 	inspectBindingPackage,
 	recordEvidence,
@@ -68,6 +70,11 @@ describe('evidence matrix', () => {
 		for (const gate of [
 			'identity-license',
 			'package-tests',
+			'upstream-types',
+			'authored-source-types',
+			'public-types',
+			'packed-source-types-node',
+			'packed-source-types-browser',
 			'identity-lifecycle',
 			'ssr-hydration',
 			'upstream-crosswalk',
@@ -75,6 +82,8 @@ describe('evidence matrix', () => {
 		]) {
 			assert.ok(matrix.gates[gate], gate);
 		}
+		assert.equal(matrix.schemaVersion, EVIDENCE_MATRIX_SCHEMA_VERSION);
+		assert.equal(matrix.gates.typecheck, undefined);
 		assert.equal(matrix.gates['identity-license'].status, 'passed');
 	});
 
@@ -97,6 +106,44 @@ describe('evidence matrix', () => {
 			observed: '12 tests passed',
 		});
 		assert.equal(matrix.gates['package-tests'].status, 'passed');
+	});
+
+	test('rejects stale matrices instead of accepting legacy typecheck evidence', () => {
+		const staleMatrix = {
+			schemaVersion: 1,
+			categories: ['thin-core'],
+			gates: {
+				typecheck: {
+					id: 'typecheck',
+					label: 'Legacy typecheck',
+					status: 'passed',
+					allowInapplicable: false,
+					artifact: 'legacy-types.log',
+					observed: 'Legacy typecheck passed.',
+				},
+			},
+		};
+
+		assert.throws(() => assertCurrentEvidenceMatrix(staleMatrix), /rerun init/i);
+		assert.throws(
+			() =>
+				recordEvidence(staleMatrix, 'typecheck', {
+					status: 'failed',
+					artifact: 'new-types.log',
+					observed: 'New typecheck failed.',
+				}),
+			/rerun init/i,
+		);
+		assert.throws(
+			() =>
+				evaluateVerificationReadiness({
+					matrix: staleMatrix,
+					crosswalkReport: { status: 'passed' },
+					packageReport: { status: 'passed' },
+					closureReport: { status: 'passed' },
+				}),
+			/rerun init/i,
+		);
 	});
 
 	test('keeps every upstream registration visible with local evidence or a rationale', () => {

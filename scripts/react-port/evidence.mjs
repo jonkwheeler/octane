@@ -6,9 +6,11 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import {
 	auditShippedClosure,
+	assertCurrentEvidenceMatrix,
 	createEvidenceMatrix,
 	evaluateVerificationReadiness,
 	inspectBindingPackage,
+	isCurrentEvidenceMatrix,
 	recordEvidence,
 	validateUpstreamCrosswalk,
 } from './evidence-lib.mjs';
@@ -30,7 +32,7 @@ function usage() {
 	return `Usage:
   node scripts/react-port/evidence.mjs init --batch <id> --node <pkg:id> --category <kind> [...]
   node scripts/react-port/evidence.mjs record --batch <id> --node <pkg:id> --gate <id> --status <status> [evidence]
-  node scripts/react-port/evidence.mjs run --batch <id> --node <pkg:id> --gate <id> -- <executable> [args...]
+  node scripts/react-port/evidence.mjs run --batch <id> --node <pkg:id> --gate <id> [--gate <id> ...] -- <executable> [args...]
   node scripts/react-port/evidence.mjs verify --batch <id> --node <pkg:id> --package-dir <path> \
     --expected-directory <repo-path> --registrations <json> --crosswalk <json> --closure <json>
 
@@ -52,7 +54,11 @@ function parseArguments(arguments_) {
 	const command = optionArguments[0];
 	if (!['init', 'record', 'run', 'verify'].includes(command))
 		throw new Error('Expected init, record, run, or verify');
-	const options = { category: [], workRoot: path.join(process.cwd(), '.react-port-work') };
+	const options = {
+		category: [],
+		gate: [],
+		workRoot: path.join(process.cwd(), '.react-port-work'),
+	};
 	for (let index = 1; index < optionArguments.length; index += 1) {
 		const argument = optionArguments[index];
 		if (argument === '--recover-stale-lock') {
@@ -63,7 +69,7 @@ function parseArguments(arguments_) {
 		const name = argument.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 		const value = optionArguments[index + 1];
 		if (!value) throw new Error(`${argument} requires a value`);
-		if (name === 'category') options.category.push(value);
+		if (name === 'category' || name === 'gate') options[name].push(value);
 		else if (name === 'workRoot') options.workRoot = path.resolve(value);
 		else options[name] = value;
 		index += 1;
@@ -169,12 +175,22 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			transitionNodeState(manifest, options.node, 'implementing', {
 				evidenceFingerprint: node.evidenceFingerprint,
 			});
-		} else if (
-			!node.evidenceMatrix ||
-			JSON.stringify(node.evidenceMatrix.categories) !==
-				JSON.stringify([...new Set(options.category)].sort())
-		) {
-			throw new Error('Implementing node already has a different evidence category matrix');
+		} else {
+			const requestedCategories = [...new Set(options.category)].sort();
+			if (JSON.stringify(node.evidenceMatrix?.categories) !== JSON.stringify(requestedCategories)) {
+				throw new Error('Implementing node already has a different evidence category matrix');
+			}
+			if (!isCurrentEvidenceMatrix(node.evidenceMatrix)) {
+				node.evidenceMatrix = createEvidenceMatrix({
+					categories: requestedCategories,
+					preflightArtifact: path.join(
+						path.resolve(options.workRoot),
+						manifest.batchId,
+						'manifest.json',
+					),
+				});
+				delete node.evidence;
+			}
 		}
 		return { schemaVersion: 1, command, status: 'passed', nodeId: options.node, state: node.state };
 	}
@@ -184,8 +200,12 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			`Node ${options.node} must be implementing with an initialized evidence matrix`,
 		);
 	}
+	assertCurrentEvidenceMatrix(node.evidenceMatrix);
 	if (command === 'record') {
-		if (!options.gate || !options.status) throw new Error('record requires --gate and --status');
+		if (options.gate.length !== 1 || !options.status) {
+			throw new Error('record requires exactly one --gate and --status');
+		}
+		const gateId = options.gate[0];
 		if (options.command) {
 			throw new Error('record cannot claim command evidence; use run -- <executable> [args...]');
 		}
@@ -206,17 +226,23 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			reason: options.reason,
 			repair: options.repair,
 		});
-		recordEvidence(node.evidenceMatrix, options.gate, evidence);
+		recordEvidence(node.evidenceMatrix, gateId, evidence);
 		return {
 			schemaVersion: 1,
 			command,
 			status: 'passed',
 			nodeId: options.node,
-			gate: node.evidenceMatrix.gates[options.gate],
+			gate: node.evidenceMatrix.gates[gateId],
 		};
 	}
 	if (command === 'run') {
-		if (!options.gate) throw new Error('run requires --gate');
+		const gateIds = [...new Set(options.gate)];
+		if (gateIds.length === 0) throw new Error('run requires at least one --gate');
+		for (const gateId of gateIds) {
+			if (!node.evidenceMatrix.gates[gateId]) {
+				throw new Error(`Unknown evidence gate: ${gateId}`);
+			}
+		}
 		if (commandArguments.length === 0) {
 			throw new Error('run requires an executable and arguments after --');
 		}
@@ -250,13 +276,16 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 				),
 			};
 		}
-		recordEvidence(node.evidenceMatrix, options.gate, evidence);
+		for (const gateId of gateIds) {
+			recordEvidence(node.evidenceMatrix, gateId, evidence);
+		}
+		const gates = gateIds.map((gateId) => node.evidenceMatrix.gates[gateId]);
 		return {
 			schemaVersion: 1,
 			command,
 			status: evidence.status === 'passed' ? 'passed' : 'blocked',
 			nodeId: options.node,
-			gate: node.evidenceMatrix.gates[options.gate],
+			...(gates.length === 1 ? { gate: gates[0] } : { gates }),
 		};
 	}
 

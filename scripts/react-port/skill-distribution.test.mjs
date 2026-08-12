@@ -95,6 +95,34 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /independently authored\s+`?localEvidence`? paths/i);
 	});
 
+	test('requires strict authored and packed consumer type evidence', () => {
+		const implementation = readFileSync(
+			path.join(CANONICAL_ROOT, 'references', 'implementation-and-evidence.md'),
+			'utf8',
+		);
+		for (const gate of [
+			'upstream-types',
+			'authored-source-types',
+			'public-types',
+			'packed-source-types-node',
+			'packed-source-types-browser',
+		]) {
+			assert.match(implementation, new RegExp(`--gate ${gate}\\b`), gate);
+		}
+		assert.match(implementation, /directly include[\s\S]*authored\s+`?\.tsrx`?/i);
+		assert.match(
+			implementation,
+			/`?tsrx-tsc --noEmit`?[\s\S]*never (?:use )?plain `?(?:tsc|tsgo)`?/i,
+		);
+		assert.match(implementation, /`?skipLibCheck`?\s*(?::|must be)\s*`?false`?/i);
+		assert.match(implementation, /with Node\s+ambient types[\s\S]*without Node\s+ambient types/i);
+		assert.match(implementation, /complete packed dependency closure/i);
+		assert.match(implementation, /dependencies[\s\S]*optionalDependencies[\s\S]*peerDependencies/i);
+		assert.match(implementation, /AssertNotAny/);
+		assert.match(implementation, /must not add[\s\S]*packedTsrxSourceExceptions/i);
+		assert.match(implementation, /package import[\s\S]*declaration[\s\S]*hide[\s\S]*source/i);
+	});
+
 	test('keeps the canonical entry point thin and makes preflight mandatory', () => {
 		const skill = readFileSync(path.join(CANONICAL_ROOT, 'SKILL.md'), 'utf8');
 		assert.match(skill, /pnpm react-port:preflight/);

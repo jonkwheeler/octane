@@ -3,6 +3,7 @@ import { mkdtemp, readFile, readdir, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
+import { createEvidenceMatrix } from './evidence-lib.mjs';
 import {
 	acquireBatchLock,
 	createBatchManifest,
@@ -104,7 +105,7 @@ describe('batch state', () => {
 		assert.deepEqual(resumed.resume.invalidated, ['pkg:base', 'pkg:leaf']);
 	});
 
-	test('invalidates legacy verified binding implementations without stored evidence', () => {
+	test('invalidates stale verified binding evidence while preserving current and non-binding nodes', () => {
 		const implementationActions = ['create-binding', 'extend-binding', 'adopt-binding'];
 		const nodes = Object.fromEntries(
 			implementationActions.map((action) => [
@@ -123,6 +124,13 @@ describe('batch state', () => {
 			action: 'create-binding',
 			nodeFingerprint: 'verified-binding-plan',
 			evidenceFingerprint: 'verified-binding-evidence',
+			dependsOn: [],
+		};
+		nodes['pkg:current-binding'] = {
+			state: 'ready',
+			action: 'create-binding',
+			nodeFingerprint: 'current-binding-plan',
+			evidenceFingerprint: 'current-binding-evidence',
 			dependsOn: [],
 		};
 		nodes['pkg:reuse-binding'] = {
@@ -156,7 +164,27 @@ describe('batch state', () => {
 		});
 		Object.assign(previous.nodes['pkg:verified-binding'], {
 			state: 'verified',
-			evidenceMatrix: { schemaVersion: 1, gates: {} },
+			evidenceMatrix: {
+				schemaVersion: 1,
+				categories: ['thin-core'],
+				gates: {
+					typecheck: {
+						id: 'typecheck',
+						status: 'passed',
+						allowInapplicable: false,
+					},
+				},
+			},
+			evidence: { readiness: { status: 'verified' } },
+		});
+		const currentMatrix = createEvidenceMatrix({
+			categories: ['thin-core'],
+			preflightArtifact: 'manifest.json',
+		});
+		for (const gate of Object.values(currentMatrix.gates)) gate.status = 'passed';
+		Object.assign(previous.nodes['pkg:current-binding'], {
+			state: 'verified',
+			evidenceMatrix: currentMatrix,
 			evidence: { readiness: { status: 'verified' } },
 		});
 
@@ -165,12 +193,13 @@ describe('batch state', () => {
 		for (const action of implementationActions) {
 			assert.equal(resumed.nodes[`pkg:${action}`].state, 'ready');
 		}
-		assert.equal(resumed.nodes['pkg:verified-binding'].state, 'verified');
+		assert.equal(resumed.nodes['pkg:verified-binding'].state, 'ready');
+		assert.equal(resumed.nodes['pkg:current-binding'].state, 'verified');
 		assert.equal(resumed.nodes['pkg:reuse-binding'].state, 'verified');
 		assert.equal(resumed.nodes['pkg:clean-room'].state, 'verified');
 		assert.deepEqual(
 			resumed.resume.invalidated,
-			implementationActions.map((action) => `pkg:${action}`).sort(),
+			[...implementationActions.map((action) => `pkg:${action}`), 'pkg:verified-binding'].sort(),
 		);
 	});
 

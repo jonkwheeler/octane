@@ -22,11 +22,21 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const REQUIRED_NODE_ENGINE = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
 	.engines.node;
 
+export const EVIDENCE_MATRIX_SCHEMA_VERSION = 2;
+
 const COMMON_GATES = [
 	['identity-license', 'Immutable identity and approved-license preflight', false],
 	['upstream-crosswalk', 'Complete upstream test-registration crosswalk', false],
 	['package-tests', 'Focused package behavior tests', false],
-	['typecheck', 'Public and authored-source typecheck', false],
+	['upstream-types', 'Pristine and one-for-one adapted upstream type tests', false],
+	['authored-source-types', 'Strict direct authored-source typecheck', false],
+	['public-types', 'Precise packed public type surface and negative controls', false],
+	['packed-source-types-node', 'Strict packed source typecheck with Node ambient types', false],
+	[
+		'packed-source-types-browser',
+		'Strict packed source typecheck without Node ambient types',
+		false,
+	],
 	['public-exports', 'Public entrypoint and export checks', false],
 	['package-pack', 'Packed external-consumer check', false],
 	['package-contract', 'Binding package contract', false],
@@ -66,21 +76,83 @@ function gateRecord([id, label, allowInapplicable]) {
 	return [id, { id, label, status: 'required', allowInapplicable }];
 }
 
-export function createEvidenceMatrix({ categories, preflightArtifact }) {
+function normalizeCategories(categories) {
 	if (!Array.isArray(categories) || categories.length === 0) {
 		throw new Error('At least one binding evidence category is required');
-	}
-	if (typeof preflightArtifact !== 'string' || !preflightArtifact) {
-		throw new Error('The preflight manifest/report artifact is required');
 	}
 	const normalizedCategories = [...new Set(categories)].sort();
 	for (const category of normalizedCategories) {
 		if (!CATEGORY_GATES[category]) throw new Error(`Unknown evidence category: ${category}`);
 	}
-	const definitions = [
-		...COMMON_GATES,
-		...normalizedCategories.flatMap((category) => CATEGORY_GATES[category]),
-	];
+	return normalizedCategories;
+}
+
+function gateDefinitions(categories) {
+	return [...COMMON_GATES, ...categories.flatMap((category) => CATEGORY_GATES[category])];
+}
+
+export function isCurrentEvidenceMatrix(matrix) {
+	if (
+		!matrix ||
+		typeof matrix !== 'object' ||
+		matrix.schemaVersion !== EVIDENCE_MATRIX_SCHEMA_VERSION ||
+		!matrix.gates ||
+		typeof matrix.gates !== 'object'
+	) {
+		return false;
+	}
+	let definitions;
+	try {
+		definitions = gateDefinitions(normalizeCategories(matrix.categories));
+	} catch {
+		return false;
+	}
+	const expectedGates = new Map(
+		definitions.map(([id, , allowInapplicable]) => [id, allowInapplicable]),
+	);
+	if (
+		Object.keys(matrix.gates).length !== expectedGates.size ||
+		Object.keys(matrix.gates).some((gateId) => !expectedGates.has(gateId))
+	) {
+		return false;
+	}
+	return [...expectedGates].every(([gateId, allowInapplicable]) => {
+		const gate = matrix.gates[gateId];
+		return (
+			gate &&
+			gate.id === gateId &&
+			EVIDENCE_STATUSES.has(gate.status) &&
+			gate.allowInapplicable === allowInapplicable
+		);
+	});
+}
+
+export function assertCurrentEvidenceMatrix(matrix) {
+	if (!isCurrentEvidenceMatrix(matrix)) {
+		throw new Error(
+			`Evidence matrix does not satisfy schema version ${EVIDENCE_MATRIX_SCHEMA_VERSION}; rerun init with the existing evidence categories to reset it`,
+		);
+	}
+	return matrix;
+}
+
+export function isCompleteEvidenceMatrix(matrix) {
+	return (
+		isCurrentEvidenceMatrix(matrix) &&
+		Object.values(matrix.gates).every(
+			(gate) =>
+				gate.status === 'passed' ||
+				(gate.status === 'inapplicable' && gate.allowInapplicable && Boolean(gate.reason)),
+		)
+	);
+}
+
+export function createEvidenceMatrix({ categories, preflightArtifact }) {
+	if (typeof preflightArtifact !== 'string' || !preflightArtifact) {
+		throw new Error('The preflight manifest/report artifact is required');
+	}
+	const normalizedCategories = normalizeCategories(categories);
+	const definitions = gateDefinitions(normalizedCategories);
 	const gates = Object.fromEntries(definitions.map(gateRecord));
 	gates['identity-license'] = {
 		...gates['identity-license'],
@@ -88,10 +160,15 @@ export function createEvidenceMatrix({ categories, preflightArtifact }) {
 		artifact: preflightArtifact,
 		observed: 'Node reached ready through immutable identity and approved-license preflight.',
 	};
-	return { schemaVersion: 1, categories: normalizedCategories, gates };
+	return {
+		schemaVersion: EVIDENCE_MATRIX_SCHEMA_VERSION,
+		categories: normalizedCategories,
+		gates,
+	};
 }
 
 export function recordEvidence(matrix, gateId, evidence) {
+	assertCurrentEvidenceMatrix(matrix);
 	const gate = matrix.gates?.[gateId];
 	if (!gate) throw new Error(`Unknown evidence gate: ${gateId}`);
 	if (!EVIDENCE_STATUSES.has(evidence.status) || evidence.status === 'required') {
@@ -625,6 +702,7 @@ export function evaluateVerificationReadiness({
 	packageReport,
 	closureReport,
 }) {
+	assertCurrentEvidenceMatrix(matrix);
 	const issues = [];
 	for (const gate of Object.values(matrix.gates ?? {})) {
 		if (gate.status === 'passed') continue;

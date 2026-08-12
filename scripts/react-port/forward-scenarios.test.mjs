@@ -15,6 +15,7 @@ const fixture = JSON.parse(
 const PREFLIGHT_CLI = path.join(SCRIPT_DIRECTORY, 'preflight.mjs');
 const EVIDENCE_CLI = path.join(SCRIPT_DIRECTORY, 'evidence.mjs');
 const TERMINAL_CLI = path.join(SCRIPT_DIRECTORY, 'terminal.mjs');
+const TYPESCRIPT_CLI = path.resolve(SCRIPT_DIRECTORY, '../../node_modules/typescript/bin/tsc');
 const MIT_FIXTURE = path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json');
 const mitFixture = JSON.parse(readFileSync(MIT_FIXTURE, 'utf8'));
 
@@ -26,10 +27,24 @@ function writeJson(filePath, value) {
 	writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+function strictTypeCompilerOptions(overrides = {}) {
+	return {
+		module: 'NodeNext',
+		moduleResolution: 'NodeNext',
+		noEmit: true,
+		skipLibCheck: false,
+		strict: true,
+		target: 'ES2022',
+		types: [],
+		...overrides,
+	};
+}
+
 function createBindingPackage(workspace, licenseText) {
 	const packageDirectory = path.join(workspace, 'packages/fixture-widget');
 	mkdirSync(path.join(packageDirectory, 'src'), { recursive: true });
-	mkdirSync(path.join(packageDirectory, 'tests'));
+	mkdirSync(path.join(packageDirectory, 'tests/types/upstream'), { recursive: true });
+	mkdirSync(path.join(packageDirectory, 'tests/types/public'), { recursive: true });
 	writeJson(path.join(packageDirectory, 'package.json'), {
 		name: '@octanejs/fixture-widget',
 		version: '0.1.0',
@@ -38,19 +53,52 @@ function createBindingPackage(workspace, licenseText) {
 		publishConfig: { access: 'public' },
 		repository: { directory: 'packages/fixture-widget' },
 		files: ['src', 'README.md', 'UPSTREAM.md', 'LICENSE'],
-		exports: { '.': './src/index.mjs' },
+		types: './src/index.ts',
+		exports: {
+			'.': {
+				types: './src/index.ts',
+				import: './src/index.mjs',
+				default: './src/index.mjs',
+			},
+		},
 		scripts: { test: 'node --test tests/*.test.mjs' },
 		peerDependencies: { octane: 'workspace:*' },
 		devDependencies: { octane: 'workspace:*' },
+	});
+	writeJson(path.join(packageDirectory, 'tsconfig.json'), {
+		compilerOptions: strictTypeCompilerOptions(),
+		include: ['src/**/*.ts'],
 	});
 	writeFileSync(
 		path.join(packageDirectory, 'src/index.mjs'),
 		'export function fixtureWidget(value) { return `fixture:${value}`; }\n',
 	);
 	writeFileSync(
+		path.join(packageDirectory, 'src/index.ts'),
+		'export function fixtureWidget(value: string): string { return `fixture:${value}`; }\n',
+	);
+	writeFileSync(
 		path.join(packageDirectory, 'tests/fixture-widget.test.mjs'),
 		"import assert from 'node:assert/strict';\nimport { test } from 'node:test';\nimport { fixtureWidget } from '../src/index.mjs';\ntest('exposes the pinned widget behavior', () => assert.equal(fixtureWidget('ok'), 'fixture:ok'));\n",
 	);
+	for (const fileName of ['pristine.ts', 'adapted.ts']) {
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/upstream', fileName),
+			"import { fixtureWidget } from '../../../src/index.js';\n\nfixtureWidget('upstream') satisfies string;\n// @ts-expect-error the upstream contract accepts strings only\nfixtureWidget(1);\n",
+		);
+	}
+	writeJson(path.join(packageDirectory, 'tests/types/upstream/tsconfig.json'), {
+		compilerOptions: strictTypeCompilerOptions(),
+		include: ['*.ts'],
+	});
+	writeFileSync(
+		path.join(packageDirectory, 'tests/types/public/public.ts'),
+		"import { fixtureWidget } from '@octanejs/fixture-widget';\n\ntype IsAny<T> = 0 extends 1 & T ? true : false;\ntype Assert<T extends true> = T;\ntype PublicExportIsTyped = Assert<IsAny<typeof fixtureWidget> extends false ? true : false>;\n\nfixtureWidget('public') satisfies string;\n// @ts-expect-error the public API rejects non-string inputs\nfixtureWidget({ value: 'invalid' });\n",
+	);
+	writeJson(path.join(packageDirectory, 'tests/types/public/tsconfig.json'), {
+		compilerOptions: strictTypeCompilerOptions(),
+		include: ['public.ts'],
+	});
 	writeFileSync(path.join(packageDirectory, 'README.md'), '# Fixture Widget\n');
 	writeFileSync(path.join(packageDirectory, 'LICENSE'), licenseText);
 	writeFileSync(
@@ -63,6 +111,71 @@ function createBindingPackage(workspace, licenseText) {
 		verified: '2026-08-12',
 	});
 	return packageDirectory;
+}
+
+function createPackedTypeProjects(workspace, packageDirectory) {
+	const packDirectory = path.join(workspace, 'packed');
+	const consumerDirectory = path.join(workspace, 'packed-consumer');
+	mkdirSync(packDirectory);
+	mkdirSync(consumerDirectory);
+	const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+	const npmEnvironment = {
+		...process.env,
+		npm_config_cache: path.join(workspace, '.npm-cache'),
+		npm_config_update_notifier: 'false',
+	};
+	const packed = spawnSync(npmCommand, ['pack', '--json', '--pack-destination', packDirectory], {
+		cwd: packageDirectory,
+		encoding: 'utf8',
+		env: npmEnvironment,
+	});
+	assert.equal(packed.status, 0, packed.stderr || packed.stdout);
+	const [{ filename }] = JSON.parse(packed.stdout);
+	const installed = spawnSync(
+		npmCommand,
+		[
+			'install',
+			'--ignore-scripts',
+			'--no-audit',
+			'--no-fund',
+			'--offline',
+			'--legacy-peer-deps',
+			'--prefix',
+			consumerDirectory,
+			path.join(packDirectory, filename),
+		],
+		{ cwd: workspace, encoding: 'utf8', env: npmEnvironment },
+	);
+	assert.equal(installed.status, 0, installed.stderr || installed.stdout);
+
+	const installedSource = 'node_modules/@octanejs/fixture-widget/src/**/*.ts';
+	writeFileSync(
+		path.join(consumerDirectory, 'node-consumer.ts'),
+		"import process from 'node:process';\nimport { fixtureWidget } from '@octanejs/fixture-widget';\n\nfixtureWidget(process.env.FIXTURE_VALUE ?? 'node') satisfies string;\n",
+	);
+	writeJson(path.join(consumerDirectory, 'tsconfig.node.json'), {
+		compilerOptions: strictTypeCompilerOptions({
+			composite: true,
+			typeRoots: [path.resolve(SCRIPT_DIRECTORY, '../../node_modules/@types')],
+			types: ['node'],
+		}),
+		include: ['node-consumer.ts', installedSource],
+	});
+	writeFileSync(
+		path.join(consumerDirectory, 'browser-consumer.ts'),
+		"import { fixtureWidget } from '@octanejs/fixture-widget';\n\nfixtureWidget(window.location.href) satisfies string;\n// @ts-expect-error browser consumers must not receive Node globals\nprocess.cwd();\n",
+	);
+	writeJson(path.join(consumerDirectory, 'tsconfig.browser.json'), {
+		compilerOptions: strictTypeCompilerOptions({
+			composite: true,
+			lib: ['ES2022', 'DOM'],
+		}),
+		include: ['browser-consumer.ts', installedSource],
+	});
+	return {
+		browser: path.join(consumerDirectory, 'tsconfig.browser.json'),
+		node: path.join(consumerDirectory, 'tsconfig.node.json'),
+	};
 }
 
 function inventory() {
@@ -196,6 +309,7 @@ describe('fresh forward scenarios', () => {
 
 		const licenseText = mitFixture.targets['fixture-widget@1.0.0'].registry.licenseFiles[0].content;
 		const packageDirectory = createBindingPackage(workspace, licenseText);
+		const packedTypeProjects = createPackedTypeProjects(workspace, packageDirectory);
 		const evidenceDirectory = path.join(workspace, 'evidence');
 		mkdirSync(evidenceDirectory);
 		const registrationsPath = path.join(evidenceDirectory, 'registrations.json');
@@ -234,45 +348,110 @@ describe('fresh forward scenarios', () => {
 		const sourceEntry = path.join(packageDirectory, 'src/index.mjs');
 		const expectedSource = 'export function fixtureWidget(value) { return `fixture:${value}`; }\n';
 		const commandGates = [
-			['typecheck', ['--check', sourceEntry]],
 			[
-				'public-exports',
+				['upstream-types'],
+				[
+					TYPESCRIPT_CLI,
+					'--noEmit',
+					'-p',
+					path.join(packageDirectory, 'tests/types/upstream/tsconfig.json'),
+				],
+			],
+			[
+				['authored-source-types'],
+				[TYPESCRIPT_CLI, '--noEmit', '-p', path.join(packageDirectory, 'tsconfig.json')],
+			],
+			[
+				['public-types'],
+				[
+					TYPESCRIPT_CLI,
+					'--noEmit',
+					'-p',
+					path.join(packageDirectory, 'tests/types/public/tsconfig.json'),
+				],
+			],
+			[
+				['packed-source-types-node', 'packed-source-types-browser'],
+				[
+					TYPESCRIPT_CLI,
+					'--build',
+					packedTypeProjects.node,
+					packedTypeProjects.browser,
+					'--pretty',
+					'false',
+				],
+			],
+			[
+				['public-exports'],
 				[
 					'-e',
 					`import(${JSON.stringify(pathToFileURL(sourceEntry).href)}).then((module) => { if (typeof module.fixtureWidget !== 'function') process.exit(1); process.stdout.write('public export passed'); })`,
 				],
 			],
 			[
-				'package-pack',
+				['package-pack'],
 				[
 					'-e',
-					`const manifest = JSON.parse(require('node:fs').readFileSync(${JSON.stringify(path.join(packageDirectory, 'package.json'))}, 'utf8')); if (manifest.exports?.['.'] !== './src/index.mjs' || !manifest.files.includes('UPSTREAM.md')) process.exit(1); process.stdout.write('package boundary passed');`,
+					`const manifest = JSON.parse(require('node:fs').readFileSync(${JSON.stringify(path.join(packageDirectory, 'package.json'))}, 'utf8')); if (manifest.exports?.['.']?.import !== './src/index.mjs' || manifest.exports?.['.']?.types !== './src/index.ts' || !manifest.files.includes('UPSTREAM.md')) process.exit(1); process.stdout.write('package boundary passed');`,
 				],
 			],
 			[
-				'format',
+				['format'],
 				[
 					'-e',
 					`const source = require('node:fs').readFileSync(${JSON.stringify(sourceEntry)}, 'utf8'); if (source !== ${JSON.stringify(expectedSource)}) process.exit(1); process.stdout.write('fixture format passed');`,
 				],
 			],
 			[
-				'differential-surface',
+				['differential-surface'],
 				[
 					'-e',
 					`import(${JSON.stringify(pathToFileURL(sourceEntry).href)}).then(({ fixtureWidget }) => { for (const value of ['', 'ok', 'value']) if (fixtureWidget(value) !== 'fixture:' + value) process.exit(1); process.stdout.write('differential surface passed'); })`,
 				],
 			],
 		];
-		for (const [gateId, commandArguments] of commandGates) {
+		for (const [gateIds, commandArguments] of commandGates) {
 			const result = runNodeCli(
 				EVIDENCE_CLI,
-				['run', ...evidenceCommon, '--gate', gateId, '--', process.execPath, ...commandArguments],
+				[
+					'run',
+					...evidenceCommon,
+					...gateIds.flatMap((gateId) => ['--gate', gateId]),
+					'--',
+					process.execPath,
+					...commandArguments,
+				],
 				workspace,
 			);
-			assert.equal(result.status, 0, `${gateId}: ${result.stderr || result.stdout}`);
-			assert.equal(JSON.parse(result.stdout).gate.status, 'passed');
+			assert.equal(result.status, 0, `${gateIds.join(', ')}: ${result.stderr || result.stdout}`);
+			const report = JSON.parse(result.stdout);
+			for (const gate of report.gates ?? [report.gate]) assert.equal(gate.status, 'passed');
 		}
+		manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		const typeGateCommands = Object.fromEntries(
+			[
+				'upstream-types',
+				'authored-source-types',
+				'public-types',
+				'packed-source-types-node',
+				'packed-source-types-browser',
+			].map((gateId) => [
+				gateId,
+				JSON.parse(manifest.nodes['pkg:fixture-widget'].evidenceMatrix.gates[gateId].command),
+			]),
+		);
+		for (const [gateId, command] of Object.entries(typeGateCommands)) {
+			assert.equal(command[0], process.execPath, gateId);
+			assert.equal(command[1], TYPESCRIPT_CLI, gateId);
+			assert.doesNotMatch(command.join(' '), /--check\b/, gateId);
+		}
+		assert.deepEqual(
+			typeGateCommands['packed-source-types-browser'],
+			typeGateCommands['packed-source-types-node'],
+			'the shared compiler command must cover both packed projects',
+		);
+		assert.ok(typeGateCommands['packed-source-types-node'].includes(packedTypeProjects.node));
+		assert.ok(typeGateCommands['packed-source-types-node'].includes(packedTypeProjects.browser));
 		const generatedData = runNodeCli(
 			EVIDENCE_CLI,
 			[
@@ -329,6 +508,7 @@ describe('fresh forward scenarios', () => {
 		for (const relativePath of [
 			'package.json',
 			'src/index.mjs',
+			'src/index.ts',
 			'tests/fixture-widget.test.mjs',
 			'UPSTREAM.md',
 			'LICENSE',

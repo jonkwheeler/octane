@@ -1,9 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { createEvidenceMatrix } from './evidence-lib.mjs';
 import { parseArguments, terminalBatchReport } from './terminal.mjs';
 
 function node(id, { requested = true, state, disposition, ...rest }) {
 	return { id, requested, state, disposition, dependsOn: [], ...rest };
+}
+
+function evidenceMatrix(categories = ['thin-core'], complete = true) {
+	const matrix = createEvidenceMatrix({ categories, preflightArtifact: 'manifest.json' });
+	if (complete) {
+		for (const gate of Object.values(matrix.gates)) gate.status = 'passed';
+	}
+	return matrix;
 }
 
 test('rejects path traversal and separators in batch identifiers', () => {
@@ -38,13 +47,12 @@ test('reports unfinished requested targets and actionable graph prerequisites', 
 				state: 'implementing',
 				disposition: 'actionable',
 				action: 'create-binding',
-				evidenceMatrix: {
-					gates: {
-						typecheck: { status: 'passed' },
-						'package-tests': { status: 'required' },
-						browser: { status: 'failed' },
-					},
-				},
+				evidenceMatrix: (() => {
+					const matrix = evidenceMatrix(['dom-component']);
+					matrix.gates['package-tests'].status = 'required';
+					matrix.gates.browser.status = 'failed';
+					return matrix;
+				})(),
 			}),
 			dependency: node('dependency', {
 				requested: false,
@@ -191,6 +199,7 @@ test('repairs legacy verified binding implementations without stored evidence', 
 			'pkg:extend-binding',
 			'pkg:adopt-binding',
 			'pkg:verified-binding',
+			'pkg:current-binding',
 			'pkg:reuse-binding',
 			'pkg:clean-room',
 		],
@@ -218,7 +227,24 @@ test('repairs legacy verified binding implementations without stored evidence', 
 				state: 'verified',
 				disposition: 'actionable',
 				action: 'create-binding',
-				evidenceMatrix: { schemaVersion: 1, gates: {} },
+				evidenceMatrix: {
+					schemaVersion: 1,
+					categories: ['thin-core'],
+					gates: {
+						typecheck: {
+							id: 'typecheck',
+							status: 'passed',
+							allowInapplicable: false,
+						},
+					},
+				},
+				evidence: { readiness: { status: 'verified' } },
+			}),
+			'pkg:current-binding': node('pkg:current-binding', {
+				state: 'verified',
+				disposition: 'actionable',
+				action: 'create-binding',
+				evidenceMatrix: evidenceMatrix(),
 				evidence: { readiness: { status: 'verified' } },
 			}),
 			'pkg:reuse-binding': node('pkg:reuse-binding', {
@@ -239,6 +265,7 @@ test('repairs legacy verified binding implementations without stored evidence', 
 		'pkg:create-binding',
 		'pkg:extend-binding',
 		'pkg:adopt-binding',
+		'pkg:verified-binding',
 	]);
 	assert.deepEqual(
 		report.nextActions.map(({ nodeId, kind, repair }) => ({ nodeId, kind, repair })),
@@ -257,6 +284,12 @@ test('repairs legacy verified binding implementations without stored evidence', 
 			},
 			{
 				nodeId: 'pkg:adopt-binding',
+				kind: 'repair-evidence',
+				repair:
+					'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.',
+			},
+			{
+				nodeId: 'pkg:verified-binding',
 				kind: 'repair-evidence',
 				repair:
 					'Rerun preflight, then initialize and verify binding evidence before requesting a terminal report.',

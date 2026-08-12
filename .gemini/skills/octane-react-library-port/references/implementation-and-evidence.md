@@ -74,7 +74,8 @@ A completed publishable binding normally has:
 - exact workspace `octane` peer and dev dependencies, never a regular runtime
   `octane` dependency;
 - source and public type exports with no published `declare module '*.tsrx'`;
-- README, `status.json`, tests, and `tsconfig.json`/type fixtures as applicable;
+- README, `status.json`, tests, and strict authored/public/packed-consumer type
+  programs;
 - a byte-exact, unpublished `upstream/` evidence tree for the pinned source and
   tests when those bytes are adapted or used as parity evidence;
 - `UPSTREAM.md` naming package, version/tag, immutable commit, source boundary,
@@ -144,6 +145,50 @@ repair `vitest.config.js`, the parity manifest, or the package's include pattern
 as appropriate and rerun. Test discovery is implementation work; it cannot be
 recorded as blocked, inapplicable, or a reason to return an unfinished port.
 
+## Strict type evidence
+
+Type correctness is five independent obligations. None substitutes for another:
+
+1. Run the pristine upstream type suite with its original compiler and pinned
+   React types, then the complete one-for-one adapted suite with Octane types.
+   Preserve positive assertions, negative assertions, and every
+   `@ts-expect-error`.
+2. Compile the authored package source directly with `tsrx-tsc --noEmit`. The
+   project must directly include every authored `.tsrx` file; a package import
+   can resolve a declaration condition and hide broken source. For every source
+   program use `strict: true`, `skipLibCheck: false`, the Octane JSX/compiler
+   settings, and no ambient `declare module '*.tsrx'`. Never use plain `tsc` or
+   `tsgo` for a program containing `.tsrx`.
+3. Compile a consumer of every public entry and type export. Assert exported
+   component props, hooks, values, and aliases are not `any` (for example with
+   `AssertNotAny`), exercise representative valid calls, and retain negative
+   controls for invalid props and unsupported exports. A declaration file may
+   describe the public surface, but it never replaces direct source compilation.
+4. Pack the binding and typecheck the installed authored source with Node
+   ambient types. Install the complete packed dependency closure across
+   `dependencies`, `optionalDependencies`, `peerDependencies`, internal
+   workspace packages, and required external peers. Resolve Octane and the
+   compiler from the isolated consumer, never back into the workspace.
+5. Run the same strict packed-source check without Node ambient types
+   (`types: []`) for browser consumers. Directly include installed authored
+   `.tsrx`; imports from those files must pull their `.ts` dependencies into the
+   program. Bare browser globals, missing ambient declarations, null/ref generic
+   mistakes, implicit component props, and hidden peer-type incompatibilities
+   are failures to repair.
+
+Explicitly type public component props, context values, ref generics,
+nullability, and renderables (`OctaneNode`, never `React.ReactNode`). Ensure
+generated ambient declarations needed by a public entry are reachable from that
+entry. Keep `types`/conditional exports truthful: declaration-only routing must
+not claim runtime exports that the port does not implement.
+
+The repository packed-consumer guard discovers every published framework
+binding that ships `.tsrx` and fails when it has no importable public entry. A
+new or upgraded port must not add itself to `packedTsrxSourceExceptions` or any
+equivalent allowlist. Existing named debt does not authorize new debt. Any
+failure in these lanes is implementation work, not an inapplicable or terminal
+disposition.
+
 ## Evidence matrix
 
 Record every row as `required`, `passed`, `failed`, `blocked`, or `inapplicable`.
@@ -167,7 +212,8 @@ provider or portal behavior. In particular, `react-hotkeys-hook` does not gain
 
 Run every command-backed gate through the evidence runner. It executes an argv
 vector directly without a shell, captures bounded output, records the actual
-exit status, and cannot turn a failed command into a pass:
+exit status, and cannot turn a failed command into a pass. Repeat `--gate` when
+one authoritative command proves multiple rows; the command runs only once:
 
 ```bash
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
@@ -175,6 +221,29 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
 ```
 
 For example, use `-- pnpm --dir packages/<binding> test` for a package test.
+
+Record all five strict type obligations under their dedicated gates. Use the
+actual package-owned pristine/adapted command for the first row and strict
+`tsrx-tsc` projects for authored and public programs. The packed repository gate
+proves both installed-source contexts and the package boundary in one run:
+
+```bash
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate upstream-types -- <pristine-and-adapted-type-command>
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate authored-source-types -- pnpm exec tsrx-tsc --noEmit \
+  -p packages/<binding>/tsconfig.json
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate public-types -- pnpm exec tsrx-tsc --noEmit \
+  -p packages/<binding>/tests/types/tsconfig.json
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate packed-source-types-node \
+  --gate packed-source-types-browser \
+  --gate package-pack -- pnpm packages:pack:check
+```
+
+Paths and package script names may follow the closest binding, but the five
+separate observations and compiler semantics above are mandatory.
 
 Use `record` only for an existing `--artifact`, for a blocked row with both
 `--reason` and `--repair`, or for an allowed inapplicable row with `--reason`.
@@ -190,7 +259,8 @@ pnpm react-port:evidence record --batch <id> --node pkg:<name> \
 Always require:
 
 - package test suite and focused public-export behavior;
-- typecheck (`tsrx-tsc --noEmit` for programs containing `.tsrx`);
+- pristine/adapted upstream type parity, direct authored-source typecheck,
+  precise public types, and packed Node/browser source typechecks;
 - upstream test-registration crosswalk completeness;
 - public entrypoint/export and packed-consumer checks;
 - durable upstream/license/notice provenance;
