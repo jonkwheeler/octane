@@ -42,6 +42,12 @@ export function validateBatchManifest(manifest) {
 	if (typeof manifest.batchId !== 'string' || !/^[a-z0-9][a-z0-9._-]*$/i.test(manifest.batchId)) {
 		throw new Error('Batch manifest has an invalid batchId');
 	}
+	if (
+		manifest.workspaceRoot !== undefined &&
+		(typeof manifest.workspaceRoot !== 'string' || !path.isAbsolute(manifest.workspaceRoot))
+	) {
+		throw new Error('Batch manifest workspaceRoot must be an absolute path');
+	}
 	if (!manifest.nodes || typeof manifest.nodes !== 'object')
 		throw new Error('Batch manifest has no nodes');
 	for (const field of ['executionUnits', 'actionableExecutionUnits', 'executionOrder']) {
@@ -71,6 +77,7 @@ export function validateBatchManifest(manifest) {
 
 export function createBatchManifest({
 	batchId,
+	workspaceRoot = null,
 	inventoryFingerprint,
 	nodes,
 	baseline = {},
@@ -82,6 +89,7 @@ export function createBatchManifest({
 	const manifest = {
 		schemaVersion: SCHEMA_VERSION,
 		batchId,
+		...(workspaceRoot === null ? {} : { workspaceRoot: path.resolve(workspaceRoot) }),
 		inventoryFingerprint,
 		graphFingerprint,
 		nodes: structuredClone(nodes),

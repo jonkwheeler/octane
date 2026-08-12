@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import {
@@ -90,6 +90,18 @@ function readJson(filePath, label) {
 	}
 }
 
+function canonicalPath(filePath) {
+	let existingPath = path.resolve(filePath);
+	const missingParts = [];
+	while (!existsSync(existingPath)) {
+		const parent = path.dirname(existingPath);
+		if (parent === existingPath) break;
+		missingParts.unshift(path.basename(existingPath));
+		existingPath = parent;
+	}
+	return path.join(realpathSync(existingPath), ...missingParts);
+}
+
 function attributionHashes(node) {
 	const verdicts = [node.license?.published, node.license?.source];
 	return {
@@ -148,7 +160,11 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		if (node.state === 'ready') {
 			node.evidenceMatrix = createEvidenceMatrix({
 				categories: options.category,
-				preflightArtifact: `.react-port-work/${manifest.batchId}/manifest.json`,
+				preflightArtifact: path.join(
+					path.resolve(options.workRoot),
+					manifest.batchId,
+					'manifest.json',
+				),
 			});
 			transitionNodeState(manifest, options.node, 'implementing', {
 				evidenceFingerprint: node.evidenceFingerprint,
@@ -262,10 +278,10 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	if (options.expectedDirectory !== node.bindingDirectory) {
 		throw new Error(`--expected-directory must match the graph plan: ${node.bindingDirectory}`);
 	}
-	const workspaceRoot = path.dirname(path.resolve(options.workRoot));
+	const workspaceRoot = manifest.workspaceRoot ?? path.dirname(path.resolve(options.workRoot));
 	const plannedPackageDirectory = path.resolve(workspaceRoot, node.bindingDirectory);
 	const packageDirectory = path.resolve(options.packageDir);
-	if (packageDirectory !== plannedPackageDirectory) {
+	if (canonicalPath(packageDirectory) !== canonicalPath(plannedPackageDirectory)) {
 		throw new Error(
 			`--package-dir must match the graph-planned workspace directory: ${plannedPackageDirectory}`,
 		);

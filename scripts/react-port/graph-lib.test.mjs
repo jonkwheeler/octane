@@ -479,6 +479,31 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:missing-target']);
 	});
 
+	test('keeps blocked npm URL targets distinct by parsed package identity', () => {
+		const graph = planPortGraph({
+			targets: [
+				{
+					input: 'https://www.npmjs.com/package/@acme/react-one/v/1.0.0',
+					status: 'blocked',
+					blockers: ['Remote request failed with HTTP 404'],
+				},
+				{
+					input: 'https://www.npmjs.com/package/@acme/react-two/v/2.0.0',
+					status: 'blocked',
+					blockers: ['Remote request failed with HTTP 404'],
+				},
+			],
+			inventory: fixtureInventory(),
+		});
+
+		assert.equal(graph.nodes['pkg:@acme/react-one'].input.includes('react-one'), true);
+		assert.equal(graph.nodes['pkg:@acme/react-two'].input.includes('react-two'), true);
+		assert.deepEqual(graph.requestedSummary.hardBlocked, [
+			'pkg:@acme/react-one',
+			'pkg:@acme/react-two',
+		]);
+	});
+
 	test('names new bindings by removing a leading react segment', () => {
 		const graph = planPortGraph({
 			targets: [

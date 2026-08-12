@@ -253,6 +253,7 @@ async function main() {
 			});
 			const nextManifest = createBatchManifest({
 				batchId,
+				workspaceRoot: process.cwd(),
 				inventoryFingerprint: inventory.fingerprint,
 				graphFingerprint: graph.fingerprint,
 				nodes: graph.nodes,

@@ -17,13 +17,14 @@ function sha256(content) {
 	return createHash('sha256').update(content).digest('hex');
 }
 
-function createReadyBatch({ cleanRoomDependency = false } = {}) {
+function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-port-work' } = {}) {
 	const workspaceRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
-	const workRoot = path.join(workspaceRoot, '.react-port-work');
+	const workRoot = path.join(workspaceRoot, workRootPath);
 	const batchDirectory = path.join(workRoot, 'fixture-batch');
 	mkdirSync(batchDirectory, { recursive: true });
 	const manifest = createBatchManifest({
 		batchId: 'fixture-batch',
+		workspaceRoot,
 		inventoryFingerprint: 'inventory',
 		nodes: {
 			'pkg:widget': {
@@ -430,5 +431,45 @@ describe('evidence CLI', () => {
 		const report = JSON.parse(verified.stdout);
 		assert.equal(report.status, 'passed');
 		assert.equal(report.state, 'verified');
+	});
+
+	test('uses the recorded workspace with a nested custom work root', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch({
+			workRootPath: 'state/react-port',
+		});
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		recordRequiredEvidence(batchDirectory);
+
+		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-custom-root-'));
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		for (const [name, value] of Object.entries({
+			'registrations.json': [],
+			'crosswalk.json': [],
+			'closure.json': { runtimeDependencies: ['octane'], adaptedSources: [] },
+		})) {
+			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
+		}
+		const verified = runEvidence([
+			'verify',
+			...common,
+			'--package-dir',
+			packageDirectory,
+			'--expected-directory',
+			'packages/widget',
+			'--registrations',
+			path.join(inputRoot, 'registrations.json'),
+			'--crosswalk',
+			path.join(inputRoot, 'crosswalk.json'),
+			'--closure',
+			path.join(inputRoot, 'closure.json'),
+		]);
+
+		assert.equal(verified.status, 0, verified.stderr);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['identity-license'].artifact,
+			path.join(workRoot, 'fixture-batch', 'manifest.json'),
+		);
 	});
 });

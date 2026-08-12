@@ -7,6 +7,7 @@ import {
 	REACT_API_MAP,
 } from '../../packages/octane-mcp-server/src/bridge.js';
 import { getWorkspacePackages, REPO_ROOT } from '../workspace-packages.mjs';
+import { parseInput } from './input-lib.mjs';
 import { fingerprint } from './preflight-lib.mjs';
 import { rangesOverlap, satisfiesRange } from './version-lib.mjs';
 
@@ -129,6 +130,12 @@ export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
 function packageNameFromBlockedTarget(target) {
 	if (target.identity?.packageName) return target.identity.packageName;
 	const input = String(target.input ?? 'unknown');
+	try {
+		const parsedInput = parseInput(input);
+		if (parsedInput.kind === 'npm') return parsedInput.packageName;
+	} catch {
+		// Preserve the raw input below when immutable intake failed before parsing completed.
+	}
 	if (input.startsWith('@')) {
 		const separator = input.indexOf('@', input.indexOf('/'));
 		return separator === -1 ? input : input.slice(0, separator);
