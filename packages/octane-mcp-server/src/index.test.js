@@ -268,7 +268,10 @@ describe('@octanejs/mcp-server helpers', () => {
 			.map((entry) => entry.name)
 			.sort();
 
-		expect(Object.keys(REPO_SKILLS).sort()).toEqual(onDisk);
+		expect(REPO_SKILLS['react-library-port']).toBe(
+			'.rulesync/skills/octane-react-library-port/SKILL.md',
+		);
+		expect(Object.keys(REPO_SKILLS).sort()).toEqual([...onDisk, 'react-library-port'].sort());
 
 		for (const file of Object.values(REPO_SKILLS)) {
 			expect(file.startsWith('.rulesync/skills/')).toBe(true);

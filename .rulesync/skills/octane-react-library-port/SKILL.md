@@ -93,7 +93,10 @@ authority.
    prerequisites, feasibility plans, `actionableExecutionUnits`, and deterministic
    order. Before each ready unit, compare its exact planned paths with the
    manifest baseline and current status. Resolve or provenance-match/adopt every
-   collision; never overwrite unrelated work.
+   collision; never overwrite unrelated work. `evidence init` enforces the
+   stored worktree baseline, rejects changed planned paths, rejects symlink
+   components, and confirms the real binding directory stays inside the real
+   workspace root.
 
 5. **Initialize evidence before the first implementation write.** Choose every
    evidence category from the ready node's public behavior, then run:

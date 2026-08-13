@@ -101,7 +101,11 @@ boundary recorded in `UPSTREAM.md` and the retained license.
 ## Upstream inventory and test crosswalk
 
 First prove what runtime and type suites exist at the pin by inspecting its
-workspace, package scripts, fixtures, snapshots, and test configuration. The npm
+workspace, package scripts, fixtures, snapshots, and test configuration. The
+preflight manifest stores the immutable Git-tree path, blob hash, size, and
+runtime/type kind of every discovered upstream test file before implementation;
+the registration inventory must cover that stored set. A zero-case inventory
+passes only when the immutable tree inventory itself is empty. The npm
 tarball alone cannot prove that upstream has no tests. Run framework-neutral
 suites unchanged against reused cores; port React-owned cases one by one with
 their upstream names and source citations.
@@ -245,10 +249,12 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
 Paths and package script names may follow the closest binding, but the five
 separate observations and compiler semantics above are mandatory.
 
-Use `record` only for an existing `--artifact`, for a blocked row with both
-`--reason` and `--repair`, or for an allowed inapplicable row with `--reason`.
-It rejects passed/failed command claims that it did not execute. A skipped,
-unrun, or missing-output command is never `passed`.
+Evidence gates declare whether they are `command` or machine-`automated`.
+Command gates accept passed/failed evidence only from `run`; automated gates are
+written only by `verify`. Use `record` for a blocked row with both `--reason`
+and `--repair`, or for an allowed inapplicable row with `--reason`. It rejects
+passed/failed command claims that it did not execute. A skipped, unrun, or
+missing-output command is never `passed`.
 
 ```bash
 pnpm react-port:evidence record --batch <id> --node pkg:<name> \
@@ -324,11 +330,17 @@ only validating metadata. Run affected core tests and the full root `pnpm test`
 after targeted evidence is green. Regenerate derived data from its source
 command; never edit generated files directly.
 
-Before verification, write three data files: the immutable upstream registration
-inventory, its complete classified crosswalk, and a closure object. The closure
-contains `runtimeDependencies`, `adaptedSources` (`packageName` and exact paths),
-and `reimplementedDependencies`. Use `reimplementedDependencies: []` when there
-are none. For every no-copy dependency, add exactly one object with its
+Before verification, write three data files: the registration inventory covering
+the immutable preflight test-file inventory, its complete classified crosswalk,
+and a closure object. The closure contains expected `runtimeDependencies`,
+expected `adaptedSources`, a `sourceLedger`, and `reimplementedDependencies`.
+The source ledger covers every source file reachable from public exports with
+its package-relative path, exact SHA-256, and `authored` or `adapted` origin; an
+adapted entry also names its upstream package. Verification derives actual
+runtime imports from the package manifest and reachable public source, hashes
+the ledger bytes, and compares both derived sets with the graph and closure
+expectations. Use `reimplementedDependencies: []` when there are none. For every
+no-copy dependency, add exactly one object with its
 `packageName`, nonempty `publicBehaviors`, and independently authored
 `localEvidence` paths. Those paths must point to safe local tests or artifacts;
 source-derived plans and upstream test copies are not clean-room evidence. Then

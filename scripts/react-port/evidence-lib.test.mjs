@@ -165,6 +165,60 @@ describe('evidence matrix', () => {
 		assert.equal(result.status, 'passed');
 		assert.equal(result.cases.length, 2);
 	});
+
+	test('binds registrations to the immutable upstream test inventory', () => {
+		assert.throws(
+			() =>
+				validateUpstreamCrosswalk(
+					[],
+					[],
+					[
+						{
+							path: 'packages/widget/tests/widget.test.ts',
+							kind: 'runtime',
+							gitBlob: 'a'.repeat(40),
+							size: 128,
+						},
+					],
+				),
+			/immutable upstream.*widget\.test\.ts.*missing/i,
+		);
+	});
+
+	test('hashes package-local crosswalk evidence and rejects missing files', async () => {
+		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-crosswalk-evidence-'));
+		await mkdir(path.join(evidenceRoot, 'tests'));
+		const evidencePath = 'tests/widget.test.ts';
+		const evidenceContents = 'export const covered = true;\n';
+		await writeFile(path.join(evidenceRoot, evidencePath), evidenceContents);
+		const registrations = [{ id: 'renders', source: 'upstream/widget.test.ts:10' }];
+		const valid = validateUpstreamCrosswalk(
+			registrations,
+			[{ id: 'renders', classification: 'implemented', localEvidence: evidencePath }],
+			[],
+			evidenceRoot,
+		);
+
+		assert.deepEqual(valid.localEvidenceArtifacts, [
+			{ path: evidencePath, sha256: sha256(evidenceContents) },
+		]);
+		assert.throws(
+			() =>
+				validateUpstreamCrosswalk(
+					registrations,
+					[
+						{
+							id: 'renders',
+							classification: 'implemented',
+							localEvidence: 'tests/missing.test.ts',
+						},
+					],
+					[],
+					evidenceRoot,
+				),
+			/missing\.test\.ts/i,
+		);
+	});
 });
 
 describe('package and closure completion', () => {
@@ -295,6 +349,83 @@ describe('package and closure completion', () => {
 		assert.equal(result.status, 'blocked');
 		assert.match(result.issues.join('\n'), /surprise-runtime/);
 		assert.match(result.issues.join('\n'), /copied-helper.*approved-license/i);
+	});
+
+	test('derives runtime imports from reachable shipped source instead of trusting closure input', async () => {
+		const packageDirectory = await mkdtemp(path.join(tmpdir(), 'react-port-derived-closure-'));
+		await mkdir(path.join(packageDirectory, 'src'));
+		await writeFile(
+			path.join(packageDirectory, 'package.json'),
+			JSON.stringify({
+				name: '@octanejs/widget',
+				exports: { '.': './src/index.ts' },
+			}),
+		);
+		await writeFile(
+			path.join(packageDirectory, 'src/index.ts'),
+			"import 'surprise-runtime';\nexport const widget = true;\n",
+		);
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes: {
+				'pkg:widget': { packageName: 'widget', dependsOn: [] },
+			},
+			packageDirectory,
+			runtimeDependencies: [],
+			adaptedSources: [],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /surprise-runtime.*approved graph/i);
+	});
+
+	test('does not classify TypeScript type-only imports as shipped runtime dependencies', async () => {
+		const packageDirectory = await mkdtemp(path.join(tmpdir(), 'react-port-type-only-closure-'));
+		await mkdir(path.join(packageDirectory, 'src'));
+		await writeFile(
+			path.join(packageDirectory, 'package.json'),
+			JSON.stringify({
+				name: '@octanejs/widget',
+				exports: { '.': './src/index.ts' },
+			}),
+		);
+		const source =
+			"import type { Helper } from 'types-only-helper';\nexport type Widget = Helper;\n";
+		await writeFile(path.join(packageDirectory, 'src/index.ts'), source);
+
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes: {
+				'pkg:widget': { packageName: 'widget', dependsOn: [] },
+			},
+			packageDirectory,
+			runtimeDependencies: [],
+			adaptedSources: [],
+			sourceLedger: [{ path: 'src/index.ts', origin: 'authored', sha256: sha256(source) }],
+		});
+
+		assert.equal(result.status, 'passed', result.issues.join('\n'));
+	});
+
+	test('requires React-coupled dependency edges to use their planned binding', () => {
+		const result = auditShippedClosure({
+			nodeId: 'pkg:widget',
+			graphNodes: {
+				'pkg:widget': { packageName: 'widget', dependsOn: ['pkg:react-helper'] },
+				'pkg:react-helper': {
+					packageName: 'react-helper',
+					binding: '@octanejs/helper',
+					action: 'reuse-binding',
+					dependsOn: [],
+				},
+			},
+			runtimeDependencies: ['react-helper'],
+			adaptedSources: [],
+		});
+
+		assert.equal(result.status, 'blocked');
+		assert.match(result.issues.join('\n'), /react-helper.*approved graph/i);
 	});
 
 	test('does not require an evidence root without clean-room obligations', () => {

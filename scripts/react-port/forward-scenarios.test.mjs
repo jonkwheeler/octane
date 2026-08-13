@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -25,6 +26,10 @@ function runNodeCli(script, arguments_, cwd) {
 
 function writeJson(filePath, value) {
 	writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function sha256(filePath) {
+	return createHash('sha256').update(readFileSync(filePath)).digest('hex');
 }
 
 function strictTypeCompilerOptions(overrides = {}) {
@@ -320,12 +325,17 @@ describe('fresh forward scenarios', () => {
 			{
 				id: 'fixture-widget-export',
 				classification: 'implemented',
-				localEvidence: 'packages/fixture-widget/tests/fixture-widget.test.mjs',
+				localEvidence: 'tests/fixture-widget.test.mjs',
 			},
 		]);
 		writeJson(closurePath, {
-			runtimeDependencies: ['octane', 'fixture-core'],
+			runtimeDependencies: ['octane'],
 			adaptedSources: [],
+			sourceLedger: ['src/index.mjs', 'src/index.ts'].map((sourcePath) => ({
+				path: sourcePath,
+				origin: 'authored',
+				sha256: sha256(path.join(packageDirectory, sourcePath)),
+			})),
 			reimplementedDependencies: [],
 		});
 		const packageTests = runNodeCli(

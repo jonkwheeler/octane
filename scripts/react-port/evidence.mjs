@@ -17,11 +17,14 @@ import {
 import { sanitizeForReport } from './preflight-lib.mjs';
 import {
 	acquireBatchLock,
+	assertPlannedPathIsSafe,
+	detectNodeWorktreeCollisions,
 	releaseBatchLock,
 	transitionNodeState,
 	validateBatchManifest,
 	writeManifestAtomically,
 } from './state-lib.mjs';
+import { credentialValuesFromEnvironment } from './report-lib.mjs';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
@@ -41,8 +44,8 @@ Common options:
   --recover-stale-lock     Explicitly recover a lock older than 30 minutes
 
 Use run for command-backed passed/failed evidence; commands execute directly
-without a shell. Record accepts existing --artifact evidence, blocked rows with
---reason and --repair, or inapplicable rows with --reason.
+without a shell. Record accepts blocked rows with --reason and --repair, or
+inapplicable rows with --reason. Automated gates are computed by verify.
 `;
 }
 
@@ -149,14 +152,15 @@ function commandTimeout(options) {
 	return timeout;
 }
 
-function commandObservation(stdout, stderr, fallback) {
+function commandObservation(stdout, stderr, fallback, credentialValues) {
 	const output = [stdout, stderr].filter(Boolean).join('\n').trim();
-	return sanitizeForReport(output || fallback);
+	return sanitizeForReport(output || fallback, '', credentialValues);
 }
 
 async function operate(command, options, manifest, batchDirectory, commandArguments) {
 	const node = manifest.nodes[options.node];
 	if (!node) throw new Error(`Batch has no node ${options.node}`);
+	const credentialValues = credentialValuesFromEnvironment();
 
 	if (command === 'init') {
 		if (node.state !== 'ready' && node.state !== 'implementing') {
@@ -164,6 +168,18 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		}
 		if (options.category.length === 0) throw new Error('init requires at least one --category');
 		if (node.state === 'ready') {
+			if (!node.bindingDirectory)
+				throw new Error(`Node ${options.node} has no planned binding path`);
+			const workspaceRoot = manifest.workspaceRoot ?? path.dirname(path.resolve(options.workRoot));
+			assertPlannedPathIsSafe(workspaceRoot, node.bindingDirectory);
+			const collisions = detectNodeWorktreeCollisions({
+				repoRoot: workspaceRoot,
+				bindingDirectory: node.bindingDirectory,
+				baseline: manifest.baseline,
+			});
+			if (collisions.length > 0) {
+				throw new Error(`Worktree collision in planned binding path(s): ${collisions.join(', ')}`);
+			}
 			node.evidenceMatrix = createEvidenceMatrix({
 				categories: options.category,
 				preflightArtifact: path.join(
@@ -206,10 +222,18 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			throw new Error('record requires exactly one --gate and --status');
 		}
 		const gateId = options.gate[0];
+		const gate = node.evidenceMatrix.gates[gateId];
+		if (!gate) throw new Error(`Unknown evidence gate: ${gateId}`);
 		if (options.command) {
 			throw new Error('record cannot claim command evidence; use run -- <executable> [args...]');
 		}
 		if (['passed', 'failed'].includes(options.status)) {
+			if (gate.evidenceType === 'command') {
+				throw new Error(`Evidence gate ${gateId} is command-backed; use run`);
+			}
+			if (gate.evidenceType === 'automated') {
+				throw new Error(`Evidence gate ${gateId} is computed by verify`);
+			}
 			if (!options.artifact) {
 				throw new Error('record passed/failed evidence requires an existing --artifact');
 			}
@@ -218,14 +242,18 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 				throw new Error(`record artifact does not exist: ${options.artifact}`);
 			}
 		}
-		const evidence = sanitizeForReport({
-			status: options.status,
-			command: options.command,
-			artifact: options.artifact,
-			observed: options.observed,
-			reason: options.reason,
-			repair: options.repair,
-		});
+		const evidence = sanitizeForReport(
+			{
+				status: options.status,
+				command: options.command,
+				artifact: options.artifact,
+				observed: options.observed,
+				reason: options.reason,
+				repair: options.repair,
+			},
+			'',
+			credentialValues,
+		);
 		recordEvidence(node.evidenceMatrix, gateId, evidence);
 		return {
 			schemaVersion: 1,
@@ -246,7 +274,11 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		if (commandArguments.length === 0) {
 			throw new Error('run requires an executable and arguments after --');
 		}
-		const commandDisplay = JSON.stringify(commandArguments);
+		const commandDisplay = sanitizeForReport(
+			JSON.stringify(commandArguments),
+			'',
+			credentialValues,
+		);
 		let evidence;
 		try {
 			const { stdout, stderr } = await execFileAsync(
@@ -263,7 +295,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			evidence = {
 				status: 'passed',
 				command: commandDisplay,
-				observed: commandObservation(stdout, stderr, 'Exited with status 0.'),
+				observed: commandObservation(stdout, stderr, 'Exited with status 0.', credentialValues),
 			};
 		} catch (error) {
 			evidence = {
@@ -273,6 +305,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 					error?.stdout,
 					error?.stderr,
 					error instanceof Error ? error.message : String(error),
+					credentialValues,
 				),
 			};
 		}
@@ -309,6 +342,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	}
 	const workspaceRoot = manifest.workspaceRoot ?? path.dirname(path.resolve(options.workRoot));
 	const plannedPackageDirectory = path.resolve(workspaceRoot, node.bindingDirectory);
+	assertPlannedPathIsSafe(workspaceRoot, node.bindingDirectory);
 	const packageDirectory = path.resolve(options.packageDir);
 	if (canonicalPath(packageDirectory) !== canonicalPath(plannedPackageDirectory)) {
 		throw new Error(
@@ -320,7 +354,12 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	const closure = readJson(options.closure, 'closure');
 	let crosswalkReport;
 	try {
-		crosswalkReport = validateUpstreamCrosswalk(registrations, crosswalk);
+		crosswalkReport = validateUpstreamCrosswalk(
+			registrations,
+			crosswalk,
+			node.upstreamTestInventory,
+			plannedPackageDirectory,
+		);
 	} catch (error) {
 		crosswalkReport = {
 			status: 'blocked',
@@ -341,8 +380,10 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		graphNodes: manifest.nodes,
 		runtimeDependencies: closure.runtimeDependencies ?? [],
 		adaptedSources: closure.adaptedSources ?? [],
+		sourceLedger: closure.sourceLedger,
 		reimplementedDependencies: closure.reimplementedDependencies ?? [],
 		evidenceRoot: plannedPackageDirectory,
+		packageDirectory: plannedPackageDirectory,
 	});
 	setAutomatedGate(node.evidenceMatrix, 'upstream-crosswalk', crosswalkReport, {
 		artifact: path.resolve(options.crosswalk),
@@ -375,17 +416,21 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 			evidence: { crosswalkReport, packageReport, closureReport, readiness },
 		});
 	}
-	return sanitizeForReport({
-		schemaVersion: 1,
-		command,
-		status: readiness.status === 'verified' ? 'passed' : 'blocked',
-		nodeId: options.node,
-		state: node.state,
-		issues: readiness.issues,
-		crosswalkReport,
-		packageReport,
-		closureReport,
-	});
+	return sanitizeForReport(
+		{
+			schemaVersion: 1,
+			command,
+			status: readiness.status === 'verified' ? 'passed' : 'blocked',
+			nodeId: options.node,
+			state: node.state,
+			issues: readiness.issues,
+			crosswalkReport,
+			packageReport,
+			closureReport,
+		},
+		'',
+		credentialValues,
+	);
 }
 
 async function main() {
@@ -423,7 +468,7 @@ async function main() {
 		if (report.status === 'blocked') process.exitCode = 2;
 	} catch (error) {
 		process.stderr.write(
-			`${sanitizeForReport(error instanceof Error ? error.message : String(error))}\n`,
+			`${sanitizeForReport(error instanceof Error ? error.message : String(error), '', credentialValuesFromEnvironment())}\n`,
 		);
 		process.exitCode = 2;
 	} finally {

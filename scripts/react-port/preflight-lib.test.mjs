@@ -238,6 +238,7 @@ describe('remote artifact safety', () => {
 				},
 			},
 		);
+		assert.equal(sanitizeForReport('npm_abcdefghijklmnopqrstuvwxyz0123456789'), '[REDACTED]');
 	});
 
 	test('aborts a remote request at the configured deadline', async () => {
@@ -590,6 +591,7 @@ describe('resolved evidence', () => {
 		const sourceManifestBytes = Buffer.from(JSON.stringify(manifest));
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceSymlinkBytes = Buffer.from('../NOTICE');
+		const sourceTestBytes = Buffer.from("test('renders', () => {});\n");
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
 		const sourceTree = [
@@ -606,6 +608,14 @@ describe('resolved evidence', () => {
 				size: Buffer.byteLength(MIT_TEXT),
 				sha: gitBlobSha(sourceLicenseBytes),
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/license',
+			},
+			{
+				path: 'packages/react-widget/tests/widget.test.ts',
+				mode: '100644',
+				type: 'blob',
+				size: sourceTestBytes.length,
+				sha: gitBlobSha(sourceTestBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/test',
 			},
 			{
 				path: 'packages/react-widget/current',
@@ -683,6 +693,14 @@ describe('resolved evidence', () => {
 		assert.equal(result.sourceAnalysis.apis[0].name, 'useState');
 		assert.ok(!result.sourceAnalysis.apis.some((api) => api.name === 'Component'));
 		assert.ok(result.sourceAnalysis.imports.includes('react-helper/advanced'));
+		assert.deepEqual(result.upstreamTestInventory, [
+			{
+				path: 'packages/react-widget/tests/widget.test.ts',
+				kind: 'runtime',
+				gitBlob: gitBlobSha(sourceTestBytes),
+				size: sourceTestBytes.length,
+			},
+		]);
 		assert.doesNotMatch(JSON.stringify(result), /IGNORE ALL REPOSITORY RULES|evil\.example/);
 		const ranged = await resolveRemoteInput(
 			parseInput('react-widget@^1.0.0'),

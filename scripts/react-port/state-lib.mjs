@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { lstatSync, readFileSync, readlinkSync } from 'node:fs';
+import { lstatSync, readFileSync, readdirSync, readlinkSync, realpathSync } from 'node:fs';
 import { open, mkdir, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { isCompleteEvidenceMatrix, isCurrentEvidenceMatrix } from './evidence-lib.mjs';
@@ -236,7 +236,7 @@ function hashWorktreePath(repoRoot, relativePath) {
 	}
 }
 
-export function captureWorktreeBaseline(repoRoot = process.cwd()) {
+export function captureWorktreeBaseline(repoRoot = process.cwd(), plannedRoots = []) {
 	const output = execFileSync(
 		'git',
 		['--no-optional-locks', 'status', '--porcelain=v1', '-z', '--untracked-files=all'],
@@ -254,11 +254,59 @@ export function captureWorktreeBaseline(repoRoot = process.cwd()) {
 			index += 1;
 		}
 	}
+	for (const plannedRoot of plannedRoots) {
+		const rootPath = path.join(repoRoot, plannedRoot);
+		try {
+			paths.push(plannedRoot);
+			if (!lstatSync(rootPath).isDirectory()) continue;
+			for (const entry of readdirSync(rootPath, { recursive: true, withFileTypes: true })) {
+				paths.push(path.relative(repoRoot, path.join(entry.parentPath, entry.name)));
+			}
+		} catch (error) {
+			if (error?.code !== 'ENOENT') throw error;
+		}
+	}
 	return Object.fromEntries(
 		[...new Set(paths)]
 			.sort()
 			.map((relativePath) => [relativePath, hashWorktreePath(repoRoot, relativePath)]),
 	);
+}
+
+export function assertPlannedPathIsSafe(repoRoot, relativePath) {
+	const resolvedRoot = realpathSync(repoRoot);
+	const segments = relativePath.split('/').filter(Boolean);
+	let candidate = resolvedRoot;
+	for (const segment of segments) {
+		candidate = path.join(candidate, segment);
+		try {
+			if (lstatSync(candidate).isSymbolicLink()) {
+				throw new Error(`Planned binding path contains a symlink: ${relativePath}`);
+			}
+		} catch (error) {
+			if (error?.code === 'ENOENT') break;
+			throw error;
+		}
+	}
+	const relative = path.relative(resolvedRoot, candidate);
+	if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+		throw new Error(`Planned binding path escapes the workspace: ${relativePath}`);
+	}
+}
+
+export function detectNodeWorktreeCollisions({ repoRoot, bindingDirectory, baseline }) {
+	const current = captureWorktreeBaseline(repoRoot, [bindingDirectory]);
+	const prefix = `${bindingDirectory.replace(/\/$/, '')}/`;
+	const plannedPaths = [
+		bindingDirectory,
+		...Object.keys(baseline ?? {}).filter(
+			(filePath) => filePath === bindingDirectory || filePath.startsWith(prefix),
+		),
+		...Object.keys(current).filter(
+			(filePath) => filePath === bindingDirectory || filePath.startsWith(prefix),
+		),
+	];
+	return detectWorktreeCollisions({ plannedPaths, baseline: baseline ?? {}, current });
 }
 
 async function readLock(lockPath) {

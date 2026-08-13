@@ -261,7 +261,12 @@ async function main() {
 				executionUnits: graph.executionUnits,
 				actionableExecutionUnits: graph.actionableExecutionUnits,
 				executionOrder: graph.executionOrder,
-				baseline: captureWorktreeBaseline(),
+				baseline: captureWorktreeBaseline(
+					process.cwd(),
+					Object.values(graph.nodes)
+						.map((node) => node.bindingDirectory)
+						.filter(Boolean),
+				),
 			});
 			const manifestPath = path.join(batchDirectory, 'manifest.json');
 			const manifest = existsSync(manifestPath)

@@ -6,7 +6,7 @@ import {
 	readRepositoryCapabilityInventory,
 	satisfiesRange,
 } from './graph-lib.mjs';
-import { selectHighestSatisfyingVersion } from './version-lib.mjs';
+import { rangesOverlap, selectHighestSatisfyingVersion } from './version-lib.mjs';
 
 function licensedTarget(packageName, version, runtimeDependencies = {}) {
 	return {
@@ -78,10 +78,15 @@ describe('repository capability inventory', () => {
 		assert.equal(satisfiesRange('2.4.0', '2'), true);
 		assert.equal(satisfiesRange('2.4.0', '2.4'), true);
 		assert.equal(satisfiesRange('2.4.0', '>=2.0.0 <3.0.0'), true);
+		assert.equal(satisfiesRange('0.50.0', '>=0.25.0 <1'), true);
+		assert.equal(satisfiesRange('1.5.0', '1.0.0 - 2.0.0'), true);
+		assert.equal(satisfiesRange('1.2.3-beta.1', '>=1.2.3-beta.0 <1.2.3'), true);
 		assert.equal(satisfiesRange('2.4.0', '^1.0.0 || >=2.0.0 <3.0.0'), true);
 		assert.equal(satisfiesRange('1.0.0', '>1.0.0 >=1.0.0'), false);
 		assert.equal(satisfiesRange('2.0.0', '<2.0.0 <=2.0.0'), false);
 		assert.equal(satisfiesRange('2.4.0', 'workspace:*'), false);
+		assert.equal(rangesOverlap('0.50.0', '>=0.25.0 <1'), true);
+		assert.equal(rangesOverlap('1.0.0 - 2.0.0', '>=1.5.0 <3'), true);
 		assert.equal(
 			selectHighestSatisfyingVersion(['1.0.0', '1.9.0', '2.0.0', '1.10.0-beta.1'], '^1.0.0'),
 			'1.9.0',

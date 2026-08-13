@@ -435,6 +435,7 @@ export function planPortGraph({
 			node.identity = target.identity;
 			node.license = target.license;
 			node.provenance = target.provenance;
+			node.upstreamTestInventory = target.upstreamTestInventory ?? [];
 			targetByPackage.set(packageName, target);
 		}
 		if (providesPrimaryEvidence && target.sourceAnalysis) {
@@ -685,6 +686,7 @@ export function planPortGraph({
 			identity: node.identity ?? null,
 			license: node.license ?? null,
 			provenance: node.provenance ?? null,
+			upstreamTestInventory: node.upstreamTestInventory ?? null,
 			blockers: node.blockers,
 		});
 		node.evidenceFingerprint ??= node.nodeFingerprint;

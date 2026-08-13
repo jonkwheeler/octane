@@ -93,6 +93,17 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /packageName/);
 		assert.match(implementation, /nonempty `?publicBehaviors`?/i);
 		assert.match(implementation, /independently authored\s+`?localEvidence`? paths/i);
+		assert.match(
+			implementation,
+			/immutable Git-tree path[\s\S]*blob hash[\s\S]*before implementation/i,
+		);
+		assert.match(
+			implementation,
+			/zero-case inventory[\s\S]*immutable tree inventory itself is empty/i,
+		);
+		assert.match(implementation, /command gates accept passed\/failed evidence only from `run`/i);
+		assert.match(implementation, /sourceLedger/);
+		assert.match(implementation, /reachable from public exports[\s\S]*SHA-256/i);
 	});
 
 	test('requires strict authored and packed consumer type evidence', () => {

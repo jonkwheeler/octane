@@ -39,6 +39,7 @@ const SOURCE_SKIP_PARTS = new Set([
 ]);
 const MAX_SOURCE_FILES = 400;
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
+const TEST_SOURCE_PATTERN = /\.(?:[cm]?[jt]sx?)$/i;
 
 export const APPROVED_LICENSE_IDENTIFIERS = Object.freeze(['MIT', 'Unlicense']);
 
@@ -673,6 +674,39 @@ function isScannableSourcePath(entryPath) {
 	return !parts.some((part) => SOURCE_SKIP_PARTS.has(part.toLowerCase()));
 }
 
+function immutableTestInventory(tree, subdirectory) {
+	const scopePrefix = subdirectory ? `${subdirectory}/` : '';
+	return tree
+		.filter((entry) => {
+			if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return false;
+			const relativePath = entry.path.slice(scopePrefix.length);
+			if (!TEST_SOURCE_PATTERN.test(relativePath) || /(?:^|\/)node_modules\//i.test(relativePath)) {
+				return false;
+			}
+			const segments = relativePath.toLowerCase().split('/');
+			const baseName = segments.at(-1);
+			return (
+				segments.some((segment) =>
+					['test', 'tests', '__tests__', 'typetests', 'type-tests', 'test-d'].includes(segment),
+				) || /(?:^|[.-])(?:test|spec|test-d|d-test)\.[cm]?[jt]sx?$/.test(baseName)
+			);
+		})
+		.map((entry) => {
+			const relativePath = entry.path.slice(scopePrefix.length);
+			return {
+				path: entry.path,
+				kind: /(?:^|\/)(?:typetests|type-tests|test-d)(?:\/|$)|(?:^|[.-])(?:test-d|d-test)\.[cm]?[jt]sx?$/i.test(
+					relativePath,
+				)
+					? 'type'
+					: 'runtime',
+				gitBlob: entry.sha,
+				size: entry.size ?? 0,
+			};
+		})
+		.sort((left, right) => left.path.localeCompare(right.path));
+}
+
 function collectModuleSpecifiers(sourceFiles) {
 	const imports = new Set();
 	for (const [entryPath, bytes] of sourceFiles) {
@@ -1028,6 +1062,7 @@ async function resolveGitHubSource(repository, ref, options) {
 		licenseFiles,
 		noticeFiles,
 		manifestSha256: sha256(manifestBytes),
+		upstreamTestInventory: immutableTestInventory(treeResponse.tree, repository.subdirectory),
 	};
 }
 
@@ -1058,8 +1093,14 @@ export async function resolveRemoteInput(parsedInput, rawInput, options = {}) {
 		registry = await resolveRegistryArtifact(source.name, source.version, resolvedOptions);
 	}
 	const result = assessResolvedEvidence({ input: rawInput, registry, source });
+	const upstreamTestInventory = source.upstreamTestInventory ?? [];
 	return {
 		...result,
+		upstreamTestInventory,
+		evidenceFingerprint: fingerprint({
+			preflight: result.evidenceFingerprint,
+			upstreamTestInventory,
+		}),
 		runtimeDependencies: registry.runtimeDependencies,
 		sourceAnalysis: registry.sourceAnalysis,
 		provenance: sanitizeForReport({

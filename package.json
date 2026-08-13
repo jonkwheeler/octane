@@ -124,6 +124,7 @@
     "prettier-plugin-svelte": "catalog:default",
     "playwright": "catalog:default",
     "rulesync": "catalog:default",
+    "semver": "7.8.5",
     "svelte-check": "catalog:default",
     "typescript": "catalog:default",
     "vitest": "catalog:default",

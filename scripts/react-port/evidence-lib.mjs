@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 import {
 	APPROVED_LICENSE_IDENTIFIERS,
 	fingerprint,
@@ -22,58 +23,91 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const REQUIRED_NODE_ENGINE = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
 	.engines.node;
 
-export const EVIDENCE_MATRIX_SCHEMA_VERSION = 2;
+export const EVIDENCE_MATRIX_SCHEMA_VERSION = 3;
 
 const COMMON_GATES = [
-	['identity-license', 'Immutable identity and approved-license preflight', false],
-	['upstream-crosswalk', 'Complete upstream test-registration crosswalk', false],
-	['package-tests', 'Focused package behavior tests', false],
-	['upstream-types', 'Pristine and one-for-one adapted upstream type tests', false],
-	['authored-source-types', 'Strict direct authored-source typecheck', false],
-	['public-types', 'Precise packed public type surface and negative controls', false],
-	['packed-source-types-node', 'Strict packed source typecheck with Node ambient types', false],
+	['identity-license', 'Immutable identity and approved-license preflight', false, 'automated'],
+	['upstream-crosswalk', 'Complete upstream test-registration crosswalk', false, 'automated'],
+	['package-tests', 'Focused package behavior tests', false, 'command'],
+	['upstream-types', 'Pristine and one-for-one adapted upstream type tests', false, 'command'],
+	['authored-source-types', 'Strict direct authored-source typecheck', false, 'command'],
+	['public-types', 'Precise packed public type surface and negative controls', false, 'command'],
+	[
+		'packed-source-types-node',
+		'Strict packed source typecheck with Node ambient types',
+		false,
+		'command',
+	],
 	[
 		'packed-source-types-browser',
 		'Strict packed source typecheck without Node ambient types',
 		false,
+		'command',
 	],
-	['public-exports', 'Public entrypoint and export checks', false],
-	['package-pack', 'Packed external-consumer check', false],
-	['package-contract', 'Binding package contract', false],
-	['provenance', 'UPSTREAM, license, and notice provenance', false],
-	['closure-audit', 'Final shipped dependency and adapted-source closure', false],
-	['generated-data', 'Affected catalog and generated-data checks', true],
-	['format', 'Formatting checks', false],
+	['public-exports', 'Public entrypoint and export checks', false, 'command'],
+	['package-pack', 'Packed external-consumer check', false, 'command'],
+	['package-contract', 'Binding package contract', false, 'automated'],
+	['provenance', 'UPSTREAM, license, and notice provenance', false, 'automated'],
+	['closure-audit', 'Final shipped dependency and adapted-source closure', false, 'automated'],
+	['generated-data', 'Affected catalog and generated-data checks', true, 'command'],
+	['format', 'Formatting checks', false, 'command'],
 ];
 
 const CATEGORY_GATES = Object.freeze({
 	'thin-core': [
-		['differential-surface', 'Framework-neutral core and thin binding equivalence', false],
+		[
+			'differential-surface',
+			'Framework-neutral core and thin binding equivalence',
+			false,
+			'command',
+		],
 	],
 	'hooks-store': [
-		['identity-lifecycle', 'Subscription, identity, bailout, effect, and cleanup behavior', false],
-		['server-snapshot', 'Server snapshot and hydration-safe store behavior', true],
+		[
+			'identity-lifecycle',
+			'Subscription, identity, bailout, effect, and cleanup behavior',
+			false,
+			'command',
+		],
+		['server-snapshot', 'Server snapshot and hydration-safe store behavior', true, 'command'],
 	],
 	'dom-component': [
-		['differential-events', 'Differential DOM and event-sequence behavior', false],
-		['focus-ref-keyed', 'Focus, ref lifecycle, and keyed survivor identity', false],
-		['browser', 'Real-browser component behavior', false],
+		['differential-events', 'Differential DOM and event-sequence behavior', false, 'command'],
+		['focus-ref-keyed', 'Focus, ref lifecycle, and keyed survivor identity', false, 'command'],
+		['browser', 'Real-browser component behavior', false, 'command'],
 	],
 	'provider-portal': [
-		['provider-identity', 'Provider/context identity and nested ownership', false],
-		['portal-lifecycle', 'Portal ancestry, suspension/error ownership, and teardown', false],
+		['provider-identity', 'Provider/context identity and nested ownership', false, 'command'],
+		[
+			'portal-lifecycle',
+			'Portal ancestry, suspension/error ownership, and teardown',
+			false,
+			'command',
+		],
 	],
-	'ssr-sensitive': [['ssr-hydration', 'SSR, streaming when public, and hydration behavior', false]],
+	'ssr-sensitive': [
+		['ssr-hydration', 'SSR, streaming when public, and hydration behavior', false, 'command'],
+	],
 	'async-suspense': [
-		['async-lifecycle', 'Promise, replay, rejection, timer, and cleanup behavior', false],
+		[
+			'async-lifecycle',
+			'Promise, replay, rejection, timer, and cleanup behavior',
+			false,
+			'command',
+		],
 	],
 	'performance-sensitive': [
-		['performance', 'Relevant runtime, SSR, hydration, compiler, and size guards', false],
+		[
+			'performance',
+			'Relevant runtime, SSR, hydration, compiler, and size guards',
+			false,
+			'command',
+		],
 	],
 });
 
-function gateRecord([id, label, allowInapplicable]) {
-	return [id, { id, label, status: 'required', allowInapplicable }];
+function gateRecord([id, label, allowInapplicable, evidenceType]) {
+	return [id, { id, label, status: 'required', allowInapplicable, evidenceType }];
 }
 
 function normalizeCategories(categories) {
@@ -108,7 +142,10 @@ export function isCurrentEvidenceMatrix(matrix) {
 		return false;
 	}
 	const expectedGates = new Map(
-		definitions.map(([id, , allowInapplicable]) => [id, allowInapplicable]),
+		definitions.map(([id, , allowInapplicable, evidenceType]) => [
+			id,
+			{ allowInapplicable, evidenceType },
+		]),
 	);
 	if (
 		Object.keys(matrix.gates).length !== expectedGates.size ||
@@ -116,13 +153,14 @@ export function isCurrentEvidenceMatrix(matrix) {
 	) {
 		return false;
 	}
-	return [...expectedGates].every(([gateId, allowInapplicable]) => {
+	return [...expectedGates].every(([gateId, definition]) => {
 		const gate = matrix.gates[gateId];
 		return (
 			gate &&
 			gate.id === gateId &&
 			EVIDENCE_STATUSES.has(gate.status) &&
-			gate.allowInapplicable === allowInapplicable
+			gate.allowInapplicable === definition.allowInapplicable &&
+			gate.evidenceType === definition.evidenceType
 		);
 	});
 }
@@ -179,6 +217,12 @@ export function recordEvidence(matrix, gateId, evidence) {
 			throw new Error(`Evidence gate ${gateId} requires a command or artifact`);
 		}
 		if (!evidence.observed) throw new Error(`Evidence gate ${gateId} requires an observed result`);
+		if (gate.evidenceType === 'command' && !evidence.command) {
+			throw new Error(`Evidence gate ${gateId} is command-backed and requires run evidence`);
+		}
+		if (gate.evidenceType === 'automated' && !evidence.artifact) {
+			throw new Error(`Evidence gate ${gateId} requires automated artifact evidence`);
+		}
 	}
 	if (evidence.status === 'blocked' && (!evidence.reason || !evidence.repair)) {
 		throw new Error(`Blocked evidence gate ${gateId} requires a reason and repair action`);
@@ -191,9 +235,32 @@ export function recordEvidence(matrix, gateId, evidence) {
 	return matrix.gates[gateId];
 }
 
-export function validateUpstreamCrosswalk(registrations, crosswalk) {
+export function validateUpstreamCrosswalk(
+	registrations,
+	crosswalk,
+	upstreamTestInventory = [],
+	evidenceRoot = null,
+) {
 	if (!Array.isArray(registrations) || !Array.isArray(crosswalk)) {
 		throw new Error('Upstream registrations and crosswalk must be arrays');
+	}
+	if (!Array.isArray(upstreamTestInventory)) {
+		throw new Error('Immutable upstream test inventory must be an array');
+	}
+	const immutableTestPaths = new Set();
+	for (const entry of upstreamTestInventory) {
+		if (
+			typeof entry?.path !== 'string' ||
+			!entry.path ||
+			!['runtime', 'type'].includes(entry.kind) ||
+			!/^[a-f0-9]{40}$/i.test(entry.gitBlob ?? '') ||
+			!Number.isSafeInteger(entry.size) ||
+			entry.size < 0 ||
+			immutableTestPaths.has(entry.path)
+		) {
+			throw new Error('Immutable upstream test inventory contains an invalid or duplicate entry');
+		}
+		immutableTestPaths.add(entry.path);
 	}
 	const expected = new Map();
 	for (const registration of registrations) {
@@ -202,7 +269,24 @@ export function validateUpstreamCrosswalk(registrations, crosswalk) {
 		}
 		expected.set(registration.id, registration);
 	}
+	for (const testPath of immutableTestPaths) {
+		const represented = [...expected.values()].some(
+			(registration) =>
+				registration.source === testPath || registration.source?.startsWith(`${testPath}:`),
+		);
+		if (!represented) {
+			throw new Error(`Immutable upstream test ${testPath} is missing from registrations`);
+		}
+	}
 	const actual = new Map();
+	const localEvidenceArtifacts = new Map();
+	let resolvedEvidenceRoot = null;
+	if (evidenceRoot !== null) {
+		resolvedEvidenceRoot = realpathSync(evidenceRoot);
+		if (!statSync(resolvedEvidenceRoot).isDirectory()) {
+			throw new Error(`Crosswalk evidence root must be a directory: ${evidenceRoot}`);
+		}
+	}
 	for (const entry of crosswalk) {
 		if (!entry.id || actual.has(entry.id)) throw new Error(`Duplicate crosswalk id: ${entry.id}`);
 		if (!expected.has(entry.id)) throw new Error(`Crosswalk contains unknown case ${entry.id}`);
@@ -214,6 +298,31 @@ export function validateUpstreamCrosswalk(registrations, crosswalk) {
 			!entry.localEvidence
 		) {
 			throw new Error(`Crosswalk case ${entry.id} requires local evidence`);
+		}
+		for (const evidencePath of entry.localEvidence
+			? Array.isArray(entry.localEvidence)
+				? entry.localEvidence
+				: [entry.localEvidence]
+			: []) {
+			if (!isSafeLocalEvidencePath(evidencePath)) {
+				throw new Error(`Crosswalk case ${entry.id} has unsafe local evidence: ${evidencePath}`);
+			}
+			if (resolvedEvidenceRoot) {
+				const resolvedEvidencePath = realpathSync(path.resolve(resolvedEvidenceRoot, evidencePath));
+				const relativePath = path.relative(resolvedEvidenceRoot, resolvedEvidencePath);
+				if (
+					relativePath === '..' ||
+					relativePath.startsWith(`..${path.sep}`) ||
+					path.isAbsolute(relativePath) ||
+					!statSync(resolvedEvidencePath).isFile()
+				) {
+					throw new Error(`Crosswalk case ${entry.id} local evidence escapes the package root`);
+				}
+				localEvidenceArtifacts.set(evidencePath, {
+					path: evidencePath,
+					sha256: hashFile(resolvedEvidencePath),
+				});
+			}
 		}
 		if (
 			['blocked', 'unsupported', 'inapplicable'].includes(entry.classification) &&
@@ -229,11 +338,18 @@ export function validateUpstreamCrosswalk(registrations, crosswalk) {
 	const cases = [...expected.keys()]
 		.sort()
 		.map((id) => ({ ...expected.get(id), ...actual.get(id) }));
-	return {
+	const result = {
 		status: cases.some((entry) => entry.classification === 'blocked') ? 'blocked' : 'passed',
 		cases,
-		fingerprint: fingerprint(cases),
+		upstreamTestInventory: [...upstreamTestInventory].sort((left, right) =>
+			left.path.localeCompare(right.path),
+		),
+		localEvidenceArtifacts: [...localEvidenceArtifacts.values()].sort((left, right) =>
+			left.path.localeCompare(right.path),
+		),
 	};
+	result.fingerprint = fingerprint(result);
+	return result;
 }
 
 function readJson(filePath, issues, label) {
@@ -472,6 +588,181 @@ function normalizeReimplementationProof(proof) {
 	};
 }
 
+const SHIPPED_SOURCE_EXTENSIONS = ['.ts', '.tsx', '.tsrx', '.js', '.jsx', '.mjs', '.cjs'];
+
+function staticModuleSpecifiers(filePath) {
+	const source = ts.createSourceFile(
+		filePath,
+		readFileSync(filePath, 'utf8'),
+		ts.ScriptTarget.Latest,
+		false,
+		/\.(?:tsx|tsrx|jsx)$/.test(filePath) ? ts.ScriptKind.TSX : undefined,
+	);
+	const specifiers = [];
+	function visit(node) {
+		if (
+			ts.isImportDeclaration(node) &&
+			node.moduleSpecifier &&
+			ts.isStringLiteralLike(node.moduleSpecifier) &&
+			!node.importClause?.isTypeOnly
+		) {
+			specifiers.push(node.moduleSpecifier.text);
+		} else if (
+			ts.isExportDeclaration(node) &&
+			node.moduleSpecifier &&
+			ts.isStringLiteralLike(node.moduleSpecifier) &&
+			!node.isTypeOnly
+		) {
+			specifiers.push(node.moduleSpecifier.text);
+		} else if (
+			ts.isImportEqualsDeclaration(node) &&
+			ts.isExternalModuleReference(node.moduleReference) &&
+			node.moduleReference.expression &&
+			ts.isStringLiteralLike(node.moduleReference.expression) &&
+			!node.isTypeOnly
+		) {
+			specifiers.push(node.moduleReference.expression.text);
+		} else if (
+			ts.isCallExpression(node) &&
+			node.arguments.length === 1 &&
+			ts.isStringLiteralLike(node.arguments[0]) &&
+			(node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+				(ts.isIdentifier(node.expression) && node.expression.text === 'require'))
+		) {
+			specifiers.push(node.arguments[0].text);
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(source);
+	return specifiers;
+}
+
+function resolveRelativeSource(fromFile, specifier) {
+	const base = path.resolve(path.dirname(fromFile), specifier);
+	const candidates = [
+		base,
+		...SHIPPED_SOURCE_EXTENSIONS.map((extension) => `${base}${extension}`),
+		...SHIPPED_SOURCE_EXTENSIONS.map((extension) => path.join(base, `index${extension}`)),
+	];
+	return (
+		candidates.find((candidate) => existsSync(candidate) && statSync(candidate).isFile()) ?? null
+	);
+}
+
+function deriveShippedClosure(packageDirectory, sourceLedger) {
+	const issues = [];
+	const resolvedPackageDirectory = realpathSync(packageDirectory);
+	const manifest = JSON.parse(
+		readFileSync(path.join(resolvedPackageDirectory, 'package.json'), 'utf8'),
+	);
+	const runtimeDependencies = new Set([
+		...Object.keys(manifest.dependencies ?? {}),
+		...Object.keys(manifest.optionalDependencies ?? {}),
+		...Object.keys(manifest.peerDependencies ?? {}),
+	]);
+	const queue = collectExportTargets(manifest.exports ?? manifest.main ?? manifest.module ?? [])
+		.filter((target) => typeof target === 'string' && !/\.d\.[cm]?ts$/.test(target))
+		.map((target) => path.resolve(resolvedPackageDirectory, target));
+	const reachableFiles = new Set();
+	while (queue.length > 0) {
+		const filePath = queue.shift();
+		if (!existsSync(filePath) || !statSync(filePath).isFile()) continue;
+		const resolvedFile = realpathSync(filePath);
+		const relativeFile = path.relative(resolvedPackageDirectory, resolvedFile);
+		if (
+			relativeFile === '..' ||
+			relativeFile.startsWith(`..${path.sep}`) ||
+			path.isAbsolute(relativeFile) ||
+			reachableFiles.has(resolvedFile)
+		) {
+			continue;
+		}
+		reachableFiles.add(resolvedFile);
+		for (const specifier of staticModuleSpecifiers(resolvedFile)) {
+			if (specifier.startsWith('.') || specifier.startsWith('/')) {
+				const dependencyFile = resolveRelativeSource(resolvedFile, specifier);
+				if (dependencyFile) queue.push(dependencyFile);
+			} else {
+				runtimeDependencies.add(packageRoot(specifier));
+			}
+		}
+	}
+
+	const ledger = Array.isArray(sourceLedger) ? sourceLedger : [];
+	const ledgerByPath = new Map();
+	for (const entry of ledger) {
+		if (
+			!isSafeLocalEvidencePath(entry?.path) ||
+			!['authored', 'adapted'].includes(entry?.origin) ||
+			!/^[a-f0-9]{64}$/i.test(entry?.sha256 ?? '') ||
+			ledgerByPath.has(entry.path)
+		) {
+			issues.push('Source ledger contains an invalid or duplicate entry.');
+			continue;
+		}
+		if (entry.origin === 'adapted' && !entry.packageName) {
+			issues.push(`Adapted source ledger entry ${entry.path} requires packageName.`);
+		}
+		ledgerByPath.set(entry.path, entry);
+	}
+	const adaptedByPackage = new Map();
+	for (const filePath of [...reachableFiles].sort()) {
+		const relativePath = path
+			.relative(resolvedPackageDirectory, filePath)
+			.split(path.sep)
+			.join('/');
+		const entry = ledgerByPath.get(relativePath);
+		if (!entry) {
+			issues.push(`Reachable shipped source ${relativePath} is missing from the source ledger.`);
+			continue;
+		}
+		if (entry.sha256 !== hashFile(filePath)) {
+			issues.push(`Source ledger hash does not match shipped bytes for ${relativePath}.`);
+		}
+		if (entry.origin === 'adapted') {
+			const paths = adaptedByPackage.get(entry.packageName) ?? [];
+			paths.push(relativePath);
+			adaptedByPackage.set(entry.packageName, paths);
+		}
+		ledgerByPath.delete(relativePath);
+	}
+	for (const extraPath of ledgerByPath.keys()) {
+		issues.push(`Source ledger entry ${extraPath} is not reachable from a public export.`);
+	}
+	return {
+		issues,
+		runtimeDependencies: [...new Set([...runtimeDependencies].map(packageRoot))].sort(),
+		adaptedSources: [...adaptedByPackage]
+			.map(([packageName, paths]) => ({ packageName, paths: paths.sort() }))
+			.sort((left, right) => left.packageName.localeCompare(right.packageName)),
+		sourceLedger: [...ledger].sort((left, right) =>
+			String(left?.path ?? '').localeCompare(String(right?.path ?? '')),
+		),
+	};
+}
+
+function normalizeAdaptedSources(adaptedSources) {
+	return (adaptedSources ?? [])
+		.map((adaptedSource) => ({
+			packageName:
+				typeof adaptedSource?.packageName === 'string' ? adaptedSource.packageName.trim() : '',
+			paths: Array.isArray(adaptedSource?.paths)
+				? [
+						...new Set(
+							adaptedSource.paths.map((sourcePath) =>
+								typeof sourcePath === 'string' ? sourcePath.trim() : sourcePath,
+							),
+						),
+					].sort()
+				: adaptedSource?.paths,
+		}))
+		.sort((left, right) =>
+			left.packageName === right.packageName
+				? JSON.stringify(left).localeCompare(JSON.stringify(right))
+				: left.packageName.localeCompare(right.packageName),
+		);
+}
+
 function hasApprovedLicenseEvidence(node) {
 	return (
 		node?.license?.policy === 'approved-license-v2' &&
@@ -486,8 +777,10 @@ export function auditShippedClosure({
 	nodeId,
 	graphNodes,
 	evidenceRoot,
+	packageDirectory,
 	runtimeDependencies,
 	adaptedSources,
+	sourceLedger,
 	reimplementedDependencies = [],
 }) {
 	const issues = [];
@@ -496,8 +789,17 @@ export function auditShippedClosure({
 	const plannedDependencies = new Set(
 		(node.dependsOn ?? []).flatMap((dependencyId) => {
 			const dependency = graphNodes[dependencyId];
-			if (dependency?.action === 'reimplement-in-parent') return [];
-			return [dependency?.packageName, dependency?.binding].filter(Boolean);
+			switch (dependency?.action) {
+				case 'reuse-package':
+					return dependency.packageName ? [dependency.packageName] : [];
+				case 'reuse-binding':
+				case 'create-binding':
+				case 'extend-binding':
+				case 'adopt-binding':
+					return dependency.binding ? [dependency.binding] : [];
+				default:
+					return [];
+			}
 		}),
 	);
 	const plannedCleanRoomDependencies = new Set(
@@ -508,7 +810,27 @@ export function auditShippedClosure({
 				: [];
 		}),
 	);
-	const normalizedRuntimeDependencies = [...new Set(runtimeDependencies.map(packageRoot))].sort();
+	let derivedClosure = null;
+	if (packageDirectory) {
+		try {
+			derivedClosure = deriveShippedClosure(packageDirectory, sourceLedger);
+			issues.push(...derivedClosure.issues);
+		} catch (error) {
+			issues.push(
+				`Could not derive shipped closure: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
+	}
+	const normalizedRuntimeDependencies = [
+		...new Set((derivedClosure?.runtimeDependencies ?? runtimeDependencies ?? []).map(packageRoot)),
+	].sort();
+	if (
+		derivedClosure &&
+		JSON.stringify(normalizedStrings(runtimeDependencies)) !==
+			JSON.stringify(derivedClosure.runtimeDependencies)
+	) {
+		issues.push('Declared runtimeDependencies do not match the derived shipped closure.');
+	}
 	for (const dependency of normalizedRuntimeDependencies) {
 		if (plannedCleanRoomDependencies.has(dependency)) {
 			issues.push(
@@ -526,19 +848,15 @@ export function auditShippedClosure({
 		}
 		issues.push(`Runtime dependency ${dependency} was not present in the approved graph.`);
 	}
-	const normalizedAdaptedSources = adaptedSources
-		.map((adaptedSource) => ({
-			packageName:
-				typeof adaptedSource?.packageName === 'string' ? adaptedSource.packageName.trim() : '',
-			paths: Array.isArray(adaptedSource?.paths)
-				? [...adaptedSource.paths].sort()
-				: adaptedSource?.paths,
-		}))
-		.sort((left, right) =>
-			left.packageName === right.packageName
-				? JSON.stringify(left).localeCompare(JSON.stringify(right))
-				: left.packageName.localeCompare(right.packageName),
-		);
+	const normalizedAdaptedSources = normalizeAdaptedSources(
+		derivedClosure?.adaptedSources ?? adaptedSources ?? [],
+	);
+	if (
+		derivedClosure &&
+		fingerprint(normalizedAdaptedSources) !== fingerprint(normalizeAdaptedSources(adaptedSources))
+	) {
+		issues.push('Declared adaptedSources do not match the hashed shipped-source ledger.');
+	}
 	for (const adaptedSource of normalizedAdaptedSources) {
 		const adaptedNode = graphNodes[`pkg:${adaptedSource.packageName}`];
 		const copyForbidden =
@@ -688,6 +1006,7 @@ export function auditShippedClosure({
 		reimplementedDependencies: proofs,
 		issues,
 	};
+	if (derivedClosure) fingerprintInput.sourceLedger = derivedClosure.sourceLedger;
 	if (plannedCleanRoomDependencies.size > 0) {
 		report.localEvidenceArtifacts = sortedLocalEvidenceArtifacts;
 		fingerprintInput.localEvidenceArtifacts = sortedLocalEvidenceArtifacts;

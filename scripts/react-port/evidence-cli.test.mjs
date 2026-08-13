@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	symlinkSync,
+	writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, test } from 'node:test';
@@ -19,6 +26,7 @@ function sha256(content) {
 
 function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-port-work' } = {}) {
 	const workspaceRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
+	spawnSync('git', ['init', '--quiet'], { cwd: workspaceRoot });
 	const workRoot = path.join(workspaceRoot, workRootPath);
 	const batchDirectory = path.join(workRoot, 'fixture-batch');
 	mkdirSync(batchDirectory, { recursive: true });
@@ -36,6 +44,7 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 				evidenceFingerprint: 'evidence',
 				nodeFingerprint: 'plan',
 				identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+				upstreamTestInventory: [],
 				license: {
 					policy: 'approved-license-v2',
 					published: {
@@ -75,9 +84,10 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 	return { workspaceRoot, workRoot, batchDirectory };
 }
 
-function runEvidence(arguments_) {
+function runEvidence(arguments_, { env = {} } = {}) {
 	return spawnSync(process.execPath, [path.join(SCRIPT_DIRECTORY, 'evidence.mjs'), ...arguments_], {
 		encoding: 'utf8',
+		env: { ...process.env, ...env },
 	});
 }
 
@@ -120,6 +130,22 @@ function createCompletePackage(root) {
 	return packageDirectory;
 }
 
+function completeClosure(packageDirectory, overrides = {}) {
+	return {
+		runtimeDependencies: ['octane'],
+		adaptedSources: [],
+		sourceLedger: [
+			{
+				path: 'src/index.ts',
+				origin: 'authored',
+				sha256: sha256(readFileSync(path.join(packageDirectory, 'src/index.ts'))),
+			},
+		],
+		reimplementedDependencies: [],
+		...overrides,
+	};
+}
+
 function recordRequiredEvidence(batchDirectory) {
 	const manifestPath = path.join(batchDirectory, 'manifest.json');
 	const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
@@ -133,7 +159,7 @@ function recordRequiredEvidence(batchDirectory) {
 		if (gate.status !== 'required' || automated.has(gate.id)) continue;
 		recordEvidence(manifest.nodes['pkg:widget'].evidenceMatrix, gate.id, {
 			status: 'passed',
-			artifact: 'fixture-evidence',
+			command: 'fixture-command',
 			observed: 'fixture gate passed',
 		});
 	}
@@ -235,6 +261,109 @@ describe('evidence CLI', () => {
 		]);
 		assert.equal(claimed.status, 2);
 		assert.match(claimed.stderr, /cannot claim command evidence/i);
+
+		const artifactPath = path.join(workRoot, 'artifact-only.json');
+		writeFileSync(artifactPath, '{}\n');
+		const artifactOnly = runEvidence([
+			'record',
+			...common,
+			'--gate',
+			'packed-source-types-browser',
+			'--status',
+			'passed',
+			'--artifact',
+			artifactPath,
+			'--observed',
+			'passed',
+		]);
+		assert.equal(artifactOnly.status, 2);
+		assert.match(artifactOnly.stderr, /command-backed.*use run/i);
+	});
+
+	test('rejects worktree collisions and symlinked binding paths before implementation', () => {
+		const collision = createReadyBatch();
+		mkdirSync(path.join(collision.workspaceRoot, 'packages/widget'), { recursive: true });
+		writeFileSync(path.join(collision.workspaceRoot, 'packages/widget/package.json'), '{}\n');
+		const collisionResult = runEvidence([
+			'init',
+			'--work-root',
+			collision.workRoot,
+			'--batch',
+			'fixture-batch',
+			'--node',
+			'pkg:widget',
+			'--category',
+			'thin-core',
+		]);
+		assert.equal(collisionResult.status, 2);
+		assert.match(collisionResult.stderr, /worktree collision.*packages\/widget/i);
+
+		const committedCollision = createReadyBatch();
+		mkdirSync(path.join(committedCollision.workspaceRoot, 'packages/widget'), {
+			recursive: true,
+		});
+		writeFileSync(
+			path.join(committedCollision.workspaceRoot, 'packages/widget/package.json'),
+			'{}\n',
+		);
+		assert.equal(
+			spawnSync('git', ['add', 'packages/widget/package.json'], {
+				cwd: committedCollision.workspaceRoot,
+			}).status,
+			0,
+		);
+		assert.equal(
+			spawnSync(
+				'git',
+				[
+					'-c',
+					'user.name=Fixture',
+					'-c',
+					'user.email=fixture@example.com',
+					'commit',
+					'--quiet',
+					'-m',
+					'occupy planned path',
+				],
+				{ cwd: committedCollision.workspaceRoot },
+			).status,
+			0,
+		);
+		const committedCollisionResult = runEvidence([
+			'init',
+			'--work-root',
+			committedCollision.workRoot,
+			'--batch',
+			'fixture-batch',
+			'--node',
+			'pkg:widget',
+			'--category',
+			'thin-core',
+		]);
+		assert.equal(committedCollisionResult.status, 2);
+		assert.match(committedCollisionResult.stderr, /worktree collision.*packages\/widget/i);
+
+		const symlinked = createReadyBatch();
+		const outside = mkdtempSync(path.join(tmpdir(), 'react-port-outside-binding-'));
+		mkdirSync(path.join(symlinked.workspaceRoot, 'packages'), { recursive: true });
+		symlinkSync(outside, path.join(symlinked.workspaceRoot, 'packages/widget'));
+		const symlinkManifestPath = path.join(symlinked.batchDirectory, 'manifest.json');
+		const symlinkManifest = JSON.parse(readFileSync(symlinkManifestPath, 'utf8'));
+		symlinkManifest.baseline['packages/widget'] = `symlink:${outside}`;
+		writeFileSync(symlinkManifestPath, `${JSON.stringify(symlinkManifest, null, 2)}\n`);
+		const symlinkResult = runEvidence([
+			'init',
+			'--work-root',
+			symlinked.workRoot,
+			'--batch',
+			'fixture-batch',
+			'--node',
+			'pkg:widget',
+			'--category',
+			'thin-core',
+		]);
+		assert.equal(symlinkResult.status, 2);
+		assert.match(symlinkResult.stderr, /symlink.*packages\/widget/i);
 	});
 
 	test('passes shell metacharacters as literal argv data', () => {
@@ -260,6 +389,34 @@ describe('evidence CLI', () => {
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['authored-source-types'].observed,
 			literal,
 		);
+	});
+
+	test('redacts configured npm credentials from command reports and stored evidence', () => {
+		const { workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const token = 'npm_abcdefghijklmnopqrstuvwxyz0123456789';
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				process.execPath,
+				'-e',
+				'process.stdout.write(process.env.NPM_TOKEN)',
+			],
+			{ env: { NPM_TOKEN: token, NODE_AUTH_TOKEN: token } },
+		);
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.equal(result.stdout.includes(token), false);
+		assert.equal(
+			readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8').includes(token),
+			false,
+		);
+		assert.match(result.stdout, /\[REDACTED\]/);
 	});
 
 	test('executes one command once for multiple evidence gates', () => {
@@ -568,7 +725,7 @@ describe('evidence CLI', () => {
 		for (const [name, value] of Object.entries({
 			'registrations.json': [],
 			'crosswalk.json': [],
-			'closure.json': { runtimeDependencies: ['octane'], adaptedSources: [] },
+			'closure.json': completeClosure(packageDirectory),
 		})) {
 			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
 		}
@@ -602,7 +759,7 @@ describe('evidence CLI', () => {
 		for (const [name, value] of Object.entries({
 			'registrations.json': [],
 			'crosswalk.json': [],
-			'closure.json': { runtimeDependencies: ['octane'], adaptedSources: [] },
+			'closure.json': completeClosure(packageDirectory),
 		})) {
 			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
 		}
@@ -640,7 +797,7 @@ describe('evidence CLI', () => {
 		for (const [name, value] of Object.entries({
 			'registrations.json': [],
 			'crosswalk.json': [],
-			'closure.json': { runtimeDependencies: ['octane'], adaptedSources: [] },
+			'closure.json': completeClosure(packageDirectory),
 		})) {
 			writeFileSync(path.join(inputRoot, name), JSON.stringify(value));
 		}
