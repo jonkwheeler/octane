@@ -680,6 +680,34 @@ describe('union prerequisite graph', () => {
 		assert.equal(graph.nodes['pkg:cycle-b'].state, 'ready');
 	});
 
+	test('keeps actionable members of a cycle whose remaining members are already satisfied', () => {
+		const inventory = fixtureInventory();
+		inventory.sourceBindings['cycle-b'] = '@octanejs/cycle-b';
+		inventory.bindings['@octanejs/cycle-b'] = {
+			name: '@octanejs/cycle-b',
+			version: '0.1.0',
+			exports: ['.'],
+			tested: true,
+			status: {
+				upstream: { package: 'cycle-b', version: '1.0.0' },
+				verified: '2026-08-13',
+			},
+		};
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('cycle-a', '1.0.0', { 'cycle-b': '^1.0.0' }),
+				licensedTarget('cycle-b', '1.0.0', { 'cycle-a': '^1.0.0' }),
+			],
+			inventory,
+			dependencyClassifications: { 'cycle-a': 'react-coupled', 'cycle-b': 'react-coupled' },
+		});
+
+		assert.deepEqual(graph.executionUnits, [['pkg:cycle-a', 'pkg:cycle-b']]);
+		assert.equal(graph.nodes['pkg:cycle-a'].disposition, 'actionable');
+		assert.equal(graph.nodes['pkg:cycle-b'].disposition, 'satisfied');
+		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:cycle-a']]);
+	});
+
 	test('keeps rewrite-heavy class and element-construction ports ready with an adaptation plan', () => {
 		const target = licensedTarget('react-legacy-ui', '1.0.0');
 		target.sourceAnalysis = {
