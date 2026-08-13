@@ -477,6 +477,34 @@ describe('resolved evidence', () => {
 		assert.throws(() => parseTarArchive(link), /unsupported archive entry type/i);
 	});
 
+	test('keeps file quotas independent from directory and metadata headers', () => {
+		const archive = makeTarEntries([
+			{ name: 'package/', type: '5', value: '' },
+			{ name: 'PaxHeaders/a', type: 'x', value: paxRecord('path', 'package/a') },
+			{ name: 'package/placeholder-a', value: 'a' },
+			{ name: '././@LongLink', type: 'L', value: 'package/b\0' },
+			{ name: 'package/placeholder-b', value: 'b' },
+		]);
+		const parsed = parseTarArchive(archive, {
+			select: () => true,
+			limits: { maxFiles: 2, maxTotalBytes: 2 },
+		});
+
+		assert.deepEqual(
+			parsed.entries.map((entry) => entry.path),
+			['package/', 'package/a', 'package/b'],
+		);
+		assert.deepEqual([...parsed.files.keys()], ['package/a', 'package/b']);
+		assert.throws(
+			() => parseTarArchive(archive, { limits: { maxHeaders: 4 } }),
+			/archive header limit/i,
+		);
+		assert.throws(
+			() => parseTarArchive(archive, { limits: { maxMetadataBytes: 1 } }),
+			/archive metadata limit/i,
+		);
+	});
+
 	test('marks feasibility evidence truncated at the shipped-source file bound', () => {
 		const sourceFiles = Object.fromEntries(
 			Array.from({ length: 401 }, (_, index) => [`package/src/file-${index}.js`, 'export {};']),

@@ -13,6 +13,8 @@ const DEFAULT_ARCHIVE_LIMITS = Object.freeze({
 	maxFiles: 10_000,
 	maxFileBytes: 100 * 1024 * 1024,
 	maxTotalBytes: 250 * 1024 * 1024,
+	maxHeaders: 40_000,
+	maxMetadataBytes: 8 * 1024 * 1024,
 	maxDepth: 32,
 });
 const REMOTE_LIMITS = Object.freeze({
@@ -453,8 +455,8 @@ export function parseTarArchive(bytes, { select = () => false, limits = {} } = {
 	const resolvedLimits = { ...DEFAULT_ARCHIVE_LIMITS, ...limits };
 	const globalPaxOverrides = new Map();
 	const pendingPaxOverrides = new Map();
-	let recordCount = 0;
-	let recordBytes = 0;
+	let headerCount = 0;
+	let metadataBytes = 0;
 	let offset = 0;
 
 	while (offset + 512 <= archive.length) {
@@ -476,13 +478,13 @@ export function parseTarArchive(bytes, { select = () => false, limits = {} } = {
 			? pendingPaxOverrides.get('size')
 			: globalPaxOverrides.get('size');
 		const size = metadataType ? headerSize : readPaxSize(sizeOverride, headerSize);
-		if (size > resolvedLimits.maxFileBytes) {
-			throw new Error(`Archive entry exceeds the per-file limit: ${entryPath}`);
-		}
-		recordCount += 1;
-		recordBytes += size;
-		if (recordCount > resolvedLimits.maxFiles || recordBytes > resolvedLimits.maxTotalBytes) {
-			throw new Error('Archive exceeds resource limits');
+		headerCount += 1;
+		if (headerCount > resolvedLimits.maxHeaders) throw new Error('Archive header limit exceeded');
+		if (metadataType) {
+			metadataBytes += size;
+			if (metadataBytes > resolvedLimits.maxMetadataBytes) {
+				throw new Error('Archive metadata limit exceeded');
+			}
 		}
 
 		const dataStart = offset + 512;
