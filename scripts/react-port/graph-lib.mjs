@@ -696,9 +696,13 @@ export function planPortGraph({
 		Object.entries(nodes).sort(([left], [right]) => left.localeCompare(right)),
 	);
 	const executionUnits = orderComponents(orderedNodes, stronglyConnectedComponents(orderedNodes));
-	const actionableExecutionUnits = executionUnits
-		.map((unit) => unit.filter((nodeId) => orderedNodes[nodeId].disposition === 'actionable'))
-		.filter((unit) => unit.length > 0);
+	const actionableNodes = Object.fromEntries(
+		Object.entries(orderedNodes).filter(([, node]) => node.disposition === 'actionable'),
+	);
+	const actionableExecutionUnits = orderComponents(
+		actionableNodes,
+		stronglyConnectedComponents(actionableNodes),
+	);
 	const requestedSummary = {
 		actionable: [],
 		pendingIntake: [],

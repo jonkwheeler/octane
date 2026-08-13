@@ -708,6 +708,40 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:cycle-a']]);
 	});
 
+	test('recomputes actionable dependency order after satisfied cycle members are removed', () => {
+		const inventory = fixtureInventory();
+		inventory.sourceBindings['cycle-b'] = '@octanejs/cycle-b';
+		inventory.bindings['@octanejs/cycle-b'] = {
+			name: '@octanejs/cycle-b',
+			version: '0.1.0',
+			exports: ['.'],
+			tested: true,
+			status: {
+				upstream: { package: 'cycle-b', version: '1.0.0' },
+				verified: '2026-08-13',
+			},
+		};
+		const graph = planPortGraph({
+			targets: [
+				licensedTarget('cycle-a', '1.0.0', { 'cycle-b': '^1.0.0' }),
+				licensedTarget('cycle-b', '1.0.0', { 'cycle-c': '^1.0.0' }),
+				licensedTarget('cycle-c', '1.0.0', { 'cycle-a': '^1.0.0' }),
+			],
+			inventory,
+			dependencyClassifications: {
+				'cycle-a': 'react-coupled',
+				'cycle-b': 'react-coupled',
+				'cycle-c': 'react-coupled',
+			},
+		});
+
+		assert.deepEqual(graph.executionUnits, [['pkg:cycle-a', 'pkg:cycle-b', 'pkg:cycle-c']]);
+		assert.equal(graph.nodes['pkg:cycle-a'].disposition, 'actionable');
+		assert.equal(graph.nodes['pkg:cycle-b'].disposition, 'satisfied');
+		assert.equal(graph.nodes['pkg:cycle-c'].disposition, 'actionable');
+		assert.deepEqual(graph.actionableExecutionUnits, [['pkg:cycle-a'], ['pkg:cycle-c']]);
+	});
+
 	test('keeps rewrite-heavy class and element-construction ports ready with an adaptation plan', () => {
 		const target = licensedTarget('react-legacy-ui', '1.0.0');
 		target.sourceAnalysis = {
