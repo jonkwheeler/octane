@@ -212,8 +212,9 @@ async function main() {
 						npmToken: process.env.NODE_AUTH_TOKEN ?? process.env.NPM_TOKEN,
 					}),
 	});
-	const requestedInputs = new Set(parsedArguments.inputs);
-	for (const target of report.targets) target.requested = requestedInputs.has(target.input);
+	for (const [index, target] of report.targets.entries()) {
+		target.requested = index < parsedArguments.inputs.length;
+	}
 	const inventory = readRepositoryCapabilityInventory();
 	const graph = planPortGraph({
 		targets: report.targets,

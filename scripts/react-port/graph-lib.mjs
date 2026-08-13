@@ -394,6 +394,11 @@ export function planPortGraph({
 		inventory.workspacePackages ?? Object.keys(inventory.bindings),
 	);
 	const workspaceDirectories = new Set(inventory.workspaceDirectories ?? []);
+	const licensedPackageNames = new Set(
+		targets
+			.filter((target) => target.status === 'licensed')
+			.map((target) => packageNameFromBlockedTarget(target)),
+	);
 
 	function ensureNode(packageName) {
 		const id = `pkg:${packageName}`;
@@ -418,8 +423,13 @@ export function planPortGraph({
 		const packageName = packageNameFromBlockedTarget(target);
 		const node = ensureNode(packageName);
 		node.requested ||= target.requested !== false;
-		node.input = target.input;
-		if (target.identity?.version) {
+		const hasLicensedEvidence = licensedPackageNames.has(packageName);
+		if (target.status === 'blocked' && target.requested === false && hasLicensedEvidence) {
+			continue;
+		}
+		const providesPrimaryEvidence = target.status === 'licensed' || !hasLicensedEvidence;
+		if (providesPrimaryEvidence || !node.input) node.input = target.input;
+		if (providesPrimaryEvidence && target.identity?.version) {
 			node.constraints.push({ range: target.identity.version, via: packageName });
 			node.version = target.identity.version;
 			node.identity = target.identity;
@@ -427,7 +437,7 @@ export function planPortGraph({
 			node.provenance = target.provenance;
 			targetByPackage.set(packageName, target);
 		}
-		if (target.sourceAnalysis) {
+		if (providesPrimaryEvidence && target.sourceAnalysis) {
 			node.feasibility = {
 				verdict: target.sourceAnalysis.verdict,
 				requiresAdaptation: target.sourceAnalysis.verdict === 'bridgeable-with-rewrites',

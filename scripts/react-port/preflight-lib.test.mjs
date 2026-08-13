@@ -799,6 +799,40 @@ describe('preflight CLI', () => {
 		assert.equal(report.graph.nodes['pkg:fixture-prerequisite'].requested, false);
 	});
 
+	test('does not let a failed duplicate prerequisite poison licensed requested evidence', () => {
+		const result = spawnSync(
+			process.execPath,
+			[
+				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				'--no-state',
+				'--fixture-evidence',
+				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
+				'--classify',
+				'fixture-core=framework-neutral',
+				'fixture-widget@1.0.0',
+				'--prerequisite',
+				'fixture-widget@missing',
+			],
+			{ encoding: 'utf8' },
+		);
+
+		assert.equal(result.status, 0, result.stderr);
+		const report = JSON.parse(result.stdout);
+		assert.equal(report.preflightStatus, 'partial');
+		assert.equal(report.status, 'passed');
+		assert.deepEqual(
+			report.targets.map(({ input, requested }) => ({ input, requested })),
+			[
+				{ input: 'fixture-widget@1.0.0', requested: true },
+				{ input: 'fixture-widget@missing', requested: false },
+			],
+		);
+		assert.equal(report.graph.nodes['pkg:fixture-widget'].state, 'ready');
+		assert.equal(report.graph.nodes['pkg:fixture-widget'].action, 'create-binding');
+		assert.equal(report.graph.nodes['pkg:fixture-widget'].input, 'fixture-widget@1.0.0');
+		assert.deepEqual(report.graph.nodes['pkg:fixture-widget'].blockers, []);
+	});
+
 	test('returns structured evidence and a nonzero status when every input is blocked', () => {
 		const result = spawnSync(
 			process.execPath,

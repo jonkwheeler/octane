@@ -410,6 +410,62 @@ describe('union prerequisite graph', () => {
 		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:blocked-target']);
 	});
 
+	test('preserves licensed requested evidence when duplicate prerequisite intake fails', () => {
+		const licensed = licensedTarget('react-widget', '1.0.0');
+		licensed.sourceAnalysis = {
+			verdict: 'bridgeable',
+			filesScanned: 1,
+			truncated: false,
+			hazards: [],
+			apis: [],
+			imports: ['react'],
+			plan: [],
+		};
+		const failedPrerequisite = {
+			input: 'react-widget@missing',
+			requested: false,
+			status: 'blocked',
+			blockers: ['Selector missing did not resolve to one exact published version'],
+			repair: 'Correct the input or retry immutable evidence resolution.',
+		};
+
+		for (const targets of [
+			[licensed, failedPrerequisite],
+			[failedPrerequisite, licensed],
+		]) {
+			const graph = planPortGraph({ targets, inventory: fixtureInventory() });
+			const node = graph.nodes['pkg:react-widget'];
+
+			assert.equal(node.requested, true);
+			assert.equal(node.state, 'ready');
+			assert.equal(node.action, 'create-binding');
+			assert.equal(node.input, licensed.input);
+			assert.deepEqual(node.identity, licensed.identity);
+			assert.deepEqual(node.license, licensed.license);
+			assert.equal(node.evidenceFingerprint, licensed.evidenceFingerprint);
+			assert.deepEqual(node.blockers, []);
+			assert.deepEqual(graph.requestedSummary.actionable, ['pkg:react-widget']);
+		}
+	});
+
+	test('keeps a failed requested duplicate blocked despite other licensed evidence', () => {
+		const licensed = licensedTarget('react-widget', '1.0.0');
+		const failedRequestedTarget = {
+			input: 'react-widget@missing',
+			requested: true,
+			status: 'blocked',
+			blockers: ['Selector missing did not resolve to one exact published version'],
+		};
+		const graph = planPortGraph({
+			targets: [licensed, failedRequestedTarget],
+			inventory: fixtureInventory(),
+		});
+
+		assert.equal(graph.nodes['pkg:react-widget'].state, 'blocked');
+		assert.equal(graph.nodes['pkg:react-widget'].action, 'repair-preflight');
+		assert.deepEqual(graph.requestedSummary.hardBlocked, ['pkg:react-widget']);
+	});
+
 	test('distinguishes recursive intake work from hard blockers', () => {
 		const graph = planPortGraph({
 			targets: [
