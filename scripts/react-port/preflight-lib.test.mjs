@@ -276,18 +276,31 @@ function tarHeader(name, size, type = '0') {
 	return header;
 }
 
-function makeTar(files) {
+function paxRecord(key, value) {
+	const body = ` ${key}=${value}\n`;
+	let length = Buffer.byteLength(body) + 1;
+	while (Buffer.byteLength(String(length)) + Buffer.byteLength(body) !== length) {
+		length = Buffer.byteLength(String(length)) + Buffer.byteLength(body);
+	}
+	return `${length}${body}`;
+}
+
+function makeTarEntries(entries) {
 	const chunks = [];
-	for (const [name, value] of Object.entries(files)) {
+	for (const { name, value, type = '0', headerSize } of entries) {
 		const bytes = Buffer.from(value);
 		chunks.push(
-			tarHeader(name, bytes.length),
+			tarHeader(name, headerSize ?? bytes.length, type),
 			bytes,
 			Buffer.alloc((512 - (bytes.length % 512)) % 512),
 		);
 	}
 	chunks.push(Buffer.alloc(1024));
 	return Buffer.concat(chunks);
+}
+
+function makeTar(files) {
+	return makeTarEntries(Object.entries(files).map(([name, value]) => ({ name, value })));
 }
 
 describe('resolved evidence', () => {
@@ -418,6 +431,50 @@ describe('resolved evidence', () => {
 		const corrupt = Buffer.from(archive);
 		corrupt[0] ^= 1;
 		assert.throws(() => parseTarArchive(corrupt), /checksum/i);
+	});
+
+	test('accepts bounded tar metadata while enforcing effective paths and link safety', () => {
+		const manifestPath = 'package/metadata/package.json';
+		const manifest = JSON.stringify({ name: 'react-widget', version: '1.2.3' });
+		const longLicensePath = `package/${'nested/'.repeat(14)}LICENSE`;
+		const archive = makeTarEntries([
+			{
+				name: 'PaxHeaders/package.json',
+				type: 'x',
+				value: `${paxRecord('path', manifestPath)}${paxRecord('size', String(Buffer.byteLength(manifest)))}`,
+			},
+			{ name: 'package/placeholder', value: manifest, headerSize: 0 },
+			{ name: 'GlobalHead', type: 'g', value: paxRecord('comment', 'npm metadata') },
+			{ name: '././@LongLink', type: 'L', value: `${longLicensePath}\0` },
+			{ name: 'package/truncated-license', value: MIT_TEXT },
+		]);
+		const parsed = parseTarArchive(archive, { select: () => true });
+
+		assert.deepEqual(
+			parsed.entries.map((entry) => entry.path),
+			[manifestPath, longLicensePath],
+		);
+		assert.deepEqual(JSON.parse(parsed.files.get(manifestPath).toString('utf8')), {
+			name: 'react-widget',
+			version: '1.2.3',
+		});
+		assert.match(
+			parsed.files.get(longLicensePath).toString('utf8'),
+			/Permission is hereby granted/,
+		);
+
+		const unsafe = makeTarEntries([
+			{
+				name: 'PaxHeaders/unsafe',
+				type: 'x',
+				value: paxRecord('path', '../escape'),
+			},
+			{ name: 'package/placeholder', value: 'unsafe' },
+		]);
+		assert.throws(() => parseTarArchive(unsafe), /unsafe archive path/i);
+
+		const link = makeTarEntries([{ name: 'package/link', type: '2', value: 'target' }]);
+		assert.throws(() => parseTarArchive(link), /unsupported archive entry type/i);
 	});
 
 	test('marks feasibility evidence truncated at the shipped-source file bound', () => {

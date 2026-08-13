@@ -394,6 +394,55 @@ function verifyTarHeaderChecksum(header) {
 	if (actual !== expected) throw new Error('Archive header checksum mismatch');
 }
 
+function readPaxOverrides(data) {
+	const overrides = new Map();
+	let offset = 0;
+	while (offset < data.length) {
+		const separator = data.indexOf(0x20, offset);
+		if (separator === -1) throw new Error('Invalid archive pax record length');
+		const lengthText = data.subarray(offset, separator).toString('ascii');
+		if (!/^[1-9][0-9]*$/.test(lengthText)) {
+			throw new Error('Invalid archive pax record length');
+		}
+		const length = Number(lengthText);
+		const recordEnd = offset + length;
+		if (!Number.isSafeInteger(length) || recordEnd <= separator + 1 || recordEnd > data.length) {
+			throw new Error('Invalid archive pax record length');
+		}
+		const record = data.subarray(separator + 1, recordEnd);
+		if (record.at(-1) !== 0x0a) throw new Error('Invalid archive pax record terminator');
+		const payload = record.subarray(0, -1).toString('utf8');
+		const equals = payload.indexOf('=');
+		if (equals <= 0) throw new Error('Invalid archive pax record');
+		const key = payload.slice(0, equals);
+		if (key === 'path' || key === 'size') overrides.set(key, payload.slice(equals + 1));
+		offset = recordEnd;
+	}
+	return overrides;
+}
+
+function applyGlobalPaxOverrides(globalOverrides, overrides) {
+	for (const [key, value] of overrides) {
+		if (value === '') globalOverrides.delete(key);
+		else globalOverrides.set(key, value);
+	}
+}
+
+function readGnuLongName(data) {
+	const terminator = data.indexOf(0);
+	const value = data.subarray(0, terminator === -1 ? data.length : terminator).toString('utf8');
+	if (!value) throw new Error('Invalid archive GNU long-name record');
+	return value;
+}
+
+function readPaxSize(value, fallback) {
+	if (value === undefined || value === '') return fallback;
+	if (!/^(?:0|[1-9][0-9]*)$/.test(value)) throw new Error('Invalid archive pax entry size');
+	const size = Number(value);
+	if (!Number.isSafeInteger(size)) throw new Error('Archive pax entry size is too large');
+	return size;
+}
+
 export function parseTarArchive(bytes, { select = () => false, limits = {} } = {}) {
 	if (!Buffer.isBuffer(bytes) && !(bytes instanceof Uint8Array)) {
 		throw new TypeError('Archive bytes must be a Buffer or Uint8Array');
@@ -401,6 +450,11 @@ export function parseTarArchive(bytes, { select = () => false, limits = {} } = {
 	const archive = Buffer.from(bytes);
 	const entries = [];
 	const files = new Map();
+	const resolvedLimits = { ...DEFAULT_ARCHIVE_LIMITS, ...limits };
+	const globalPaxOverrides = new Map();
+	const pendingPaxOverrides = new Map();
+	let recordCount = 0;
+	let recordBytes = 0;
 	let offset = 0;
 
 	while (offset + 512 <= archive.length) {
@@ -410,21 +464,54 @@ export function parseTarArchive(bytes, { select = () => false, limits = {} } = {
 
 		const name = readTarString(header, 0, 100);
 		const prefix = readTarString(header, 345, 155);
-		const entryPath = prefix ? `${prefix}/${name}` : name;
-		const size = readTarOctal(header, 124, 12, 'entry size');
+		const headerPath = prefix ? `${prefix}/${name}` : name;
+		const headerSize = readTarOctal(header, 124, 12, 'entry size');
 		const typeFlag = readTarString(header, 156, 1);
-		const type =
-			typeFlag === '' || typeFlag === '0' ? 'file' : typeFlag === '5' ? 'directory' : 'link';
-		const entry = { path: entryPath, type, size };
-		validateArchiveEntries([entry], limits);
+		const metadataType = typeFlag === 'x' || typeFlag === 'g' || typeFlag === 'L';
+		const pathOverride = pendingPaxOverrides.has('path')
+			? pendingPaxOverrides.get('path')
+			: globalPaxOverrides.get('path');
+		const entryPath = metadataType ? headerPath : pathOverride || headerPath;
+		const sizeOverride = pendingPaxOverrides.has('size')
+			? pendingPaxOverrides.get('size')
+			: globalPaxOverrides.get('size');
+		const size = metadataType ? headerSize : readPaxSize(sizeOverride, headerSize);
+		if (size > resolvedLimits.maxFileBytes) {
+			throw new Error(`Archive entry exceeds the per-file limit: ${entryPath}`);
+		}
+		recordCount += 1;
+		recordBytes += size;
+		if (recordCount > resolvedLimits.maxFiles || recordBytes > resolvedLimits.maxTotalBytes) {
+			throw new Error('Archive exceeds resource limits');
+		}
 
 		const dataStart = offset + 512;
 		const dataEnd = dataStart + size;
 		if (dataEnd > archive.length) throw new Error(`Archive entry is truncated: ${entryPath}`);
+		const data = archive.subarray(dataStart, dataEnd);
+		if (metadataType) {
+			if (typeFlag === 'g') {
+				applyGlobalPaxOverrides(globalPaxOverrides, readPaxOverrides(data));
+			} else if (typeFlag === 'x') {
+				for (const [key, value] of readPaxOverrides(data)) {
+					pendingPaxOverrides.set(key, value);
+				}
+			} else {
+				pendingPaxOverrides.set('path', readGnuLongName(data));
+			}
+			offset = dataStart + Math.ceil(size / 512) * 512;
+			continue;
+		}
+
+		const type =
+			typeFlag === '' || typeFlag === '0' ? 'file' : typeFlag === '5' ? 'directory' : 'link';
+		const entry = { path: entryPath, type, size };
+		validateArchiveEntries([entry], limits);
 		entries.push(entry);
 		if (type === 'file' && select(entryPath, entry)) {
-			files.set(entryPath, Buffer.from(archive.subarray(dataStart, dataEnd)));
+			files.set(entryPath, Buffer.from(data));
 		}
+		pendingPaxOverrides.clear();
 		offset = dataStart + Math.ceil(size / 512) * 512;
 	}
 
