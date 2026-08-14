@@ -138,6 +138,20 @@ function commonjsExportName(node) {
 	return null;
 }
 
+function importHasRuntimeEffect(statement) {
+	const clause = statement.importClause;
+	if (!clause) return true;
+	if (clause.isTypeOnly) return false;
+	if (clause.name) return true;
+	if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+		return (
+			clause.namedBindings.elements.length === 0 ||
+			clause.namedBindings.elements.some((element) => !element.isTypeOnly)
+		);
+	}
+	return true;
+}
+
 function inspectModule(targetPath, packageDirectory, visiting = new Set()) {
 	if (visiting.has(targetPath)) return { exports: new Set(), sideEffect: false };
 	const source = readFileSync(targetPath, 'utf8');
@@ -271,7 +285,7 @@ function inspectModule(targetPath, packageDirectory, visiting = new Set()) {
 			continue;
 		}
 		if (ts.isImportDeclaration(statement)) {
-			sideEffect = true;
+			sideEffect ||= importHasRuntimeEffect(statement);
 			continue;
 		}
 		if (

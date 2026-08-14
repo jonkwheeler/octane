@@ -637,6 +637,59 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('accepts public type coverage split across files in one type project', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			'export const widget = true;\nexport const helper = 1;\n',
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/widget.ts'),
+			"import { widget } from '@octanejs/widget';\nwidget satisfies boolean;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/helper.ts'),
+			"import { helper } from '@octanejs/widget';\nhelper satisfies number;\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/tsconfig.json'),
+			JSON.stringify({
+				compilerOptions: {
+					strict: true,
+					skipLibCheck: false,
+					noEmit: true,
+					baseUrl: '.',
+					module: 'ESNext',
+					moduleResolution: 'Bundler',
+					paths: { '@octanejs/widget': ['../../../src/index.ts'] },
+				},
+				files: ['widget.ts', 'helper.ts'],
+				reactPortEvidence: { gate: 'public-types' },
+			}),
+		);
+
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['public-types'],
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/public/tsconfig.json',
+				],
+				{
+					binding: '@octanejs/widget',
+					bindingDirectory: 'packages/widget',
+					upstreamTestInventory: [],
+				},
+				{ workspaceRoot },
+			),
+		);
+	});
+
 	test('rejects package-test evidence that never runs a passing test', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -746,6 +799,54 @@ describe('evidence CLI', () => {
 		assert.equal(
 			batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
 			'required',
+		);
+	});
+
+	test('requires Node TAP to pass every counted package test registration', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'node --test';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'node:test';\ntest('first case', () => {});\ntest('second case', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_STDOUT:
+						'TAP version 13\n# tests 2\n# suites 0\n# pass 1\n# fail 0\n# skipped 1\n# todo 0\n',
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		const batchManifest = JSON.parse(
+			readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'),
+		);
+		assert.equal(
+			batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+			'failed',
+		);
+		assert.match(
+			batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
+			/passed 1, total 2, expected 2/i,
 		);
 	});
 

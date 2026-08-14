@@ -336,7 +336,7 @@ function assertPackageTestReport(plan, reportPath, stdout, stderr) {
 		const output = `${stdout ?? ''}\n${stderr ?? ''}`;
 		const passed = Number(output.match(/^#\s*pass\s+(\d+)\s*$/im)?.[1] ?? 0);
 		const total = Number(output.match(/^#\s*tests\s+(\d+)\s*$/im)?.[1] ?? 0);
-		if (passed < 1 || total < plan.countedRegistrations) {
+		if (passed < plan.countedRegistrations || total < plan.countedRegistrations) {
 			throw new Error(
 				`Package test runner reported no complete executed passing test set (passed ${passed}, total ${total}, expected ${plan.countedRegistrations}); runner output: ${output.slice(-1_000) || 'none'}`,
 			);
@@ -496,6 +496,7 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 	const importedEntries = new Set();
 	const importedBindings = [];
 	const fileEvidence = new Map();
+	const projectImportsBySpecifier = new Map();
 
 	for (const filePath of checkerFiles) {
 		const source = readFileSync(filePath, 'utf8');
@@ -503,7 +504,6 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 			program.getSourceFile(filePath) ??
 			ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKind(filePath));
 		const taintedSymbols = new Set();
-		const importsBySpecifier = new Map();
 		for (const statement of sourceFile.statements) {
 			if (
 				!ts.isImportDeclaration(statement) ||
@@ -514,7 +514,7 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 			}
 			const specifier = statement.moduleSpecifier.text;
 			importedEntries.add(specifier);
-			const record = importsBySpecifier.get(specifier) ?? {
+			const record = projectImportsBySpecifier.get(specifier) ?? {
 				moduleSpecifier: statement.moduleSpecifier,
 				namespace: false,
 				coveredExports: new Set(),
@@ -537,47 +537,45 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 					importedBindings.push(element.name);
 				}
 			}
-			importsBySpecifier.set(specifier, record);
+			projectImportsBySpecifier.set(specifier, record);
 		}
-		fileEvidence.set(filePath, { importsBySpecifier, source, sourceFile, taintedSymbols });
+		fileEvidence.set(filePath, { source, sourceFile, taintedSymbols });
 	}
 
 	const missingEntries = [...expected].filter((specifier) => !importedEntries.has(specifier));
 	if (missingEntries.length > 0) {
 		throw new Error(`Type project omits public entry import(s): ${missingEntries.join(', ')}`);
 	}
-	for (const { importsBySpecifier } of fileEvidence.values()) {
-		for (const [specifier, record] of importsBySpecifier) {
-			const moduleSymbol = checker.getSymbolAtLocation(record.moduleSpecifier);
-			if (!moduleSymbol) throw new Error(`Type project cannot resolve public entry ${specifier}`);
-			const exports = checker.getExportsOfModule(moduleSymbol);
-			if (!record.namespace) {
-				const omitted = exports
-					.map((symbol) => symbol.name)
-					.filter((name) => !record.coveredExports.has(name));
-				if (omitted.length > 0) {
-					throw new Error(
-						`Type project does not consume every export from ${specifier}: ${omitted.join(', ')}`,
-					);
-				}
+	for (const [specifier, record] of projectImportsBySpecifier) {
+		const moduleSymbol = checker.getSymbolAtLocation(record.moduleSpecifier);
+		if (!moduleSymbol) throw new Error(`Type project cannot resolve public entry ${specifier}`);
+		const exports = checker.getExportsOfModule(moduleSymbol);
+		if (!record.namespace) {
+			const omitted = exports
+				.map((symbol) => symbol.name)
+				.filter((name) => !record.coveredExports.has(name));
+			if (omitted.length > 0) {
+				throw new Error(
+					`Type project does not consume every export from ${specifier}: ${omitted.join(', ')}`,
+				);
 			}
-			for (const symbol of exports) {
-				const declaration =
-					symbol.valueDeclaration ?? symbol.declarations?.[0] ?? record.moduleSpecifier;
-				let type;
-				try {
-					type =
-						symbol.flags & (ts.SymbolFlags.TypeAlias | ts.SymbolFlags.Interface)
-							? checker.getDeclaredTypeOfSymbol(symbol)
-							: checker.getTypeOfSymbolAtLocation(symbol, declaration);
-				} catch {
-					continue;
-				}
-				if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
-					throw new Error(
-						`Imported public type ${specifier}.${symbol.name} resolves to any or unknown`,
-					);
-				}
+		}
+		for (const symbol of exports) {
+			const declaration =
+				symbol.valueDeclaration ?? symbol.declarations?.[0] ?? record.moduleSpecifier;
+			let type;
+			try {
+				type =
+					symbol.flags & (ts.SymbolFlags.TypeAlias | ts.SymbolFlags.Interface)
+						? checker.getDeclaredTypeOfSymbol(symbol)
+						: checker.getTypeOfSymbolAtLocation(symbol, declaration);
+			} catch {
+				continue;
+			}
+			if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
+				throw new Error(
+					`Imported public type ${specifier}.${symbol.name} resolves to any or unknown`,
+				);
 			}
 		}
 	}

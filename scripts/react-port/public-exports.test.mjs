@@ -120,6 +120,24 @@ test('accepts CommonJS, side-effect, and intentionally empty declaration contrac
 	assert.equal(inspectPublicExports(declaration).status, 'passed');
 });
 
+test('does not treat erased type-only imports as a side-effect contract', () => {
+	for (const [name, source] of [
+		['clause', "import type { FixtureType } from './types.js';\n"],
+		['specifier', "import { type FixtureType } from './types.js';\n"],
+	]) {
+		const packageDirectory = createPackage(
+			`@octanejs/type-only-import-${name}-fixture`,
+			{ '.': './src/index.ts' },
+			{
+				'src/index.ts': source,
+				'src/types.ts': 'export interface FixtureType { ready: boolean }\n',
+			},
+		);
+
+		assert.throws(() => inspectPublicExports(packageDirectory), /no public contract/i);
+	}
+});
+
 test('resolves CommonJS re-exports instead of accepting an empty assignment', () => {
 	const reexport = createPackage(
 		'@octanejs/commonjs-reexport-fixture',
