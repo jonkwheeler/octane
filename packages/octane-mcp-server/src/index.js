@@ -33,7 +33,7 @@ export const REPO_SKILLS = {
 	'octane-core-extend': '.rulesync/skills/octane-core-extend/SKILL.md',
 	'performance-audit': '.rulesync/skills/performance-audit/SKILL.md',
 	// Temporary compatibility alias for callers using the pre-rename skill name.
-	'react-library-port': '.rulesync/skills/octane-react-library-port/SKILL.md',
+	'react-library-port': '.rulesync/skills/react-library-port/SKILL.md',
 	'octane-react-library-port': '.rulesync/skills/octane-react-library-port/SKILL.md',
 	triage: '.rulesync/skills/triage/SKILL.md',
 };
