@@ -110,9 +110,12 @@ preflight rather than silently undercount the suite. Preflight expands every
 known count into one stable row per registration and preserves
 `estimatedRegistrations`, `dynamicExpansion`, `helperExpansion`, and
 `manualReviewReason` in immutable evidence. The npm tarball alone cannot prove
-that upstream has no tests. Run framework-neutral suites unchanged against
-reused cores; port React-owned cases one by one with their upstream names and
-source citations.
+that upstream has no tests. Node test-context subtests (`t.test`) and curried
+Vitest conditional registrars such as `it.skipIf(condition)(title, fn)` and
+`test.runIf(condition)(title, fn)` are registrations too; the inventory must
+retain their actual titles and conditions. Run framework-neutral suites
+unchanged against reused cores; port React-owned cases one by one with their
+upstream names and source citations.
 
 Run `scripts/scaffold-react-port.mjs` against the pinned source/test inventory.
 Keep every upstream test file and registration visible. Classify each as:
@@ -163,18 +166,24 @@ gates. Neither upstream command observation substitutes for the other:
    Preserve positive assertions, negative assertions, and every
    `@ts-expect-error`. Both project files must declare `reactPortEvidence.gate`
    and an `upstreamRegistrations` list that exactly matches the pinned immutable
-   type inventory; each pinned ID must also appear in a compiled mapping source.
+   type inventory; each pinned ID must also appear in a compiled, structured
+   upstream registration map such as
+   `const upstreamRegistrationMap = { '<registration-id>': true } as const`.
+   Comments and unrelated string literals are not mappings.
 2. Compile the authored package source directly with `tsrx-tsc --noEmit`. The
-   project must directly include every authored `.tsrx` file; a package import
-   can resolve a declaration condition and hide broken source. For every source
-   program use `strict: true`, `skipLibCheck: false`, the Octane JSX/compiler
-   settings, and no ambient `declare module '*.tsrx'`. Never use plain `tsc` or
-   `tsgo` for a program containing `.tsrx`.
+   project must directly include every authored `.ts`, `.tsx`, and `.tsrx` file;
+   a package import can resolve a declaration condition and hide broken source.
+   For every source program use `strict: true`, `skipLibCheck: false`, the Octane
+   JSX/compiler settings, and no ambient `declare module '*.tsrx'`.
+   Never use plain `tsc` or `tsgo` for a program containing `.tsrx`.
 3. Compile a consumer of every public entry and type export. Assert exported
    component props, hooks, values, and aliases are not `any` (for example with
    `AssertNotAny`), exercise representative valid calls, and retain negative
-   controls for invalid props and unsupported exports. A declaration file may
-   describe the public surface, but it never replaces direct source compilation.
+   controls for invalid props and unsupported exports. The project must contain
+   a parsed import from the graph-planned package, positive assertions that use
+   those imported bindings, and a real `@ts-expect-error` negative control;
+   comments cannot satisfy package consumption. A declaration file may describe
+   the public surface, but it never replaces direct source compilation.
 4. Pack the binding and typecheck the installed authored source with Node
    ambient types. Install the complete packed dependency closure across
    `dependencies`, `optionalDependencies`, `peerDependencies`, internal
@@ -232,14 +241,19 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
 ```
 
 The runner binds each gate to an approved command shape and validates the
-referenced package/project semantics before execution. Package tests require a
-non-no-op script and a nonzero count of statically countable test registrations.
-Type projects require nonempty expected source roots, `strict: true`,
-`skipLibCheck: false`, and matching `reactPortEvidence`; pristine/adapted
-projects are bound to the pinned immutable type inventory. It rejects `true`,
-ad hoc `node -e`, unrelated package scripts, incompatible multi-gate groups,
-and any other successful command that does not prove the requested row. The
-approved shapes are:
+referenced package/project semantics before execution. Package tests must reach
+a supported test runner (Vitest, Jest, `node --test`, or the repository parity
+wrapper), contain a nonzero runnable registration count, and report at least one
+executed passing test after the command exits successfully. Skipped, todo,
+conditional, and expected-failure registrations do not count. Type projects
+require complete expected source roots, `strict: true`, `skipLibCheck: false`,
+and matching `reactPortEvidence`; pristine/adapted projects are bound to the
+pinned immutable type inventory. The public export target checker requires each
+declared module target to contain a real exported value or type (or a nonempty
+JSON/CSS artifact), not merely an existing `export {}` placeholder.
+It rejects `true`, ad hoc `node -e`, unrelated package scripts, incompatible
+multi-gate groups, and any other successful command that does not prove the requested row.
+The approved shapes are:
 
 - `pnpm --dir packages/<binding> test` for package behavior;
 - `node scripts/react-port/public-exports.mjs --package-dir

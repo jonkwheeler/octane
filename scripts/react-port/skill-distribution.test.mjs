@@ -101,6 +101,8 @@ describe('octane-react-library-port skill distribution', () => {
 			/immutable Git-tree path[\s\S]*blob hash[\s\S]*before implementation/i,
 		);
 		assert.match(implementation, /zero-case[\s\S]*fail[\s\S]*preflight/i);
+		assert.match(implementation, /Node test-context[\s\S]*subtests/i);
+		assert.match(implementation, /`?skipIf`?[\s\S]*`?runIf`?/i);
 		assert.match(
 			implementation,
 			/estimatedRegistrations[\s\S]*dynamicExpansion[\s\S]*helperExpansion[\s\S]*manualReviewReason/i,
@@ -145,8 +147,11 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /must not add[\s\S]*packedTsrxSourceExceptions/i);
 		assert.match(implementation, /package import[\s\S]*declaration[\s\S]*hide[\s\S]*source/i);
 		assert.match(implementation, /reactPortEvidence[\s\S]*pinned immutable type inventory/i);
+		assert.match(implementation, /structured[\s\S]*upstream registration map/i);
+		assert.match(implementation, /parsed import[\s\S]*positive[\s\S]*negative control/i);
 		assert.match(implementation, /public-exports\.mjs/);
-		assert.match(implementation, /nonzero[\s\S]*test registrations/i);
+		assert.match(implementation, /supported test runner[\s\S]*executed passing test/i);
+		assert.match(implementation, /public export target[\s\S]*real exported value or type/i);
 	});
 
 	test('keeps the canonical entry point thin and makes preflight mandatory', () => {

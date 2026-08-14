@@ -30,3 +30,18 @@ test('validates every target in an export fallback array', () => {
 		],
 	);
 });
+
+test('rejects an existing target that exports no public values or types', () => {
+	const packageDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-public-exports-empty-'));
+	mkdirSync(path.join(packageDirectory, 'src'));
+	writeFileSync(path.join(packageDirectory, 'src/index.ts'), 'export {};\n');
+	writeFileSync(
+		path.join(packageDirectory, 'package.json'),
+		JSON.stringify({
+			name: '@octanejs/empty-export-fixture',
+			exports: { '.': './src/index.ts' },
+		}),
+	);
+
+	assert.throws(() => inspectPublicExports(packageDirectory), /no public values or types/i);
+});

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
@@ -56,6 +56,7 @@ const PACK_GATES = new Set([
 	'packed-source-types-browser',
 	'package-pack',
 ]);
+const NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails', 'skipIf', 'runIf']);
 
 function usage() {
 	return `Usage:
@@ -232,6 +233,34 @@ function bindingPackageDirectory(node, workspaceRoot) {
 	return packageDirectory;
 }
 
+function scriptRunsSupportedTests(manifest, scriptName, visiting = new Set()) {
+	if (visiting.has(scriptName)) return false;
+	const script = manifest.scripts?.[scriptName]?.trim();
+	if (!script) return false;
+	const nextVisiting = new Set(visiting).add(scriptName);
+	for (let segment of script.split(/&&|\|\||;/)) {
+		segment = segment.trim().replace(/^(?:[A-Za-z_][A-Za-z0-9_]*=[^\s]+\s+)+/, '');
+		if (/^(?:vitest|jest)(?:\s|$)/.test(segment)) return true;
+		if (/^node\s+--test(?:\s|$)/.test(segment)) return true;
+		if (/^pnpm\s+(?:exec\s+)?(?:vitest|jest)(?:\s|$)/.test(segment)) return true;
+		if (/^node\s+(?:(?:\.\.\/)+)?scripts\/react-parity\/harness\.mjs(?:\s|$)/.test(segment)) {
+			return true;
+		}
+		const delegated = segment.match(/^pnpm\s+(?:run\s+)?([^\s]+)/)?.[1];
+		if (delegated && scriptRunsSupportedTests(manifest, delegated, nextVisiting)) return true;
+	}
+	return false;
+}
+
+function hasExecutedPassingTest(stdout, stderr) {
+	const output = `${stdout ?? ''}\n${stderr ?? ''}`;
+	return [
+		/^\s*tests?\s*:\s*[^\n]*?([1-9]\d*)\s+passed\b/im,
+		/^\s*tests?\s+([1-9]\d*)\s+passed\b/im,
+		/^#\s*pass\s+([1-9]\d*)\s*$/im,
+	].some((pattern) => pattern.test(output));
+}
+
 function assertPackageTestSemantics(node, workspaceRoot) {
 	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
 	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
@@ -243,6 +272,11 @@ function assertPackageTestSemantics(node, workspaceRoot) {
 		)
 	) {
 		throw new Error('Package test script is missing or is a no-op');
+	}
+	if (!scriptRunsSupportedTests(manifest, 'test')) {
+		throw new Error(
+			'Package test script must invoke a supported test runner or repository wrapper',
+		);
 	}
 	let countedRegistrations = 0;
 	for (const testPath of discoverPackageTests(packageDirectory)) {
@@ -256,6 +290,12 @@ function assertPackageTestSemantics(node, workspaceRoot) {
 			);
 		}
 		for (const testCase of extractTestCases(source, { file: testPath })) {
+			if (
+				testCase.kind === 'xit' ||
+				testCase.modifiers.some((modifier) => NON_RUNNABLE_TEST_MODIFIERS.has(modifier))
+			) {
+				continue;
+			}
 			if (!Number.isSafeInteger(testCase.estimatedRegistrations)) {
 				throw new Error(`Package test registration count is unknown in ${testPath}`);
 			}
@@ -263,8 +303,162 @@ function assertPackageTestSemantics(node, workspaceRoot) {
 		}
 	}
 	if (countedRegistrations === 0) {
-		throw new Error('Package test gate has no countable test registrations');
+		throw new Error('Package test gate has no runnable test registrations');
 	}
+}
+
+function authoredSourceFiles(packageDirectory) {
+	const sourceDirectory = path.join(packageDirectory, 'src');
+	if (!existsSync(sourceDirectory)) return [];
+	const files = [];
+	const walk = (directory) => {
+		for (const entry of readdirSync(directory, { withFileTypes: true })) {
+			const entryPath = path.join(directory, entry.name);
+			if (entry.isDirectory()) walk(entryPath);
+			else if (entry.isFile() && /(?:\.d)?\.(?:[cm]?ts|tsx|tsrx)$/i.test(entry.name)) {
+				files.push(path.resolve(entryPath));
+			}
+		}
+	};
+	walk(sourceDirectory);
+	return files.sort();
+}
+
+function globMatches(relativePath, spec) {
+	const normalized = spec.replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, '');
+	if (!/[?*]/.test(normalized)) {
+		return relativePath === normalized || relativePath.startsWith(`${normalized}/`);
+	}
+	let expression = '^';
+	for (let index = 0; index < normalized.length; index++) {
+		const character = normalized[index];
+		if (character === '*' && normalized[index + 1] === '*') {
+			if (normalized[index + 2] === '/') {
+				expression += '(?:.*/)?';
+				index += 2;
+			} else {
+				expression += '.*';
+				index++;
+			}
+		} else if (character === '*') expression += '[^/]*';
+		else if (character === '?') expression += '[^/]';
+		else expression += character.replace(/[\\^$.[\]{}()+|]/g, '\\$&');
+	}
+	return new RegExp(`${expression}$`).test(relativePath);
+}
+
+function configSelectsCustomSource(config, projectDirectory, sourcePath) {
+	const relativePath = path.relative(projectDirectory, sourcePath).replaceAll('\\', '/');
+	const files = Array.isArray(config.files) ? config.files : null;
+	if (files) return files.some((spec) => globMatches(relativePath, String(spec)));
+	const includes = Array.isArray(config.include) ? config.include : ['**/*'];
+	const excludes = Array.isArray(config.exclude) ? config.exclude : [];
+	return (
+		includes.some((spec) => globMatches(relativePath, String(spec))) &&
+		!excludes.some((spec) => globMatches(relativePath, String(spec)))
+	);
+}
+
+function importedBindingsAndAssertions(programFiles, binding) {
+	let importedBindingCount = 0;
+	let hasPositiveAssertion = false;
+	let hasNegativeControl = false;
+	const sourceFiles = programFiles.map((filePath) => ({
+		filePath,
+		source: readFileSync(filePath, 'utf8'),
+	}));
+	for (const { filePath, source } of sourceFiles) {
+		const importedNames = new Set();
+		const sourceFile = ts.createSourceFile(
+			filePath,
+			source,
+			ts.ScriptTarget.Latest,
+			true,
+			ts.ScriptKind.TSX,
+		);
+		for (const statement of sourceFile.statements) {
+			if (
+				ts.isImportDeclaration(statement) &&
+				ts.isStringLiteral(statement.moduleSpecifier) &&
+				(statement.moduleSpecifier.text === binding ||
+					statement.moduleSpecifier.text.startsWith(`${binding}/`))
+			) {
+				const clause = statement.importClause;
+				if (clause?.name) importedNames.add(clause.name.text);
+				if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
+					importedNames.add(clause.namedBindings.name.text);
+				}
+				if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+					for (const element of clause.namedBindings.elements) importedNames.add(element.name.text);
+				}
+			}
+		}
+		importedBindingCount += importedNames.size;
+		if (/@ts-expect-error\b/.test(source)) hasNegativeControl = true;
+		const referencesImportedName = (node) => {
+			let found = false;
+			const visit = (child) => {
+				if (ts.isIdentifier(child) && importedNames.has(child.text)) found = true;
+				if (!found) ts.forEachChild(child, visit);
+			};
+			visit(node);
+			return found;
+		};
+		const inspect = (node) => {
+			if (ts.isSatisfiesExpression(node) && referencesImportedName(node.expression)) {
+				hasPositiveAssertion = true;
+			}
+			if (
+				ts.isCallExpression(node) &&
+				source.slice(node.getStart(sourceFile), node.end).includes('expectTypeOf') &&
+				referencesImportedName(node)
+			) {
+				hasPositiveAssertion = true;
+			}
+			ts.forEachChild(node, inspect);
+		};
+		inspect(sourceFile);
+	}
+	return { importedBindingCount, hasPositiveAssertion, hasNegativeControl };
+}
+
+function structurallyMappedRegistrations(programFiles) {
+	const registrations = new Set();
+	for (const filePath of programFiles) {
+		const source = readFileSync(filePath, 'utf8');
+		const sourceFile = ts.createSourceFile(
+			filePath,
+			source,
+			ts.ScriptTarget.Latest,
+			true,
+			ts.ScriptKind.TSX,
+		);
+		const visit = (node) => {
+			if (ts.isObjectLiteralExpression(node)) {
+				for (const property of node.properties) {
+					if (
+						!ts.isPropertyAssignment(property) ||
+						property.initializer.kind !== ts.SyntaxKind.TrueKeyword
+					) {
+						continue;
+					}
+					const name = property.name;
+					if (ts.isStringLiteral(name) || ts.isIdentifier(name)) registrations.add(name.text);
+				}
+			}
+			if (
+				ts.isCallExpression(node) &&
+				ts.isIdentifier(node.expression) &&
+				node.expression.text === 'assertUpstreamRegistration' &&
+				ts.isStringLiteral(node.arguments[0])
+			) {
+				registrations.add(node.arguments[0].text);
+			}
+			ts.forEachChild(node, visit);
+		};
+		visit(sourceFile);
+	}
+	return registrations;
 }
 
 function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoot) {
@@ -295,18 +489,42 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 			const relative = path.relative(path.join(packageDirectory, directory), filePath);
 			return !relative.startsWith('..') && !path.isAbsolute(relative);
 		});
-	if (gateId === 'authored-source-types' && !within('src')) {
-		throw new Error('Authored source type project must compile the package src directory');
+	if (gateId === 'authored-source-types') {
+		if (!within('src')) {
+			throw new Error('Authored source type project must compile the package src directory');
+		}
+		const selectedFiles = new Set(programFiles);
+		const omittedFiles = authoredSourceFiles(packageDirectory).filter(
+			(filePath) =>
+				!selectedFiles.has(filePath) &&
+				!(
+					filePath.endsWith('.tsrx') &&
+					configSelectsCustomSource(loaded.config, path.dirname(projectPath), filePath)
+				),
+		);
+		if (omittedFiles.length > 0) {
+			throw new Error(
+				`Authored source type project omits authored source: ${omittedFiles
+					.map((filePath) => path.relative(packageDirectory, filePath))
+					.join(', ')}`,
+			);
+		}
 	}
 	if (gateId === 'public-types') {
 		if (!within('tests/types')) {
 			throw new Error('Public type project must compile package tests/types sources');
 		}
-		if (
-			node.binding &&
-			!programFiles.some((filePath) => readFileSync(filePath, 'utf8').includes(node.binding))
-		) {
-			throw new Error('Public type project must consume the graph-planned package export');
+		if (node.binding) {
+			const semantics = importedBindingsAndAssertions(programFiles, node.binding);
+			if (semantics.importedBindingCount === 0) {
+				throw new Error('Public type project must import the graph-planned package export');
+			}
+			if (!semantics.hasPositiveAssertion) {
+				throw new Error('Public type project must contain a positive type assertion');
+			}
+			if (!semantics.hasNegativeControl) {
+				throw new Error('Public type project must contain a @ts-expect-error negative control');
+			}
 		}
 	}
 	if (gateId.startsWith('upstream-types-')) {
@@ -326,11 +544,11 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 				`Type project for ${gateId} is not bound to the pinned immutable type inventory`,
 			);
 		}
-		const source = programFiles.map((filePath) => readFileSync(filePath, 'utf8')).join('\n');
+		const mappedRegistrations = structurallyMappedRegistrations(programFiles);
 		for (const registrationId of expectedRegistrations) {
-			if (!source.includes(registrationId)) {
+			if (!mappedRegistrations.has(registrationId)) {
 				throw new Error(
-					`Type project for ${gateId} does not map pinned registration ${registrationId}`,
+					`Type project for ${gateId} does not structurally map pinned registration ${registrationId}`,
 				);
 			}
 		}
@@ -547,6 +765,9 @@ async function operate(
 					windowsHide: true,
 				},
 			);
+			if (gateIds.includes('package-tests') && !hasExecutedPassingTest(stdout, stderr)) {
+				throw new Error('Package test command reported no executed passing test');
+			}
 			evidence = {
 				status: 'passed',
 				command: commandDisplay,

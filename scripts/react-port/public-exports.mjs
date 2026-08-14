@@ -3,6 +3,7 @@
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 function exportTargets(value, keyPath = 'exports') {
 	if (typeof value === 'string') return [{ keyPath, target: value }];
@@ -13,6 +14,36 @@ function exportTargets(value, keyPath = 'exports') {
 	return Object.entries(value).flatMap(([key, nested]) =>
 		exportTargets(nested, `${keyPath}.${key}`),
 	);
+}
+
+function hasPublicModuleExport(targetPath, source) {
+	if (targetPath.endsWith('.json')) {
+		const value = JSON.parse(source);
+		return value !== null && (typeof value !== 'object' || Object.keys(value).length > 0);
+	}
+	if (!/\.(?:[cm]?[jt]sx?|tsrx)$/i.test(targetPath)) return source.trim().length > 0;
+	const sourceFile = ts.createSourceFile(
+		targetPath,
+		source,
+		ts.ScriptTarget.Latest,
+		true,
+		ts.ScriptKind.TSX,
+	);
+	for (const statement of sourceFile.statements) {
+		if (ts.isExportAssignment(statement)) return true;
+		if (ts.isExportDeclaration(statement)) {
+			if (!statement.exportClause) return true;
+			if (ts.isNamespaceExport(statement.exportClause)) return true;
+			if (statement.exportClause.elements.length > 0) return true;
+		}
+		if (
+			ts.canHaveModifiers(statement) &&
+			ts.getModifiers(statement)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
+		) {
+			return true;
+		}
+	}
+	return false;
 }
 
 export function inspectPublicExports(packageDirectory) {
@@ -35,6 +66,9 @@ export function inspectPublicExports(packageDirectory) {
 		}
 		if (realpathSync(targetPath) !== targetPath) {
 			throw new Error(`${keyPath} must not resolve through a symlink: ${target}`);
+		}
+		if (!hasPublicModuleExport(targetPath, readFileSync(targetPath, 'utf8'))) {
+			throw new Error(`${keyPath} target exports no public values or types: ${target}`);
 		}
 	}
 	return { status: 'passed', package: manifest.name, targets };

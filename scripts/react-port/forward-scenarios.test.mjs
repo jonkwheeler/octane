@@ -356,7 +356,7 @@ describe('fresh forward scenarios', () => {
 				'--',
 				process.execPath,
 				'-e',
-				`import(${JSON.stringify(pathToFileURL(path.join(packageDirectory, 'src/index.mjs')).href)}).then(({ fixtureWidget }) => { if (fixtureWidget('ok') !== 'fixture:ok') process.exit(1); process.stdout.write('fixture behavior passed'); })`,
+				`import(${JSON.stringify(pathToFileURL(path.join(packageDirectory, 'src/index.mjs')).href)}).then(({ fixtureWidget }) => { if (fixtureWidget('ok') !== 'fixture:ok') process.exit(1); process.stdout.write('Tests 1 passed (1); fixture behavior passed'); })`,
 			],
 			workspace,
 		);

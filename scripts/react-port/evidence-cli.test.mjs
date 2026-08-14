@@ -93,8 +93,9 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 		`#!/usr/bin/env node
 import { appendFileSync } from 'node:fs';
 if (process.env.FIXTURE_COUNTER) appendFileSync(process.env.FIXTURE_COUNTER, process.env.FIXTURE_COUNTER_VALUE ?? 'x');
-if (process.env.FIXTURE_PRINT_NPM_TOKEN === '1') process.stdout.write(process.env.NPM_TOKEN ?? '');
+if (process.env.FIXTURE_PRINT_NPM_TOKEN === '1') process.stdout.write((process.env.NPM_TOKEN ?? '') + '\\nTests 1 passed (1)');
 else if (process.env.FIXTURE_STDOUT) process.stdout.write(process.env.FIXTURE_STDOUT);
+else process.stdout.write('Tests 1 passed (1)');
 if (process.env.FIXTURE_STDERR) process.stderr.write(process.env.FIXTURE_STDERR);
 process.exit(Number(process.env.FIXTURE_EXIT ?? 0));
 `,
@@ -164,7 +165,7 @@ function createCompletePackage(root) {
 	}
 	writeFileSync(
 		path.join(packageDirectory, 'tests/types/public/public.ts'),
-		"import { widget } from '@octanejs/widget';\nwidget satisfies boolean;\n",
+		"import { widget } from '@octanejs/widget';\nwidget satisfies boolean;\n// @ts-expect-error public surface rejects invalid calls\nwidget();\n",
 	);
 	writeFileSync(
 		path.join(packageDirectory, 'tests/types/public/tsconfig.json'),
@@ -351,6 +352,20 @@ describe('evidence CLI', () => {
 			),
 		);
 		writeFileSync(
+			path.join(packageDirectory, 'src/Omitted.tsrx'),
+			'export const omitted = true;\n',
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['authored-source-types'],
+					['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tsconfig.json'],
+					node,
+					validation,
+				),
+			/omits authored source.*Omitted\.tsrx/i,
+		);
+		writeFileSync(
 			path.join(packageDirectory, 'tsconfig.json'),
 			JSON.stringify({
 				compilerOptions: { strict: false, skipLibCheck: true },
@@ -413,6 +428,166 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('rejects comment-only public imports and upstream registration mappings', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [
+				{
+					kind: 'type',
+					registrations: [{ id: 'react-registration-v1:pinned-type-case' }],
+				},
+			],
+		};
+		const validation = { workspaceRoot };
+
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/public.ts'),
+			'// @octanejs/widget\n// @ts-expect-error placeholder\nexport {};\n',
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					node,
+					validation,
+				),
+			/public type project must import|positive type assertion/i,
+		);
+
+		for (const name of ['pristine', 'adapted']) {
+			writeFileSync(
+				path.join(packageDirectory, `tests/types/upstream/tsconfig.${name}.json`),
+				JSON.stringify({
+					compilerOptions: { strict: true, skipLibCheck: false, noEmit: true },
+					files: [`${name}.ts`],
+					reactPortEvidence: {
+						gate: `upstream-types-${name}`,
+						upstreamRegistrations: ['react-registration-v1:pinned-type-case'],
+					},
+				}),
+			);
+			writeFileSync(
+				path.join(packageDirectory, `tests/types/upstream/${name}.ts`),
+				'// react-registration-v1:pinned-type-case\nexport {};\n',
+			);
+		}
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-pristine'],
+					[
+						'pnpm',
+						'exec',
+						'tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+					],
+					node,
+					validation,
+				),
+			/does not structurally map pinned registration/i,
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/upstream/pristine.ts'),
+			"const upstreamRegistrationMap = { 'react-registration-v1:pinned-type-case': true } as const;\nupstreamRegistrationMap satisfies Record<string, true>;\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['upstream-types-pristine'],
+				[
+					'pnpm',
+					'exec',
+					'tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+				],
+				node,
+				validation,
+			),
+		);
+	});
+
+	test('rejects package-test evidence that never runs a passing test', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const packageManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		packageManifest.scripts.test = `node -e "console.log('not running Vitest')"`;
+		writeFileSync(manifestPath, JSON.stringify(packageManifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\ntest.skip('placeholder', () => {});\n",
+		);
+
+		const result = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			'pnpm',
+			'--dir',
+			'packages/widget',
+			'test',
+		]);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stderr, /supported test runner|runnable test registrations/i);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+			'required',
+		);
+	});
+
+	test('rejects successful package-test output without an executed passing test', () => {
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{ env: { FIXTURE_STDOUT: 'application log: 1 test passed\nTests 1 skipped (1)' } },
+		);
+
+		assert.equal(result.status, 2);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+			'failed',
+		);
+		assert.match(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
+			/no executed passing test/i,
+		);
+	});
+
 	test('rejects a successful command that is not owned by the requested gate', () => {
 		const { workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -449,13 +624,13 @@ describe('evidence CLI', () => {
 				'packages/widget',
 				'test',
 			],
-			{ env: { FIXTURE_STDOUT: 'separator preserved' } },
+			{ env: { FIXTURE_STDOUT: 'Tests 1 passed (1); separator preserved' } },
 		);
 		assert.equal(recorded.status, 0, recorded.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
 		assert.equal(
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			'separator preserved',
+			'Tests 1 passed (1); separator preserved',
 		);
 	});
 
@@ -478,7 +653,7 @@ describe('evidence CLI', () => {
 				'packages/widget',
 				'test',
 			],
-			{ env: { FIXTURE_STDOUT: '12 tests passed' } },
+			{ env: { FIXTURE_STDOUT: 'Tests 12 passed (12)' } },
 		);
 		assert.equal(recorded.status, 0, recorded.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
@@ -489,7 +664,7 @@ describe('evidence CLI', () => {
 		);
 		assert.match(
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			/12 tests passed/,
+			/Tests 12 passed/,
 		);
 	});
 

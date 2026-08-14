@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import ts from 'typescript';
 
 export const INVENTORY_SCHEMA_VERSION = 1;
 
@@ -27,6 +28,7 @@ export const DEFAULT_HELPER_EXPANSIONS = Object.freeze({
 const DIRECT_REGISTRARS = new Set(['it', 'test', 'fit', 'xit']);
 const NAMESPACED_DIRECT_REGISTRARS = new Set(['scopedLive']);
 const GATED_REGISTRARS = new Set(['_test_gate', '_test_gate_focus']);
+const CURRIED_CONDITIONAL_MODIFIERS = new Set(['skipIf', 'runIf']);
 const OPEN_TO_CLOSE = new Map([
 	['(', ')'],
 	['[', ']'],
@@ -490,14 +492,38 @@ function eachInvocation(tokens, pairs, startIndex) {
 	let cursor = startIndex + 1;
 	const modifiers = [];
 	let each = null;
+	let conditional = null;
 	while (tokens[cursor]?.value === '.' && tokens[cursor + 1]?.type === 'identifier') {
 		const modifier = tokens[cursor + 1].value;
 		cursor += 2;
-		if (modifier === 'each') each = true;
-		else modifiers.push(modifier);
+		if (modifier === 'each') {
+			each = true;
+		} else {
+			modifiers.push(modifier);
+			if (CURRIED_CONDITIONAL_MODIFIERS.has(modifier)) {
+				if (tokens[cursor]?.value !== '(') {
+					return { invocationOpen: null, modifiers, each: null, conditional: null };
+				}
+				const conditionClose = pairs.get(cursor);
+				if (conditionClose === undefined) {
+					return { invocationOpen: null, modifiers, each: null, conditional: null };
+				}
+				const conditionArguments = splitArguments(tokens, cursor, conditionClose);
+				if (conditionArguments.length !== 1) {
+					return { invocationOpen: null, modifiers, each: null, conditional: null };
+				}
+				conditional = { modifier, argumentRange: conditionArguments[0] };
+				cursor = conditionClose + 1;
+			}
+		}
 	}
 	if (!each)
-		return { invocationOpen: tokens[cursor]?.value === '(' ? cursor : null, modifiers, each: null };
+		return {
+			invocationOpen: tokens[cursor]?.value === '(' ? cursor : null,
+			modifiers,
+			each: null,
+			conditional,
+		};
 	let rowCount = null;
 	let rows = null;
 	let tableSourceStart = cursor;
@@ -518,7 +544,45 @@ function eachInvocation(tokens, pairs, startIndex) {
 		invocationOpen: tokens[cursor]?.value === '(' ? cursor : null,
 		modifiers,
 		each: { rowCount, rows, tableStart: tableSourceStart },
+		conditional,
 	};
+}
+
+function nodeSubtestRegistrarOffsets(source, file) {
+	const scriptKind = /\.[jt]sx$/i.test(file) ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+	const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, scriptKind);
+	const offsets = new Set();
+	const callbackFor = (call) =>
+		[...call.arguments]
+			.reverse()
+			.find((argument) => ts.isArrowFunction(argument) || ts.isFunctionExpression(argument));
+	const visit = (node, contextNames) => {
+		if (!ts.isCallExpression(node)) {
+			ts.forEachChild(node, (child) => visit(child, contextNames));
+			return;
+		}
+		const expression = node.expression;
+		const direct = ts.isIdentifier(expression) && expression.text === 'test';
+		const contextual =
+			ts.isPropertyAccessExpression(expression) &&
+			expression.name.text === 'test' &&
+			ts.isIdentifier(expression.expression) &&
+			contextNames.has(expression.expression.text);
+		if (contextual) offsets.add(expression.name.getStart(sourceFile));
+		const callback = direct || contextual ? callbackFor(node) : null;
+		ts.forEachChild(node, (child) => {
+			if (child !== callback) {
+				visit(child, contextNames);
+				return;
+			}
+			const parameter = callback.parameters[0]?.name;
+			const nestedNames = new Set(contextNames);
+			if (parameter && ts.isIdentifier(parameter)) nestedNames.add(parameter.text);
+			visit(child, nestedNames);
+		});
+	};
+	visit(sourceFile, new Set());
+	return offsets;
 }
 
 function makeCaseId(file, kind, identity, occurrence) {
@@ -575,13 +639,14 @@ export function extractTestCases(
 	const pairs = buildPairMap(tokens);
 	const describeContexts = describeEachContexts(source, tokens, pairs);
 	const loops = loopContexts(source, tokens, pairs);
+	const nodeSubtestOffsets = nodeSubtestRegistrarOffsets(source, file);
 	const cases = [];
 	const occurrences = new Map();
 	for (let index = 0; index < tokens.length; index++) {
 		const token = tokens[index];
 		const name = token.value;
 		const isNamespacedDirect =
-			NAMESPACED_DIRECT_REGISTRARS.has(name) &&
+			(NAMESPACED_DIRECT_REGISTRARS.has(name) || nodeSubtestOffsets.has(token.start)) &&
 			tokens[index - 1]?.value === '.' &&
 			tokens[index - 2]?.type === 'identifier';
 		const isDirect = DIRECT_REGISTRARS.has(name) || isNamespacedDirect;
@@ -599,6 +664,7 @@ export function extractTestCases(
 					invocationOpen: tokens[index + 1]?.value === '(' ? index + 1 : null,
 					modifiers: [],
 					each: null,
+					conditional: null,
 				};
 		if (parsed.invocationOpen === null) continue;
 		const close = pairs.get(parsed.invocationOpen);
@@ -635,9 +701,18 @@ export function extractTestCases(
 			? null
 			: factors.reduce((total, factor) => total * factor, 1);
 		const dynamicGate = isGated && args[0] ? expressionSource(source, tokens, args[0]) : null;
+		const conditionalGate = parsed.conditional
+			? `${parsed.conditional.modifier}(${expressionSource(
+					source,
+					tokens,
+					parsed.conditional.argumentRange,
+				)})`
+			: null;
 		const gate = dynamicGate
 			? { kind: 'runtime', expression: dynamicGate }
-			: pragmaGate(source, comments, token.start);
+			: conditionalGate
+				? { kind: 'runtime', expression: conditionalGate }
+				: pragmaGate(source, comments, token.start);
 		const snippetEnd = Math.min(tokens[close].end, token.start + 320);
 		const declarationId = makeCaseId(file, name, identity, occurrence);
 		const rowVariants = parsed.each?.rows?.map((row, rowIndex) => ({
