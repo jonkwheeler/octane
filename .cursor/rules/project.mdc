@@ -39,6 +39,8 @@ trigger first arises, even if it is a later step you chose:
 - `performance-audit`: a change that can move render, SSR, hydration, compiler
   output, or bundle cost.
 - `octane-react-library-port`: a new or existing `@octanejs/*` binding.
+- `react-library-port`: legacy compatibility trigger; immediately follow
+  `octane-react-library-port`.
 - `authoring-tsrx`: writing a new `.tsrx` file.
 - `triage`: the owning area is unclear.
 
