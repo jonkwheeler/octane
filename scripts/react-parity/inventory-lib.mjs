@@ -620,7 +620,13 @@ export function extractTestCases(
 		const outerLoops = loops.filter(
 			(context) => token.start > context.start && token.start < context.end,
 		);
-		const primaryFactor = helper ? helper.registrations : parsed.each ? parsed.each.rowCount : 1;
+		const primaryFactor = helper
+			? helper.registrations
+			: parsed.each
+				? parsed.each.rows
+					? 1
+					: parsed.each.rowCount
+				: 1;
 		const factors = [
 			outerLoops.length ? null : primaryFactor,
 			...outerEach.map((context) => context.rowCount),
@@ -679,10 +685,7 @@ export function extractTestCases(
 						? { kind: 'loop', contexts: outerLoops.map((context) => context.source) }
 						: null,
 				helperExpansion: helper ? { helper: name, ...helper } : null,
-				estimatedRegistrations:
-					parsed.each?.rows && outerEach.length === 0 && outerLoops.length === 0
-						? (helper?.registrations ?? 1)
-						: estimatedRegistrations,
+				estimatedRegistrations,
 				sourceSnippet: source.slice(token.start, snippetEnd).replace(/\s+/g, ' ').trim(),
 				manualReviewReason:
 					rowVariant.title === null

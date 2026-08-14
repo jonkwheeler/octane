@@ -594,9 +594,10 @@ describe('resolved evidence', () => {
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceSymlinkBytes = Buffer.from('../NOTICE');
 		const sourceTestConfigBytes = Buffer.from(
-			"export default { test: { include: ['quality/**/*.ts'] } };\n",
+			"export default { resolve: { alias: { source: 'src/' } }, test: { include: ['quality/**/*.ts'], exclude: ['src/**/*.ts'], setupFiles: ['index.ts'] } };\n",
 		);
 		const sourceTestBytes = Buffer.from("test('renders', () => {});\n");
+		const ordinarySourceBytes = Buffer.from('export const widgetSource = true;\n');
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
 		const sourceTree = [
@@ -629,6 +630,14 @@ describe('resolved evidence', () => {
 				size: sourceTestBytes.length,
 				sha: gitBlobSha(sourceTestBytes),
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/test',
+			},
+			{
+				path: 'packages/react-widget/src/index.ts',
+				mode: '100644',
+				type: 'blob',
+				size: ordinarySourceBytes.length,
+				sha: gitBlobSha(ordinarySourceBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/ordinary-source',
 			},
 			{
 				path: 'packages/react-widget/current',
@@ -699,6 +708,14 @@ describe('resolved evidence', () => {
 					encoding: 'base64',
 					content: sourceTestBytes.toString('base64'),
 					size: sourceTestBytes.length,
+				}),
+			],
+			[
+				'https://api.github.com/repos/example/widgets/git/blobs/ordinary-source',
+				Response.json({
+					encoding: 'base64',
+					content: ordinarySourceBytes.toString('base64'),
+					size: ordinarySourceBytes.length,
 				}),
 			],
 		]);

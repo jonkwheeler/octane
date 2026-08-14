@@ -235,7 +235,12 @@ function discoverPackageTests(packageDirectory) {
 	const files = [];
 	const walk = (directory) => {
 		for (const entry of readdirSync(directory, { withFileTypes: true })) {
-			if (entry.name === 'node_modules' || entry.name === 'dist') continue;
+			if (
+				entry.name === 'node_modules' ||
+				entry.name === 'dist' ||
+				(directory === packageDirectory && entry.name === 'upstream')
+			)
+				continue;
 			const entryPath = path.join(directory, entry.name);
 			if (entry.isDirectory()) walk(entryPath);
 			else if (

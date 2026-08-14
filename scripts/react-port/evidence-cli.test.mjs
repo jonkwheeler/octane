@@ -493,6 +493,32 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('counts local package tests without parsing vendored upstream suites', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		mkdirSync(path.join(packageDirectory, 'upstream'), { recursive: true });
+		writeFileSync(
+			path.join(packageDirectory, 'upstream/vendor.test.ts'),
+			"test.each(vendoredCases)('vendored %s', value => value);\n",
+		);
+
+		const recorded = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			'pnpm',
+			'--dir',
+			'packages/widget',
+			'test',
+		]);
+
+		assert.equal(recorded.status, 0, recorded.stderr);
+	});
+
 	test('records command failures and rejects unexecuted command claims', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];

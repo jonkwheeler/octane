@@ -692,14 +692,122 @@ function conventionalTestPath(relativePath) {
 	);
 }
 
-function referencedByTestConfiguration(relativePath, configurationSource) {
+function expandBracePattern(pattern) {
+	const expanded = [pattern];
+	for (let index = 0; index < expanded.length; index++) {
+		const current = expanded[index];
+		const open = current.indexOf('{');
+		if (open === -1) continue;
+		const close = current.indexOf('}', open + 1);
+		if (close === -1) return [pattern];
+		const choices = current.slice(open + 1, close).split(',');
+		if (choices.length < 2 || choices.length > 16) return [pattern];
+		const variants = choices.map(
+			(choice) => `${current.slice(0, open)}${choice}${current.slice(close + 1)}`,
+		);
+		if (expanded.length - 1 + variants.length > 64) return [pattern];
+		expanded.splice(index, 1, ...variants);
+		index--;
+	}
+	return expanded;
+}
+
+function globMatchesPath(relativePath, pattern) {
+	let expression = '^';
+	for (let index = 0; index < pattern.length; index++) {
+		const character = pattern[index];
+		if (character === '*' && pattern[index + 1] === '*') {
+			if (pattern[index + 2] === '/') {
+				expression += '(?:.*/)?';
+				index += 2;
+			} else {
+				expression += '.*';
+				index++;
+			}
+		} else if (character === '*') {
+			expression += '[^/]*';
+		} else if (character === '?') {
+			expression += '[^/]';
+		} else {
+			expression += character.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+		}
+	}
+	return new RegExp(`${expression}$`).test(relativePath);
+}
+
+function normalizeConfigurationPattern(value) {
+	const candidate = value.replace(/^--[^=]+=|^[([{,'"]+|[\]),;'"`]+$/g, '').replace(/^\.\//, '');
+	if (!candidate || /\s/.test(candidate) || candidate.startsWith('!')) return null;
+	return candidate.includes('/') || TEST_SOURCE_PATTERN.test(candidate) ? candidate : null;
+}
+
+function commandPathPatterns(testScripts) {
+	return Object.values(testScripts).flatMap((command) =>
+		String(command).split(/\s+/).map(normalizeConfigurationPattern).filter(Boolean),
+	);
+}
+
+function propertyName(name) {
+	return ts.isIdentifier(name) || ts.isStringLiteralLike(name) ? name.text : null;
+}
+
+function staticConfigurationPatterns(node) {
+	if (ts.isStringLiteralLike(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+		const pattern = normalizeConfigurationPattern(node.text);
+		return pattern ? [pattern] : [];
+	}
+	if (ts.isArrayLiteralExpression(node)) {
+		return node.elements.flatMap((element) =>
+			ts.isSpreadElement(element) ? [] : staticConfigurationPatterns(element),
+		);
+	}
+	return [];
+}
+
+function configurationSectionName(node) {
+	for (let parent = node.parent; parent; parent = parent.parent) {
+		if (ts.isPropertyAssignment(parent)) {
+			return propertyName(parent.name);
+		}
+	}
+	return null;
+}
+
+function configurationPathPatterns(configurationSource, fileName) {
+	const sourceFile = ts.createSourceFile(
+		fileName,
+		configurationSource,
+		ts.ScriptTarget.Latest,
+		true,
+	);
+	const patterns = [];
+	const visit = (node) => {
+		if (ts.isPropertyAssignment(node)) {
+			const name = propertyName(node.name);
+			const section = configurationSectionName(node);
+			const withinTestConfiguration = ['test', 'vitest', 'jest', 'ava', 'mocha'].includes(section);
+			if (
+				name === 'testMatch' ||
+				name === 'spec' ||
+				name === 'includeSource' ||
+				(name === 'include' && withinTestConfiguration) ||
+				(name === 'files' && withinTestConfiguration)
+			) {
+				patterns.push(...staticConfigurationPatterns(node.initializer));
+			}
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(sourceFile);
+	return patterns;
+}
+
+function referencedByTestConfiguration(relativePath, configurationPatterns) {
 	const normalized = relativePath.replace(/^\.\//, '');
-	const segments = normalized.split('/');
-	return (
-		configurationSource.includes(normalized) ||
-		configurationSource.includes(`./${normalized}`) ||
-		(segments.length > 1 && configurationSource.includes(`${segments[0]}/`)) ||
-		configurationSource.includes(path.posix.basename(normalized))
+	return configurationPatterns.some((pattern) =>
+		expandBracePattern(pattern).some((expanded) =>
+			/[*?]/.test(expanded) ? globMatchesPath(normalized, expanded) : expanded === normalized,
+		),
 	);
 }
 
@@ -734,11 +842,20 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 			(relativePath !== null && explicitConfigurationPaths.includes(relativePath))
 		);
 	});
-	const configurationParts = [initialConfigurationSource];
+	const configurationPatterns = new Set([
+		...commandPathPatterns(testScripts),
+		...configurationPathPatterns(
+			JSON.stringify(manifestRunnerConfiguration),
+			'package-runner-config.json',
+		),
+	]);
 	for (const entry of configurationEntries) {
-		configurationParts.push((await fetchGitHubBlob(entry, options)).toString('utf8'));
+		const source = (await fetchGitHubBlob(entry, options)).toString('utf8');
+		for (const pattern of configurationPathPatterns(source, entry.path)) {
+			configurationPatterns.add(pattern);
+		}
 	}
-	const configurationSource = configurationParts.join('\n');
+	const configuredTestPatterns = [...configurationPatterns];
 	const configurationEntryPaths = new Set(configurationEntries.map((entry) => entry.path));
 	const candidates = tree.filter((entry) => {
 		if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return false;
@@ -749,7 +866,7 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 		}
 		return (
 			conventionalTestPath(relativePath) ||
-			referencedByTestConfiguration(relativePath, configurationSource)
+			referencedByTestConfiguration(relativePath, configuredTestPatterns)
 		);
 	});
 	if (candidates.length > MAX_UPSTREAM_TEST_FILES) {

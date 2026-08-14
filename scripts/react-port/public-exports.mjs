@@ -6,7 +6,10 @@ import { fileURLToPath } from 'node:url';
 
 function exportTargets(value, keyPath = 'exports') {
 	if (typeof value === 'string') return [{ keyPath, target: value }];
-	if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+	if (Array.isArray(value)) {
+		return value.flatMap((nested, index) => exportTargets(nested, `${keyPath}[${index}]`));
+	}
+	if (!value || typeof value !== 'object') return [];
 	return Object.entries(value).flatMap(([key, nested]) =>
 		exportTargets(nested, `${keyPath}.${key}`),
 	);

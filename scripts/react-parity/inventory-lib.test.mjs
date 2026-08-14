@@ -132,6 +132,27 @@ describe('extractTestCases', () => {
 		assert.deepEqual(cases[0].parameterization?.outerRowCounts, [2]);
 	});
 
+	test('counts each static test row once inside a static suite matrix', () => {
+		const cases = extractTestCases(`
+			describe.each(['button', 'input'])('%s', tag => {
+				test.each([['mouse'], ['keyboard'], ['touch']])(
+					'handles %s input',
+					input => ({ tag, input }),
+				);
+			});
+		`);
+
+		assert.equal(cases.length, 3);
+		assert.deepEqual(
+			cases.map(({ estimatedRegistrations }) => estimatedRegistrations),
+			[2, 2, 2],
+		);
+		assert.equal(
+			cases.reduce((total, testCase) => total + testCase.estimatedRegistrations, 0),
+			6,
+		);
+	});
+
 	test('annotates React DOM server integration helper expansion modes', () => {
 		const [testCase] = extractTestCases(`itRenders('a link', async render => render(<a />));`);
 
