@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +32,7 @@ import {
 	writeManifestAtomically,
 } from './state-lib.mjs';
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
-import { inspectPublicExports } from './public-exports.mjs';
+import { concretePublicSpecifiers, inspectPublicExports } from './public-exports.mjs';
 import { discoverPackageTests } from './package-tests-lib.mjs';
 
 const execFileAsync = promisify(execFile);
@@ -233,53 +234,61 @@ function bindingPackageDirectory(node, workspaceRoot) {
 	return packageDirectory;
 }
 
-function scriptRunsSupportedTests(manifest, scriptName, visiting = new Set()) {
-	if (visiting.has(scriptName)) return false;
+function packageTestRunner(manifest, scriptName = 'test', visiting = new Set()) {
+	if (visiting.has(scriptName)) return null;
 	const script = manifest.scripts?.[scriptName]?.trim();
-	if (!script) return false;
+	if (!script) return null;
 	const nextVisiting = new Set(visiting).add(scriptName);
-	for (let segment of script.split(/&&|\|\||;/)) {
-		segment = segment.trim().replace(/^(?:[A-Za-z_][A-Za-z0-9_]*=[^\s]+\s+)+/, '');
-		if (/^(?:vitest|jest)(?:\s|$)/.test(segment)) return true;
-		if (/^node\s+--test(?:\s|$)/.test(segment)) return true;
-		if (/^pnpm\s+(?:exec\s+)?(?:vitest|jest)(?:\s|$)/.test(segment)) return true;
-		if (/^node\s+(?:(?:\.\.\/)+)?scripts\/react-parity\/harness\.mjs(?:\s|$)/.test(segment)) {
-			return true;
+	const segments = script
+		.split(/&&|\|\||;/)
+		.map((segment) => segment.trim().replace(/^(?:[A-Za-z_][A-Za-z0-9_]*=[^\s]+\s+)+/, ''));
+	const segment = segments.at(-1) ?? '';
+	const direct = segment.match(/^(?:(?:pnpm\s+(?:exec\s+)?)?)(vitest|jest)(?:\s+(.*))?$/);
+	if (direct) {
+		const [, runner, rawArguments = ''] = direct;
+		if (
+			/--(?:version|help|listTests|showConfig)\b|(?:^|\s)(?:list|--watch)(?:\s|$)/.test(
+				rawArguments,
+			)
+		) {
+			return null;
 		}
-		const delegated = segment.match(/^pnpm\s+(?:run\s+)?([^\s]+)/)?.[1];
-		if (delegated && scriptRunsSupportedTests(manifest, delegated, nextVisiting)) return true;
+		if (runner === 'vitest' && !/(?:^|\s)(?:run|--run)(?:\s|$)/.test(rawArguments)) {
+			return null;
+		}
+		return runner;
 	}
-	return false;
-}
-
-function hasExecutedPassingTest(stdout, stderr) {
-	const output = `${stdout ?? ''}\n${stderr ?? ''}`;
-	return [
-		/^\s*tests?\s*:\s*[^\n]*?([1-9]\d*)\s+passed\b/im,
-		/^\s*tests?\s+([1-9]\d*)\s+passed\b/im,
-		/^#\s*pass\s+([1-9]\d*)\s*$/im,
-	].some((pattern) => pattern.test(output));
-}
-
-function assertPackageTestSemantics(node, workspaceRoot) {
-	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
-	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
-	const testScript = manifest.scripts?.test?.trim();
+	if (/^node\s+--test(?:\s|$)/.test(segment)) {
+		if (/--(?:help|test-name-pattern|test-only|watch)\b|(?:^|\s)--version(?:\s|$)/.test(segment)) {
+			return null;
+		}
+		return 'node-test';
+	}
 	if (
-		!testScript ||
-		/^(?:true|:|exit\s+0|echo(?:\s+.*)?|node\s+(?:--eval|-e)\s+['"]?(?:true|process\.exit\(0\))['"]?)$/i.test(
-			testScript,
+		/^node\s+(?:(?:\.\.\/)+)?scripts\/react-parity\/harness\.mjs\s+run-required(?:\s|$)/.test(
+			segment,
 		)
 	) {
-		throw new Error('Package test script is missing or is a no-op');
+		return 'react-parity';
 	}
-	if (!scriptRunsSupportedTests(manifest, 'test')) {
+	const delegated = segment.match(/^pnpm\s+(?:run\s+)?([^\s]+)$/)?.[1];
+	return delegated ? packageTestRunner(manifest, delegated, nextVisiting) : null;
+}
+
+function packageTestExecutionPlan(node, workspaceRoot) {
+	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
+	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
+	const runner = packageTestRunner(manifest);
+	if (!runner) {
 		throw new Error(
-			'Package test script must invoke a supported test runner or repository wrapper',
+			'Package test script must finish with a running Vitest, Jest, node --test, or repository parity command',
 		);
 	}
 	let countedRegistrations = 0;
-	for (const testPath of discoverPackageTests(packageDirectory)) {
+	const testFiles = discoverPackageTests(packageDirectory).map((filePath) =>
+		realpathSync(filePath),
+	);
+	for (const testPath of testFiles) {
 		const source = readFileSync(testPath, 'utf8');
 		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
 		if (possibleRegistrars.length > 0) {
@@ -305,6 +314,73 @@ function assertPackageTestSemantics(node, workspaceRoot) {
 	if (countedRegistrations === 0) {
 		throw new Error('Package test gate has no runnable test registrations');
 	}
+	return { countedRegistrations, packageDirectory, runner, testFiles };
+}
+
+function packageTestCommand(commandArguments, plan, reportPath) {
+	if (plan.runner === 'vitest') {
+		return [...commandArguments, '--reporter=json', `--outputFile=${reportPath}`];
+	}
+	if (plan.runner === 'jest') {
+		return [...commandArguments, '--json', `--outputFile=${reportPath}`];
+	}
+	if (plan.runner === 'node-test') {
+		return [...commandArguments, '--test-reporter=tap', ...plan.testFiles];
+	}
+	return commandArguments;
+}
+
+function assertPackageTestReport(plan, reportPath, stdout, stderr) {
+	if (plan.runner === 'react-parity') return;
+	if (plan.runner === 'node-test') {
+		const output = `${stdout ?? ''}\n${stderr ?? ''}`;
+		const passed = Number(output.match(/^#\s*pass\s+(\d+)\s*$/im)?.[1] ?? 0);
+		const total = Number(output.match(/^#\s*tests\s+(\d+)\s*$/im)?.[1] ?? 0);
+		if (passed < 1 || total < plan.countedRegistrations) {
+			throw new Error(
+				`Package test runner reported no complete executed passing test set (passed ${passed}, total ${total}, expected ${plan.countedRegistrations}); runner output: ${output.slice(-1_000) || 'none'}`,
+			);
+		}
+		return;
+	}
+	if (!existsSync(reportPath)) {
+		throw new Error('Package test runner did not create its machine-readable test report');
+	}
+	const report = readJson(reportPath, 'package test report');
+	const passed = Number(report.numPassedTests ?? 0);
+	const failed = Number(report.numFailedTests ?? 0);
+	if (passed < plan.countedRegistrations || failed !== 0) {
+		throw new Error('Package test report does not contain the complete passing registration set');
+	}
+	const reportedFiles = new Set(
+		(report.testResults ?? [])
+			.map((result) => result.name ?? result.testFilePath)
+			.filter((filePath) => typeof filePath === 'string')
+			.map((filePath) => canonicalPath(path.resolve(plan.packageDirectory, filePath))),
+	);
+	const missingFiles = plan.testFiles.filter((filePath) => !reportedFiles.has(filePath));
+	if (missingFiles.length > 0) {
+		throw new Error(
+			`Package test report omits package test file(s): ${missingFiles
+				.map((filePath) => path.relative(plan.packageDirectory, filePath))
+				.join(', ')}; reported: ${[...reportedFiles].join(', ') || 'none'}`,
+		);
+	}
+}
+
+function assertPackageTestSemantics(node, workspaceRoot) {
+	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
+	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
+	const testScript = manifest.scripts?.test?.trim();
+	if (
+		!testScript ||
+		/^(?:true|:|exit\s+0|echo(?:\s+.*)?|node\s+(?:--eval|-e)\s+['"]?(?:true|process\.exit\(0\))['"]?)$/i.test(
+			testScript,
+		)
+	) {
+		throw new Error('Package test script is missing or is a no-op');
+	}
+	return packageTestExecutionPlan(node, workspaceRoot);
 }
 
 function authoredSourceFiles(packageDirectory) {
@@ -359,98 +435,234 @@ function configSelectsCustomSource(config, projectDirectory, sourcePath) {
 	);
 }
 
-function importedBindingsAndAssertions(programFiles, binding) {
-	let importedBindingCount = 0;
-	let hasPositiveAssertion = false;
-	let hasNegativeControl = false;
-	const sourceFiles = programFiles.map((filePath) => ({
-		filePath,
-		source: readFileSync(filePath, 'utf8'),
-	}));
-	for (const { filePath, source } of sourceFiles) {
-		const importedNames = new Set();
-		const sourceFile = ts.createSourceFile(
-			filePath,
-			source,
-			ts.ScriptTarget.Latest,
-			true,
-			ts.ScriptKind.TSX,
-		);
+function scriptKind(filePath) {
+	if (/\.(?:tsx|tsrx)$/i.test(filePath)) return ts.ScriptKind.TSX;
+	if (/\.jsx$/i.test(filePath)) return ts.ScriptKind.JSX;
+	if (/\.(?:js|mjs|cjs)$/i.test(filePath)) return ts.ScriptKind.JS;
+	return ts.ScriptKind.TS;
+}
+
+function bindingSymbols(name, checker, output) {
+	if (ts.isIdentifier(name)) {
+		const symbol = checker.getSymbolAtLocation(name);
+		if (symbol) output.add(symbol);
+	} else if (ts.isObjectBindingPattern(name) || ts.isArrayBindingPattern(name)) {
+		for (const element of name.elements) {
+			if (ts.isBindingElement(element)) bindingSymbols(element.name, checker, output);
+		}
+	}
+}
+
+function referencesSymbols(node, checker, symbols) {
+	let found = false;
+	const visit = (child) => {
+		if (ts.isIdentifier(child) && symbols.has(checker.getSymbolAtLocation(child))) found = true;
+		if (!found) ts.forEachChild(child, visit);
+	};
+	visit(node);
+	return found;
+}
+
+function typeAssertionName(node, sourceFile) {
+	const text = node.getText(sourceFile);
+	return /\b(?:Assert|AssertNotAny|Equal|Expect|IsAny|expectType|expectTypeOf)\b/.test(text);
+}
+
+function containsPositiveTypeAssertion(node, sourceFile, checker, symbols) {
+	let found = false;
+	const visit = (child) => {
+		if (
+			(ts.isSatisfiesExpression(child) && referencesSymbols(child, checker, symbols)) ||
+			(ts.isCallExpression(child) &&
+				/\bexpectType(?:Of)?\b/.test(child.expression.getText(sourceFile)) &&
+				referencesSymbols(child, checker, symbols)) ||
+			(ts.isTypeAliasDeclaration(child) &&
+				typeAssertionName(child.type, sourceFile) &&
+				referencesSymbols(child.type, checker, symbols))
+		) {
+			found = true;
+		}
+		if (!found) ts.forEachChild(child, visit);
+	};
+	visit(node);
+	return found;
+}
+
+function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
+	const checkerFiles = programFiles.filter((filePath) => !filePath.endsWith('.tsrx'));
+	const program = ts.createProgram({ rootNames: checkerFiles, options: parsed.options });
+	const checker = program.getTypeChecker();
+	const expected = new Set(expectedSpecifiers);
+	const importedEntries = new Set();
+	const importedBindings = [];
+	const fileEvidence = new Map();
+
+	for (const filePath of checkerFiles) {
+		const source = readFileSync(filePath, 'utf8');
+		const sourceFile =
+			program.getSourceFile(filePath) ??
+			ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKind(filePath));
+		const taintedSymbols = new Set();
+		const importsBySpecifier = new Map();
 		for (const statement of sourceFile.statements) {
 			if (
-				ts.isImportDeclaration(statement) &&
-				ts.isStringLiteral(statement.moduleSpecifier) &&
-				(statement.moduleSpecifier.text === binding ||
-					statement.moduleSpecifier.text.startsWith(`${binding}/`))
+				!ts.isImportDeclaration(statement) ||
+				!ts.isStringLiteral(statement.moduleSpecifier) ||
+				!expected.has(statement.moduleSpecifier.text)
 			) {
-				const clause = statement.importClause;
-				if (clause?.name) importedNames.add(clause.name.text);
-				if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
-					importedNames.add(clause.namedBindings.name.text);
+				continue;
+			}
+			const specifier = statement.moduleSpecifier.text;
+			importedEntries.add(specifier);
+			const record = importsBySpecifier.get(specifier) ?? {
+				moduleSpecifier: statement.moduleSpecifier,
+				namespace: false,
+				coveredExports: new Set(),
+			};
+			const clause = statement.importClause;
+			if (clause?.name) {
+				bindingSymbols(clause.name, checker, taintedSymbols);
+				record.coveredExports.add('default');
+				importedBindings.push(clause.name);
+			}
+			if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
+				bindingSymbols(clause.namedBindings.name, checker, taintedSymbols);
+				record.namespace = true;
+				importedBindings.push(clause.namedBindings.name);
+			}
+			if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
+				for (const element of clause.namedBindings.elements) {
+					bindingSymbols(element.name, checker, taintedSymbols);
+					record.coveredExports.add(element.propertyName?.text ?? element.name.text);
+					importedBindings.push(element.name);
 				}
-				if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
-					for (const element of clause.namedBindings.elements) importedNames.add(element.name.text);
+			}
+			importsBySpecifier.set(specifier, record);
+		}
+		fileEvidence.set(filePath, { importsBySpecifier, source, sourceFile, taintedSymbols });
+	}
+
+	const missingEntries = [...expected].filter((specifier) => !importedEntries.has(specifier));
+	if (missingEntries.length > 0) {
+		throw new Error(`Type project omits public entry import(s): ${missingEntries.join(', ')}`);
+	}
+	for (const { importsBySpecifier } of fileEvidence.values()) {
+		for (const [specifier, record] of importsBySpecifier) {
+			const moduleSymbol = checker.getSymbolAtLocation(record.moduleSpecifier);
+			if (!moduleSymbol) throw new Error(`Type project cannot resolve public entry ${specifier}`);
+			const exports = checker.getExportsOfModule(moduleSymbol);
+			if (!record.namespace) {
+				const omitted = exports
+					.map((symbol) => symbol.name)
+					.filter((name) => !record.coveredExports.has(name));
+				if (omitted.length > 0) {
+					throw new Error(
+						`Type project does not consume every export from ${specifier}: ${omitted.join(', ')}`,
+					);
+				}
+			}
+			for (const symbol of exports) {
+				const declaration =
+					symbol.valueDeclaration ?? symbol.declarations?.[0] ?? record.moduleSpecifier;
+				let type;
+				try {
+					type =
+						symbol.flags & (ts.SymbolFlags.TypeAlias | ts.SymbolFlags.Interface)
+							? checker.getDeclaredTypeOfSymbol(symbol)
+							: checker.getTypeOfSymbolAtLocation(symbol, declaration);
+				} catch {
+					continue;
+				}
+				if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
+					throw new Error(
+						`Imported public type ${specifier}.${symbol.name} resolves to any or unknown`,
+					);
 				}
 			}
 		}
-		importedBindingCount += importedNames.size;
-		if (/@ts-expect-error\b/.test(source)) hasNegativeControl = true;
-		const referencesImportedName = (node) => {
-			let found = false;
-			const visit = (child) => {
-				if (ts.isIdentifier(child) && importedNames.has(child.text)) found = true;
-				if (!found) ts.forEachChild(child, visit);
+	}
+	for (const imported of importedBindings) {
+		if (checker.getTypeAtLocation(imported).flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
+			throw new Error(`Imported public type ${imported.text} resolves to any or unknown`);
+		}
+	}
+
+	for (const evidence of fileEvidence.values()) {
+		let changed = true;
+		while (changed) {
+			changed = false;
+			const visit = (node) => {
+				if (
+					ts.isVariableDeclaration(node) &&
+					node.initializer &&
+					referencesSymbols(node.initializer, checker, evidence.taintedSymbols)
+				) {
+					const before = evidence.taintedSymbols.size;
+					bindingSymbols(node.name, checker, evidence.taintedSymbols);
+					changed ||= evidence.taintedSymbols.size !== before;
+				}
+				if (
+					ts.isTypeAliasDeclaration(node) &&
+					referencesSymbols(node.type, checker, evidence.taintedSymbols)
+				) {
+					const before = evidence.taintedSymbols.size;
+					bindingSymbols(node.name, checker, evidence.taintedSymbols);
+					changed ||= evidence.taintedSymbols.size !== before;
+				}
+				ts.forEachChild(node, visit);
 			};
-			visit(node);
-			return found;
-		};
+			visit(evidence.sourceFile);
+		}
+	}
+
+	let hasPositiveAssertion = false;
+	let hasNegativeControl = false;
+	for (const evidence of fileEvidence.values()) {
 		const inspect = (node) => {
-			if (ts.isSatisfiesExpression(node) && referencesImportedName(node.expression)) {
-				hasPositiveAssertion = true;
-			}
 			if (
-				ts.isCallExpression(node) &&
-				source.slice(node.getStart(sourceFile), node.end).includes('expectTypeOf') &&
-				referencesImportedName(node)
+				containsPositiveTypeAssertion(node, evidence.sourceFile, checker, evidence.taintedSymbols)
 			) {
 				hasPositiveAssertion = true;
 			}
-			ts.forEachChild(node, inspect);
-		};
-		inspect(sourceFile);
-	}
-	return { importedBindingCount, hasPositiveAssertion, hasNegativeControl };
-}
-
-function structurallyMappedRegistrations(programFiles) {
-	const registrations = new Set();
-	for (const filePath of programFiles) {
-		const source = readFileSync(filePath, 'utf8');
-		const sourceFile = ts.createSourceFile(
-			filePath,
-			source,
-			ts.ScriptTarget.Latest,
-			true,
-			ts.ScriptKind.TSX,
-		);
-		const visit = (node) => {
-			if (ts.isObjectLiteralExpression(node)) {
-				for (const property of node.properties) {
-					if (
-						!ts.isPropertyAssignment(property) ||
-						property.initializer.kind !== ts.SyntaxKind.TrueKeyword
-					) {
-						continue;
-					}
-					const name = property.name;
-					if (ts.isStringLiteral(name) || ts.isIdentifier(name)) registrations.add(name.text);
+			if (ts.isStatement(node)) {
+				const leading = evidence.source.slice(
+					node.getFullStart(),
+					node.getStart(evidence.sourceFile),
+				);
+				if (
+					/@ts-expect-error\b/.test(leading) &&
+					referencesSymbols(node, checker, evidence.taintedSymbols)
+				) {
+					hasNegativeControl = true;
 				}
 			}
+			ts.forEachChild(node, inspect);
+		};
+		inspect(evidence.sourceFile);
+	}
+	return { checker, fileEvidence, hasNegativeControl, hasPositiveAssertion, importedEntries };
+}
+
+function structurallyMappedRegistrations(programFiles, analysis) {
+	const registrations = new Set();
+	for (const filePath of programFiles) {
+		const evidence = analysis.fileEvidence.get(filePath);
+		if (!evidence) continue;
+		const { sourceFile, taintedSymbols } = evidence;
+		const visit = (node) => {
 			if (
 				ts.isCallExpression(node) &&
 				ts.isIdentifier(node.expression) &&
 				node.expression.text === 'assertUpstreamRegistration' &&
-				ts.isStringLiteral(node.arguments[0])
+				ts.isStringLiteral(node.arguments[0]) &&
+				node.arguments[1] &&
+				referencesSymbols(node.arguments[1], analysis.checker, taintedSymbols) &&
+				containsPositiveTypeAssertion(
+					node.arguments[1],
+					sourceFile,
+					analysis.checker,
+					taintedSymbols,
+				)
 			) {
 				registrations.add(node.arguments[0].text);
 			}
@@ -515,15 +727,18 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 			throw new Error('Public type project must compile package tests/types sources');
 		}
 		if (node.binding) {
-			const semantics = importedBindingsAndAssertions(programFiles, node.binding);
-			if (semantics.importedBindingCount === 0) {
-				throw new Error('Public type project must import the graph-planned package export');
-			}
+			const semantics = analyzeTypeEvidence(
+				programFiles,
+				parsed,
+				concretePublicSpecifiers(packageDirectory, node.binding),
+			);
 			if (!semantics.hasPositiveAssertion) {
 				throw new Error('Public type project must contain a positive type assertion');
 			}
 			if (!semantics.hasNegativeControl) {
-				throw new Error('Public type project must contain a @ts-expect-error negative control');
+				throw new Error(
+					'Public type project must contain a @ts-expect-error negative control tied to an imported public binding',
+				);
 			}
 		}
 	}
@@ -544,11 +759,21 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 				`Type project for ${gateId} is not bound to the pinned immutable type inventory`,
 			);
 		}
-		const mappedRegistrations = structurallyMappedRegistrations(programFiles);
+		const expectedImport = gateId === 'upstream-types-pristine' ? node.packageName : node.binding;
+		if (!expectedImport) {
+			throw new Error(`Type project for ${gateId} has no graph-planned package import`);
+		}
+		const analysis = analyzeTypeEvidence(programFiles, parsed, [expectedImport]);
+		if (!analysis.hasPositiveAssertion || !analysis.hasNegativeControl) {
+			throw new Error(
+				`Type project for ${gateId} must contain positive and negative assertions tied to ${expectedImport}`,
+			);
+		}
+		const mappedRegistrations = structurallyMappedRegistrations(programFiles, analysis);
 		for (const registrationId of expectedRegistrations) {
 			if (!mappedRegistrations.has(registrationId)) {
 				throw new Error(
-					`Type project for ${gateId} does not structurally map pinned registration ${registrationId}`,
+					`Type project for ${gateId} does not structurally map pinned registration ${registrationId} to a real assertion group`,
 				);
 			}
 		}
@@ -563,6 +788,7 @@ export function assertApprovedGateCommand(
 ) {
 	const bindingDirectory = node.bindingDirectory?.replaceAll('\\', '/');
 	if (!bindingDirectory) throw new Error('Evidence node has no graph-planned binding directory');
+	let packageTestPlan = null;
 	for (const gateId of gateIds) {
 		let approved = false;
 		if (gateId === 'package-tests') {
@@ -601,7 +827,7 @@ export function assertApprovedGateCommand(
 			);
 		}
 		if (workspaceRoot && gateId === 'package-tests') {
-			assertPackageTestSemantics(node, workspaceRoot);
+			packageTestPlan = assertPackageTestSemantics(node, workspaceRoot);
 		}
 		if (workspaceRoot && gateId === 'public-exports') {
 			inspectPublicExports(bindingPackageDirectory(node, workspaceRoot));
@@ -618,6 +844,7 @@ export function assertApprovedGateCommand(
 			assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoot);
 		}
 	}
+	return { packageTestPlan };
 }
 
 async function operate(
@@ -744,19 +971,30 @@ async function operate(
 		if (commandArguments.length === 0) {
 			throw new Error('run requires an executable and arguments after --');
 		}
-		assertCommand(gateIds, commandArguments, node, {
+		const commandValidation = assertCommand(gateIds, commandArguments, node, {
 			workspaceRoot: manifest.workspaceRoot ?? process.cwd(),
 		});
+		const packageTestPlan = gateIds.includes('package-tests')
+			? (commandValidation?.packageTestPlan ??
+				packageTestExecutionPlan(node, manifest.workspaceRoot ?? process.cwd()))
+			: null;
+		const reportDirectory = packageTestPlan
+			? mkdtempSync(path.join(tmpdir(), 'react-port-package-tests-'))
+			: null;
+		const reportPath = reportDirectory ? path.join(reportDirectory, 'report.json') : null;
+		const executedArguments = packageTestPlan
+			? packageTestCommand(commandArguments, packageTestPlan, reportPath)
+			: commandArguments;
 		const commandDisplay = sanitizeForReport(
-			JSON.stringify(commandArguments),
+			JSON.stringify(executedArguments),
 			'',
 			credentialValues,
 		);
 		let evidence;
 		try {
 			const { stdout, stderr } = await execFileAsync(
-				commandArguments[0],
-				commandArguments.slice(1),
+				executedArguments[0],
+				executedArguments.slice(1),
 				{
 					cwd: manifest.workspaceRoot ?? process.cwd(),
 					encoding: 'utf8',
@@ -765,9 +1003,7 @@ async function operate(
 					windowsHide: true,
 				},
 			);
-			if (gateIds.includes('package-tests') && !hasExecutedPassingTest(stdout, stderr)) {
-				throw new Error('Package test command reported no executed passing test');
-			}
+			if (packageTestPlan) assertPackageTestReport(packageTestPlan, reportPath, stdout, stderr);
 			evidence = {
 				status: 'passed',
 				command: commandDisplay,
@@ -784,6 +1020,8 @@ async function operate(
 					credentialValues,
 				),
 			};
+		} finally {
+			if (reportDirectory) rmSync(reportDirectory, { force: true, recursive: true });
 		}
 		for (const gateId of gateIds) {
 			recordEvidence(node.evidenceMatrix, gateId, evidence);

@@ -25,7 +25,9 @@ const MIT_FIXTURE = path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widge
 const mitFixture = JSON.parse(readFileSync(MIT_FIXTURE, 'utf8'));
 
 function runNodeCli(script, arguments_, cwd) {
-	return spawnSync(process.execPath, [script, ...arguments_], { cwd, encoding: 'utf8' });
+	const env = { ...process.env };
+	delete env.NODE_TEST_CONTEXT;
+	return spawnSync(process.execPath, [script, ...arguments_], { cwd, encoding: 'utf8', env });
 }
 
 function writeJson(filePath, value) {
@@ -348,20 +350,11 @@ describe('fresh forward scenarios', () => {
 		});
 		const packageTests = runNodeCli(
 			EVIDENCE_CLI,
-			[
-				'run',
-				...evidenceCommon,
-				'--gate',
-				'package-tests',
-				'--',
-				process.execPath,
-				'-e',
-				`import(${JSON.stringify(pathToFileURL(path.join(packageDirectory, 'src/index.mjs')).href)}).then(({ fixtureWidget }) => { if (fixtureWidget('ok') !== 'fixture:ok') process.exit(1); process.stdout.write('Tests 1 passed (1); fixture behavior passed'); })`,
-			],
+			['run', ...evidenceCommon, '--gate', 'package-tests', '--', process.execPath, '--test'],
 			workspace,
 		);
 		assert.equal(packageTests.status, 0, packageTests.stderr || packageTests.stdout);
-		assert.match(JSON.parse(packageTests.stdout).gate.observed, /fixture behavior passed/i);
+		assert.match(JSON.parse(packageTests.stdout).gate.observed, /# pass 1/i);
 
 		const sourceEntry = path.join(packageDirectory, 'src/index.mjs');
 		const expectedSource = 'export function fixtureWidget(value) { return `fixture:${value}`; }\n';

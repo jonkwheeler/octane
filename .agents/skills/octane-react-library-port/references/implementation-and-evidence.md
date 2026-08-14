@@ -166,24 +166,31 @@ gates. Neither upstream command observation substitutes for the other:
    Preserve positive assertions, negative assertions, and every
    `@ts-expect-error`. Both project files must declare `reactPortEvidence.gate`
    and an `upstreamRegistrations` list that exactly matches the pinned immutable
-   type inventory; each pinned ID must also appear in a compiled, structured
-   upstream registration map such as
-   `const upstreamRegistrationMap = { '<registration-id>': true } as const`.
-   Comments and unrelated string literals are not mappings.
+   type inventory. Bind each pinned ID to a compiled assertion group with
+   `assertUpstreamRegistration('<registration-id>', () => { ...assertions... })`.
+   The assertion group must reference the pristine upstream import or adapted
+   binding import and contain a real positive type assertion. Boolean ID maps,
+   comments, and unrelated string literals are not mappings.
 2. Compile the authored package source directly with `tsrx-tsc --noEmit`. The
    project must directly include every authored `.ts`, `.tsx`, and `.tsrx` file;
    a package import can resolve a declaration condition and hide broken source.
    For every source program use `strict: true`, `skipLibCheck: false`, the Octane
    JSX/compiler settings, and no ambient `declare module '*.tsrx'`.
    Never use plain `tsc` or `tsgo` for a program containing `.tsrx`.
-3. Compile a consumer of every public entry and type export. Assert exported
-   component props, hooks, values, and aliases are not `any` (for example with
-   `AssertNotAny`), exercise representative valid calls, and retain negative
+3. Compile a consumer of every concrete public entry and type export, including
+   entries expanded from package-export wildcards. Assert exported component
+   props, hooks, values, and aliases are neither `any` nor `unknown` (for example
+   with `AssertNotAny`), exercise representative valid calls, and retain negative
    controls for invalid props and unsupported exports. The project must contain
-   a parsed import from the graph-planned package, positive assertions that use
-   those imported bindings, and a real `@ts-expect-error` negative control;
-   comments cannot satisfy package consumption. A declaration file may describe
-   the public surface, but it never replaces direct source compilation.
+   parsed imports from every graph-planned public entry, consume every exported
+   symbol directly or through a namespace import, and contain both a positive
+   assertion and a real `@ts-expect-error` negative control whose symbol identity
+   resolves back to an imported binding.
+   Supported positive styles include `Assert<Equal<...>>`, `AssertNotAny`,
+   `expectType`, `expectTypeOf`, and `satisfies` after the type checker has proved
+   the binding is not `any`/`unknown`. Comments and unrelated failures cannot
+   satisfy package consumption. A declaration file may describe the public
+   surface, but it never replaces direct source compilation.
 4. Pack the binding and typecheck the installed authored source with Node
    ambient types. Install the complete packed dependency closure across
    `dependencies`, `optionalDependencies`, `peerDependencies`, internal
@@ -241,16 +248,23 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
 ```
 
 The runner binds each gate to an approved command shape and validates the
-referenced package/project semantics before execution. Package tests must reach
-a supported test runner (Vitest, Jest, `node --test`, or the repository parity
-wrapper), contain a nonzero runnable registration count, and report at least one
-executed passing test after the command exits successfully. Skipped, todo,
-conditional, and expected-failure registrations do not count. Type projects
-require complete expected source roots, `strict: true`, `skipLibCheck: false`,
-and matching `reactPortEvidence`; pristine/adapted projects are bound to the
-pinned immutable type inventory. The public export target checker requires each
-declared module target to contain a real exported value or type (or a nonempty
-JSON/CSS artifact), not merely an existing `export {}` placeholder.
+referenced package/project semantics before execution. Package tests must finish
+with a running Vitest, Jest, `node --test`, or repository parity command, contain
+a nonzero runnable registration count, and produce runner-owned machine evidence
+from that invocation. The evidence runner injects a machine reporter (and a report
+destination where supported) and checks the executed file identities, passed
+count, and zero-failure result against the discovered package tests; the
+repository parity wrapper owns the equivalent checks internally. Console text
+cannot manufacture a pass. Version, help, list, and watch modes are rejected.
+Skipped, todo, conditional, and expected-failure registrations do not count. Type
+projects require complete expected source roots, `strict: true`,
+`skipLibCheck: false`, and matching `reactPortEvidence`; pristine/adapted projects
+are bound to the pinned immutable type inventory and assertion groups. The
+public-export checker expands wildcard targets, follows ESM/CommonJS re-export
+chains, uses the correct source kind, recognizes value, type, asset, side-effect,
+and intentionally empty declaration contracts, and defers prepack-generated
+conditions to packed-artifact validation. It rejects a subpath when every
+resolved condition is empty.
 It rejects `true`, ad hoc `node -e`, unrelated package scripts, incompatible
 multi-gate groups, and any other successful command that does not prove the requested row.
 The approved shapes are:

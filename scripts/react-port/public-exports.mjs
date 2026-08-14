@@ -1,77 +1,384 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-function exportTargets(value, keyPath = 'exports') {
-	if (typeof value === 'string') return [{ keyPath, target: value }];
+function exportTargets(value, keyPath = 'exports', subpath = '.') {
+	if (typeof value === 'string') return [{ keyPath, subpath, target: value }];
 	if (Array.isArray(value)) {
-		return value.flatMap((nested, index) => exportTargets(nested, `${keyPath}[${index}]`));
+		return value.flatMap((nested, index) => exportTargets(nested, `${keyPath}[${index}]`, subpath));
 	}
 	if (!value || typeof value !== 'object') return [];
-	return Object.entries(value).flatMap(([key, nested]) =>
-		exportTargets(nested, `${keyPath}.${key}`),
+	const entries = Object.entries(value);
+	const hasSubpaths = entries.some(([key]) => key.startsWith('.'));
+	return entries.flatMap(([key, nested]) =>
+		exportTargets(nested, `${keyPath}.${key}`, hasSubpaths ? key : subpath),
 	);
 }
 
-function hasPublicModuleExport(targetPath, source) {
+function scriptKind(filePath) {
+	if (/\.(?:tsx|tsrx)$/i.test(filePath)) return ts.ScriptKind.TSX;
+	if (/\.jsx$/i.test(filePath)) return ts.ScriptKind.JSX;
+	if (/\.(?:js|mjs|cjs)$/i.test(filePath)) return ts.ScriptKind.JS;
+	return ts.ScriptKind.TS;
+}
+
+function packageFiles(packageDirectory) {
+	const files = [];
+	const walk = (directory) => {
+		for (const entry of readdirSync(directory, { withFileTypes: true })) {
+			if (entry.name === 'node_modules' || entry.name === '.git') continue;
+			const entryPath = path.join(directory, entry.name);
+			if (entry.isDirectory()) walk(entryPath);
+			else if (entry.isFile()) files.push(entryPath);
+		}
+	};
+	walk(packageDirectory);
+	return files;
+}
+
+function wildcardMatches(packageDirectory, target, files) {
+	const relativePattern = target.slice(2);
+	const expression = new RegExp(
+		`^${relativePattern
+			.split('*')
+			.map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+			.join('(.+)')}$`,
+	);
+	return files.flatMap((filePath) => {
+		const relativePath = path.relative(packageDirectory, filePath).replaceAll('\\', '/');
+		const match = expression.exec(relativePath);
+		return match ? [{ captures: match.slice(1), targetPath: filePath }] : [];
+	});
+}
+
+function resolveLocalModule(fromPath, specifier, packageDirectory) {
+	if (!specifier.startsWith('.')) return null;
+	const unresolved = path.resolve(path.dirname(fromPath), specifier);
+	const candidates = [unresolved];
+	const extension = path.extname(unresolved);
+	const extensions = [
+		'.ts',
+		'.tsx',
+		'.tsrx',
+		'.mts',
+		'.cts',
+		'.js',
+		'.jsx',
+		'.mjs',
+		'.cjs',
+		'.d.ts',
+	];
+	if (extension) {
+		const stem = unresolved.slice(0, -extension.length);
+		for (const candidateExtension of extensions) candidates.push(`${stem}${candidateExtension}`);
+	}
+	for (const candidateExtension of extensions) {
+		candidates.push(`${unresolved}${candidateExtension}`);
+		candidates.push(path.join(unresolved, `index${candidateExtension}`));
+	}
+	for (const candidate of candidates) {
+		const relative = path.relative(packageDirectory, candidate);
+		if (
+			!relative.startsWith('..') &&
+			!path.isAbsolute(relative) &&
+			existsSync(candidate) &&
+			statSync(candidate).isFile() &&
+			realpathSync(candidate) === candidate
+		) {
+			return candidate;
+		}
+	}
+	return null;
+}
+
+function exportedDeclarationNames(statement, output) {
+	const addBindingNames = (name) => {
+		if (ts.isIdentifier(name)) output.add(name.text);
+		else if (ts.isObjectBindingPattern(name) || ts.isArrayBindingPattern(name)) {
+			for (const element of name.elements) {
+				if (ts.isBindingElement(element)) addBindingNames(element.name);
+			}
+		}
+	};
+	if (statement.name) addBindingNames(statement.name);
+	if (ts.isVariableStatement(statement)) {
+		for (const declaration of statement.declarationList.declarations) {
+			addBindingNames(declaration.name);
+		}
+	}
+}
+
+function commonjsExportName(node) {
+	if (!ts.isBinaryExpression(node) || node.operatorToken.kind !== ts.SyntaxKind.EqualsToken) {
+		return null;
+	}
+	const left = node.left;
+	if (
+		ts.isPropertyAccessExpression(left) &&
+		ts.isIdentifier(left.expression) &&
+		left.expression.text === 'module' &&
+		left.name.text === 'exports'
+	) {
+		return 'module.exports';
+	}
+	if (ts.isPropertyAccessExpression(left) && ts.isIdentifier(left.expression)) {
+		if (left.expression.text === 'exports') return left.name.text;
+		if (
+			ts.isPropertyAccessExpression(left.expression) &&
+			ts.isIdentifier(left.expression.expression) &&
+			left.expression.expression.text === 'module' &&
+			left.expression.name.text === 'exports'
+		) {
+			return left.name.text;
+		}
+	}
+	return null;
+}
+
+function inspectModule(targetPath, packageDirectory, visiting = new Set()) {
+	if (visiting.has(targetPath)) return { exports: new Set(), sideEffect: false };
+	const source = readFileSync(targetPath, 'utf8');
 	if (targetPath.endsWith('.json')) {
 		const value = JSON.parse(source);
-		return value !== null && (typeof value !== 'object' || Object.keys(value).length > 0);
+		return {
+			exports: new Set(
+				value !== null && (typeof value !== 'object' || Object.keys(value).length)
+					? ['default']
+					: [],
+			),
+			sideEffect: false,
+		};
 	}
-	if (!/\.(?:[cm]?[jt]sx?|tsrx)$/i.test(targetPath)) return source.trim().length > 0;
+	if (!/\.(?:[cm]?[jt]sx?|tsrx)$/i.test(targetPath)) {
+		return { exports: new Set(), sideEffect: source.trim().length > 0 };
+	}
+	if (/\.d\.[cm]?ts$/i.test(targetPath)) {
+		return { exports: new Set(['declaration-contract']), sideEffect: false };
+	}
 	const sourceFile = ts.createSourceFile(
 		targetPath,
 		source,
 		ts.ScriptTarget.Latest,
 		true,
-		ts.ScriptKind.TSX,
+		scriptKind(targetPath),
 	);
+	const exports = new Set();
+	let sideEffect = false;
+	const nextVisiting = new Set(visiting).add(targetPath);
 	for (const statement of sourceFile.statements) {
-		if (ts.isExportAssignment(statement)) return true;
+		if (ts.isExportAssignment(statement)) {
+			exports.add(statement.isExportEquals ? 'module.exports' : 'default');
+			continue;
+		}
 		if (ts.isExportDeclaration(statement)) {
-			if (!statement.exportClause) return true;
-			if (ts.isNamespaceExport(statement.exportClause)) return true;
-			if (statement.exportClause.elements.length > 0) return true;
+			if (statement.exportClause) {
+				let nested = null;
+				if (statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)) {
+					const resolved = resolveLocalModule(
+						targetPath,
+						statement.moduleSpecifier.text,
+						packageDirectory,
+					);
+					if (resolved) nested = inspectModule(resolved, packageDirectory, nextVisiting);
+					else if (!statement.moduleSpecifier.text.startsWith('.')) nested = 'external';
+				}
+				if (ts.isNamespaceExport(statement.exportClause)) {
+					if (nested === 'external' || (nested && nested.exports.size > 0)) {
+						exports.add(statement.exportClause.name.text);
+					}
+				} else {
+					for (const element of statement.exportClause.elements) {
+						const sourceName = element.propertyName?.text ?? element.name.text;
+						if (
+							!statement.moduleSpecifier ||
+							nested === 'external' ||
+							nested?.exports.has(sourceName) ||
+							nested?.exports.has('declaration-contract')
+						) {
+							exports.add(element.name.text);
+						}
+					}
+				}
+				continue;
+			}
+			if (statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)) {
+				const resolved = resolveLocalModule(
+					targetPath,
+					statement.moduleSpecifier.text,
+					packageDirectory,
+				);
+				if (!resolved) {
+					if (!statement.moduleSpecifier.text.startsWith('.')) exports.add('external-reexport');
+					continue;
+				}
+				const nested = inspectModule(resolved, packageDirectory, nextVisiting);
+				for (const name of nested.exports) exports.add(name);
+			}
+			continue;
 		}
 		if (
 			ts.canHaveModifiers(statement) &&
 			ts.getModifiers(statement)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
 		) {
-			return true;
+			exportedDeclarationNames(statement, exports);
+			if (
+				ts
+					.getModifiers(statement)
+					?.some((modifier) => modifier.kind === ts.SyntaxKind.DefaultKeyword)
+			) {
+				exports.add('default');
+			}
+			continue;
+		}
+		if (ts.isExpressionStatement(statement)) {
+			const commonjsName = commonjsExportName(statement.expression);
+			if (
+				commonjsName === 'module.exports' &&
+				ts.isBinaryExpression(statement.expression) &&
+				ts.isCallExpression(statement.expression.right) &&
+				ts.isIdentifier(statement.expression.right.expression) &&
+				statement.expression.right.expression.text === 'require' &&
+				ts.isStringLiteral(statement.expression.right.arguments[0])
+			) {
+				const specifier = statement.expression.right.arguments[0].text;
+				const resolved = resolveLocalModule(targetPath, specifier, packageDirectory);
+				if (resolved) {
+					const nested = inspectModule(resolved, packageDirectory, nextVisiting);
+					for (const name of nested.exports) exports.add(name);
+				} else if (!specifier.startsWith('.')) exports.add('external-reexport');
+			} else if (
+				commonjsName === 'module.exports' &&
+				ts.isBinaryExpression(statement.expression) &&
+				ts.isObjectLiteralExpression(statement.expression.right)
+			) {
+				for (const property of statement.expression.right.properties) {
+					if (
+						(ts.isPropertyAssignment(property) || ts.isMethodDeclaration(property)) &&
+						property.name
+					) {
+						exports.add(property.name.getText(sourceFile));
+					} else if (ts.isShorthandPropertyAssignment(property)) {
+						exports.add(property.name.text);
+					} else if (ts.isSpreadAssignment(property)) {
+						exports.add('spread-export');
+					}
+				}
+			} else if (commonjsName) exports.add(commonjsName);
+			else if (!ts.isStringLiteral(statement.expression)) sideEffect = true;
+			continue;
+		}
+		if (ts.isImportDeclaration(statement)) {
+			sideEffect = true;
+			continue;
+		}
+		if (
+			ts.isThrowStatement(statement) ||
+			ts.isIfStatement(statement) ||
+			ts.isForStatement(statement) ||
+			ts.isForOfStatement(statement) ||
+			ts.isForInStatement(statement) ||
+			ts.isWhileStatement(statement) ||
+			ts.isDoStatement(statement) ||
+			ts.isTryStatement(statement)
+		) {
+			sideEffect = true;
 		}
 	}
-	return false;
+	return { exports, sideEffect };
+}
+
+function validatesAfterPrepack(manifest, target) {
+	return Boolean(
+		manifest.scripts?.prepack && /^(?:\.\/)?(?:dist|build|lib|cjs|esm)\//.test(target.slice(2)),
+	);
 }
 
 export function inspectPublicExports(packageDirectory) {
 	const resolvedPackageDirectory = realpathSync(packageDirectory);
 	const manifestPath = path.join(resolvedPackageDirectory, 'package.json');
 	const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-	const targets = exportTargets(manifest.exports);
-	if (targets.length === 0) throw new Error('Package exports must declare at least one target');
-	for (const { keyPath, target } of targets) {
+	const declaredTargets = exportTargets(manifest.exports);
+	if (declaredTargets.length === 0)
+		throw new Error('Package exports must declare at least one target');
+	const files = packageFiles(resolvedPackageDirectory);
+	const targets = [];
+	for (const declared of declaredTargets) {
+		const { keyPath, subpath, target } = declared;
 		if (!target.startsWith('./')) {
 			throw new Error(`${keyPath} must use a package-relative target: ${target}`);
 		}
-		const targetPath = path.resolve(resolvedPackageDirectory, target);
-		const relativeTarget = path.relative(resolvedPackageDirectory, targetPath);
-		if (relativeTarget.startsWith('..') || path.isAbsolute(relativeTarget)) {
-			throw new Error(`${keyPath} escapes the package directory: ${target}`);
+		const concreteTargets = target.includes('*')
+			? wildcardMatches(resolvedPackageDirectory, target, files).map(
+					({ captures, targetPath }) => ({
+						concreteSubpath: captures.reduce(
+							(value, capture) => value.replace('*', capture),
+							subpath,
+						),
+						targetPath,
+					}),
+				)
+			: [{ concreteSubpath: subpath, targetPath: path.resolve(resolvedPackageDirectory, target) }];
+		if (concreteTargets.length === 0 && validatesAfterPrepack(manifest, target)) {
+			targets.push({ ...declared, validation: 'packed-artifact' });
+			continue;
 		}
-		if (!existsSync(targetPath) || !statSync(targetPath).isFile()) {
-			throw new Error(`${keyPath} points to a missing public export: ${target}`);
+		if (concreteTargets.length === 0) {
+			throw new Error(`${keyPath} wildcard matches no public exports: ${target}`);
 		}
-		if (realpathSync(targetPath) !== targetPath) {
-			throw new Error(`${keyPath} must not resolve through a symlink: ${target}`);
+		for (const concrete of concreteTargets) {
+			const relativeTarget = path.relative(resolvedPackageDirectory, concrete.targetPath);
+			if (relativeTarget.startsWith('..') || path.isAbsolute(relativeTarget)) {
+				throw new Error(`${keyPath} escapes the package directory: ${target}`);
+			}
+			if (!existsSync(concrete.targetPath) || !statSync(concrete.targetPath).isFile()) {
+				if (validatesAfterPrepack(manifest, target)) {
+					targets.push({ ...declared, validation: 'packed-artifact' });
+					continue;
+				}
+				throw new Error(`${keyPath} points to a missing public export: ${target}`);
+			}
+			if (realpathSync(concrete.targetPath) !== concrete.targetPath) {
+				throw new Error(`${keyPath} must not resolve through a symlink: ${target}`);
+			}
+			const contract = inspectModule(concrete.targetPath, resolvedPackageDirectory);
+			targets.push({
+				...declared,
+				concreteSubpath: concrete.concreteSubpath,
+				concreteTarget: `./${relativeTarget.replaceAll('\\', '/')}`,
+				validation:
+					contract.exports.size > 0
+						? 'module-exports'
+						: contract.sideEffect
+							? 'side-effect'
+							: 'empty',
+			});
 		}
-		if (!hasPublicModuleExport(targetPath, readFileSync(targetPath, 'utf8'))) {
-			throw new Error(`${keyPath} target exports no public values or types: ${target}`);
+	}
+	for (const subpath of new Set(
+		targets.map(({ concreteSubpath, subpath }) => concreteSubpath ?? subpath),
+	)) {
+		const conditions = targets.filter(
+			(target) => (target.concreteSubpath ?? target.subpath) === subpath,
+		);
+		if (conditions.every(({ validation }) => validation === 'empty')) {
+			throw new Error(`${subpath} exposes no public contract through any export condition`);
 		}
 	}
 	return { status: 'passed', package: manifest.name, targets };
+}
+
+export function concretePublicSpecifiers(packageDirectory, packageName) {
+	return [
+		...new Set(
+			inspectPublicExports(packageDirectory)
+				.targets.map(({ concreteSubpath, subpath }) => concreteSubpath ?? subpath)
+				.filter((subpath) => subpath && !subpath.includes('*'))
+				.map((subpath) => (subpath === '.' ? packageName : `${packageName}/${subpath.slice(2)}`)),
+		),
+	].sort();
 }
 
 function parseArguments(arguments_) {

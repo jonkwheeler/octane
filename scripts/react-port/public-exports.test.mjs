@@ -1,9 +1,30 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import {
+	existsSync,
+	mkdirSync,
+	mkdtempSync,
+	readFileSync,
+	readdirSync,
+	writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
-import { inspectPublicExports } from './public-exports.mjs';
+import { fileURLToPath } from 'node:url';
+import { concretePublicSpecifiers, inspectPublicExports } from './public-exports.mjs';
+
+function createPackage(name, exports, files, scripts) {
+	const packageDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-public-exports-'));
+	for (const [relativePath, source] of Object.entries(files)) {
+		mkdirSync(path.dirname(path.join(packageDirectory, relativePath)), { recursive: true });
+		writeFileSync(path.join(packageDirectory, relativePath), source);
+	}
+	writeFileSync(
+		path.join(packageDirectory, 'package.json'),
+		JSON.stringify({ name, exports, scripts }),
+	);
+	return packageDirectory;
+}
 
 test('validates every target in an export fallback array', () => {
 	const packageDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-public-exports-'));
@@ -43,5 +64,104 @@ test('rejects an existing target that exports no public values or types', () => 
 		}),
 	);
 
-	assert.throws(() => inspectPublicExports(packageDirectory), /no public values or types/i);
+	assert.throws(() => inspectPublicExports(packageDirectory), /no public contract/i);
+});
+
+test('rejects an empty local re-export chain', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/empty-reexport-fixture',
+		{ '.': './src/index.ts' },
+		{
+			'src/index.ts': "export * from './empty.js';\n",
+			'src/empty.ts': 'export {};\n',
+		},
+	);
+
+	assert.throws(() => inspectPublicExports(packageDirectory), /no public contract/i);
+});
+
+test('expands wildcard exports into concrete public specifiers', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/wildcard-fixture',
+		{ '.': './src/index.ts', './features/*': './src/features/*.ts' },
+		{
+			'src/index.ts': 'export const root = true;\n',
+			'src/features/alpha.ts': 'export const alpha = true;\n',
+			'src/features/beta.ts': 'export const beta = true;\n',
+		},
+	);
+
+	assert.deepEqual(concretePublicSpecifiers(packageDirectory, '@octanejs/wildcard-fixture'), [
+		'@octanejs/wildcard-fixture',
+		'@octanejs/wildcard-fixture/features/alpha',
+		'@octanejs/wildcard-fixture/features/beta',
+	]);
+});
+
+test('accepts CommonJS, side-effect, and intentionally empty declaration contracts', () => {
+	const commonjs = createPackage(
+		'@octanejs/commonjs-fixture',
+		{ '.': './index.cjs' },
+		{ 'index.cjs': 'module.exports = { ready: true };\n' },
+	);
+	const sideEffect = createPackage(
+		'@octanejs/side-effect-fixture',
+		{ '.': './register.js' },
+		{ 'register.js': "import './setup.js';\n", 'setup.js': 'globalThis.fixtureReady = true;\n' },
+	);
+	const declaration = createPackage(
+		'@octanejs/declaration-fixture',
+		{ '.': { types: './index.d.ts', import: './index.js' } },
+		{ 'index.d.ts': 'export {};\n', 'index.js': '' },
+	);
+
+	assert.equal(inspectPublicExports(commonjs).status, 'passed');
+	assert.equal(inspectPublicExports(sideEffect).status, 'passed');
+	assert.equal(inspectPublicExports(declaration).status, 'passed');
+});
+
+test('resolves CommonJS re-exports instead of accepting an empty assignment', () => {
+	const reexport = createPackage(
+		'@octanejs/commonjs-reexport-fixture',
+		{ '.': './index.cjs' },
+		{
+			'index.cjs': "module.exports = require('./empty.cjs');\n",
+			'empty.cjs': 'module.exports = {};\n',
+		},
+	);
+
+	assert.throws(() => inspectPublicExports(reexport), /no public contract/i);
+});
+
+test('defers prepack-generated public targets to packed-artifact validation', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/generated-fixture',
+		{ '.': { types: './dist/index.d.ts', import: './dist/index.js' } },
+		{},
+		{ prepack: 'node scripts/build.mjs' },
+	);
+
+	assert.deepEqual(
+		inspectPublicExports(packageDirectory).targets.map(({ validation }) => validation),
+		['packed-artifact', 'packed-artifact'],
+	);
+});
+
+test('accepts the public export contracts of every publishable workspace package', () => {
+	const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+	const failures = [];
+	for (const name of readdirSync(path.join(workspaceRoot, 'packages'))) {
+		const packageDirectory = path.join(workspaceRoot, 'packages', name);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		if (!existsSync(manifestPath)) continue;
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		if (manifest.private || !manifest.exports) continue;
+		try {
+			inspectPublicExports(packageDirectory);
+		} catch (error) {
+			failures.push(`${name}: ${error instanceof Error ? error.message : String(error)}`);
+		}
+	}
+
+	assert.deepEqual(failures, []);
 });
