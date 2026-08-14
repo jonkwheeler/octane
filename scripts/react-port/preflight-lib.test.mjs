@@ -594,10 +594,13 @@ describe('resolved evidence', () => {
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceSymlinkBytes = Buffer.from('../NOTICE');
 		const sourceTestConfigBytes = Buffer.from(
-			"export default { resolve: { alias: { source: 'src/' } }, test: { include: ['quality/**/*.ts'], exclude: ['src/**/*.ts'], setupFiles: ['index.ts'] } };\n",
+			"export default { resolve: { alias: { source: 'src/' } }, test: { include: ['quality/**/*.ts'], includeSource: ['src/**/*.ts'], exclude: ['src/**/*.ts'], setupFiles: ['index.ts'] } };\n",
 		);
 		const sourceTestBytes = Buffer.from("test('renders', () => {});\n");
 		const ordinarySourceBytes = Buffer.from('export const widgetSource = true;\n');
+		const inlineTestSourceBytes = Buffer.from(
+			"export const inline = true; if (import.meta.vitest) { test('works inline', () => {}); }\n",
+		);
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
 		const sourceTree = [
@@ -638,6 +641,14 @@ describe('resolved evidence', () => {
 				size: ordinarySourceBytes.length,
 				sha: gitBlobSha(ordinarySourceBytes),
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/ordinary-source',
+			},
+			{
+				path: 'packages/react-widget/src/inline.ts',
+				mode: '100644',
+				type: 'blob',
+				size: inlineTestSourceBytes.length,
+				sha: gitBlobSha(inlineTestSourceBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/inline-source',
 			},
 			{
 				path: 'packages/react-widget/current',
@@ -718,6 +729,14 @@ describe('resolved evidence', () => {
 					size: ordinarySourceBytes.length,
 				}),
 			],
+			[
+				'https://api.github.com/repos/example/widgets/git/blobs/inline-source',
+				Response.json({
+					encoding: 'base64',
+					content: inlineTestSourceBytes.toString('base64'),
+					size: inlineTestSourceBytes.length,
+				}),
+			],
 		]);
 		const fetchImpl = async (url) => {
 			const response = responses.get(String(url));
@@ -752,6 +771,26 @@ describe('resolved evidence', () => {
 						source: 'packages/react-widget/quality/widget.behavior.ts:1:1',
 						kind: 'test',
 						title: 'renders',
+						estimatedRegistrations: 1,
+						registrationIndex: 0,
+						dynamicExpansion: null,
+						helperExpansion: null,
+						manualReviewReason: null,
+					},
+				],
+			},
+			{
+				path: 'packages/react-widget/src/inline.ts',
+				kind: 'runtime',
+				gitBlob: gitBlobSha(inlineTestSourceBytes),
+				size: inlineTestSourceBytes.length,
+				registrations: [
+					{
+						id: result.upstreamTestInventory[1].registrations[0].id,
+						declarationId: result.upstreamTestInventory[1].registrations[0].declarationId,
+						source: 'packages/react-widget/src/inline.ts:1:55',
+						kind: 'test',
+						title: 'works inline',
 						estimatedRegistrations: 1,
 						registrationIndex: 0,
 						dynamicExpansion: null,

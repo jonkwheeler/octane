@@ -773,33 +773,35 @@ function configurationSectionName(node) {
 	return null;
 }
 
-function configurationPathPatterns(configurationSource, fileName) {
+function configurationPathSelections(configurationSource, fileName) {
 	const sourceFile = ts.createSourceFile(
 		fileName,
 		configurationSource,
 		ts.ScriptTarget.Latest,
 		true,
 	);
-	const patterns = [];
+	const testFiles = [];
+	const inlineSources = [];
 	const visit = (node) => {
 		if (ts.isPropertyAssignment(node)) {
 			const name = propertyName(node.name);
 			const section = configurationSectionName(node);
 			const withinTestConfiguration = ['test', 'vitest', 'jest', 'ava', 'mocha'].includes(section);
-			if (
+			if (name === 'includeSource' && withinTestConfiguration) {
+				inlineSources.push(...staticConfigurationPatterns(node.initializer));
+			} else if (
 				name === 'testMatch' ||
 				name === 'spec' ||
-				name === 'includeSource' ||
 				(name === 'include' && withinTestConfiguration) ||
 				(name === 'files' && withinTestConfiguration)
 			) {
-				patterns.push(...staticConfigurationPatterns(node.initializer));
+				testFiles.push(...staticConfigurationPatterns(node.initializer));
 			}
 		}
 		ts.forEachChild(node, visit);
 	};
 	visit(sourceFile);
-	return patterns;
+	return { inlineSources, testFiles };
 }
 
 function referencedByTestConfiguration(relativePath, configurationPatterns) {
@@ -809,6 +811,26 @@ function referencedByTestConfiguration(relativePath, configurationPatterns) {
 			/[*?]/.test(expanded) ? globMatchesPath(normalized, expanded) : expanded === normalized,
 		),
 	);
+}
+
+function containsInlineTestMarker(source, fileName) {
+	const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true);
+	let found = false;
+	const visit = (node) => {
+		if (
+			ts.isPropertyAccessExpression(node) &&
+			node.name.text === 'vitest' &&
+			ts.isMetaProperty(node.expression) &&
+			node.expression.keywordToken === ts.SyntaxKind.ImportKeyword &&
+			node.expression.name.text === 'meta'
+		) {
+			found = true;
+			return;
+		}
+		ts.forEachChild(node, visit);
+	};
+	visit(sourceFile);
+	return found;
 }
 
 async function immutableTestInventory(tree, subdirectory, manifest, options) {
@@ -842,43 +864,67 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 			(relativePath !== null && explicitConfigurationPaths.includes(relativePath))
 		);
 	});
+	const manifestSelections = configurationPathSelections(
+		JSON.stringify(manifestRunnerConfiguration),
+		'package-runner-config.json',
+	);
 	const configurationPatterns = new Set([
 		...commandPathPatterns(testScripts),
-		...configurationPathPatterns(
-			JSON.stringify(manifestRunnerConfiguration),
-			'package-runner-config.json',
-		),
+		...manifestSelections.testFiles,
 	]);
+	const inlineSourcePatterns = new Set(manifestSelections.inlineSources);
 	for (const entry of configurationEntries) {
 		const source = (await fetchGitHubBlob(entry, options)).toString('utf8');
-		for (const pattern of configurationPathPatterns(source, entry.path)) {
+		const selections = configurationPathSelections(source, entry.path);
+		for (const pattern of selections.testFiles) {
 			configurationPatterns.add(pattern);
 		}
+		for (const pattern of selections.inlineSources) inlineSourcePatterns.add(pattern);
 	}
 	const configuredTestPatterns = [...configurationPatterns];
+	const configuredInlineSourcePatterns = [...inlineSourcePatterns];
 	const configurationEntryPaths = new Set(configurationEntries.map((entry) => entry.path));
-	const candidates = tree.filter((entry) => {
-		if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return false;
-		if (configurationEntryPaths.has(entry.path)) return false;
+	const candidateEntries = tree.flatMap((entry) => {
+		if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return [];
+		if (configurationEntryPaths.has(entry.path)) return [];
 		const relativePath = entry.path.slice(scopePrefix.length);
 		if (!TEST_SOURCE_PATTERN.test(relativePath) || /(?:^|\/)node_modules\//i.test(relativePath)) {
-			return false;
+			return [];
 		}
-		return (
+		const directTest =
 			conventionalTestPath(relativePath) ||
-			referencedByTestConfiguration(relativePath, configuredTestPatterns)
+			referencedByTestConfiguration(relativePath, configuredTestPatterns);
+		const inlineSource = referencedByTestConfiguration(
+			relativePath,
+			configuredInlineSourcePatterns,
 		);
+		return directTest || inlineSource ? [{ directTest, entry, inlineSource, relativePath }] : [];
 	});
-	if (candidates.length > MAX_UPSTREAM_TEST_FILES) {
+	if (candidateEntries.length > MAX_UPSTREAM_TEST_FILES) {
 		throw new Error('Immutable upstream test inventory exceeds the file limit');
 	}
-	if (candidates.reduce((total, entry) => total + (entry.size ?? 0), 0) > MAX_UPSTREAM_TEST_BYTES) {
+	if (
+		candidateEntries.reduce((total, { entry }) => total + (entry.size ?? 0), 0) >
+		MAX_UPSTREAM_TEST_BYTES
+	) {
 		throw new Error('Immutable upstream test inventory exceeds the byte limit');
 	}
+	const candidateSources = new Map();
+	const candidates = [];
+	for (const candidate of candidateEntries) {
+		if (!candidate.directTest && candidate.inlineSource) {
+			const source = (await fetchGitHubBlob(candidate.entry, options)).toString('utf8');
+			if (!containsInlineTestMarker(source, candidate.entry.path)) continue;
+			candidateSources.set(candidate.entry.path, source);
+		}
+		candidates.push(candidate);
+	}
 	const inventory = [];
-	for (const entry of candidates.sort((left, right) => left.path.localeCompare(right.path))) {
-		const relativePath = entry.path.slice(scopePrefix.length);
-		const source = (await fetchGitHubBlob(entry, options)).toString('utf8');
+	for (const { entry, relativePath } of candidates.sort((left, right) =>
+		left.entry.path.localeCompare(right.entry.path),
+	)) {
+		const source =
+			candidateSources.get(entry.path) ?? (await fetchGitHubBlob(entry, options)).toString('utf8');
 		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
 		if (possibleRegistrars.length > 0) {
 			throw new Error(
