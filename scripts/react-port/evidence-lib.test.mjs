@@ -329,6 +329,19 @@ describe('package and closure completion', () => {
 			expectedNoticeHashes: [sha256('Fixture attribution\n')],
 		});
 		assert.equal(result.status, 'passed', result.issues.join('\n'));
+		await unlink(path.join(packageDirectory, 'tests/widget.test.ts'));
+		await writeFile(
+			path.join(packageDirectory, 'src/widget.spec.ts'),
+			"test('renders', () => {});\n",
+		);
+		const specOnly = inspectBindingPackage(packageDirectory, {
+			expectedPackageName: '@octanejs/widget',
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.equal(specOnly.status, 'passed', specOnly.issues.join('\n'));
 		const wrongName = inspectBindingPackage(packageDirectory, {
 			expectedPackageName: '@octanejs/other',
 			expectedDirectory: 'packages/widget',

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
 	KNOWN_BINDINGS,
@@ -8,6 +8,7 @@ import {
 } from '../../packages/octane-mcp-server/src/bridge.js';
 import { getWorkspacePackages, REPO_ROOT } from '../workspace-packages.mjs';
 import { parseInput } from './input-lib.mjs';
+import { hasObservablePackageTests } from './package-tests-lib.mjs';
 import { fingerprint } from './preflight-lib.mjs';
 import { rangesOverlap, satisfiesRange } from './version-lib.mjs';
 
@@ -86,14 +87,6 @@ function hashFile(filePath) {
 	return fingerprint(readFileSync(filePath, 'utf8'));
 }
 
-function hasObservableTests(directory) {
-	const testsDirectory = path.join(directory, 'tests');
-	if (!existsSync(testsDirectory)) return false;
-	return readdirSync(testsDirectory, { recursive: true, withFileTypes: true }).some(
-		(entry) => entry.isFile() && /\.test\.[cm]?[jt]sx?$/.test(entry.name),
-	);
-}
-
 export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
 	const workspacePackages = getWorkspacePackages();
 	const bindings = workspacePackages
@@ -111,7 +104,7 @@ export function readRepositoryCapabilityInventory(repoRoot = REPO_ROOT) {
 				exports: manifestExports(binding.manifest),
 				tested:
 					typeof binding.manifest.scripts?.test === 'string' &&
-					hasObservableTests(binding.directory),
+					hasObservablePackageTests(binding.directory),
 				status: JSON.parse(readFileSync(binding.statusPath, 'utf8')),
 			};
 		});

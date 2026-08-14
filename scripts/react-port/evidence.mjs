@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +32,7 @@ import {
 } from './state-lib.mjs';
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
 import { inspectPublicExports } from './public-exports.mjs';
+import { discoverPackageTests } from './package-tests-lib.mjs';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
@@ -229,31 +230,6 @@ function bindingPackageDirectory(node, workspaceRoot) {
 		throw new Error('Graph-planned binding directory escapes the workspace');
 	}
 	return packageDirectory;
-}
-
-function discoverPackageTests(packageDirectory) {
-	const files = [];
-	const walk = (directory) => {
-		for (const entry of readdirSync(directory, { withFileTypes: true })) {
-			if (
-				entry.name === 'node_modules' ||
-				entry.name === 'dist' ||
-				(directory === packageDirectory && entry.name === 'upstream')
-			)
-				continue;
-			const entryPath = path.join(directory, entry.name);
-			if (entry.isDirectory()) walk(entryPath);
-			else if (
-				entry.isFile() &&
-				/(?:^|[.-])(?:test|spec)\.[cm]?[jt]sx?$/.test(entry.name) &&
-				!/\.d\.[cm]?ts$/.test(entry.name)
-			) {
-				files.push(entryPath);
-			}
-		}
-	};
-	walk(packageDirectory);
-	return files.sort();
 }
 
 function assertPackageTestSemantics(node, workspaceRoot) {

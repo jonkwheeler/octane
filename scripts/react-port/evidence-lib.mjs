@@ -8,6 +8,7 @@ import {
 	fingerprint,
 	isRecognizableMitText,
 } from './preflight-lib.mjs';
+import { hasObservablePackageTests } from './package-tests-lib.mjs';
 
 const EVIDENCE_STATUSES = new Set(['required', 'passed', 'failed', 'blocked', 'inapplicable']);
 const CROSSWALK_CLASSIFICATIONS = new Set([
@@ -572,11 +573,7 @@ export function inspectBindingPackage(
 	}
 	const authoredSource = sourceFiles(path.join(packageDirectory, 'src'));
 	if (authoredSource.length === 0) issues.push('package has no source files');
-	if (
-		!sourceFiles(path.join(packageDirectory, 'tests')).some((file) =>
-			/\.test\.[cm]?[jt]sx?$/.test(file),
-		)
-	) {
+	if (!hasObservablePackageTests(packageDirectory)) {
 		issues.push('package has no observable test file');
 	}
 	for (const file of authoredSource.filter((file) => /\.(?:ts|tsx|tsrx)$/.test(file))) {
