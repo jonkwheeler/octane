@@ -3,6 +3,10 @@ import path from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import ts from 'typescript';
 import { bridgeReportFromSource } from '../../packages/octane-mcp-server/src/bridge.js';
+import {
+	extractTestCases,
+	findPossibleUnexpandedRegistrars,
+} from '../react-parity/inventory-lib.mjs';
 import { decodePathPart, parseGitHubUrl, parseInput } from './input-lib.mjs';
 import { fingerprint, sanitizeForReport, stableStringify } from './report-lib.mjs';
 import { selectHighestSatisfyingVersion } from './version-lib.mjs';
@@ -39,7 +43,11 @@ const SOURCE_SKIP_PARTS = new Set([
 ]);
 const MAX_SOURCE_FILES = 400;
 const MAX_SOURCE_BYTES = 8 * 1024 * 1024;
-const TEST_SOURCE_PATTERN = /\.(?:[cm]?[jt]sx?)$/i;
+const TEST_SOURCE_PATTERN = /\.(?:[cm]?[jt]sx?|coffee)$/i;
+const TEST_CONFIG_PATTERN =
+	/^(?:(?:vitest|vite|jest|karma|mocha|ava|webpack)\.config|test(?:s)?\.config)\.[cm]?[jt]s$/i;
+const MAX_UPSTREAM_TEST_FILES = 500;
+const MAX_UPSTREAM_TEST_BYTES = 16 * 1024 * 1024;
 
 export const APPROVED_LICENSE_IDENTIFIERS = Object.freeze(['MIT', 'Unlicense']);
 
@@ -674,37 +682,114 @@ function isScannableSourcePath(entryPath) {
 	return !parts.some((part) => SOURCE_SKIP_PARTS.has(part.toLowerCase()));
 }
 
-function immutableTestInventory(tree, subdirectory) {
+function conventionalTestPath(relativePath) {
+	const segments = relativePath.toLowerCase().split('/');
+	const baseName = segments.at(-1);
+	return (
+		segments.some((segment) =>
+			['test', 'tests', '__tests__', 'typetests', 'type-tests', 'test-d'].includes(segment),
+		) || /(?:^|[.-])(?:test|spec|test-d|d-test)\.(?:[cm]?[jt]sx?|coffee)$/.test(baseName)
+	);
+}
+
+function referencedByTestConfiguration(relativePath, configurationSource) {
+	const normalized = relativePath.replace(/^\.\//, '');
+	const segments = normalized.split('/');
+	return (
+		configurationSource.includes(normalized) ||
+		configurationSource.includes(`./${normalized}`) ||
+		(segments.length > 1 && configurationSource.includes(`${segments[0]}/`)) ||
+		configurationSource.includes(path.posix.basename(normalized))
+	);
+}
+
+async function immutableTestInventory(tree, subdirectory, manifest, options) {
 	const scopePrefix = subdirectory ? `${subdirectory}/` : '';
-	return tree
-		.filter((entry) => {
-			if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return false;
-			const relativePath = entry.path.slice(scopePrefix.length);
-			if (!TEST_SOURCE_PATTERN.test(relativePath) || /(?:^|\/)node_modules\//i.test(relativePath)) {
-				return false;
-			}
-			const segments = relativePath.toLowerCase().split('/');
-			const baseName = segments.at(-1);
-			return (
-				segments.some((segment) =>
-					['test', 'tests', '__tests__', 'typetests', 'type-tests', 'test-d'].includes(segment),
-				) || /(?:^|[.-])(?:test|spec|test-d|d-test)\.[cm]?[jt]sx?$/.test(baseName)
+	const testScripts = Object.fromEntries(
+		Object.entries(manifest.scripts ?? {}).filter(([name]) => /(?:test|spec|type)/i.test(name)),
+	);
+	const manifestRunnerConfiguration = Object.fromEntries(
+		['jest', 'vitest', 'ava', 'mocha'].flatMap((name) =>
+			manifest[name] === undefined ? [] : [[name, manifest[name]]],
+		),
+	);
+	const initialConfigurationSource = JSON.stringify({
+		scripts: testScripts,
+		...manifestRunnerConfiguration,
+	});
+	const explicitConfigurationPaths = [
+		...initialConfigurationSource.matchAll(/--config(?:=|\s+)([^\s"']+)/g),
+	].map((match) => match[1].replace(/^\.\//, ''));
+	const configurationEntries = tree.filter((entry) => {
+		if (!isGitHubRegularBlob(entry)) return false;
+		const directory = path.posix.dirname(entry.path);
+		const conventionalConfiguration =
+			(directory === '.' || directory === (subdirectory ?? '.')) &&
+			TEST_CONFIG_PATTERN.test(path.posix.basename(entry.path));
+		const relativePath = entry.path.startsWith(scopePrefix)
+			? entry.path.slice(scopePrefix.length)
+			: null;
+		return (
+			conventionalConfiguration ||
+			(relativePath !== null && explicitConfigurationPaths.includes(relativePath))
+		);
+	});
+	const configurationParts = [initialConfigurationSource];
+	for (const entry of configurationEntries) {
+		configurationParts.push((await fetchGitHubBlob(entry, options)).toString('utf8'));
+	}
+	const configurationSource = configurationParts.join('\n');
+	const configurationEntryPaths = new Set(configurationEntries.map((entry) => entry.path));
+	const candidates = tree.filter((entry) => {
+		if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return false;
+		if (configurationEntryPaths.has(entry.path)) return false;
+		const relativePath = entry.path.slice(scopePrefix.length);
+		if (!TEST_SOURCE_PATTERN.test(relativePath) || /(?:^|\/)node_modules\//i.test(relativePath)) {
+			return false;
+		}
+		return (
+			conventionalTestPath(relativePath) ||
+			referencedByTestConfiguration(relativePath, configurationSource)
+		);
+	});
+	if (candidates.length > MAX_UPSTREAM_TEST_FILES) {
+		throw new Error('Immutable upstream test inventory exceeds the file limit');
+	}
+	if (candidates.reduce((total, entry) => total + (entry.size ?? 0), 0) > MAX_UPSTREAM_TEST_BYTES) {
+		throw new Error('Immutable upstream test inventory exceeds the byte limit');
+	}
+	const inventory = [];
+	for (const entry of candidates.sort((left, right) => left.path.localeCompare(right.path))) {
+		const relativePath = entry.path.slice(scopePrefix.length);
+		const source = (await fetchGitHubBlob(entry, options)).toString('utf8');
+		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
+		if (possibleRegistrars.length > 0) {
+			throw new Error(
+				`Immutable upstream test ${entry.path} has unexpanded registrar(s): ${possibleRegistrars
+					.map((registrar) => registrar.name)
+					.join(', ')}`,
 			);
-		})
-		.map((entry) => {
-			const relativePath = entry.path.slice(scopePrefix.length);
-			return {
-				path: entry.path,
-				kind: /(?:^|\/)(?:typetests|type-tests|test-d)(?:\/|$)|(?:^|[.-])(?:test-d|d-test)\.[cm]?[jt]sx?$/i.test(
-					relativePath,
-				)
-					? 'type'
-					: 'runtime',
-				gitBlob: entry.sha,
-				size: entry.size ?? 0,
-			};
-		})
-		.sort((left, right) => left.path.localeCompare(right.path));
+		}
+		const registrations = extractTestCases(source, { file: entry.path }).map((testCase) => ({
+			id: testCase.caseId,
+			source: `${entry.path}:${testCase.line}:${testCase.column}`,
+			kind: testCase.kind,
+			title: testCase.title ?? testCase.declaredTitle ?? testCase.titleExpression,
+		}));
+		if (!conventionalTestPath(relativePath) && registrations.length === 0) continue;
+		inventory.push({
+			path: entry.path,
+			kind: /(?:^|\/)(?:typetests|type-tests|test-d)(?:\/|$)|(?:^|[.-])(?:test-d|d-test)\.[cm]?[jt]sx?$/i.test(
+				relativePath,
+			)
+				? 'type'
+				: 'runtime',
+			gitBlob: entry.sha,
+			size: entry.size ?? 0,
+			registrations,
+		});
+	}
+	return inventory;
 }
 
 function collectModuleSpecifiers(sourceFiles) {
@@ -1052,6 +1137,12 @@ async function resolveGitHubSource(repository, ref, options) {
 		if (NOTICE_NAME_PATTERN.test(path.posix.basename(entry.path))) noticeFiles.push(file);
 		else licenseFiles.push(file);
 	}
+	const upstreamTestInventory = await immutableTestInventory(
+		treeResponse.tree,
+		repository.subdirectory,
+		manifest,
+		options,
+	);
 
 	return {
 		name: manifest.name,
@@ -1062,7 +1153,7 @@ async function resolveGitHubSource(repository, ref, options) {
 		licenseFiles,
 		noticeFiles,
 		manifestSha256: sha256(manifestBytes),
-		upstreamTestInventory: immutableTestInventory(treeResponse.tree, repository.subdirectory),
+		upstreamTestInventory,
 	};
 }
 

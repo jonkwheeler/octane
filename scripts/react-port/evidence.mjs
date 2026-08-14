@@ -4,6 +4,7 @@ import { execFile } from 'node:child_process';
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
 import {
 	auditShippedClosure,
 	assertCurrentEvidenceMatrix,
@@ -30,12 +31,31 @@ const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
 const MAX_COMMAND_TIMEOUT_MS = 30 * 60 * 1_000;
 const MAX_COMMAND_OUTPUT_BYTES = 1024 * 1024;
+const PACKAGE_TEST_GATES = new Set(['package-tests', 'public-exports']);
+const PARITY_GATES = new Set([
+	'differential-surface',
+	'identity-lifecycle',
+	'server-snapshot',
+	'differential-events',
+	'focus-ref-keyed',
+	'browser',
+	'provider-identity',
+	'portal-lifecycle',
+	'ssr-hydration',
+	'async-lifecycle',
+	'performance',
+]);
+const PACK_GATES = new Set([
+	'packed-source-types-node',
+	'packed-source-types-browser',
+	'package-pack',
+]);
 
 function usage() {
 	return `Usage:
   node scripts/react-port/evidence.mjs init --batch <id> --node <pkg:id> --category <kind> [...]
   node scripts/react-port/evidence.mjs record --batch <id> --node <pkg:id> --gate <id> --status <status> [evidence]
-  node scripts/react-port/evidence.mjs run --batch <id> --node <pkg:id> --gate <id> [--gate <id> ...] -- <executable> [args...]
+  node scripts/react-port/evidence.mjs run --batch <id> --node <pkg:id> --gate <id> [--gate <id> ...] -- <approved-gate-command>
   node scripts/react-port/evidence.mjs verify --batch <id> --node <pkg:id> --package-dir <path> \
     --expected-directory <repo-path> --registrations <json> --crosswalk <json> --closure <json>
 
@@ -44,8 +64,9 @@ Common options:
   --recover-stale-lock     Explicitly recover a lock older than 30 minutes
 
 Use run for command-backed passed/failed evidence; commands execute directly
-without a shell. Record accepts blocked rows with --reason and --repair, or
-inapplicable rows with --reason. Automated gates are computed by verify.
+without a shell after validation against the requested gate. Record accepts
+blocked rows with --reason and --repair, or inapplicable rows with --reason.
+Automated gates are computed by verify.
 `;
 }
 
@@ -157,7 +178,69 @@ function commandObservation(stdout, stderr, fallback, credentialValues) {
 	return sanitizeForReport(output || fallback, '', credentialValues);
 }
 
-async function operate(command, options, manifest, batchDirectory, commandArguments) {
+function isExactCommand(commandArguments, expected) {
+	return JSON.stringify(commandArguments) === JSON.stringify(expected);
+}
+
+function isTypeProjectCommand(commandArguments, bindingDirectory, gateId) {
+	if (
+		commandArguments.length !== 6 ||
+		!isExactCommand(commandArguments.slice(0, 5), ['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p'])
+	) {
+		return false;
+	}
+	const projectPath = commandArguments[5].replaceAll('\\', '/').replace(/^\.\//, '');
+	if (!projectPath.startsWith(`${bindingDirectory}/`) || !projectPath.endsWith('/tsconfig.json')) {
+		return false;
+	}
+	const relativeProject = projectPath.slice(`${bindingDirectory}/`.length);
+	if (gateId === 'authored-source-types') return relativeProject === 'tsconfig.json';
+	if (relativeProject === 'tests/types/tsconfig.json') return true;
+	if (gateId === 'upstream-types')
+		return /(?:^|\/)(?:upstream|pristine|adapted)(?:\/|$)/i.test(relativeProject);
+	return /(?:^|\/)public(?:\/|$)/i.test(relativeProject);
+}
+
+export function assertApprovedGateCommand(gateIds, commandArguments, node) {
+	const bindingDirectory = node.bindingDirectory?.replaceAll('\\', '/');
+	if (!bindingDirectory) throw new Error('Evidence node has no graph-planned binding directory');
+	for (const gateId of gateIds) {
+		let approved = false;
+		if (PACKAGE_TEST_GATES.has(gateId)) {
+			approved = isExactCommand(commandArguments, ['pnpm', '--dir', bindingDirectory, 'test']);
+		} else if (PARITY_GATES.has(gateId)) {
+			approved = isExactCommand(commandArguments, [
+				'node',
+				'scripts/react-parity/harness.mjs',
+				'run-required',
+				'--manifest',
+				`${bindingDirectory}/audit/react-parity.json`,
+			]);
+		} else if (['upstream-types', 'authored-source-types', 'public-types'].includes(gateId)) {
+			approved = isTypeProjectCommand(commandArguments, bindingDirectory, gateId);
+		} else if (PACK_GATES.has(gateId)) {
+			approved = isExactCommand(commandArguments, ['pnpm', 'packages:pack:check']);
+		} else if (gateId === 'generated-data') {
+			approved = isExactCommand(commandArguments, ['pnpm', 'sync']);
+		} else if (gateId === 'format') {
+			approved = isExactCommand(commandArguments, ['pnpm', 'format:check']);
+		}
+		if (!approved) {
+			throw new Error(
+				`Command is not an approved command for ${gateId}; use the gate-owned command documented by the React library port skill`,
+			);
+		}
+	}
+}
+
+async function operate(
+	command,
+	options,
+	manifest,
+	batchDirectory,
+	commandArguments,
+	assertCommand,
+) {
 	const node = manifest.nodes[options.node];
 	if (!node) throw new Error(`Batch has no node ${options.node}`);
 	const credentialValues = credentialValuesFromEnvironment();
@@ -225,7 +308,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		const gate = node.evidenceMatrix.gates[gateId];
 		if (!gate) throw new Error(`Unknown evidence gate: ${gateId}`);
 		if (options.command) {
-			throw new Error('record cannot claim command evidence; use run -- <executable> [args...]');
+			throw new Error('record cannot claim command evidence; use the gate-owned run command');
 		}
 		if (['passed', 'failed'].includes(options.status)) {
 			if (gate.evidenceType === 'command') {
@@ -274,6 +357,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 		if (commandArguments.length === 0) {
 			throw new Error('run requires an executable and arguments after --');
 		}
+		assertCommand(gateIds, commandArguments, node);
 		const commandDisplay = sanitizeForReport(
 			JSON.stringify(commandArguments),
 			'',
@@ -285,7 +369,7 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 				commandArguments[0],
 				commandArguments.slice(1),
 				{
-					cwd: process.cwd(),
+					cwd: manifest.workspaceRoot ?? process.cwd(),
 					encoding: 'utf8',
 					maxBuffer: MAX_COMMAND_OUTPUT_BYTES,
 					timeout: commandTimeout(options),
@@ -433,10 +517,13 @@ async function operate(command, options, manifest, batchDirectory, commandArgume
 	);
 }
 
-async function main() {
+export async function main({
+	argumentsList = process.argv.slice(2),
+	assertCommand = assertApprovedGateCommand,
+} = {}) {
 	let parsed;
 	try {
-		parsed = parseArguments(process.argv.slice(2));
+		parsed = parseArguments(argumentsList);
 	} catch (error) {
 		process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n\n${usage()}`);
 		process.exitCode = 2;
@@ -462,6 +549,7 @@ async function main() {
 			manifest,
 			batchDirectory,
 			parsed.commandArguments,
+			assertCommand,
 		);
 		await writeManifestAtomically(batchDirectory, manifest, { owner: lock.owner });
 		process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
@@ -476,4 +564,6 @@ async function main() {
 	}
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+	await main();
+}

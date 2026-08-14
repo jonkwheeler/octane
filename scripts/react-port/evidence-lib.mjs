@@ -23,7 +23,7 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const REQUIRED_NODE_ENGINE = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
 	.engines.node;
 
-export const EVIDENCE_MATRIX_SCHEMA_VERSION = 3;
+export const EVIDENCE_MATRIX_SCHEMA_VERSION = 4;
 
 const COMMON_GATES = [
 	['identity-license', 'Immutable identity and approved-license preflight', false, 'automated'],
@@ -248,6 +248,7 @@ export function validateUpstreamCrosswalk(
 		throw new Error('Immutable upstream test inventory must be an array');
 	}
 	const immutableTestPaths = new Set();
+	const immutableRegistrations = new Map();
 	for (const entry of upstreamTestInventory) {
 		if (
 			typeof entry?.path !== 'string' ||
@@ -256,11 +257,25 @@ export function validateUpstreamCrosswalk(
 			!/^[a-f0-9]{40}$/i.test(entry.gitBlob ?? '') ||
 			!Number.isSafeInteger(entry.size) ||
 			entry.size < 0 ||
+			!Array.isArray(entry.registrations) ||
 			immutableTestPaths.has(entry.path)
 		) {
 			throw new Error('Immutable upstream test inventory contains an invalid or duplicate entry');
 		}
 		immutableTestPaths.add(entry.path);
+		for (const registration of entry.registrations) {
+			if (
+				typeof registration?.id !== 'string' ||
+				!registration.id ||
+				typeof registration.source !== 'string' ||
+				!registration.source.startsWith(`${entry.path}:`) ||
+				typeof registration.kind !== 'string' ||
+				immutableRegistrations.has(registration.id)
+			) {
+				throw new Error('Immutable upstream test inventory contains an invalid registration');
+			}
+			immutableRegistrations.set(registration.id, registration);
+		}
 	}
 	const expected = new Map();
 	for (const registration of registrations) {
@@ -269,13 +284,21 @@ export function validateUpstreamCrosswalk(
 		}
 		expected.set(registration.id, registration);
 	}
-	for (const testPath of immutableTestPaths) {
-		const represented = [...expected.values()].some(
-			(registration) =>
-				registration.source === testPath || registration.source?.startsWith(`${testPath}:`),
-		);
-		if (!represented) {
-			throw new Error(`Immutable upstream test ${testPath} is missing from registrations`);
+	if (immutableTestPaths.size > 0) {
+		const projectRegistration = (registration) => ({
+			id: registration.id,
+			source: registration.source,
+			kind: registration.kind,
+			title: registration.title ?? null,
+		});
+		const suppliedRegistrations = [...expected.values()]
+			.map(projectRegistration)
+			.sort((left, right) => left.id.localeCompare(right.id));
+		const pinnedRegistrations = [...immutableRegistrations.values()]
+			.map(projectRegistration)
+			.sort((left, right) => left.id.localeCompare(right.id));
+		if (fingerprint(suppliedRegistrations) !== fingerprint(pinnedRegistrations)) {
+			throw new Error('Supplied registrations differ from the immutable upstream case inventory');
 		}
 	}
 	const actual = new Map();
@@ -306,6 +329,11 @@ export function validateUpstreamCrosswalk(
 			: []) {
 			if (!isSafeLocalEvidencePath(evidencePath)) {
 				throw new Error(`Crosswalk case ${entry.id} has unsafe local evidence: ${evidencePath}`);
+			}
+			if (!isCrosswalkEvidencePath(evidencePath)) {
+				throw new Error(
+					`Crosswalk case ${entry.id} requires a package-local test evidence path: ${evidencePath}`,
+				);
 			}
 			if (resolvedEvidenceRoot) {
 				const resolvedEvidencePath = realpathSync(path.resolve(resolvedEvidenceRoot, evidencePath));
@@ -462,6 +490,15 @@ export function inspectBindingPackage(
 		}
 		if (manifest.dependencies?.octane !== undefined)
 			issues.push('octane must not be a regular dependency');
+		for (const dependencyField of ['dependencies', 'optionalDependencies', 'peerDependencies']) {
+			for (const reactPackage of ['react', 'react-dom']) {
+				if (manifest[dependencyField]?.[reactPackage] !== undefined) {
+					issues.push(
+						`${reactPackage} must not be a runtime dependency (${dependencyField}); keep React test-only`,
+					);
+				}
+			}
+		}
 		if (manifest.peerDependencies?.octane !== 'workspace:*')
 			issues.push('octane peer must be workspace:*');
 		if (manifest.devDependencies?.octane !== 'workspace:*')
@@ -577,6 +614,15 @@ function isSafeLocalEvidencePath(value) {
 		!candidate.includes('\\') &&
 		!candidate.includes('\0') &&
 		segments.every((segment) => segment && segment !== '.' && segment !== '..')
+	);
+}
+
+function isCrosswalkEvidencePath(value) {
+	if (!isSafeLocalEvidencePath(value)) return false;
+	const normalized = value.trim();
+	return (
+		/^(?:tests?|__tests__|typetests|type-tests|test-d|audit)\//i.test(normalized) &&
+		/\.(?:[cm]?[jt]sx?|json|md)$/i.test(normalized)
 	);
 }
 
@@ -838,12 +884,13 @@ export function auditShippedClosure({
 			);
 			continue;
 		}
-		if (
-			dependency === 'octane' ||
-			dependency === 'react' ||
-			dependency === 'react-dom' ||
-			plannedDependencies.has(dependency)
-		) {
+		if (dependency === 'react' || dependency === 'react-dom') {
+			issues.push(
+				`Runtime dependency ${dependency} crosses the React runtime boundary and must be test-only.`,
+			);
+			continue;
+		}
+		if (dependency === 'octane' || plannedDependencies.has(dependency)) {
 			continue;
 		}
 		issues.push(`Runtime dependency ${dependency} was not present in the approved graph.`);

@@ -170,18 +170,32 @@ describe('evidence matrix', () => {
 		assert.throws(
 			() =>
 				validateUpstreamCrosswalk(
-					[],
-					[],
+					[{ id: 'invented', source: 'packages/widget/tests/widget.test.ts:1:1' }],
+					[
+						{
+							id: 'invented',
+							classification: 'inapplicable',
+							rationale: 'Invented by the caller.',
+						},
+					],
 					[
 						{
 							path: 'packages/widget/tests/widget.test.ts',
 							kind: 'runtime',
 							gitBlob: 'a'.repeat(40),
 							size: 128,
+							registrations: [
+								{
+									id: 'immutable-renders',
+									source: 'packages/widget/tests/widget.test.ts:4:2',
+									kind: 'test',
+									title: 'renders',
+								},
+							],
 						},
 					],
 				),
-			/immutable upstream.*widget\.test\.ts.*missing/i,
+			/registrations differ.*immutable/i,
 		);
 	});
 
@@ -191,6 +205,7 @@ describe('evidence matrix', () => {
 		const evidencePath = 'tests/widget.test.ts';
 		const evidenceContents = 'export const covered = true;\n';
 		await writeFile(path.join(evidenceRoot, evidencePath), evidenceContents);
+		await writeFile(path.join(evidenceRoot, 'package.json'), '{}\n');
 		const registrations = [{ id: 'renders', source: 'upstream/widget.test.ts:10' }];
 		const valid = validateUpstreamCrosswalk(
 			registrations,
@@ -217,6 +232,22 @@ describe('evidence matrix', () => {
 					evidenceRoot,
 				),
 			/missing\.test\.ts/i,
+		);
+		assert.throws(
+			() =>
+				validateUpstreamCrosswalk(
+					registrations,
+					[
+						{
+							id: 'renders',
+							classification: 'implemented',
+							localEvidence: 'package.json',
+						},
+					],
+					[],
+					evidenceRoot,
+				),
+			/test evidence path/i,
 		);
 	});
 });
@@ -291,6 +322,18 @@ describe('package and closure completion', () => {
 		});
 		assert.match(staleNodeEngine.issues.join('\n'), /engines\.node must be >=22\.22\.2/i);
 		manifest.engines.node = '>=22.22.2';
+		manifest.peerDependencies.react = '^19.0.0';
+		await writeFile(manifestPath, JSON.stringify(manifest));
+		const reactRuntime = inspectBindingPackage(packageDirectory, {
+			expectedPackageName: '@octanejs/widget',
+			expectedDirectory: 'packages/widget',
+			identity: { packageName: 'widget', version: '1.0.0', commit: 'a'.repeat(40) },
+			expectedLicenseHashes: [sha256(MIT_TEXT)],
+			expectedNoticeHashes: [sha256('Fixture attribution\n')],
+		});
+		assert.match(reactRuntime.issues.join('\n'), /react.*must not be a runtime dependency/i);
+		delete manifest.peerDependencies.react;
+		manifest.engines.node = '>=22.22.2';
 		manifest.files = manifest.files.filter((file) => file !== 'NOTICE');
 		await writeFile(manifestPath, JSON.stringify(manifest));
 		const noticeOmitted = inspectBindingPackage(packageDirectory, {
@@ -342,12 +385,13 @@ describe('package and closure completion', () => {
 		const result = auditShippedClosure({
 			nodeId: 'pkg:widget',
 			graphNodes,
-			runtimeDependencies: ['widget-core', 'surprise-runtime'],
+			runtimeDependencies: ['widget-core', 'surprise-runtime', 'react'],
 			adaptedSources: [{ packageName: 'copied-helper', paths: ['src/helper.ts'] }],
 		});
 
 		assert.equal(result.status, 'blocked');
 		assert.match(result.issues.join('\n'), /surprise-runtime/);
+		assert.match(result.issues.join('\n'), /react.*runtime boundary.*test-only/i);
 		assert.match(result.issues.join('\n'), /copied-helper.*approved-license/i);
 	});
 

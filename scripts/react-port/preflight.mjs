@@ -2,12 +2,8 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import {
-	assessResolvedEvidence,
-	resolveRemoteInput,
-	runPreflight,
-	sanitizeForReport,
-} from './preflight-lib.mjs';
+import { fileURLToPath } from 'node:url';
+import { resolveRemoteInput, runPreflight, sanitizeForReport } from './preflight-lib.mjs';
 import { planPortGraph, readRepositoryCapabilityInventory } from './graph-lib.mjs';
 import {
 	acquireBatchLock,
@@ -25,7 +21,6 @@ Resolve one or more public npm/GitHub inputs, verify immutable provenance, and
 enforce Octane's approved MIT-or-Unlicense policy before binding writes.
 
 Options:
-  --fixture-evidence <file>  Read deterministic local evidence; disables networking
   --prerequisite <input>     Add a discovered prerequisite without marking it requested
   --classify <package=kind>  Classify a dependency as framework-neutral,
                              react-coupled, reimplemented, or unsupported (repeatable)
@@ -42,7 +37,6 @@ function parseArguments(arguments_) {
 	if (arguments_[0] === '--') arguments_ = arguments_.slice(1);
 	const inputs = [];
 	const prerequisiteInputs = [];
-	let fixtureEvidencePath = null;
 	let batchId = null;
 	let workRoot = path.join(process.cwd(), '.react-port-work');
 	let noState = false;
@@ -56,19 +50,12 @@ function parseArguments(arguments_) {
 				help: true,
 				inputs,
 				prerequisiteInputs,
-				fixtureEvidencePath,
 				batchId,
 				workRoot,
 				noState,
 				recoverStaleLock,
 				dependencyClassifications,
 			};
-		}
-		if (argument === '--fixture-evidence') {
-			fixtureEvidencePath = arguments_[index + 1];
-			if (!fixtureEvidencePath) throw new Error('--fixture-evidence requires a file path');
-			index += 1;
-			continue;
 		}
 		if (argument === '--prerequisite') {
 			const prerequisite = arguments_[index + 1];
@@ -130,7 +117,6 @@ function parseArguments(arguments_) {
 		help: false,
 		inputs,
 		prerequisiteInputs,
-		fixtureEvidencePath,
 		batchId,
 		workRoot,
 		noState,
@@ -140,25 +126,17 @@ function parseArguments(arguments_) {
 	};
 }
 
-function loadFixtureEvidence(filePath) {
-	let fixture;
-	try {
-		fixture = JSON.parse(readFileSync(path.resolve(filePath), 'utf8'));
-	} catch (error) {
-		throw new Error(
-			`Could not read fixture evidence: ${error instanceof Error ? error.message : String(error)}`,
-		);
-	}
-	if (fixture.schemaVersion !== 1 || !fixture.targets || typeof fixture.targets !== 'object') {
-		throw new Error('Fixture evidence must use schemaVersion 1 and contain a targets object');
-	}
-	return fixture;
-}
-
-async function main() {
+export async function main({
+	argumentsList = process.argv.slice(2),
+	resolve = (parsedInput, rawInput) =>
+		resolveRemoteInput(parsedInput, rawInput, {
+			githubToken: process.env.GITHUB_TOKEN,
+			npmToken: process.env.NODE_AUTH_TOKEN ?? process.env.NPM_TOKEN,
+		}),
+} = {}) {
 	let parsedArguments;
 	try {
-		parsedArguments = parseArguments(process.argv.slice(2));
+		parsedArguments = parseArguments(argumentsList);
 	} catch (error) {
 		process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n\n${usage()}`);
 		process.exitCode = 2;
@@ -174,43 +152,9 @@ async function main() {
 		return;
 	}
 
-	let fixture = null;
-	try {
-		fixture = parsedArguments.fixtureEvidencePath
-			? loadFixtureEvidence(parsedArguments.fixtureEvidencePath)
-			: null;
-	} catch (error) {
-		const report = {
-			schemaVersion: 1,
-			status: 'blocked',
-			targets: [...parsedArguments.inputs, ...parsedArguments.prerequisiteInputs].map((input) => ({
-				input,
-				status: 'blocked',
-				blockers: [sanitizeForReport(error instanceof Error ? error.message : String(error))],
-				repair: 'Correct the local fixture evidence path or schema.',
-			})),
-		};
-		process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-		process.exitCode = 2;
-		return;
-	}
-
 	const report = await runPreflight({
 		inputs: [...parsedArguments.inputs, ...parsedArguments.prerequisiteInputs],
-		resolve: fixture
-			? async (_parsedInput, rawInput) => {
-					const evidence = fixture.targets[rawInput];
-					if (!evidence) throw new Error(`Fixture evidence has no target for ${rawInput}`);
-					return {
-						...assessResolvedEvidence({ input: rawInput, ...evidence }),
-						runtimeDependencies: evidence.registry?.runtimeDependencies ?? {},
-					};
-				}
-			: (parsedInput, rawInput) =>
-					resolveRemoteInput(parsedInput, rawInput, {
-						githubToken: process.env.GITHUB_TOKEN,
-						npmToken: process.env.NODE_AUTH_TOKEN ?? process.env.NPM_TOKEN,
-					}),
+		resolve,
 	});
 	for (const [index, target] of report.targets.entries()) {
 		target.requested = index < parsedArguments.inputs.length;
@@ -294,4 +238,6 @@ async function main() {
 	if (report.status === 'blocked') process.exitCode = 2;
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+	await main();
+}

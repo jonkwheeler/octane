@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
+	chmodSync,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -14,6 +15,7 @@ import path from 'node:path';
 import { describe, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { EVIDENCE_MATRIX_SCHEMA_VERSION, recordEvidence } from './evidence-lib.mjs';
+import { assertApprovedGateCommand } from './evidence.mjs';
 import { createBatchManifest } from './state-lib.mjs';
 
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
@@ -81,13 +83,37 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 		path.join(batchDirectory, 'manifest.json'),
 		`${JSON.stringify(manifest, null, 2)}\n`,
 	);
+	const fixtureBin = path.join(workspaceRoot, '.fixture-bin');
+	mkdirSync(fixtureBin);
+	const fixturePnpm = path.join(fixtureBin, 'pnpm');
+	writeFileSync(
+		fixturePnpm,
+		`#!/usr/bin/env node
+import { appendFileSync } from 'node:fs';
+if (process.env.FIXTURE_COUNTER) appendFileSync(process.env.FIXTURE_COUNTER, process.env.FIXTURE_COUNTER_VALUE ?? 'x');
+if (process.env.FIXTURE_PRINT_NPM_TOKEN === '1') process.stdout.write(process.env.NPM_TOKEN ?? '');
+else if (process.env.FIXTURE_STDOUT) process.stdout.write(process.env.FIXTURE_STDOUT);
+if (process.env.FIXTURE_STDERR) process.stderr.write(process.env.FIXTURE_STDERR);
+process.exit(Number(process.env.FIXTURE_EXIT ?? 0));
+`,
+	);
+	chmodSync(fixturePnpm, 0o755);
 	return { workspaceRoot, workRoot, batchDirectory };
 }
 
 function runEvidence(arguments_, { env = {} } = {}) {
+	const workRootIndex = arguments_.indexOf('--work-root');
+	const workRoot = workRootIndex === -1 ? null : arguments_[workRootIndex + 1];
+	const batchIndex = arguments_.indexOf('--batch');
+	const batch = batchIndex === -1 ? null : arguments_[batchIndex + 1];
+	let fixturePath = process.env.PATH;
+	if (workRoot && batch) {
+		const manifest = JSON.parse(readFileSync(path.join(workRoot, batch, 'manifest.json'), 'utf8'));
+		fixturePath = `${path.join(manifest.workspaceRoot, '.fixture-bin')}${path.delimiter}${fixturePath}`;
+	}
 	return spawnSync(process.execPath, [path.join(SCRIPT_DIRECTORY, 'evidence.mjs'), ...arguments_], {
 		encoding: 'utf8',
-		env: { ...process.env, ...env },
+		env: { ...process.env, PATH: fixturePath, ...env },
 	});
 }
 
@@ -167,23 +193,84 @@ function recordRequiredEvidence(batchDirectory) {
 }
 
 describe('evidence CLI', () => {
+	test('maps every command gate family to a specific repository command', () => {
+		const node = { bindingDirectory: 'packages/widget' };
+		for (const [gateIds, command] of [
+			[
+				['package-tests', 'public-exports'],
+				['pnpm', '--dir', 'packages/widget', 'test'],
+			],
+			[
+				['differential-surface', 'browser'],
+				[
+					'node',
+					'scripts/react-parity/harness.mjs',
+					'run-required',
+					'--manifest',
+					'packages/widget/audit/react-parity.json',
+				],
+			],
+			[
+				['upstream-types', 'public-types'],
+				['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tests/types/tsconfig.json'],
+			],
+			[
+				['packed-source-types-node', 'packed-source-types-browser', 'package-pack'],
+				['pnpm', 'packages:pack:check'],
+			],
+			[['generated-data'], ['pnpm', 'sync']],
+			[['format'], ['pnpm', 'format:check']],
+		]) {
+			assert.doesNotThrow(() => assertApprovedGateCommand(gateIds, command, node));
+		}
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['package-tests', 'format'],
+					['pnpm', '--dir', 'packages/widget', 'test'],
+					node,
+				),
+			/approved command for format/i,
+		);
+	});
+
+	test('rejects a successful command that is not owned by the requested gate', () => {
+		const { workRoot, batchDirectory } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+
+		const result = runEvidence(['run', ...common, '--gate', 'package-tests', '--', 'true']);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stderr, /approved command for package-tests/i);
+		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
+		assert.equal(
+			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+			'required',
+		);
+	});
+
 	test('accepts one leading pnpm separator while preserving the run command separator', () => {
 		const { workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		const initialized = runEvidence(['--', 'init', ...common, '--category', 'thin-core']);
 		assert.equal(initialized.status, 0, initialized.stderr);
 
-		const recorded = runEvidence([
-			'--',
-			'run',
-			...common,
-			'--gate',
-			'package-tests',
-			'--',
-			process.execPath,
-			'-e',
-			"process.stdout.write('separator preserved')",
-		]);
+		const recorded = runEvidence(
+			[
+				'--',
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{ env: { FIXTURE_STDOUT: 'separator preserved' } },
+		);
 		assert.equal(recorded.status, 0, recorded.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
 		assert.equal(
@@ -198,16 +285,20 @@ describe('evidence CLI', () => {
 		const initialized = runEvidence(['init', ...common, '--category', 'thin-core']);
 		assert.equal(initialized.status, 0, initialized.stderr);
 
-		const recorded = runEvidence([
-			'run',
-			...common,
-			'--gate',
-			'package-tests',
-			'--',
-			process.execPath,
-			'-e',
-			"process.stdout.write('12 tests passed')",
-		]);
+		const recorded = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{ env: { FIXTURE_STDOUT: '12 tests passed' } },
+		);
 		assert.equal(recorded.status, 0, recorded.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
 		assert.equal(manifest.nodes['pkg:widget'].state, 'implementing');
@@ -226,16 +317,20 @@ describe('evidence CLI', () => {
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 
-		const failed = runEvidence([
-			'run',
-			...common,
-			'--gate',
-			'package-tests',
-			'--',
-			process.execPath,
-			'-e',
-			"process.stderr.write('fixture failed'); process.exit(3)",
-		]);
+		const failed = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{ env: { FIXTURE_STDERR: 'fixture failed', FIXTURE_EXIT: '3' } },
+		);
 		assert.equal(failed.status, 2);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
 		assert.equal(
@@ -371,17 +466,22 @@ describe('evidence CLI', () => {
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 		const literal = '$(printf injected); && | >';
-		const result = runEvidence([
-			'run',
-			...common,
-			'--gate',
-			'authored-source-types',
-			'--',
-			process.execPath,
-			'-e',
-			'process.stdout.write(process.argv[1])',
-			literal,
-		]);
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'authored-source-types',
+				'--',
+				'pnpm',
+				'exec',
+				'tsrx-tsc',
+				'--noEmit',
+				'-p',
+				'packages/widget/tsconfig.json',
+			],
+			{ env: { FIXTURE_STDOUT: literal } },
+		);
 
 		assert.equal(result.status, 0, result.stderr);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
@@ -403,11 +503,12 @@ describe('evidence CLI', () => {
 				'--gate',
 				'package-tests',
 				'--',
-				process.execPath,
-				'-e',
-				'process.stdout.write(process.env.NPM_TOKEN)',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
 			],
-			{ env: { NPM_TOKEN: token, NODE_AUTH_TOKEN: token } },
+			{ env: { NPM_TOKEN: token, NODE_AUTH_TOKEN: token, FIXTURE_PRINT_NPM_TOKEN: '1' } },
 		);
 
 		assert.equal(result.status, 0, result.stderr);
@@ -425,20 +526,22 @@ describe('evidence CLI', () => {
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 		const counterPath = path.join(workspaceRoot, 'type-command-count');
 
-		const result = runEvidence([
-			'run',
-			...common,
-			'--gate',
-			'packed-source-types-node',
-			'--gate',
-			'packed-source-types-browser',
-			'--gate',
-			'packed-source-types-node',
-			'--',
-			process.execPath,
-			'-e',
-			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'x'); process.stdout.write('both packed projects passed')`,
-		]);
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'packed-source-types-node',
+				'--gate',
+				'packed-source-types-browser',
+				'--gate',
+				'packed-source-types-node',
+				'--',
+				'pnpm',
+				'packages:pack:check',
+			],
+			{ env: { FIXTURE_COUNTER: counterPath, FIXTURE_STDOUT: 'both packed projects passed' } },
+		);
 
 		assert.equal(result.status, 0, result.stderr);
 		assert.equal(readFileSync(counterPath, 'utf8'), 'x');
@@ -453,18 +556,31 @@ describe('evidence CLI', () => {
 			);
 		}
 
-		const failed = runEvidence([
-			'run',
-			...common,
-			'--gate',
-			'upstream-types',
-			'--gate',
-			'public-types',
-			'--',
-			process.execPath,
-			'-e',
-			`require('node:fs').appendFileSync(${JSON.stringify(counterPath)}, 'y'); process.stderr.write('type projects failed'); process.exit(3)`,
-		]);
+		const failed = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'upstream-types',
+				'--gate',
+				'public-types',
+				'--',
+				'pnpm',
+				'exec',
+				'tsrx-tsc',
+				'--noEmit',
+				'-p',
+				'packages/widget/tests/types/tsconfig.json',
+			],
+			{
+				env: {
+					FIXTURE_COUNTER: counterPath,
+					FIXTURE_COUNTER_VALUE: 'y',
+					FIXTURE_STDERR: 'type projects failed',
+					FIXTURE_EXIT: '3',
+				},
+			},
+		);
 
 		assert.equal(failed.status, 2);
 		assert.equal(readFileSync(counterPath, 'utf8'), 'xy');

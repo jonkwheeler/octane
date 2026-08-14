@@ -63,6 +63,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 For more information, please refer to <https://unlicense.org>`;
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
+const FIXTURE_PREFLIGHT_CLI = path.join(SCRIPT_DIRECTORY, '__fixtures__/preflight-fixture-cli.mjs');
 
 function gitBlobSha(bytes) {
 	return createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex');
@@ -556,6 +557,7 @@ describe('resolved evidence', () => {
 			},
 			gitHead: commit,
 			dependencies: { 'react-helper': '^1.0.0' },
+			scripts: { test: 'vitest --config configs/quality.mjs' },
 		};
 		const tarball = gzipSync(
 			makeTar({
@@ -591,6 +593,9 @@ describe('resolved evidence', () => {
 		const sourceManifestBytes = Buffer.from(JSON.stringify(manifest));
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceSymlinkBytes = Buffer.from('../NOTICE');
+		const sourceTestConfigBytes = Buffer.from(
+			"export default { test: { include: ['quality/**/*.ts'] } };\n",
+		);
 		const sourceTestBytes = Buffer.from("test('renders', () => {});\n");
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
@@ -610,7 +615,15 @@ describe('resolved evidence', () => {
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/license',
 			},
 			{
-				path: 'packages/react-widget/tests/widget.test.ts',
+				path: 'packages/react-widget/configs/quality.mjs',
+				mode: '100644',
+				type: 'blob',
+				size: sourceTestConfigBytes.length,
+				sha: gitBlobSha(sourceTestConfigBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/test-config',
+			},
+			{
+				path: 'packages/react-widget/quality/widget.behavior.ts',
 				mode: '100644',
 				type: 'blob',
 				size: sourceTestBytes.length,
@@ -672,6 +685,22 @@ describe('resolved evidence', () => {
 					size: Buffer.byteLength(MIT_TEXT),
 				}),
 			],
+			[
+				'https://api.github.com/repos/example/widgets/git/blobs/test-config',
+				Response.json({
+					encoding: 'base64',
+					content: sourceTestConfigBytes.toString('base64'),
+					size: sourceTestConfigBytes.length,
+				}),
+			],
+			[
+				'https://api.github.com/repos/example/widgets/git/blobs/test',
+				Response.json({
+					encoding: 'base64',
+					content: sourceTestBytes.toString('base64'),
+					size: sourceTestBytes.length,
+				}),
+			],
 		]);
 		const fetchImpl = async (url) => {
 			const response = responses.get(String(url));
@@ -695,10 +724,18 @@ describe('resolved evidence', () => {
 		assert.ok(result.sourceAnalysis.imports.includes('react-helper/advanced'));
 		assert.deepEqual(result.upstreamTestInventory, [
 			{
-				path: 'packages/react-widget/tests/widget.test.ts',
+				path: 'packages/react-widget/quality/widget.behavior.ts',
 				kind: 'runtime',
 				gitBlob: gitBlobSha(sourceTestBytes),
 				size: sourceTestBytes.length,
+				registrations: [
+					{
+						id: result.upstreamTestInventory[0].registrations[0].id,
+						source: 'packages/react-widget/quality/widget.behavior.ts:1:1',
+						kind: 'test',
+						title: 'renders',
+					},
+				],
 			},
 		]);
 		assert.doesNotMatch(JSON.stringify(result), /IGNORE ALL REPOSITORY RULES|evil\.example/);
@@ -783,7 +820,7 @@ describe('preflight CLI', () => {
 		const result = spawnSync(
 			process.execPath,
 			[
-				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				FIXTURE_PREFLIGHT_CLI,
 				'--',
 				'--no-state',
 				'--classify',
@@ -808,7 +845,7 @@ describe('preflight CLI', () => {
 		const result = spawnSync(
 			process.execPath,
 			[
-				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				FIXTURE_PREFLIGHT_CLI,
 				'--no-state',
 				'--fixture-evidence',
 				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
@@ -827,7 +864,7 @@ describe('preflight CLI', () => {
 	test('persists and resumes a one-writer batch manifest', () => {
 		const workRoot = mkdtempSync(path.join(tmpdir(), 'react-port-cli-'));
 		const arguments_ = [
-			path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+			FIXTURE_PREFLIGHT_CLI,
 			'--work-root',
 			workRoot,
 			'--batch',
@@ -876,7 +913,7 @@ describe('preflight CLI', () => {
 		const result = spawnSync(
 			process.execPath,
 			[
-				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				FIXTURE_PREFLIGHT_CLI,
 				'--no-state',
 				'--fixture-evidence',
 				fixturePath,
@@ -906,7 +943,7 @@ describe('preflight CLI', () => {
 		const result = spawnSync(
 			process.execPath,
 			[
-				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				FIXTURE_PREFLIGHT_CLI,
 				'--no-state',
 				'--fixture-evidence',
 				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
@@ -949,5 +986,21 @@ describe('preflight CLI', () => {
 		const report = JSON.parse(result.stdout);
 		assert.equal(report.status, 'blocked');
 		assert.match(report.targets[0].blockers[0], /package input/i);
+	});
+
+	test('does not expose local fixture evidence through the production CLI', () => {
+		const result = spawnSync(
+			process.execPath,
+			[
+				path.join(SCRIPT_DIRECTORY, 'preflight.mjs'),
+				'--fixture-evidence',
+				path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json'),
+				'fixture-widget@1.0.0',
+			],
+			{ encoding: 'utf8' },
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stderr, /unknown option: --fixture-evidence/i);
 	});
 });

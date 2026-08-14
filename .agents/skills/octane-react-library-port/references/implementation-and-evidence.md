@@ -221,10 +221,23 @@ one authoritative command proves multiple rows; the command runs only once:
 
 ```bash
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
-  --gate <gate-id> -- <executable> [args...]
+  --gate package-tests -- pnpm --dir packages/<binding> test
 ```
 
-For example, use `-- pnpm --dir packages/<binding> test` for a package test.
+The runner binds each gate to an approved command shape before execution. It
+rejects `true`, ad hoc `node -e`, unrelated package scripts, incompatible
+multi-gate groups, and any other successful command that does not prove the
+requested row. The approved shapes are:
+
+- `pnpm --dir packages/<binding> test` for package behavior and public exports;
+- `node scripts/react-parity/harness.mjs run-required --manifest
+  packages/<binding>/audit/react-parity.json` for behavior-category gates;
+- `pnpm exec tsrx-tsc --noEmit -p packages/<binding>/tsconfig.json` for direct
+  authored source;
+- the same `tsrx-tsc` argv with a package-local upstream/public type project,
+  or their shared `tests/types/tsconfig.json`, for upstream and public types;
+- `pnpm packages:pack:check` for both packed-source rows and `package-pack`;
+- `pnpm sync` for generated data and `pnpm format:check` for formatting.
 
 Record all five strict type obligations under their dedicated gates. Use the
 actual package-owned pristine/adapted command for the first row and strict
@@ -233,7 +246,8 @@ proves both installed-source contexts and the package boundary in one run:
 
 ```bash
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
-  --gate upstream-types -- <pristine-and-adapted-type-command>
+  --gate upstream-types -- pnpm exec tsrx-tsc --noEmit \
+  -p packages/<binding>/tests/types/upstream/tsconfig.json
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
   --gate authored-source-types -- pnpm exec tsrx-tsc --noEmit \
   -p packages/<binding>/tsconfig.json
@@ -246,8 +260,11 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
   --gate package-pack -- pnpm packages:pack:check
 ```
 
-Paths and package script names may follow the closest binding, but the five
-separate observations and compiler semantics above are mandatory.
+The type-project paths may follow the closest binding, but the five separate
+observations and compiler semantics above are mandatory. If pristine and
+adapted programs have separate projects, use a package-local
+`tests/types/tsconfig.json` that references both; do not substitute arbitrary
+commands for a gate-owned command.
 
 Evidence gates declare whether they are `command` or machine-`automated`.
 Command gates accept passed/failed evidence only from `run`; automated gates are
@@ -272,6 +289,18 @@ Always require:
 - durable upstream/license/notice provenance;
 - final shipped dependency/source-closure audit;
 - formatting plus affected generated catalog/status/package data checks.
+
+Build `registrations.json` from the immutable case registrations already stored
+by preflight; preserve every machine-generated `id`, source location, registrar,
+and title exactly. Never invent a file-level case or replace the pinned case
+set. Implemented/conformance crosswalk rows may cite only package-local files
+under `test`, `tests`, `__tests__`, type-test directories, or `audit`; package
+metadata such as `package.json` is not behavioral evidence.
+
+React is test-only in a binding. Never ship `react` or `react-dom` through
+`dependencies`, `optionalDependencies`, `peerDependencies`, or any reachable
+public-export import. The package contract and closure audit reject both roots
+and their subpaths even if the dependency graph mentions them.
 
 Add by behavior:
 

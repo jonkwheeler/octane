@@ -13,8 +13,8 @@ const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(
 	readFileSync(path.join(SCRIPT_DIRECTORY, '__fixtures__/scenarios/acceptance.json'), 'utf8'),
 );
-const PREFLIGHT_CLI = path.join(SCRIPT_DIRECTORY, 'preflight.mjs');
-const EVIDENCE_CLI = path.join(SCRIPT_DIRECTORY, 'evidence.mjs');
+const PREFLIGHT_CLI = path.join(SCRIPT_DIRECTORY, '__fixtures__/preflight-fixture-cli.mjs');
+const EVIDENCE_CLI = path.join(SCRIPT_DIRECTORY, '__fixtures__/evidence-fixture-cli.mjs');
 const TERMINAL_CLI = path.join(SCRIPT_DIRECTORY, 'terminal.mjs');
 const TYPESCRIPT_CLI = path.resolve(SCRIPT_DIRECTORY, '../../node_modules/typescript/bin/tsc');
 const MIT_FIXTURE = path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json');

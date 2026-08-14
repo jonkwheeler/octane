@@ -26,6 +26,13 @@ For each input, require one canonical identity containing:
 - npm artifact integrity and manifest checksum;
 - immutable source manifest, license, notice, and Git object evidence.
 
+Preflight also derives the upstream test contract from the same immutable Git
+tree. It combines conventional test paths with paths referenced by the pinned
+package's test scripts and test-runner configuration, fetches those exact blob
+bytes, and extracts stable case registrations before implementation. The public
+CLI has no local-fixture or caller-supplied evidence mode: deterministic fixture
+resolvers exist only in repository tests.
+
 The npm artifact and immutable source must agree on name, version, repository,
 subdirectory, commit relationship, and license metadata. Preflight selects the
 version from npm's compact packument, then fetches full exact-version metadata

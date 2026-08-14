@@ -11,6 +11,7 @@ const CANONICAL_ROOT = path.join(REPO_ROOT, '.rulesync', SKILL_PATH);
 const GENERATED_ROOTS = ['.agents', '.claude', '.cursor', '.gemini', '.github'].map((root) =>
 	path.join(REPO_ROOT, root, SKILL_PATH),
 );
+const LEGACY_SKILL_NAME = 'react-library-port';
 const REFERENCES = [
 	'intake-and-license.md',
 	'dependencies-and-feasibility.md',
@@ -79,7 +80,9 @@ describe('octane-react-library-port skill distribution', () => {
 		for (const command of ['init', 'record', 'run', 'verify']) {
 			assert.match(documents, new RegExp(`pnpm react-port:evidence ${command}\\b`));
 		}
-		assert.match(documents, /pnpm react-port:evidence run[^\n]*[\s\S]*-- <executable>/);
+		assert.match(documents, /binds each gate to an approved command shape/i);
+		assert.match(documents, /rejects `true`[\s\S]*unrelated package scripts/i);
+		assert.doesNotMatch(documents, /-- <executable>/);
 		assert.match(documents, /pnpm react-port:terminal --batch/);
 		assert.doesNotMatch(documents, /react-port:(?:preflight|terminal)\s+--\s+--batch/);
 		assert.doesNotMatch(documents, /react-port:evidence\s+--\s+(?:init|record|run|verify)\b/);
@@ -102,6 +105,9 @@ describe('octane-react-library-port skill distribution', () => {
 			/zero-case inventory[\s\S]*immutable tree inventory itself is empty/i,
 		);
 		assert.match(implementation, /command gates accept passed\/failed evidence only from `run`/i);
+		assert.match(implementation, /registrations\.json[\s\S]*immutable case registrations/i);
+		assert.match(implementation, /package\.json` is not behavioral evidence/i);
+		assert.match(implementation, /React is test-only[\s\S]*react-dom/i);
 		assert.match(implementation, /sourceLedger/);
 		assert.match(implementation, /reachable from public exports[\s\S]*SHA-256/i);
 	});
@@ -165,6 +171,18 @@ describe('octane-react-library-port skill distribution', () => {
 					`${generatedRoot}: ${reference}`,
 				);
 			}
+		}
+	});
+
+	test('generates a standalone legacy entry point that routes to the canonical skill', () => {
+		for (const root of ['.rulesync', '.agents', '.claude', '.cursor', '.gemini', '.github']) {
+			const legacySkill = readFileSync(
+				path.join(REPO_ROOT, root, 'skills', LEGACY_SKILL_NAME, 'SKILL.md'),
+				'utf8',
+			);
+			assert.match(legacySkill, new RegExp(`^name: ${LEGACY_SKILL_NAME}$`, 'm'));
+			assert.match(legacySkill, /octane-react-library-port/i);
+			assert.match(legacySkill, /load[\s\S]*follow/i);
 		}
 	});
 });
