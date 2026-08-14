@@ -230,7 +230,7 @@ describe('evidence matrix', () => {
 	test('hashes package-local crosswalk evidence and rejects missing files', async () => {
 		const evidenceRoot = await mkdtemp(path.join(tmpdir(), 'react-port-crosswalk-evidence-'));
 		await mkdir(path.join(evidenceRoot, 'tests'));
-		const evidencePath = 'tests/widget.test.ts';
+		const evidencePath = 'tests/widget.test.tsrx';
 		const evidenceContents = 'export const covered = true;\n';
 		await writeFile(path.join(evidenceRoot, evidencePath), evidenceContents);
 		await writeFile(path.join(evidenceRoot, 'package.json'), '{}\n');

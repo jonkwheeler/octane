@@ -640,7 +640,7 @@ function isCrosswalkEvidencePath(value) {
 	const normalized = value.trim();
 	return (
 		/^(?:tests?|__tests__|typetests|type-tests|test-d|audit)\//i.test(normalized) &&
-		/\.(?:[cm]?[jt]sx?|json|md)$/i.test(normalized)
+		/\.(?:[cm]?[jt]sx?|tsrx|json|md)$/i.test(normalized)
 	);
 }
 
