@@ -70,7 +70,8 @@ describe('evidence matrix', () => {
 		for (const gate of [
 			'identity-license',
 			'package-tests',
-			'upstream-types',
+			'upstream-types-pristine',
+			'upstream-types-adapted',
 			'authored-source-types',
 			'public-types',
 			'packed-source-types-node',
@@ -83,6 +84,7 @@ describe('evidence matrix', () => {
 			assert.ok(matrix.gates[gate], gate);
 		}
 		assert.equal(matrix.schemaVersion, EVIDENCE_MATRIX_SCHEMA_VERSION);
+		assert.equal(matrix.gates['upstream-types'], undefined);
 		assert.equal(matrix.gates.typecheck, undefined);
 		assert.equal(matrix.gates['identity-license'].status, 'passed');
 	});

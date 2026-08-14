@@ -118,7 +118,8 @@ describe('octane-react-library-port skill distribution', () => {
 			'utf8',
 		);
 		for (const gate of [
-			'upstream-types',
+			'upstream-types-pristine',
+			'upstream-types-adapted',
 			'authored-source-types',
 			'public-types',
 			'packed-source-types-node',
@@ -127,6 +128,10 @@ describe('octane-react-library-port skill distribution', () => {
 			assert.match(implementation, new RegExp(`--gate ${gate}\\b`), gate);
 		}
 		assert.match(implementation, /directly include[\s\S]*authored\s+`?\.tsrx`?/i);
+		assert.match(
+			implementation,
+			/upstream-types-pristine[\s\S]*\btsc\b[\s\S]*upstream-types-adapted[\s\S]*tsrx-tsc/i,
+		);
 		assert.match(
 			implementation,
 			/`?tsrx-tsc --noEmit`?[\s\S]*never (?:use )?plain `?(?:tsc|tsgo)`?/i,

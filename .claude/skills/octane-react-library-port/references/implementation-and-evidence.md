@@ -151,7 +151,8 @@ recorded as blocked, inapplicable, or a reason to return an unfinished port.
 
 ## Strict type evidence
 
-Type correctness is five independent obligations. None substitutes for another:
+Type correctness is five obligations represented by six required evidence
+gates. Neither upstream command observation substitutes for the other:
 
 1. Run the pristine upstream type suite with its original compiler and pinned
    React types, then the complete one-for-one adapted suite with Octane types.
@@ -234,20 +235,27 @@ requested row. The approved shapes are:
   packages/<binding>/audit/react-parity.json` for behavior-category gates;
 - `pnpm exec tsrx-tsc --noEmit -p packages/<binding>/tsconfig.json` for direct
   authored source;
-- the same `tsrx-tsc` argv with a package-local upstream/public type project,
-  or their shared `tests/types/tsconfig.json`, for upstream and public types;
+- `pnpm exec tsc --noEmit -p <package-local-pristine-project>` for the
+  unmodified upstream suite with its pinned React types;
+- `pnpm exec tsrx-tsc --noEmit -p <package-local-adapted-project>` for the
+  one-for-one Octane adaptation;
+- the same `tsrx-tsc` argv with a package-local public type project, including
+  `tests/types/tsconfig.json`, for public types;
 - `pnpm packages:pack:check` for both packed-source rows and `package-pack`;
 - `pnpm sync` for generated data and `pnpm format:check` for formatting.
 
-Record all five strict type obligations under their dedicated gates. Use the
-actual package-owned pristine/adapted command for the first row and strict
-`tsrx-tsc` projects for authored and public programs. The packed repository gate
+Record all five strict type obligations under six dedicated evidence gates. The
+pristine and adapted upstream suites are separate observations with different
+compilers; they must never share a gate or command. The packed repository gate
 proves both installed-source contexts and the package boundary in one run:
 
 ```bash
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
-  --gate upstream-types -- pnpm exec tsrx-tsc --noEmit \
-  -p packages/<binding>/tests/types/upstream/tsconfig.json
+  --gate upstream-types-pristine -- pnpm exec tsc --noEmit \
+  -p packages/<binding>/typetests/tsconfig.pristine.json
+pnpm react-port:evidence run --batch <id> --node pkg:<name> \
+  --gate upstream-types-adapted -- pnpm exec tsrx-tsc --noEmit \
+  -p packages/<binding>/typetests/tsconfig.adapted.json
 pnpm react-port:evidence run --batch <id> --node pkg:<name> \
   --gate authored-source-types -- pnpm exec tsrx-tsc --noEmit \
   -p packages/<binding>/tsconfig.json
@@ -260,11 +268,12 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
   --gate package-pack -- pnpm packages:pack:check
 ```
 
-The type-project paths may follow the closest binding, but the five separate
-observations and compiler semantics above are mandatory. If pristine and
-adapted programs have separate projects, use a package-local
-`tests/types/tsconfig.json` that references both; do not substitute arbitrary
-commands for a gate-owned command.
+The type-project paths may follow the closest binding, but all six gate results
+and the compiler semantics above are mandatory. Pristine and adapted programs
+must have distinct package-local projects. The pristine project must contain a
+`pristine` path/name marker and the adapted project an `adapted` marker so the
+runner can bind each compiler to the right evidence. Do not use a shared project
+or substitute arbitrary commands for a gate-owned command.
 
 Evidence gates declare whether they are `command` or machine-`automated`.
 Command gates accept passed/failed evidence only from `run`; automated gates are

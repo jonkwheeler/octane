@@ -23,13 +23,24 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..
 const REQUIRED_NODE_ENGINE = JSON.parse(readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'))
 	.engines.node;
 
-export const EVIDENCE_MATRIX_SCHEMA_VERSION = 4;
+export const EVIDENCE_MATRIX_SCHEMA_VERSION = 5;
 
 const COMMON_GATES = [
 	['identity-license', 'Immutable identity and approved-license preflight', false, 'automated'],
 	['upstream-crosswalk', 'Complete upstream test-registration crosswalk', false, 'automated'],
 	['package-tests', 'Focused package behavior tests', false, 'command'],
-	['upstream-types', 'Pristine and one-for-one adapted upstream type tests', false, 'command'],
+	[
+		'upstream-types-pristine',
+		'Pristine upstream type tests with the original compiler and pinned React types',
+		false,
+		'command',
+	],
+	[
+		'upstream-types-adapted',
+		'One-for-one adapted upstream type tests with the Octane compiler',
+		false,
+		'command',
+	],
 	['authored-source-types', 'Strict direct authored-source typecheck', false, 'command'],
 	['public-types', 'Precise packed public type surface and negative controls', false, 'command'],
 	[

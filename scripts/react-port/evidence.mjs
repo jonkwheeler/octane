@@ -182,23 +182,39 @@ function isExactCommand(commandArguments, expected) {
 	return JSON.stringify(commandArguments) === JSON.stringify(expected);
 }
 
-function isTypeProjectCommand(commandArguments, bindingDirectory, gateId) {
+function hasTypeProjectMarker(relativeProject, marker) {
+	return new RegExp(`(?:^|[./_-])${marker}(?:[./_-]|$)`, 'i').test(relativeProject);
+}
+
+function isTypeProjectCommand(commandArguments, bindingDirectory, gateId, compiler) {
 	if (
 		commandArguments.length !== 6 ||
-		!isExactCommand(commandArguments.slice(0, 5), ['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p'])
+		!isExactCommand(commandArguments.slice(0, 5), ['pnpm', 'exec', compiler, '--noEmit', '-p'])
 	) {
 		return false;
 	}
 	const projectPath = commandArguments[5].replaceAll('\\', '/').replace(/^\.\//, '');
-	if (!projectPath.startsWith(`${bindingDirectory}/`) || !projectPath.endsWith('/tsconfig.json')) {
+	if (!projectPath.startsWith(`${bindingDirectory}/`) || !projectPath.endsWith('.json')) {
 		return false;
 	}
 	const relativeProject = projectPath.slice(`${bindingDirectory}/`.length);
+	if (
+		!relativeProject ||
+		relativeProject.split('/').some((segment) => !segment || segment === '.' || segment === '..')
+	) {
+		return false;
+	}
 	if (gateId === 'authored-source-types') return relativeProject === 'tsconfig.json';
-	if (relativeProject === 'tests/types/tsconfig.json') return true;
-	if (gateId === 'upstream-types')
-		return /(?:^|\/)(?:upstream|pristine|adapted)(?:\/|$)/i.test(relativeProject);
-	return /(?:^|\/)public(?:\/|$)/i.test(relativeProject);
+	if (gateId === 'upstream-types-pristine') {
+		return hasTypeProjectMarker(relativeProject, 'pristine');
+	}
+	if (gateId === 'upstream-types-adapted') {
+		return hasTypeProjectMarker(relativeProject, 'adapted');
+	}
+	return (
+		relativeProject === 'tests/types/tsconfig.json' ||
+		hasTypeProjectMarker(relativeProject, 'public')
+	);
 }
 
 export function assertApprovedGateCommand(gateIds, commandArguments, node) {
@@ -216,8 +232,12 @@ export function assertApprovedGateCommand(gateIds, commandArguments, node) {
 				'--manifest',
 				`${bindingDirectory}/audit/react-parity.json`,
 			]);
-		} else if (['upstream-types', 'authored-source-types', 'public-types'].includes(gateId)) {
-			approved = isTypeProjectCommand(commandArguments, bindingDirectory, gateId);
+		} else if (gateId === 'upstream-types-pristine') {
+			approved = isTypeProjectCommand(commandArguments, bindingDirectory, gateId, 'tsc');
+		} else if (
+			['upstream-types-adapted', 'authored-source-types', 'public-types'].includes(gateId)
+		) {
+			approved = isTypeProjectCommand(commandArguments, bindingDirectory, gateId, 'tsrx-tsc');
 		} else if (PACK_GATES.has(gateId)) {
 			approved = isExactCommand(commandArguments, ['pnpm', 'packages:pack:check']);
 		} else if (gateId === 'generated-data') {

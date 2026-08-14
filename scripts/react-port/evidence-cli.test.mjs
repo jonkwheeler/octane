@@ -211,7 +211,29 @@ describe('evidence CLI', () => {
 				],
 			],
 			[
-				['upstream-types', 'public-types'],
+				['upstream-types-pristine'],
+				[
+					'pnpm',
+					'exec',
+					'tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/typetests/tsconfig.pristine.json',
+				],
+			],
+			[
+				['upstream-types-adapted'],
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/typetests/tsconfig.adapted.json',
+				],
+			],
+			[
+				['public-types'],
 				['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tests/types/tsconfig.json'],
 			],
 			[
@@ -231,6 +253,38 @@ describe('evidence CLI', () => {
 					node,
 				),
 			/approved command for format/i,
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-pristine'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/typetests/tsconfig.pristine.json',
+					],
+					node,
+				),
+			/approved command for upstream-types-pristine/i,
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-adapted'],
+					[
+						'pnpm',
+						'exec',
+						'tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/typetests/tsconfig.adapted.json',
+					],
+					node,
+				),
+			/approved command for upstream-types-adapted/i,
 		);
 	});
 
@@ -561,16 +615,14 @@ describe('evidence CLI', () => {
 				'run',
 				...common,
 				'--gate',
-				'upstream-types',
-				'--gate',
-				'public-types',
+				'upstream-types-adapted',
 				'--',
 				'pnpm',
 				'exec',
 				'tsrx-tsc',
 				'--noEmit',
 				'-p',
-				'packages/widget/tests/types/tsconfig.json',
+				'packages/widget/typetests/tsconfig.adapted.json',
 			],
 			{
 				env: {
@@ -587,7 +639,7 @@ describe('evidence CLI', () => {
 		const failedManifest = JSON.parse(
 			readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'),
 		);
-		for (const gateId of ['upstream-types', 'public-types']) {
+		for (const gateId of ['upstream-types-adapted']) {
 			assert.equal(
 				failedManifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].status,
 				'failed',
@@ -608,9 +660,9 @@ describe('evidence CLI', () => {
 			'record',
 			...common,
 			'--gate',
-			'upstream-types',
+			'upstream-types-pristine',
 			'--gate',
-			'public-types',
+			'upstream-types-adapted',
 			'--status',
 			'blocked',
 			'--reason',
@@ -639,7 +691,12 @@ describe('evidence CLI', () => {
 		assert.equal(existsSync(counterPath), false);
 
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
-		for (const gateId of ['upstream-types', 'public-types', 'authored-source-types']) {
+		for (const gateId of [
+			'upstream-types-pristine',
+			'upstream-types-adapted',
+			'public-types',
+			'authored-source-types',
+		]) {
 			assert.equal(manifest.nodes['pkg:widget'].evidenceMatrix.gates[gateId].status, 'required');
 		}
 	});
@@ -716,7 +773,8 @@ describe('evidence CLI', () => {
 		assert.equal(resetNode.evidenceMatrix.gates.typecheck, undefined);
 		assert.equal(Object.hasOwn(resetNode, 'evidence'), false);
 		for (const gateId of [
-			'upstream-types',
+			'upstream-types-pristine',
+			'upstream-types-adapted',
 			'authored-source-types',
 			'public-types',
 			'packed-source-types-node',

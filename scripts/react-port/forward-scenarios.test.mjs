@@ -17,6 +17,10 @@ const PREFLIGHT_CLI = path.join(SCRIPT_DIRECTORY, '__fixtures__/preflight-fixtur
 const EVIDENCE_CLI = path.join(SCRIPT_DIRECTORY, '__fixtures__/evidence-fixture-cli.mjs');
 const TERMINAL_CLI = path.join(SCRIPT_DIRECTORY, 'terminal.mjs');
 const TYPESCRIPT_CLI = path.resolve(SCRIPT_DIRECTORY, '../../node_modules/typescript/bin/tsc');
+const TSRX_TYPESCRIPT_CLI = path.resolve(
+	SCRIPT_DIRECTORY,
+	'../../node_modules/@tsrx/typescript-plugin/dist/tsc.js',
+);
 const MIT_FIXTURE = path.join(SCRIPT_DIRECTORY, '__fixtures__/resolved/mit-widget.json');
 const mitFixture = JSON.parse(readFileSync(MIT_FIXTURE, 'utf8'));
 
@@ -92,9 +96,13 @@ function createBindingPackage(workspace, licenseText) {
 			"import { fixtureWidget } from '../../../src/index.js';\n\nfixtureWidget('upstream') satisfies string;\n// @ts-expect-error the upstream contract accepts strings only\nfixtureWidget(1);\n",
 		);
 	}
-	writeJson(path.join(packageDirectory, 'tests/types/upstream/tsconfig.json'), {
+	writeJson(path.join(packageDirectory, 'tests/types/upstream/tsconfig.pristine.json'), {
 		compilerOptions: strictTypeCompilerOptions(),
-		include: ['*.ts'],
+		include: ['pristine.ts'],
+	});
+	writeJson(path.join(packageDirectory, 'tests/types/upstream/tsconfig.adapted.json'), {
+		compilerOptions: strictTypeCompilerOptions(),
+		include: ['adapted.ts'],
 	});
 	writeFileSync(
 		path.join(packageDirectory, 'tests/types/public/public.ts'),
@@ -359,12 +367,21 @@ describe('fresh forward scenarios', () => {
 		const expectedSource = 'export function fixtureWidget(value) { return `fixture:${value}`; }\n';
 		const commandGates = [
 			[
-				['upstream-types'],
+				['upstream-types-pristine'],
 				[
 					TYPESCRIPT_CLI,
 					'--noEmit',
 					'-p',
-					path.join(packageDirectory, 'tests/types/upstream/tsconfig.json'),
+					path.join(packageDirectory, 'tests/types/upstream/tsconfig.pristine.json'),
+				],
+			],
+			[
+				['upstream-types-adapted'],
+				[
+					TSRX_TYPESCRIPT_CLI,
+					'--noEmit',
+					'-p',
+					path.join(packageDirectory, 'tests/types/upstream/tsconfig.adapted.json'),
 				],
 			],
 			[
@@ -440,7 +457,8 @@ describe('fresh forward scenarios', () => {
 		manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 		const typeGateCommands = Object.fromEntries(
 			[
-				'upstream-types',
+				'upstream-types-pristine',
+				'upstream-types-adapted',
 				'authored-source-types',
 				'public-types',
 				'packed-source-types-node',
@@ -452,7 +470,11 @@ describe('fresh forward scenarios', () => {
 		);
 		for (const [gateId, command] of Object.entries(typeGateCommands)) {
 			assert.equal(command[0], process.execPath, gateId);
-			assert.equal(command[1], TYPESCRIPT_CLI, gateId);
+			assert.equal(
+				command[1],
+				gateId === 'upstream-types-adapted' ? TSRX_TYPESCRIPT_CLI : TYPESCRIPT_CLI,
+				gateId,
+			);
 			assert.doesNotMatch(command.join(' '), /--check\b/, gateId);
 		}
 		assert.deepEqual(
