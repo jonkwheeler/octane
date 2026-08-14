@@ -39,6 +39,8 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 		nodes: {
 			'pkg:widget': {
 				packageName: 'widget',
+				requested: true,
+				action: 'create-binding',
 				binding: '@octanejs/widget',
 				bindingDirectory: 'packages/widget',
 				state: 'ready',
@@ -120,7 +122,8 @@ function runEvidence(arguments_, { env = {} } = {}) {
 function createCompletePackage(root) {
 	const packageDirectory = path.join(root, 'packages/widget');
 	mkdirSync(path.join(packageDirectory, 'src'), { recursive: true });
-	mkdirSync(path.join(packageDirectory, 'tests'));
+	mkdirSync(path.join(packageDirectory, 'tests/types/upstream'), { recursive: true });
+	mkdirSync(path.join(packageDirectory, 'tests/types/public'), { recursive: true });
 	writeFileSync(
 		path.join(packageDirectory, 'package.json'),
 		JSON.stringify({
@@ -138,7 +141,47 @@ function createCompletePackage(root) {
 		}),
 	);
 	writeFileSync(path.join(packageDirectory, 'src/index.ts'), 'export const widget = true;\n');
-	writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+	writeFileSync(
+		path.join(packageDirectory, 'tests/widget.test.ts'),
+		"import { test } from 'node:test';\ntest('exports a widget', () => {});\n",
+	);
+	for (const [name, compilerOptions] of [
+		['pristine', { strict: true, skipLibCheck: false, noEmit: true }],
+		['adapted', { strict: true, skipLibCheck: false, noEmit: true }],
+	]) {
+		writeFileSync(
+			path.join(packageDirectory, `tests/types/upstream/${name}.ts`),
+			"import { widget } from '../../../src/index.js';\nwidget satisfies boolean;\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, `tests/types/upstream/tsconfig.${name}.json`),
+			JSON.stringify({
+				compilerOptions,
+				files: [`${name}.ts`],
+				reactPortEvidence: { gate: `upstream-types-${name}`, upstreamRegistrations: [] },
+			}),
+		);
+	}
+	writeFileSync(
+		path.join(packageDirectory, 'tests/types/public/public.ts'),
+		"import { widget } from '@octanejs/widget';\nwidget satisfies boolean;\n",
+	);
+	writeFileSync(
+		path.join(packageDirectory, 'tests/types/public/tsconfig.json'),
+		JSON.stringify({
+			compilerOptions: { strict: true, skipLibCheck: false, noEmit: true },
+			files: ['public.ts'],
+			reactPortEvidence: { gate: 'public-types' },
+		}),
+	);
+	writeFileSync(
+		path.join(packageDirectory, 'tsconfig.json'),
+		JSON.stringify({
+			compilerOptions: { strict: true, skipLibCheck: false, noEmit: true },
+			files: ['src/index.ts'],
+			reactPortEvidence: { gate: 'authored-source-types' },
+		}),
+	);
 	writeFileSync(path.join(packageDirectory, 'README.md'), '# Widget\n');
 	writeFileSync(path.join(packageDirectory, 'LICENSE'), MIT_TEXT);
 	writeFileSync(
@@ -196,9 +239,10 @@ describe('evidence CLI', () => {
 	test('maps every command gate family to a specific repository command', () => {
 		const node = { bindingDirectory: 'packages/widget' };
 		for (const [gateIds, command] of [
+			[['package-tests'], ['pnpm', '--dir', 'packages/widget', 'test']],
 			[
-				['package-tests', 'public-exports'],
-				['pnpm', '--dir', 'packages/widget', 'test'],
+				['public-exports'],
+				['node', 'scripts/react-port/public-exports.mjs', '--package-dir', 'packages/widget'],
 			],
 			[
 				['differential-surface', 'browser'],
@@ -288,6 +332,87 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('rejects no-op tests and semantically weak or empty type projects', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [],
+		};
+		const validation = { workspaceRoot };
+
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['authored-source-types'],
+				['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tsconfig.json'],
+				node,
+				validation,
+			),
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tsconfig.json'),
+			JSON.stringify({
+				compilerOptions: { strict: false, skipLibCheck: true },
+				files: [],
+				reactPortEvidence: { gate: 'authored-source-types' },
+			}),
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['authored-source-types'],
+					['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tsconfig.json'],
+					node,
+					validation,
+				),
+			/strict.*skipLibCheck|type project.*source/i,
+		);
+
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'true';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['package-tests'],
+					['pnpm', '--dir', 'packages/widget', 'test'],
+					node,
+					validation,
+				),
+			/no-op|countable test registrations/i,
+		);
+
+		const pinnedTypeNode = {
+			...node,
+			upstreamTestInventory: [
+				{
+					kind: 'type',
+					registrations: [{ id: 'react-registration-v1:pinned-type-case' }],
+				},
+			],
+		};
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-pristine'],
+					[
+						'pnpm',
+						'exec',
+						'tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+					],
+					pinnedTypeNode,
+					validation,
+				),
+			/pinned immutable type inventory/i,
+		);
+	});
+
 	test('rejects a successful command that is not owned by the requested gate', () => {
 		const { workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -305,10 +430,11 @@ describe('evidence CLI', () => {
 	});
 
 	test('accepts one leading pnpm separator while preserving the run command separator', () => {
-		const { workRoot, batchDirectory } = createReadyBatch();
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		const initialized = runEvidence(['--', 'init', ...common, '--category', 'thin-core']);
 		assert.equal(initialized.status, 0, initialized.stderr);
+		createCompletePackage(workspaceRoot);
 
 		const recorded = runEvidence(
 			[
@@ -334,10 +460,11 @@ describe('evidence CLI', () => {
 	});
 
 	test('moves a ready node to implementing and records observed gate evidence', () => {
-		const { workRoot, batchDirectory } = createReadyBatch();
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		const initialized = runEvidence(['init', ...common, '--category', 'thin-core']);
 		assert.equal(initialized.status, 0, initialized.stderr);
+		createCompletePackage(workspaceRoot);
 
 		const recorded = runEvidence(
 			[
@@ -367,9 +494,10 @@ describe('evidence CLI', () => {
 	});
 
 	test('records command failures and rejects unexecuted command claims', () => {
-		const { workRoot, batchDirectory } = createReadyBatch();
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
 
 		const failed = runEvidence(
 			[
@@ -516,9 +644,10 @@ describe('evidence CLI', () => {
 	});
 
 	test('passes shell metacharacters as literal argv data', () => {
-		const { workRoot, batchDirectory } = createReadyBatch();
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
 		const literal = '$(printf injected); && | >';
 		const result = runEvidence(
 			[
@@ -546,9 +675,10 @@ describe('evidence CLI', () => {
 	});
 
 	test('redacts configured npm credentials from command reports and stored evidence', () => {
-		const { workRoot, batchDirectory } = createReadyBatch();
+		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
 		const token = 'npm_abcdefghijklmnopqrstuvwxyz0123456789';
 		const result = runEvidence(
 			[
@@ -578,6 +708,7 @@ describe('evidence CLI', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
 		const counterPath = path.join(workspaceRoot, 'type-command-count');
 
 		const result = runEvidence(
@@ -622,7 +753,7 @@ describe('evidence CLI', () => {
 				'tsrx-tsc',
 				'--noEmit',
 				'-p',
-				'packages/widget/typetests/tsconfig.adapted.json',
+				'packages/widget/tests/types/upstream/tsconfig.adapted.json',
 			],
 			{
 				env: {
@@ -922,14 +1053,66 @@ describe('evidence CLI', () => {
 		assert.match(verified.stderr, /planned workspace directory/i);
 	});
 
-	test('advances implementing to verified only after every machine and recorded gate passes', () => {
+	test('drives production command validation through verify and terminal', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+		mkdirSync(path.join(workspaceRoot, 'scripts/react-port'), { recursive: true });
+		symlinkSync(
+			path.join(SCRIPT_DIRECTORY, 'public-exports.mjs'),
+			path.join(workspaceRoot, 'scripts/react-port/public-exports.mjs'),
+		);
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
-		recordRequiredEvidence(batchDirectory);
 
 		const inputRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-success-'));
 		const packageDirectory = createCompletePackage(workspaceRoot);
+		for (const [gateId, commandArguments] of [
+			['package-tests', ['pnpm', '--dir', 'packages/widget', 'test']],
+			[
+				'public-exports',
+				['node', 'scripts/react-port/public-exports.mjs', '--package-dir', 'packages/widget'],
+			],
+			[
+				'upstream-types-pristine',
+				[
+					'pnpm',
+					'exec',
+					'tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+				],
+			],
+			[
+				'upstream-types-adapted',
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/upstream/tsconfig.adapted.json',
+				],
+			],
+			[
+				'authored-source-types',
+				['pnpm', 'exec', 'tsrx-tsc', '--noEmit', '-p', 'packages/widget/tsconfig.json'],
+			],
+			[
+				'public-types',
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/public/tsconfig.json',
+				],
+			],
+		]) {
+			const gate = runEvidence(['run', ...common, '--gate', gateId, '--', ...commandArguments]);
+			assert.equal(gate.status, 0, `${gateId}: ${gate.stderr || gate.stdout}`);
+		}
+		recordRequiredEvidence(batchDirectory);
 		for (const [name, value] of Object.entries({
 			'registrations.json': [],
 			'crosswalk.json': [],
@@ -956,6 +1139,19 @@ describe('evidence CLI', () => {
 		const report = JSON.parse(verified.stdout);
 		assert.equal(report.status, 'passed');
 		assert.equal(report.state, 'verified');
+		const terminal = spawnSync(
+			process.execPath,
+			[
+				path.join(SCRIPT_DIRECTORY, 'terminal.mjs'),
+				'--work-root',
+				workRoot,
+				'--batch',
+				'fixture-batch',
+			],
+			{ cwd: workspaceRoot, encoding: 'utf8' },
+		);
+		assert.equal(terminal.status, 0, terminal.stderr || terminal.stdout);
+		assert.equal(JSON.parse(terminal.stdout).status, 'terminal');
 	});
 
 	test('uses the recorded workspace with a nested custom work root', () => {

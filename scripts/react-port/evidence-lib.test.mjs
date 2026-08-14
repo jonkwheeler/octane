@@ -189,15 +189,41 @@ describe('evidence matrix', () => {
 							registrations: [
 								{
 									id: 'immutable-renders',
+									declarationId: 'react-case-v1:0123456789abcdefabcd',
 									source: 'packages/widget/tests/widget.test.ts:4:2',
 									kind: 'test',
 									title: 'renders',
+									estimatedRegistrations: 1,
+									registrationIndex: 0,
+									dynamicExpansion: null,
+									helperExpansion: null,
+									manualReviewReason: null,
 								},
 							],
 						},
 					],
 				),
 			/registrations differ.*immutable/i,
+		);
+	});
+
+	test('rejects immutable upstream test files without counted registrations', () => {
+		assert.throws(
+			() =>
+				validateUpstreamCrosswalk(
+					[],
+					[],
+					[
+						{
+							path: 'packages/widget/tests/widget.test.ts',
+							kind: 'runtime',
+							gitBlob: 'a'.repeat(40),
+							size: 128,
+							registrations: [],
+						},
+					],
+				),
+			/no counted registrations/i,
 		);
 	});
 

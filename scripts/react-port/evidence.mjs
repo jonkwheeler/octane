@@ -1,10 +1,15 @@
 #!/usr/bin/env node
 
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
+import {
+	extractTestCases,
+	findPossibleUnexpandedRegistrars,
+} from '../react-parity/inventory-lib.mjs';
 import {
 	auditShippedClosure,
 	assertCurrentEvidenceMatrix,
@@ -26,12 +31,12 @@ import {
 	writeManifestAtomically,
 } from './state-lib.mjs';
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
+import { inspectPublicExports } from './public-exports.mjs';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
 const MAX_COMMAND_TIMEOUT_MS = 30 * 60 * 1_000;
 const MAX_COMMAND_OUTPUT_BYTES = 1024 * 1024;
-const PACKAGE_TEST_GATES = new Set(['package-tests', 'public-exports']);
 const PARITY_GATES = new Set([
 	'differential-surface',
 	'identity-lifecycle',
@@ -217,13 +222,159 @@ function isTypeProjectCommand(commandArguments, bindingDirectory, gateId, compil
 	);
 }
 
-export function assertApprovedGateCommand(gateIds, commandArguments, node) {
+function bindingPackageDirectory(node, workspaceRoot) {
+	const packageDirectory = path.resolve(workspaceRoot, node.bindingDirectory);
+	const relative = path.relative(path.resolve(workspaceRoot), packageDirectory);
+	if (relative.startsWith('..') || path.isAbsolute(relative)) {
+		throw new Error('Graph-planned binding directory escapes the workspace');
+	}
+	return packageDirectory;
+}
+
+function discoverPackageTests(packageDirectory) {
+	const files = [];
+	const walk = (directory) => {
+		for (const entry of readdirSync(directory, { withFileTypes: true })) {
+			if (entry.name === 'node_modules' || entry.name === 'dist') continue;
+			const entryPath = path.join(directory, entry.name);
+			if (entry.isDirectory()) walk(entryPath);
+			else if (
+				entry.isFile() &&
+				/(?:^|[.-])(?:test|spec)\.[cm]?[jt]sx?$/.test(entry.name) &&
+				!/\.d\.[cm]?ts$/.test(entry.name)
+			) {
+				files.push(entryPath);
+			}
+		}
+	};
+	walk(packageDirectory);
+	return files.sort();
+}
+
+function assertPackageTestSemantics(node, workspaceRoot) {
+	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
+	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
+	const testScript = manifest.scripts?.test?.trim();
+	if (
+		!testScript ||
+		/^(?:true|:|exit\s+0|echo(?:\s+.*)?|node\s+(?:--eval|-e)\s+['"]?(?:true|process\.exit\(0\))['"]?)$/i.test(
+			testScript,
+		)
+	) {
+		throw new Error('Package test script is missing or is a no-op');
+	}
+	let countedRegistrations = 0;
+	for (const testPath of discoverPackageTests(packageDirectory)) {
+		const source = readFileSync(testPath, 'utf8');
+		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
+		if (possibleRegistrars.length > 0) {
+			throw new Error(
+				`Package tests contain unexpanded registrar(s): ${possibleRegistrars
+					.map(({ name }) => name)
+					.join(', ')}`,
+			);
+		}
+		for (const testCase of extractTestCases(source, { file: testPath })) {
+			if (!Number.isSafeInteger(testCase.estimatedRegistrations)) {
+				throw new Error(`Package test registration count is unknown in ${testPath}`);
+			}
+			countedRegistrations += testCase.estimatedRegistrations;
+		}
+	}
+	if (countedRegistrations === 0) {
+		throw new Error('Package test gate has no countable test registrations');
+	}
+}
+
+function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoot) {
+	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
+	const projectPath = path.resolve(workspaceRoot, commandArguments[5]);
+	const relativeProject = path.relative(packageDirectory, projectPath);
+	if (relativeProject.startsWith('..') || path.isAbsolute(relativeProject)) {
+		throw new Error(`Type project for ${gateId} escapes the binding package`);
+	}
+	const loaded = ts.readConfigFile(projectPath, ts.sys.readFile);
+	if (loaded.error) {
+		throw new Error(`Type project for ${gateId} is invalid: ${loaded.error.messageText}`);
+	}
+	const parsed = ts.parseJsonConfigFileContent(loaded.config, ts.sys, path.dirname(projectPath));
+	if (parsed.errors.length > 0) {
+		throw new Error(`Type project for ${gateId} cannot be parsed`);
+	}
+	if (parsed.options.strict !== true || parsed.options.skipLibCheck !== false) {
+		throw new Error(`Type project for ${gateId} must enable strict and disable skipLibCheck`);
+	}
+	if (loaded.config.reactPortEvidence?.gate !== gateId) {
+		throw new Error(`Type project for ${gateId} must declare reactPortEvidence.gate`);
+	}
+	const programFiles = parsed.fileNames.map((filePath) => path.resolve(filePath));
+	if (programFiles.length === 0) throw new Error(`Type project for ${gateId} has no source files`);
+	const within = (directory) =>
+		programFiles.some((filePath) => {
+			const relative = path.relative(path.join(packageDirectory, directory), filePath);
+			return !relative.startsWith('..') && !path.isAbsolute(relative);
+		});
+	if (gateId === 'authored-source-types' && !within('src')) {
+		throw new Error('Authored source type project must compile the package src directory');
+	}
+	if (gateId === 'public-types') {
+		if (!within('tests/types')) {
+			throw new Error('Public type project must compile package tests/types sources');
+		}
+		if (
+			node.binding &&
+			!programFiles.some((filePath) => readFileSync(filePath, 'utf8').includes(node.binding))
+		) {
+			throw new Error('Public type project must consume the graph-planned package export');
+		}
+	}
+	if (gateId.startsWith('upstream-types-')) {
+		if (!within('tests/types') && !within('typetests')) {
+			throw new Error('Upstream type project must compile package-local upstream type sources');
+		}
+		const expectedRegistrations = (node.upstreamTestInventory ?? [])
+			.filter(({ kind }) => kind === 'type')
+			.flatMap(({ registrations }) => registrations.map(({ id }) => id))
+			.sort();
+		const declaredRegistrations = loaded.config.reactPortEvidence?.upstreamRegistrations;
+		if (
+			!Array.isArray(declaredRegistrations) ||
+			JSON.stringify([...declaredRegistrations].sort()) !== JSON.stringify(expectedRegistrations)
+		) {
+			throw new Error(
+				`Type project for ${gateId} is not bound to the pinned immutable type inventory`,
+			);
+		}
+		const source = programFiles.map((filePath) => readFileSync(filePath, 'utf8')).join('\n');
+		for (const registrationId of expectedRegistrations) {
+			if (!source.includes(registrationId)) {
+				throw new Error(
+					`Type project for ${gateId} does not map pinned registration ${registrationId}`,
+				);
+			}
+		}
+	}
+}
+
+export function assertApprovedGateCommand(
+	gateIds,
+	commandArguments,
+	node,
+	{ workspaceRoot = null } = {},
+) {
 	const bindingDirectory = node.bindingDirectory?.replaceAll('\\', '/');
 	if (!bindingDirectory) throw new Error('Evidence node has no graph-planned binding directory');
 	for (const gateId of gateIds) {
 		let approved = false;
-		if (PACKAGE_TEST_GATES.has(gateId)) {
+		if (gateId === 'package-tests') {
 			approved = isExactCommand(commandArguments, ['pnpm', '--dir', bindingDirectory, 'test']);
+		} else if (gateId === 'public-exports') {
+			approved = isExactCommand(commandArguments, [
+				'node',
+				'scripts/react-port/public-exports.mjs',
+				'--package-dir',
+				bindingDirectory,
+			]);
 		} else if (PARITY_GATES.has(gateId)) {
 			approved = isExactCommand(commandArguments, [
 				'node',
@@ -249,6 +400,23 @@ export function assertApprovedGateCommand(gateIds, commandArguments, node) {
 			throw new Error(
 				`Command is not an approved command for ${gateId}; use the gate-owned command documented by the React library port skill`,
 			);
+		}
+		if (workspaceRoot && gateId === 'package-tests') {
+			assertPackageTestSemantics(node, workspaceRoot);
+		}
+		if (workspaceRoot && gateId === 'public-exports') {
+			inspectPublicExports(bindingPackageDirectory(node, workspaceRoot));
+		}
+		if (
+			workspaceRoot &&
+			[
+				'upstream-types-pristine',
+				'upstream-types-adapted',
+				'authored-source-types',
+				'public-types',
+			].includes(gateId)
+		) {
+			assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoot);
 		}
 	}
 }
@@ -377,7 +545,9 @@ async function operate(
 		if (commandArguments.length === 0) {
 			throw new Error('run requires an executable and arguments after --');
 		}
-		assertCommand(gateIds, commandArguments, node);
+		assertCommand(gateIds, commandArguments, node, {
+			workspaceRoot: manifest.workspaceRoot ?? process.cwd(),
+		});
 		const commandDisplay = sanitizeForReport(
 			JSON.stringify(commandArguments),
 			'',

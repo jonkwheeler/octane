@@ -731,9 +731,15 @@ describe('resolved evidence', () => {
 				registrations: [
 					{
 						id: result.upstreamTestInventory[0].registrations[0].id,
+						declarationId: result.upstreamTestInventory[0].registrations[0].declarationId,
 						source: 'packages/react-widget/quality/widget.behavior.ts:1:1',
 						kind: 'test',
 						title: 'renders',
+						estimatedRegistrations: 1,
+						registrationIndex: 0,
+						dynamicExpansion: null,
+						helperExpansion: null,
+						manualReviewReason: null,
 					},
 				],
 			},
@@ -760,6 +766,114 @@ describe('resolved evidence', () => {
 		assert.equal(fromGitHub.identity.packageName, 'react-widget');
 		assert.equal(fromGitHub.identity.commit, commit);
 		assert.deepEqual(fromGitHub.license.source.notices, []);
+
+		const dynamicTestBytes = Buffer.from("test.each(rows)('renders %s', value => value);\n");
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(
+				sourceTree.map((entry) =>
+					entry.path === 'packages/react-widget/quality/widget.behavior.ts'
+						? {
+								...entry,
+								size: dynamicTestBytes.length,
+								sha: gitBlobSha(dynamicTestBytes),
+							}
+						: entry,
+				),
+			),
+		);
+		responses.set(
+			'https://api.github.com/repos/example/widgets/git/blobs/test',
+			Response.json({
+				encoding: 'base64',
+				content: dynamicTestBytes.toString('base64'),
+				size: dynamicTestBytes.length,
+			}),
+		);
+		await assert.rejects(
+			resolveRemoteInput(parseInput(githubInput), githubInput, { fetchImpl }),
+			/cannot count every registration/i,
+		);
+
+		const helperTestBytes = Buffer.from("itRenders('renders', render => render());\n");
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(
+				sourceTree.map((entry) =>
+					entry.path === 'packages/react-widget/quality/widget.behavior.ts'
+						? {
+								...entry,
+								size: helperTestBytes.length,
+								sha: gitBlobSha(helperTestBytes),
+							}
+						: entry,
+				),
+			),
+		);
+		responses.set(
+			'https://api.github.com/repos/example/widgets/git/blobs/test',
+			Response.json({
+				encoding: 'base64',
+				content: helperTestBytes.toString('base64'),
+				size: helperTestBytes.length,
+			}),
+		);
+		const helperResult = await resolveRemoteInput(parseInput(githubInput), githubInput, {
+			fetchImpl,
+		});
+		const helperRegistrations = helperResult.upstreamTestInventory[0].registrations;
+		assert.equal(helperRegistrations.length, 5);
+		assert.equal(new Set(helperRegistrations.map(({ id }) => id)).size, 5);
+		assert.deepEqual(
+			helperRegistrations.map(({ registrationIndex }) => registrationIndex),
+			[0, 1, 2, 3, 4],
+		);
+		assert.ok(
+			helperRegistrations.every(
+				({ estimatedRegistrations, helperExpansion }) =>
+					estimatedRegistrations === 5 && helperExpansion?.helper === 'itRenders',
+			),
+		);
+
+		const emptyTestBytes = Buffer.from('export const fixture = true;\n');
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(
+				sourceTree.map((entry) =>
+					entry.path === 'packages/react-widget/quality/widget.behavior.ts'
+						? {
+								...entry,
+								size: emptyTestBytes.length,
+								sha: gitBlobSha(emptyTestBytes),
+							}
+						: entry,
+				),
+			),
+		);
+		responses.set(
+			'https://api.github.com/repos/example/widgets/git/blobs/test',
+			Response.json({
+				encoding: 'base64',
+				content: emptyTestBytes.toString('base64'),
+				size: emptyTestBytes.length,
+			}),
+		);
+		await assert.rejects(
+			resolveRemoteInput(parseInput(githubInput), githubInput, { fetchImpl }),
+			/has no countable registrations/i,
+		);
+		responses.set(
+			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,
+			githubTreeResponse(),
+		);
+		responses.set(
+			'https://api.github.com/repos/example/widgets/git/blobs/test',
+			Response.json({
+				encoding: 'base64',
+				content: sourceTestBytes.toString('base64'),
+				size: sourceTestBytes.length,
+			}),
+		);
 
 		responses.set(
 			`https://api.github.com/repos/example/widgets/git/trees/${tree}?recursive=1`,

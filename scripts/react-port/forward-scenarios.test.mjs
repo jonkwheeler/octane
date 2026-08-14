@@ -255,7 +255,7 @@ describe('fresh forward scenarios', () => {
 		});
 	}
 
-	test('completes an offline binding lifecycle through public CLI artifacts', (context) => {
+	test('completes an offline binding lifecycle through fixture-injected CLIs', (context) => {
 		const workspace = mkdtempSync(path.join(tmpdir(), 'react-port-forward-lifecycle-'));
 		context.after(() => rmSync(workspace, { recursive: true, force: true }));
 		const initializedRepository = spawnSync('git', ['init', '--quiet'], {

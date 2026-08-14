@@ -273,6 +273,9 @@ export function validateUpstreamCrosswalk(
 		) {
 			throw new Error('Immutable upstream test inventory contains an invalid or duplicate entry');
 		}
+		if (entry.registrations.length === 0) {
+			throw new Error(`Immutable upstream test ${entry.path} has no counted registrations`);
+		}
 		immutableTestPaths.add(entry.path);
 		for (const registration of entry.registrations) {
 			if (
@@ -281,6 +284,13 @@ export function validateUpstreamCrosswalk(
 				typeof registration.source !== 'string' ||
 				!registration.source.startsWith(`${entry.path}:`) ||
 				typeof registration.kind !== 'string' ||
+				typeof registration.declarationId !== 'string' ||
+				!registration.declarationId ||
+				!Number.isSafeInteger(registration.estimatedRegistrations) ||
+				registration.estimatedRegistrations < 1 ||
+				!Number.isSafeInteger(registration.registrationIndex) ||
+				registration.registrationIndex < 0 ||
+				registration.registrationIndex >= registration.estimatedRegistrations ||
 				immutableRegistrations.has(registration.id)
 			) {
 				throw new Error('Immutable upstream test inventory contains an invalid registration');

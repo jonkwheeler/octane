@@ -105,6 +105,33 @@ describe('extractTestCases', () => {
 		assert.deepEqual(cases[0].parameterization?.outerRowCounts, [2]);
 	});
 
+	test('extracts Vitest namespace wrappers and their static suite matrices', () => {
+		const cases = extractTestCases(`
+			Vitest.describe.each(['memory', 'web'])('%s', backend => {
+				Vitest.scopedLive('persists a value', () => backend);
+			});
+		`);
+
+		assert.equal(cases.length, 1);
+		assert.equal(cases[0].kind, 'scopedLive');
+		assert.equal(cases[0].title, 'persists a value');
+		assert.equal(cases[0].estimatedRegistrations, 2);
+		assert.deepEqual(cases[0].parameterization?.outerRowCounts, [2]);
+	});
+
+	test('counts describe.for static suite matrices', () => {
+		const cases = extractTestCases(`
+			describe.for([{ mode: 'a' }, { mode: 'b' }])('$mode', context => {
+				test('handles the mode', () => context.mode);
+			});
+		`);
+
+		assert.equal(cases.length, 1);
+		assert.equal(cases[0].estimatedRegistrations, 2);
+		assert.equal(cases[0].parameterization?.kind, 'describe.for');
+		assert.deepEqual(cases[0].parameterization?.outerRowCounts, [2]);
+	});
+
 	test('annotates React DOM server integration helper expansion modes', () => {
 		const [testCase] = extractTestCases(`itRenders('a link', async render => render(<a />));`);
 

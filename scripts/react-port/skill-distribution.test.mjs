@@ -100,9 +100,10 @@ describe('octane-react-library-port skill distribution', () => {
 			implementation,
 			/immutable Git-tree path[\s\S]*blob hash[\s\S]*before implementation/i,
 		);
+		assert.match(implementation, /zero-case[\s\S]*fail[\s\S]*preflight/i);
 		assert.match(
 			implementation,
-			/zero-case inventory[\s\S]*immutable tree inventory itself is empty/i,
+			/estimatedRegistrations[\s\S]*dynamicExpansion[\s\S]*helperExpansion[\s\S]*manualReviewReason/i,
 		);
 		assert.match(implementation, /command gates accept passed\/failed evidence only from `run`/i);
 		assert.match(implementation, /registrations\.json[\s\S]*immutable case registrations/i);
@@ -143,6 +144,9 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /AssertNotAny/);
 		assert.match(implementation, /must not add[\s\S]*packedTsrxSourceExceptions/i);
 		assert.match(implementation, /package import[\s\S]*declaration[\s\S]*hide[\s\S]*source/i);
+		assert.match(implementation, /reactPortEvidence[\s\S]*pinned immutable type inventory/i);
+		assert.match(implementation, /public-exports\.mjs/);
+		assert.match(implementation, /nonzero[\s\S]*test registrations/i);
 	});
 
 	test('keeps the canonical entry point thin and makes preflight mandatory', () => {

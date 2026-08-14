@@ -770,13 +770,43 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 					.join(', ')}`,
 			);
 		}
-		const registrations = extractTestCases(source, { file: entry.path }).map((testCase) => ({
-			id: testCase.caseId,
-			source: `${entry.path}:${testCase.line}:${testCase.column}`,
-			kind: testCase.kind,
-			title: testCase.title ?? testCase.declaredTitle ?? testCase.titleExpression,
-		}));
-		if (!conventionalTestPath(relativePath) && registrations.length === 0) continue;
+		const testCases = extractTestCases(source, { file: entry.path });
+		if (testCases.length === 0) {
+			throw new Error(`Immutable upstream test ${entry.path} has no countable registrations`);
+		}
+		const registrations = testCases.flatMap((testCase) => {
+			if (
+				!Number.isSafeInteger(testCase.estimatedRegistrations) ||
+				testCase.estimatedRegistrations < 1
+			) {
+				throw new Error(
+					`Immutable upstream test ${entry.path} cannot count every registration for ${testCase.caseId}`,
+				);
+			}
+			return Array.from({ length: testCase.estimatedRegistrations }, (_, registrationIndex) => {
+				const id =
+					testCase.estimatedRegistrations === 1
+						? testCase.caseId
+						: `react-registration-v1:${createHash('sha256')
+								.update(`${testCase.caseId}\0${registrationIndex}`)
+								.digest('hex')
+								.slice(0, 20)}`;
+				return {
+					id,
+					declarationId: testCase.declarationId,
+					source: `${entry.path}:${testCase.line}:${testCase.column}${
+						testCase.estimatedRegistrations === 1 ? '' : `:registration:${registrationIndex}`
+					}`,
+					kind: testCase.kind,
+					title: testCase.title ?? testCase.declaredTitle ?? testCase.titleExpression,
+					estimatedRegistrations: testCase.estimatedRegistrations,
+					registrationIndex,
+					dynamicExpansion: testCase.dynamicExpansion,
+					helperExpansion: testCase.helperExpansion,
+					manualReviewReason: testCase.manualReviewReason,
+				};
+			});
+		});
 		inventory.push({
 			path: entry.path,
 			kind: /(?:^|\/)(?:typetests|type-tests|test-d)(?:\/|$)|(?:^|[.-])(?:test-d|d-test)\.[cm]?[jt]sx?$/i.test(

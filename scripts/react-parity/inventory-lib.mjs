@@ -25,6 +25,7 @@ export const DEFAULT_HELPER_EXPANSIONS = Object.freeze({
 });
 
 const DIRECT_REGISTRARS = new Set(['it', 'test', 'fit', 'xit']);
+const NAMESPACED_DIRECT_REGISTRARS = new Set(['scopedLive']);
 const GATED_REGISTRARS = new Set(['_test_gate', '_test_gate_focus']);
 const OPEN_TO_CLOSE = new Map([
 	['(', ')'],
@@ -396,9 +397,10 @@ function describeEachContexts(source, tokens, pairs) {
 		if (
 			tokens[index].value !== 'describe' ||
 			tokens[index + 1].value !== '.' ||
-			tokens[index + 2].value !== 'each'
+			!['each', 'for'].includes(tokens[index + 2].value)
 		)
 			continue;
+		const kind = `describe.${tokens[index + 2].value}`;
 		let tableEnd;
 		let rowCount = null;
 		let cursor = index + 3;
@@ -429,6 +431,7 @@ function describeEachContexts(source, tokens, pairs) {
 		}
 		if (bodyOpen === null) continue;
 		contexts.push({
+			kind,
 			start: tokens[bodyOpen].end,
 			end: tokens[pairs.get(bodyOpen)].start,
 			rowCount,
@@ -458,7 +461,11 @@ function loopContexts(source, tokens, pairs) {
 		}
 	};
 	for (let index = 0; index < tokens.length; index++) {
-		if (tokens[index].value === 'for' && tokens[index + 1]?.value === '(') {
+		if (
+			tokens[index].value === 'for' &&
+			tokens[index - 1]?.value !== '.' &&
+			tokens[index + 1]?.value === '('
+		) {
 			const headerEnd = pairs.get(index + 1);
 			if (headerEnd !== undefined) addBody('for', index, headerEnd + 1, tokens.length);
 		}
@@ -573,11 +580,19 @@ export function extractTestCases(
 	for (let index = 0; index < tokens.length; index++) {
 		const token = tokens[index];
 		const name = token.value;
-		const isDirect = DIRECT_REGISTRARS.has(name);
+		const isNamespacedDirect =
+			NAMESPACED_DIRECT_REGISTRARS.has(name) &&
+			tokens[index - 1]?.value === '.' &&
+			tokens[index - 2]?.type === 'identifier';
+		const isDirect = DIRECT_REGISTRARS.has(name) || isNamespacedDirect;
 		const isGated = GATED_REGISTRARS.has(name);
 		const helper = Object.hasOwn(helperExpansions, name) ? helperExpansions[name] : undefined;
 		if (!isDirect && !isGated && !helper) continue;
-		if (tokens[index - 1]?.value === '.' || tokens[index - 1]?.value === 'function') continue;
+		if (
+			(tokens[index - 1]?.value === '.' && !isNamespacedDirect) ||
+			tokens[index - 1]?.value === 'function'
+		)
+			continue;
 		const parsed = isDirect
 			? eachInvocation(tokens, pairs, index)
 			: {
@@ -647,7 +662,11 @@ export function extractTestCases(
 				parameterization:
 					parsed.each || outerEach.length
 						? {
-								kind: parsed.each ? 'test.each' : 'describe.each',
+								kind: parsed.each
+									? 'test.each'
+									: outerEach.length === 1
+										? outerEach[0].kind
+										: 'parameterized-suite',
 								rowCount: parsed.each?.rowCount ?? 1,
 								rowIndex: rowVariant.rowIndex,
 								row: rowVariant.row,
@@ -756,6 +775,7 @@ export function inventoryFingerprint(inventory) {
 export function findPossibleUnexpandedRegistrars(source) {
 	const known = new Set([
 		...DIRECT_REGISTRARS,
+		...NAMESPACED_DIRECT_REGISTRARS,
 		...GATED_REGISTRARS,
 		...Object.keys(DEFAULT_HELPER_EXPANSIONS),
 	]);
