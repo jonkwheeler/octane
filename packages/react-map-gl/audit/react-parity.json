@@ -43,7 +43,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2a9f085e5df15ef2fb23cdb2045a03bd1e392971d99fc3bb5cf14fed93c5168c"
+      "lockfileSha256": "ca9924e360b0459f54522a5dc84e15b55acfad71f5bab79def08d9caf10ef75c"
     }
   },
   "lanes": [
@@ -131,11 +131,6 @@
           "path": "packages/react-map-gl/tests/_harness/tape-adapter.ts",
           "role": "support",
           "sha256": "05d5c503ae4aa05b0bee8de5795c256b8eae4b5bd0097f1ed427c73067e4ff39"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
         }
       ]
     },
@@ -223,11 +218,6 @@
           "path": "packages/react-map-gl/tests/_harness/tape-adapter.ts",
           "role": "support",
           "sha256": "05d5c503ae4aa05b0bee8de5795c256b8eae4b5bd0097f1ed427c73067e4ff39"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
         }
       ]
     },
@@ -425,11 +415,6 @@
           "path": "packages/react-map-gl/tests/_fixtures/upstream-apps.tsrx",
           "role": "support",
           "sha256": "0370152e58bb2e0de81a639cbaf337b03a9fd8ab8e451c75e9ccae521484a9fc"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
         }
       ]
     },
@@ -527,7 +512,7 @@
         {
           "path": "packages/react-map-gl/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "2a60bf2dca6c3a5a49b592a073461cc72fd4bf53e0647ae4040166d9f04136a5",
+          "sha256": "2b23b967ca83fa2bc314bf973730e7e65913c1491550b9bb93b056432609f0a4",
           "cases": [
             {
               "id": "differential:1",
@@ -600,11 +585,6 @@
           "path": "packages/react-map-gl/tests/_mocks/mapbox-gl.ts",
           "role": "support",
           "sha256": "ba922849c42f4756360689ba772e6d9c484971e61c00ef65d4a3bd0f188dc509"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
         }
       ]
     }

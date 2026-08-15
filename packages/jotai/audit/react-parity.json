@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2a9f085e5df15ef2fb23cdb2045a03bd1e392971d99fc3bb5cf14fed93c5168c"
+      "lockfileSha256": "ca9924e360b0459f54522a5dc84e15b55acfad71f5bab79def08d9caf10ef75c"
     }
   },
   "lanes": [
@@ -56,7 +56,7 @@
         {
           "path": "packages/jotai/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "5dd6a651f9e1461afa1442963500108d28cde7693f7efb3ca1542fbaacc0b0db",
+          "sha256": "f7e77c38e9227280c98f61222815aaa00241ff325a38548790b654543092f572",
           "cases": [
             {
               "id": "differential:jotai-counter",
@@ -75,8 +75,8 @@
             },
             {
               "id": "differential:jotai-async-atom",
-              "testName": "AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps",
-              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback \u2192 resolved value, byte-identical at both steps"
+              "testName": "AsyncApp: pending fallback → resolved value, byte-identical at both steps",
+              "fullName": "differential: @octanejs/jotai vs real jotai on React AsyncApp: pending fallback → resolved value, byte-identical at both steps"
             }
           ]
         },
@@ -113,12 +113,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
+          "sha256": "3e97762d731f0899f33b4060672dd79f302582b317c0bdf8e8872b9135ee2d64"
         }
       ]
     }

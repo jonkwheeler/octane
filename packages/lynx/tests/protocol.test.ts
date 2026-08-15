@@ -776,44 +776,111 @@ describe('@octanejs/lynx transported protocol', () => {
 		).toMatchObject({ instances: LYNX_LAZY_PUBLIC_INSTANCES });
 	});
 
-	it('never enables template programs or owner elision while adopting a first screen', async () => {
-		const context = new FakeContextProxy();
-		context.addEventListener(LYNX_BACKGROUND_TO_MAIN_EVENT, (event) => {
-			const message = validateLynxBackgroundOutboundMessage(event.data);
-			if (message.type !== 'main-ready-request') return;
-			context.sendToBackground({
-				protocol: LYNX_TRANSPORT_PROTOCOL_VERSION,
-				renderer: LYNX_TRANSPORT_RENDERER,
-				type: 'main-ready',
-				request: message.request,
-				firstTree: {
-					format: 1,
+	it.each(['adopted', 'repaired'] as const)(
+		'enables intrinsic runs only after a first screen is safely %s',
+		async (adoption) => {
+			const context = new FakeContextProxy();
+			const container = createLynxClientContainer();
+			const driver = createLynxClientDriver(container);
+			const commits: LynxTransportCommitMessage[] = [];
+			const capabilitiesDuringAdoptionReady: boolean[] = [];
+			context.addEventListener(LYNX_BACKGROUND_TO_MAIN_EVENT, (event) => {
+				const message = validateLynxBackgroundOutboundMessage(event.data);
+				if (message.type === 'adoption-ready') {
+					capabilitiesDuringAdoptionReady.push(driver.capabilities?.templateProgramMount === true);
+					return;
+				}
+				if (message.type === 'commit') {
+					commits.push(message);
+					return;
+				}
+				if (message.type !== 'main-ready-request') return;
+				context.sendToBackground({
+					protocol: LYNX_TRANSPORT_PROTOCOL_VERSION,
 					renderer: LYNX_TRANSPORT_RENDERER,
-					root: 1,
-					version: 1,
-					plan: null,
-					roots: [],
-					nodes: [],
-				},
-				capabilities: {
-					compactAck: 1,
-					templateMount: 1,
-					templateProgram: 1,
-					lazyPublicInstances: 1,
-					templateRuns: 1,
-				},
+					type: 'main-ready',
+					request: message.request,
+					firstTree: {
+						format: 1,
+						renderer: LYNX_TRANSPORT_RENDERER,
+						root: 1,
+						version: 1,
+						plan: null,
+						roots: [],
+						nodes: [],
+					},
+					capabilities: {
+						compactAck: 1,
+						templateMount: 1,
+						templateProgram: 1,
+						lazyPublicInstances: 1,
+						templateRuns: 1,
+					},
+				});
 			});
-		});
-		const container = createLynxClientContainer();
-		const driver = createLynxClientDriver(container);
-		const transport = createLynxBackgroundTransport(context, container);
-		await transport.ready;
-		expect(driver.capabilities?.templateMount).toBe(false);
-		expect(driver.capabilities?.templateProgramMount).toBe(false);
-		expect(driver.capabilities?.templateProgramRuns).toBe(false);
-		expect(driver.capabilities?.lazyPublicInstances).toBe(false);
-		transport.close();
-	});
+			const transport = createLynxBackgroundTransport(context, container);
+			await transport.ready;
+			expect(driver.capabilities?.templateMount).toBe(false);
+			expect(driver.capabilities?.templateProgramMount).toBe(false);
+			expect(driver.capabilities?.templateProgramRuns).toBe(false);
+			expect(driver.capabilities?.lazyPublicInstances).toBe(false);
+			const firstIdentity = identity(1, 1);
+			const capabilitiesDuringAcknowledgement: boolean[] = [];
+			const adopting = transport
+				.prepareBatch(
+					container,
+					{ renderer: LYNX_TRANSPORT_RENDERER, version: 1, commands: [] },
+					firstIdentity,
+				)
+				.apply(() => {
+					capabilitiesDuringAcknowledgement.push(
+						driver.capabilities?.templateProgramMount === true,
+					);
+				});
+			await flushMicrotasks();
+			expect(commits[0]).not.toHaveProperty('ack');
+			expect(commits[0]).not.toHaveProperty('instances');
+			context.sendToBackground({ ...firstIdentity, type: 'ack', handles: [], adoption });
+			expect(capabilitiesDuringAcknowledgement).toEqual([false]);
+			expect(capabilitiesDuringAdoptionReady).toEqual(adoption === 'adopted' ? [false] : []);
+			expect(driver.capabilities?.templateMount).toBe(true);
+			expect(driver.capabilities?.templateProgramMount).toBe(true);
+			expect(driver.capabilities?.templateProgramRuns).toBe(true);
+			expect(driver.capabilities?.lazyPublicInstances).toBe(true);
+			context.sendToBackground({ ...firstIdentity, type: 'complete' });
+			await adopting;
+
+			const count = LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS;
+			const nextIdentity = identity(firstIdentity.root, 2);
+			const adding = transport
+				.prepareBatch(container, templateProgramRunBatch(count, 2), nextIdentity)
+				.apply(() => {});
+			await flushMicrotasks();
+			expect(commits[1]).toMatchObject({
+				ack: LYNX_COMPACT_ACKNOWLEDGEMENT,
+				instances: LYNX_LAZY_PUBLIC_INSTANCES,
+				batch: { commands: [{ op: 'mount-template-run', count: count / 2 }] },
+			});
+			const handles: LynxPublicHandleDelta[] = Array.from({ length: count }, (_value, index) => {
+				const id = index + 1;
+				const type = id % 2 === 1 ? 'view' : '#text';
+				return {
+					op: 'upsert',
+					id,
+					type,
+					generation: 1,
+					attached: true,
+					listDescendant: false,
+					snapshot: handleSnapshot(nextIdentity.root, id, type, 1),
+				};
+			});
+			context.sendToBackground({ ...nextIdentity, type: 'ack', handles });
+			context.sendToBackground({ ...nextIdentity, type: 'complete' });
+			await adding;
+			expect(container.getPublicHandle(count)?.type).toBe('#text');
+			transport.close();
+		},
+	);
 
 	it('rejects unsafe template hosts, listeners, and mutable shapes reused across commands', () => {
 		const shape = Object.freeze([
@@ -2638,6 +2705,303 @@ describe('@octanejs/lynx transported protocol', () => {
 		expect(container.getPublicHandle(5)).toBe(previous);
 		expect(isLynxClientEventTarget(container, acceptedIdentity.root, 5, 1)).toBe(true);
 		expect(isLynxClientEventTarget(container, acceptedIdentity.root, 5, 2)).toBe(false);
+	});
+
+	it('re-arms compact acknowledgements after the last compact host retires', () => {
+		const count = LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS;
+		const container = createLynxClientContainer();
+		prepareLynxCompactHandleDeltas(container, templateBatch(count), count, identity(96, 1)).apply();
+		expect(container.getPublicHandle(1)?.active).toBe(true);
+
+		const destroyAll = () =>
+			prepareLynxHandleDeltas(
+				container,
+				{
+					renderer: LYNX_TRANSPORT_RENDERER,
+					version: 2,
+					commands: Array.from({ length: count }, (_value, index) => ({
+						op: 'destroy' as const,
+						id: index + 1,
+					})),
+				},
+				Array.from({ length: count }, (_value, index) => ({
+					op: 'remove' as const,
+					id: index + 1,
+					generation: 1,
+				})),
+				identity(96, 2),
+			);
+		const original = templateProgramRunBatch(count, 3);
+		const run = original.commands[0]!;
+		if (run.op !== 'mount-template-run') throw new Error('Expected a contiguous host run.');
+		const fresh: UniversalHostBatch = {
+			...original,
+			commands: [Object.freeze({ ...run, firstId: count + 1 })],
+		};
+
+		// A rolled-back retirement keeps the segment pinned: the metadata is
+		// restored and a new compact acknowledgement is still refused.
+		const rolledBack = destroyAll();
+		rolledBack.apply();
+		rolledBack.rollback();
+		expect(container.getPublicHandle(2)?.active).toBe(true);
+		expect(() =>
+			prepareLynxCompactHandleDeltas(container, fresh, count, identity(96, 3), count, true),
+		).toThrow(/fresh client container/);
+
+		// Destroying the whole segment retires its metadata, so a later pure
+		// run at fresh ids may negotiate a new compact acknowledgement.
+		destroyAll().apply();
+		expect(container.getPublicHandle(1)).toBeNull();
+		const second = prepareLynxCompactHandleDeltas(
+			container,
+			fresh,
+			count,
+			identity(96, 3),
+			count,
+			true,
+		);
+		second.apply();
+		expect(container.getPublicHandle(count + 1)?.generation).toBe(1);
+		expect(container.getPublicHandle(count + 1)?.active).toBe(true);
+	});
+
+	it('retires a compact run from one remove-run delta and re-arms compact', () => {
+		const count = LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS;
+		const container = createLynxClientContainer();
+		prepareLynxCompactHandleDeltas(container, templateBatch(count), count, identity(97, 1)).apply();
+		const observed = container.getPublicHandle(2)!;
+		expect(observed.active).toBe(true);
+
+		const runBatch: UniversalHostBatch = {
+			renderer: LYNX_TRANSPORT_RENDERER,
+			version: 2,
+			commands: [{ op: 'destroy-run', parent: null, firstId: 1, count, width: 1 }],
+		};
+		expect(() => prepareLynxHandleDeltas(container, runBatch, [], identity(97, 2))).toThrow(
+			/omits destroyed run/,
+		);
+		expect(() =>
+			prepareLynxHandleDeltas(
+				container,
+				runBatch,
+				[{ op: 'remove', id: 1, generation: 1 }],
+				identity(97, 2),
+			),
+		).toThrow(/omits destroyed run/);
+
+		const fallback = prepareLynxHandleDeltas(
+			container,
+			runBatch,
+			Array.from({ length: count }, (_value, index) => ({
+				op: 'remove' as const,
+				id: index + 1,
+				generation: 1,
+			})),
+			identity(97, 2),
+		);
+		fallback.apply();
+		expect(container.getPublicHandle(2)).toBeNull();
+		fallback.rollback();
+		expect(container.getPublicHandle(2)).toBe(observed);
+
+		const removal = prepareLynxHandleDeltas(
+			container,
+			runBatch,
+			[{ op: 'remove-run', firstId: 1, hostCount: count, generation: 1 }],
+			identity(97, 2),
+		);
+		removal.apply();
+		expect(observed.active).toBe(false);
+		expect(container.getPublicHandle(1)).toBeNull();
+		expect(container.getPublicHandle(2)).toBeNull();
+
+		removal.rollback();
+		expect(container.getPublicHandle(2)).toBe(observed);
+		expect(observed.active).toBe(true);
+
+		prepareLynxHandleDeltas(
+			container,
+			runBatch,
+			[{ op: 'remove-run', firstId: 1, hostCount: count, generation: 1 }],
+			identity(97, 2),
+		).apply();
+		expect(container.getPublicHandle(2)).toBeNull();
+
+		// The retired metadata is dropped, so a later run at fresh ids may
+		// negotiate a new incremental compact acknowledgement…
+		const original = templateProgramRunBatch(count, 3);
+		const run = original.commands[0]!;
+		if (run.op !== 'mount-template-run') throw new Error('Expected a contiguous host run.');
+		const fresh: UniversalHostBatch = {
+			...original,
+			commands: [Object.freeze({ ...run, firstId: count + 1 })],
+		};
+		// …while a run overlapping the retired range is rejected…
+		const overlapping: UniversalHostBatch = {
+			...original,
+			commands: [Object.freeze({ ...run, firstId: 1 })],
+		};
+		expect(() =>
+			prepareLynxCompactHandleDeltas(container, overlapping, count, identity(97, 3), count, true),
+		).toThrow(/reuses a retired handle/);
+
+		// …and a fresh range is accepted.
+		prepareLynxCompactHandleDeltas(container, fresh, count, identity(97, 3), count, true).apply();
+		expect(container.getPublicHandle(count + 1)?.generation).toBe(1);
+	});
+
+	it('requires a fresh generation when reusing a host from a retired compact run', () => {
+		const count = LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS;
+		const container = createLynxClientContainer();
+		prepareLynxCompactHandleDeltas(container, templateBatch(count), count, identity(98, 1)).apply();
+		prepareLynxHandleDeltas(
+			container,
+			{
+				renderer: LYNX_TRANSPORT_RENDERER,
+				version: 2,
+				commands: [{ op: 'destroy-run', parent: null, firstId: 1, count, width: 1 }],
+			},
+			[{ op: 'remove-run', firstId: 1, hostCount: count, generation: 1 }],
+			identity(98, 2),
+		).apply();
+
+		const reuseBatch: UniversalHostBatch = {
+			renderer: LYNX_TRANSPORT_RENDERER,
+			version: 3,
+			commands: [{ op: 'create', id: 1, type: 'view', props: { id: 'replacement' } }],
+		};
+		const replacement = (generation: number) => ({
+			op: 'upsert' as const,
+			id: 1,
+			type: 'view',
+			generation,
+			attached: true,
+			listDescendant: false,
+			snapshot: handleSnapshot(98, 1, 'view', generation),
+		});
+		expect(() =>
+			prepareLynxHandleDeltas(container, reuseBatch, [replacement(1)], identity(98, 3)),
+		).toThrow(/invalid created handle 1/);
+		prepareLynxHandleDeltas(container, reuseBatch, [replacement(2)], identity(98, 3)).apply();
+		expect(container.getPublicHandle(1)?.generation).toBe(2);
+	});
+
+	it('preserves adopted handles when compact descendants are accepted or rolled back', () => {
+		const count = LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS;
+		const container = createLynxClientContainer();
+		const root = 105;
+		prepareLynxHandleDeltas(
+			container,
+			{
+				renderer: LYNX_TRANSPORT_RENDERER,
+				version: 1,
+				commands: [{ op: 'create', id: 1, type: 'view', props: { id: 'adopted-shell' } }],
+			},
+			[
+				{
+					op: 'upsert',
+					id: 1,
+					type: 'view',
+					generation: 1,
+					attached: true,
+					listDescendant: false,
+					snapshot: handleSnapshot(root, 1, 'view', 1),
+				},
+			],
+			identity(root, 1),
+		).apply();
+		const shell = container.getPublicHandle(1)!;
+		const original = templateProgramRunBatch(count, 2);
+		const run = original.commands[0]!;
+		if (run.op !== 'mount-template-run') throw new Error('Expected a contiguous host run.');
+		const descendants: UniversalHostBatch = {
+			...original,
+			commands: [Object.freeze({ ...run, firstId: 2 })],
+		};
+		const acceptedIdentity = identity(root, 2);
+
+		expect(() =>
+			prepareLynxCompactHandleDeltas(container, original, count, acceptedIdentity, count, true),
+		).toThrow(/overlaps an accepted handle/);
+		expect(() =>
+			prepareLynxCompactHandleDeltas(
+				container,
+				{ ...descendants, commands: [{ ...run, firstId: 2 }] },
+				count,
+				acceptedIdentity,
+				count,
+				true,
+			),
+		).toThrow(/one frozen host run/);
+
+		const rolledBack = prepareLynxCompactHandleDeltas(
+			container,
+			descendants,
+			count,
+			acceptedIdentity,
+			count,
+			true,
+		);
+		rolledBack.apply();
+		const transient = container.getPublicHandle(2)!;
+		expect(container.getPublicHandle(1)).toBe(shell);
+		expect(isLynxClientEventTarget(container, root, 2, 1)).toBe(true);
+		rolledBack.rollback();
+		expect(container.getPublicHandle(1)).toBe(shell);
+		expect(shell.active).toBe(true);
+		expect(transient.active).toBe(false);
+		expect(container.getPublicHandle(2)).toBeNull();
+		expect(isLynxClientEventTarget(container, root, 2, 1)).toBe(false);
+
+		prepareLynxCompactHandleDeltas(
+			container,
+			descendants,
+			count,
+			acceptedIdentity,
+			count,
+			true,
+		).apply();
+		const removed = container.getPublicHandle(2)!;
+		prepareLynxHandleDeltas(
+			container,
+			{
+				renderer: LYNX_TRANSPORT_RENDERER,
+				version: 3,
+				commands: [{ op: 'destroy', id: 2 }],
+			},
+			[{ op: 'remove', id: 2, generation: 1 }],
+			identity(root, 3),
+		).apply();
+		expect(removed.active).toBe(false);
+		expect(container.getPublicHandle(1)).toBe(shell);
+		expect(isLynxClientEventTarget(container, root, 2, 1)).toBe(false);
+		expect(isLynxClientEventTarget(container, root, count + 1, 1)).toBe(true);
+
+		prepareLynxHandleDeltas(
+			container,
+			{
+				renderer: LYNX_TRANSPORT_RENDERER,
+				version: 4,
+				commands: [{ op: 'create', id: 2, type: 'view', props: { id: 'replacement' } }],
+			},
+			[
+				{
+					op: 'upsert',
+					id: 2,
+					type: 'view',
+					generation: 2,
+					attached: true,
+					listDescendant: false,
+					snapshot: handleSnapshot(root, 2, 'view', 2),
+				},
+			],
+			identity(root, 4),
+		).apply();
+		expect(container.getPublicHandle(2)?.generation).toBe(2);
+		expect(isLynxClientEventTarget(container, root, 2, 1)).toBe(false);
+		expect(isLynxClientEventTarget(container, root, 2, 2)).toBe(true);
+		expect(container.getPublicHandle(1)).toBe(shell);
 	});
 
 	it('negotiates intrinsic programs and derives every compact host from its implicit ID range', async () => {

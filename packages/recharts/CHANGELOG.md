@@ -1,5 +1,87 @@
 # @octanejs/recharts
 
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies [0635af6]
+  - octane@0.1.38
+  - @octanejs/redux@0.1.35
+
+## 0.1.34
+
+### Patch Changes
+
+- 71e3382: Restore the `AnimationController` type module and fix the style-prop import in
+  `CSSTransitionAnimate`.
+
+  Upstream ships `animation/AnimationController.ts` as a types-only module whose
+  compiled JavaScript is `export {}`, so the vendoring pass, which copies compiled
+  `es6` output, skipped it. `CSSTransitionAnimate` imported the type from a module
+  that did not exist. `AnimationHandle` is reconstructed from the real
+  `JavascriptAnimation` and `CSSTransitionAnimation` classes.
+
+  `CSSTransitionAnimate` also imported `CSSProperties` from `octane`, which does
+  not export it. The style type is now derived from Octane's own JSX surface
+  instead, which avoids adding a `react` dependency this package does not have.
+
+- 0b7460e: Expose Recharts' public declaration surface to strict TypeScript consumers.
+
+  The package previously pointed its `types` and `exports` fields at the raw
+  TypeScript source entry, causing consumer programs to typecheck every internal
+  TSRX and vendored JavaScript module. The package now routes TypeScript through
+  its Octane-native public declarations while preserving the source runtime entry.
+
+- Updated dependencies [ce3a6fe]
+- Updated dependencies [954c75f]
+- Updated dependencies [94fa199]
+- Updated dependencies [c2e77a3]
+- Updated dependencies [125c861]
+- Updated dependencies [765134a]
+- Updated dependencies [9efd6f4]
+- Updated dependencies [603756a]
+- Updated dependencies [0b7460e]
+  - @octanejs/redux@0.1.34
+  - octane@0.1.37
+
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies [972fdd3]
+- Updated dependencies [4a792e3]
+- Updated dependencies [581b8bd]
+- Updated dependencies [24aa236]
+- Updated dependencies [9c397a2]
+- Updated dependencies [24aa236]
+- Updated dependencies [5377ef3]
+- Updated dependencies [6b65644]
+- Updated dependencies [f12a9a9]
+- Updated dependencies [972fdd3]
+- Updated dependencies [1039b7d]
+- Updated dependencies [ffadd39]
+- Updated dependencies [a03ff0f]
+- Updated dependencies [4c1ecd1]
+  - octane@0.1.36
+  - @octanejs/redux@0.1.33
+
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies [50b7988]
+- Updated dependencies [6daa380]
+- Updated dependencies [d2c9e1c]
+- Updated dependencies [01240e6]
+- Updated dependencies [59a35ae]
+- Updated dependencies [a8b432b]
+- Updated dependencies [910c240]
+- Updated dependencies [db5687e]
+- Updated dependencies [e2466a5]
+- Updated dependencies [2d06817]
+  - octane@0.1.35
+  - @octanejs/redux@0.1.32
+
 ## 0.1.31
 
 ### Patch Changes

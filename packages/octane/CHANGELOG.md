@@ -1,5 +1,289 @@
 # octane
 
+## 0.1.38
+
+### Patch Changes
+
+- 0635af6: Complete React-compatible development diagnostics for unknown DOM properties,
+  controlled form conflicts, invalid HTML nesting and hydration recovery, native
+  and custom event listeners, and client/server resource hint arguments. Preserve
+  Octane's native-event authoring model while keeping diagnostic helpers and full
+  warning messages out of optimized production bundles.
+
+## 0.1.37
+
+### Patch Changes
+
+- 954c75f: React Float conformance evidence, plus two small fixes it surfaced.
+
+  The 121 planned `ReactDOMFloat-test.js` parity-ledger cases are all
+  dispositioned: 59 now carry executable adapted evidence (41 newly ported
+  conformance tests across three suites plus links into the existing Float/hint
+  suites), 54 are documented non-goals/divergences with per-case rationale
+  (suspensey commits, whole-document containers, Fizz bootstrap/external-runtime
+  protocol, `<img>`-preload scanning, SuspenseList, shadow-root scoping,
+  streamed-boundary head content), and 8 stay planned against two newly-filed
+  engine gaps, three warning-message families, and server-side hoistable
+  prioritization ordering.
+
+  Fixes: the document-metadata hoist partition is now HTML-scoped — nothing
+  hoists from an SVG lexical context (a precedence link inside `<svg>` no longer
+  becomes a stylesheet resource; `foreignObject` re-enters the HTML rules) — and
+  `preinitModule` with an invalid `as` now warns in development as documented
+  instead of failing silently.
+
+- 94fa199: Tear down removed collapsed template runs with one `destroy-run` command.
+
+  Clearing a 10,000-row keyed table shipped a 100,000-command teardown stream
+  (3.5 MB) from the background thread, acknowledged it with 70,000 per-host
+  tombstone deltas (2.9 MB), expanded every removed collapsed row into seven
+  logical records just to enumerate those commands, and left 70,000 generation
+  tombstones per clear cycle on both threads. All four costs were O(hosts) for an
+  operation whose input is O(runs).
+
+  The universal renderer now advertises a `teardownRuns` driver capability. When
+  the driver accepts it, a removed subtree that is still a collapsed program-run
+  instance with implicit contiguous ids skips expansion entirely and contributes
+  to one `destroy-run` command per contiguous range — the driver derives the
+  event unbinds, removals, and post-order destroys from the program it already
+  holds. Rows with refs, explicit ids, portals, or host callbacks keep the
+  explicit per-host path, as does any driver that does not advertise the
+  capability (the DOM boundary is unchanged).
+
+  The Lynx binding negotiates the capability end to end (a new teardown-run
+  readiness request base), expands the command against its dense record store to
+  re-enter the certified teardown fast path — falling back to an accepted-records
+  walk for reordered or explicit-path rows and to the general command loop for
+  partial ranges — and acknowledges a full-run teardown with a single
+  `remove-run` delta. Both threads then record one sorted retired-range tombstone
+  instead of 70,000 map entries, and the background client retires compact
+  metadata without materializing the handles it never observed.
+
+  On the shared 10,000-row table, the clear command stream drops from
+  3,514,556 B to ~370 B, the clear acknowledgement from 2,929,786 B to ~813 B,
+  and a create/clear/create cycle keeps the compact create acknowledgement from
+  the previous change. Reused id ranges keep bumping generations, partial-range
+  teardowns and rollbacks are pinned by new host-, client-, and emitter-side
+  regression tests, and the existing certified-teardown and remount suites run
+  unchanged.
+
+- c2e77a3: Keep plain function overload signatures non-ambient in the virtual TSX.
+
+  esrap before 2.3.2 printed `declare` on every bodyless function declaration, so
+  a plain overload pair next to its implementation typechecked as TS2384
+  ("Overload signatures must all be ambient or non-ambient") in the editor and
+  under `tsrx-tsc`, on source that compiles and runs fine. The dependency floor
+  now requires the fixed printer; an authored ambient `declare function` keeps
+  its modifier.
+
+- 125c861: Two server head-hoisting behaviors reach React Fizz parity, closing the last
+  Float engine gaps from the React 19 parity audit.
+
+  Fallback hoistables are now suppressed transitively: a `<title>`/`<meta>`/
+  `<link>` authored inside a pending boundary's fallback never reaches the
+  streamed head, including from a completed boundary nested inside that fallback
+  — the fallback is discarded at reveal, but a streamed head line is permanent.
+
+  Priority hoistables now lead the server head: `<meta charSet>` serializes
+  first (parsers only honor a charset within the first 1024 bytes), then
+  `<meta name="viewport">`, then everything else in discovery order — matching
+  React's ordering instead of pure discovery order.
+
+  The parity ledger also gains evidence for the `identifierPrefix` root option
+  and the external-store compatibility semantics (subscribe/snapshot/
+  server-snapshot through `useSyncExternalStore`), retiring those planned cases.
+
+- 765134a: Float precedence groups now form in tree discovery order on client mounts, and
+  head hoists computed from setup locals no longer crash SSR.
+
+  Precedence group order is CSS cascade order. Client mounts used to create
+  groups in the order component bodies finished executing — a nested child's or
+  `@try` arm's group could precede its parent's, so the same tree could cascade
+  differently on a client-only mount than on an SSR'd page. Resource
+  registrations now run after a component's setup but before its children mount,
+  so groups form parent-before-child, suspended arms at reveal, matching SSR and
+  React on both sides.
+
+  The server twin fixed a latent crash the same placement rule exposed: a hoisted
+  head element or resource whose attribute reads a setup local (for example
+  `<link href={slug} precedence …>` after `const slug = …`) used to emit its
+  registration ahead of the local's declaration and throw a TDZ ReferenceError
+  during render. Capture-free registrations still lead the body — arm-root sheets
+  keep shipping with the streaming shell — while ones that read setup locals now
+  run right after setup, still ahead of children.
+
+- 9efd6f4: Add actionable development diagnostics for React-compatible stylesheet resource,
+  ARIA attribute, CSS property, controlled-form, and event-listener authoring
+  mistakes without retaining development warnings in optimized production builds.
+- 603756a: Ship Float sheet resources discovered after the streaming shell.
+
+  Streaming SSR dropped `<link rel="stylesheet" href precedence>` and
+  `<style href precedence>` resources whose registration only ran on a
+  post-shell pass — a sheet inside a nested pending boundary, or one whose href
+  is computed from a `use()` resolution. Only the shell pass's head ever
+  flushed, so streamed content revealed unstyled until hydration re-inserted the
+  sheet client-side, and documents consumed without JavaScript never received
+  the CSS at all.
+
+  Each resolution wave now diffs the pass's per-resource sheet registrations
+  against what is already on the wire and ships new tags with the wave chunk,
+  ahead of its segment reveals: real markup in a hidden carrier (so no-JS
+  consumers still get working CSS) plus an inline `$OCTRH` call that hoists the
+  tags into `document.head` under the client's precedence grouping. Once client
+  Float resource state exists, the hoist hands each tag to the live runtime
+  instead, keeping dedupe and group ordering in one authority, and a hydrating
+  client adopts the streamed tags without duplicating. A still-pending child
+  boundary's sheet rides its parent's reveal wave, matching React's hoisting of
+  partial-boundary resources.
+
+## 0.1.36
+
+### Patch Changes
+
+- 972fdd3: Reduce temporary allocations during keyed list reorders by safely reusing
+  bounded numeric scratch buffers across reconciliations.
+- 4a792e3: Allow universal renderers to route compiler-emitted thread-function helpers through an optional cold runtime module.
+
+  Lynx now uses that boundary to omit main-thread worklet registries and call bridges from applications that compile no worklets, while retaining late-chunk activation and the existing worklet-enabled behavior.
+
+- 581b8bd: Reduce hydratable server-rendered HTML by reusing component-owned keyed-list
+  ranges, self-delimiting pure-host descriptor items, and proven host-only
+  conditional or switch ranges. Keep streamed Suspense segments parser-safe
+  without expanding ordinary HTML tags or hydration comments.
+- 24aa236: Skip unchanged keyed-list rows in production when their nested conditional
+  content contains only host elements and every captured dependency is stable.
+  Preserve conditional ownership, hydration, transitions, and existing keyed
+  selection behavior while avoiding redundant DOM updates in TodoMVC-shaped apps.
+- 9c397a2: Publish executable CommonJS conditions for Octane core, Floating UI, Base UI, and Radix while preserving their existing ESM and source-first entry points.
+- 24aa236: Reduce server-rendered HTML escaping time and temporary allocations while
+  preserving iterable snapshots, text security, streaming output, and hydration.
+- 5377ef3: React Float behavioral parity: hoist exclusions and hint semantics.
+
+  Document-metadata hoisting now honors React's exclusions — `itemProp`-bearing
+  `<meta>`/`<link>` stay with their `itemScope` host, and metadata/resources that
+  are direct children of `<noscript>` stay in the fallback content — on the
+  client and the server, so hydration adopts the identical shape.
+
+  Resource hints gain React's option semantics: font preloads always fetch
+  anonymously (`crossorigin=""`), preload-seeded connection/integrity options
+  transfer onto the matching `preinit`'s real tag (the server coalesces the
+  redundant preload out of the head fold), `preconnect` identity includes the
+  CORS mode, responsive image preloads omit the fallback `href`, unknown option
+  keys are dropped, and non-string hrefs warn in development and no-op. A module
+  src is one executable identity across `preinitModule` and
+  `<script async type="module" src>` in both the server pass and the hydrating
+  client — no more duplicate module scripts in the cross pairings.
+
+- 6b65644: Minimize universal-renderer keyed placements with a longest-increasing-subsequence plan so distant swaps move only displaced hosts while preserving survivor identity, events, and lifecycle behavior.
+- f12a9a9: Type native HTML attribute spellings alongside React-compatible aliases, support
+  native numeric attribute strings and SVG visibility attributes, and recognize
+  native `readonly` spelling when checking text-input change handlers.
+- 972fdd3: Add compiler-visible descriptor children for bindings that inspect or clone ordinary TSЯX children.
+- 1039b7d: Reduce duplicated client, server, and universal-renderer logic while sharing
+  specialized compiled ref and server-spread helpers through renderer-isolated
+  private runtime entry points. Preserve existing public helper exports, ref
+  cleanup semantics, server rendering, hydration, and hot-path specializations.
+- ffadd39: React 19 parity: the implementation-gap tranche from the outstanding-work issue.
+
+  - **Nested document metadata**: `<title>`/`<meta>`/`<link>` and Float resources
+    now hoist from ANY depth on the server too (React's model; the client always
+    did) — a nested hoist serializes into the head channel at its authored
+    position, the host body keeps only real children, and hydration adopts
+    without mismatches. A hoist inside a conditional arm registers only while
+    that arm renders.
+  - **`prerenderToNodeStream`**: `octane/static` gains the stream variant —
+    resolves after the await-everything render completes; `prelude` streams the
+    complete document bytes (scoped-style tags, then folded html). No
+    `postponed` field: postpone/resume stays a documented non-goal.
+  - **Teardown errors reach the root callbacks**: effect-cleanup and ref-detach
+    throws during unmount report through `onCaughtError` (boundary-claimed) or
+    `onUncaughtError` (unclaimed) with routing semantics unchanged.
+  - **Resource hints share the Float identity model**: `preinit(as:'style')` IS a
+    stylesheet resource (honors `precedence`, joins the groups, dedupes against
+    the rendered form), `preinit(as:'script')` dedupes against
+    `<script async src>`, `preload`/`preloadModule` after the matching init
+    no-op, image preloads with `imageSrcSet` key on the srcset+sizes pair, and
+    malformed calls warn in development.
+  - **Universal renderer**: `onCaughtError`/`onUncaughtError` now apply to
+    `octane/universal` roots (boundary claims and scheduler-owned work; a direct
+    `render()` throw remains the documented result channel, and there is no
+    `onRecoverableError` — the universal renderer has no hydration channel).
+
+- a03ff0f: React 19 parity tranche: Float resources, root error callbacks, module resource hints, and partial-prerender/formState dispositions.
+
+  `<link rel="stylesheet" href precedence>` and `<script async src>` rendered at
+  a component's body root are now React Float resources: hoisted into
+  `document.head`, deduped by href/src across the page, stylesheet groups ordered
+  by precedence (first-encounter group order, appended within a group), retained
+  after unmount, emitted into buffered and streamed SSR head output, and
+  hydration-deduped via the first client call's DOM seed. Suspend-until-loaded
+  commits and `<style href precedence>` style resources remain documented
+  non-goals — `<style>` in a component belongs to Octane's scoped-CSS system.
+
+  `preloadModule` and `preinitModule` join the resource-hint set on both the
+  client and server entries. `createRoot`/`hydrateRoot` accept React 19's
+  `onCaughtError`, `onUncaughtError`, and `onRecoverableError` options
+  (error-only signature — no `errorInfo`/`componentStack`; defaults are unchanged
+  when the options are absent). `unstable_Activity` is aliased to `Activity` for
+  React experimental-channel ports.
+
+  React 19.2 partial pre-rendering (`resume`/`resumeAndPrerender` and the
+  postpone/prelude protocol), `cache()`/`cacheSignal()`, and `hydrateRoot`'s
+  `formState` option are recorded as documented non-goals in the parity ledger,
+  and `docs/differences-from-react.md` now documents the previously unlisted
+  divergences: `Context.Consumer`, `<title>` child handling, per-compile-site
+  metadata dedupe, hidden-`<Activity>` scheduling, dropped stream options,
+  `prerender`'s return shape, the `useId` format, and the `version` string.
+
+- 4c1ecd1: React Float style resources, and the Context.Consumer decision made concrete.
+
+  `<style href precedence>` rendered at a component's body root is now a React
+  Float STYLE RESOURCE: its plain CSS ships by href identity, sharing the
+  stylesheet dedupe namespace and precedence-group ordering with link resources
+  (`data-precedence`/`data-href` marked, SSR-emitted, hydration-deduped, retained
+  after unmount). Every other `<style>` keeps Octane's scoped-CSS behavior.
+  Octane emits one tag per resource (no same-precedence merging), and CSS
+  containing `</style` fails closed in SSR with a development diagnostic.
+
+  Context.Consumer stays modern-only, now with teeth: accessing `.Consumer` in
+  development logs a one-time migration diagnostic (and still returns
+  `undefined`, so feature probes match production), the upstream Consumer
+  scenarios protecting observable behavior are ported as `useContext`-reading
+  conformance tests, and the render-prop-surface-only cases are recorded as
+  parity-ledger non-goals.
+
+## 0.1.35
+
+### Patch Changes
+
+- 50b7988: Cache proven immutable state-array filter projections and skip redundant
+  single-token class updates while preserving controlled field restoration.
+- 6daa380: Start independent asynchronous children in proven bounded keyed lists during
+  the same discovery wave while preserving existing suspense and request reuse.
+- d2c9e1c: Reuse delegated-event accessors and capture paths, and omit redundant component
+  markers for proven exhaustive switch-root components.
+- 01240e6: Speed up universal and Lynx rendering with shared compiled host-template
+  programs, range-based host and listener identities, compiler-proven ownership
+  elision, capability-negotiated compact transport acknowledgements, lazy public
+  handles and query selectors, and lower-allocation reconciliation. Preserve
+  native events, late refs, worklets, lists, portals, first-screen adoption,
+  public handles, and rendered output.
+- 59a35ae: Batch component-owned universal host templates after Lynx first-screen adoption,
+  preserving component hooks, effects, keyed identity, native events, and safe
+  cross-thread public handles while reducing large-list creation overhead.
+- a8b432b: Retain unchanged keyed component subtrees for asynchronous universal renderers,
+  avoiding redundant Lynx row renders while preserving context updates, native
+  listeners, host identity, effect lifetimes, and accepted-commit ordering.
+- 910c240: Specialize proven mixed inline styles so static declarations enter the template
+  and only changed dynamic properties update the DOM.
+- db5687e: Start provably reachable lazy component imports alongside independent suspended
+  work without eagerly loading dormant deferred-hydration islands.
+- e2466a5: Reuse already-warmed asynchronous resources across promoted transition retries
+  without duplicating request creators or exposing partially committed screens.
+- 2d06817: Preserve active IME composition and focus through controlled-input updates,
+  keyed reorders, and deferred hydration; improve Samsung Internet and Android
+  browser compatibility, scheduling, and browser build targets.
+
 ## 0.1.34
 
 ### Patch Changes

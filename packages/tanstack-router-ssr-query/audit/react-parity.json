@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2a9f085e5df15ef2fb23cdb2045a03bd1e392971d99fc3bb5cf14fed93c5168c"
+      "lockfileSha256": "ca9924e360b0459f54522a5dc84e15b55acfad71f5bab79def08d9caf10ef75c"
     }
   },
   "lanes": [
@@ -93,7 +93,7 @@
         {
           "path": "packages/tanstack-router-ssr-query/audit/test-classifications.json",
           "role": "support",
-          "sha256": "ca3c0b1f6c283fdf0087107fc93d5f0f198c9515e8d86832c7e869491707c278"
+          "sha256": "de7506c4ba1972116103810b8ca6ce6de17a3cf6483423a4d430fb7d37b3549f"
         },
         {
           "path": "packages/tanstack-router-ssr-query/scripts/check-upstream-ledger.mjs",
@@ -104,11 +104,6 @@
           "path": "scripts/react-parity/tanstack-router-ssr-query-controls.test.mjs",
           "role": "support",
           "sha256": "1ecafe43b22388449651495a179491c9fd7361babfef803f78dbe93bce2ba07c"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
         }
       ]
     },
@@ -119,7 +114,7 @@
       "environment": "workspace-node",
       "project": "tanstack-router-ssr-query-pristine-types",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55\u2013typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
+      "notes": "Invokes the vendored upstream tsconfig.build.json under typescript55–typescript60, matching upstream test:types accept/reject evidence (no dedicated expectType artifacts).",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",

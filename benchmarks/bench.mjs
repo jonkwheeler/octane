@@ -324,11 +324,16 @@ const SUITES = [
 		cwd: name,
 		servers: [],
 		iter: name === 'lifecycle-memory' ? { normal: 84, quick: 2 } : { normal: 8, quick: 2 },
-		runs: ['octane-tsrx', 'react', 'preact', 'solid', 'svelte', 'vue-vapor'].map((target) => ({
-			label: target,
-			script: 'run.mjs',
-			args: (n) => [target, String(n)],
-		})),
+		runs: [
+			...['octane-tsrx', 'react', 'preact', 'solid', 'svelte', 'vue-vapor'].map((target) => ({
+				label: target,
+				script: 'run.mjs',
+				args: (n) => [target, String(n)],
+			})),
+			...(name === 'event-delegation'
+				? [{ label: 'work', script: 'work.mjs', args: () => [] }]
+				: []),
+		],
 	})),
 	{
 		// Selector-based fan-out: 512 subscribers read one store through a
@@ -638,7 +643,10 @@ const SUITES = [
 		cwd: 'lynx-bundle-size',
 		servers: [],
 		iter: { normal: 1, quick: 1 },
-		runs: [{ script: 'run.mjs', args: () => [] }],
+		runs: [
+			{ script: 'run.mjs', args: () => [] },
+			{ script: 'inventory.mjs', args: () => [] },
+		],
 	},
 	{
 		// Compiled-output size (Node-only, seconds-fast): compiles a fixed

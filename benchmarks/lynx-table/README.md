@@ -24,7 +24,8 @@ build-flag-gated wire profiler — `globalThis.__OCTANE_LYNX_PROF` on each
 thread). Counts are deterministic for a fixed app and interaction sequence, so
 they carry ratio guards in `../baselines/ratios.json` against the
 `changed-rows-model` target — the commands and component renders a change of
-that size strictly implies. Selection allows two Row body executions;
+that size strictly implies. Creating any number of component-owned rows must
+emit one shared-template run. Selection allows two Row body executions;
 update-every-10th allows `ceil(rows / 10)`. The Row counter is compiled out of
 normal browser and production builds. These gates keep wire payload and render
 breadth proportional to change size, not tree size. The suite runs from the
@@ -38,6 +39,9 @@ Because the in-process ContextProxy is synchronous, acknowledgements return
 immediately and the storm gates see one commit per tick; the asynchronous
 "renders while a commit is in flight coalesce into the next commit" contract
 is pinned separately in `packages/octane/tests/universal-transport.test.ts`.
+This harness starts directly on the background renderer; production
+first-screen adoption and the subsequent capability handoff are covered by the
+Lynx first-screen integration tests and the real-browser harness below.
 
 ## 2. Lynx-for-Web wall-clock harness (`web/run-web.mjs`, informational)
 
@@ -82,6 +86,80 @@ from a degraded run.
   references on the same host in the same session.
 - A cell that cannot be driven end-to-end is reported "not measured", never as
   a number from a degraded run.
+
+## 3. Stage-decomposition instrument (`stages/run.mjs`, informational)
+
+```bash
+node stages/run.mjs --smoke --rows 1000 --allow-busy-host
+node stages/run.mjs --reps 5
+```
+
+The reportable command builds control and `__OCTANE_LYNX_PROFILE__` variants,
+requires `n >= 5`, opens a fresh page for every sample, alternates control and
+profile order `AB / BA / AB / ...` in one host window, and runs one vendored
+`vue-vdom` create sample after each pair. It records CPU/OS/Node/Chromium, host
+load at both ends, medians, min-max spread, raw milliseconds, shares, and
+same-window ratios. Do not run other builds, tests, browsers, or benchmark
+processes during that window. The default quiet-host preflight rejects a
+one-minute load average above `0.5 * logical CPUs`; `--allow-busy-host` exists
+only for non-reportable smoke/debug runs or an explicitly disclosed exception.
+
+The reusable analyzer and protocol tests are:
+
+```bash
+node --test stages/*.test.mjs
+```
+
+### Observation contract
+
+Every directly timed interval is exclusive. The analyzer rejects a sample when
+direct intervals exceed its wall clock instead of normalizing or guessing.
+
+**FCP@10k** starts when the shared browser init hook assigns the hidden
+main-thread iframe's Blob script URL (before browser load/parse/evaluation) and
+ends at the first animation-frame observation where the shared composed-tree
+driver sees all 10,000 rows:
+
+1. `mt_slice_eval`: Blob script assignment through the first `root.render()`
+   call, including browser load, parse, and evaluation.
+2. `plan_interpretation`: time inside first-screen `renderPlanNode` walks.
+3. `papi_element_creation`: time inside Element PAPI page/element/list creation
+   calls.
+4. `layout_flush_residual`: the exclusive wall-clock remainder. Web Core does
+   not expose a stable boundary separating PAPI prop/insertion work,
+   `__FlushElementTree`, DOM publication, style/layout, and observer-frame
+   delay, so those costs remain named and visible rather than guessed apart.
+
+Raw view-attach FCP is also reported for control/profile overhead and same-run
+comparison, but decode/fetch before slice evaluation is outside the four-stage
+attribution.
+
+**create@10k** starts at the byte-identical page driver's `pointerdown` boundary
+and ends when that same driver sees 10,000 rows:
+
+1. `bg_replay`: native-event delivery through completion of background render,
+   diff, command staging, and plan folding, stopping before outbound self-check.
+2. `wire_clone_transfer`: the existing ContextProxy `dispatchEvent` interval.
+3. `mt_expand`: main-thread wire-shape preparation before host preparation.
+   Historical plan-wire samples measure `instantiate` expansion; rebased
+   template-program samples measure incremental-run capability validation and
+   freezing under the same archived profile field.
+4. `papi_element_creation`: time inside Element PAPI page/element/list creation
+   calls.
+5. `layout_flush_residual`: the exclusive wall-clock remainder, including
+   event delivery before replay, validation/prepare, non-create PAPI work,
+   flush/layout, scheduling, and observer-frame delay.
+
+Snapshots are collected from the real hidden main-thread iframe and background
+worker, copied as numeric own properties, and parsed without prototype or
+`instanceof` checks. The profiler extends the existing
+`__OCTANE_LYNX_PROFILE__` record; its runtime branches are absent when the
+define is false, and `stages/analyze.test.mjs` gates that production fold
+boundary with byte-equal bundled output against a control entry.
+
+Downstream verdicts use a declared direct-share gate: `GO` requires a directly
+observed target segment (or target segment sum) to contribute at least 10% of
+the operation's median attribution. Residual time never authorizes a step.
 
 ## Claims and non-claims
 

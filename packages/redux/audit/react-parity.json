@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "2a9f085e5df15ef2fb23cdb2045a03bd1e392971d99fc3bb5cf14fed93c5168c"
+      "lockfileSha256": "ca9924e360b0459f54522a5dc84e15b55acfad71f5bab79def08d9caf10ef75c"
     }
   },
   "lanes": [
@@ -56,12 +56,12 @@
         {
           "path": "packages/redux/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "60b1d3aa41f72d6598c0d2b089346979b4d1a4c3a013a245eaaf43743d0c61f7",
+          "sha256": "21394e4a135e7c9cf2d308ff9677bb4d8638c93d2bde9cb53fd2119d6a31c891",
           "cases": [
             {
               "id": "differential:redux-counter",
-              "testName": "counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical",
-              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount \u2192 increment \u00d72 \u2192 decrement renders byte-identical"
+              "testName": "counter: mount → increment ×2 → decrement renders byte-identical",
+              "fullName": "differential: @octanejs/redux vs real react-redux counter: mount → increment ×2 → decrement renders byte-identical"
             }
           ]
         },
@@ -83,12 +83,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "fb93204b6f47c8169da006f1ca00ec24ccf0d42e4b95e82485b678d0b8e37327"
+          "sha256": "3e97762d731f0899f33b4060672dd79f302582b317c0bdf8e8872b9135ee2d64"
         }
       ]
     }

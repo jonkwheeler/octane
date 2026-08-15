@@ -1,5 +1,70 @@
 # @octanejs/motion
 
+## 0.1.37
+
+### Patch Changes
+
+- Updated dependencies [0635af6]
+  - octane@0.1.38
+
+## 0.1.36
+
+### Patch Changes
+
+- Updated dependencies [954c75f]
+- Updated dependencies [94fa199]
+- Updated dependencies [c2e77a3]
+- Updated dependencies [125c861]
+- Updated dependencies [765134a]
+- Updated dependencies [9efd6f4]
+- Updated dependencies [603756a]
+  - octane@0.1.37
+
+## 0.1.35
+
+### Patch Changes
+
+- 60a7251: Preserve host styles and layout FLIP transforms across style MotionValue rebinds.
+
+  Style MotionValue effects patch individual transform functions on the live CSS
+  string, decompose compound layout FLIP `translate(...)` / `scale(...)` forms into
+  shorthands when a style MotionValue binds so unbind can clear only that axis,
+  leave untouched compound forms alone on unbind, and leave plain static style
+  values alone when a key switches from a MotionValue to a host-owned value.
+
+- 60a7251: Leave layout FLIP compound `scale(sx, sy)` intact when unbinding a style `scale` MotionValue.
+- Updated dependencies [972fdd3]
+- Updated dependencies [4a792e3]
+- Updated dependencies [581b8bd]
+- Updated dependencies [24aa236]
+- Updated dependencies [9c397a2]
+- Updated dependencies [24aa236]
+- Updated dependencies [5377ef3]
+- Updated dependencies [6b65644]
+- Updated dependencies [f12a9a9]
+- Updated dependencies [972fdd3]
+- Updated dependencies [1039b7d]
+- Updated dependencies [ffadd39]
+- Updated dependencies [a03ff0f]
+- Updated dependencies [4c1ecd1]
+  - octane@0.1.36
+
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies [50b7988]
+- Updated dependencies [6daa380]
+- Updated dependencies [d2c9e1c]
+- Updated dependencies [01240e6]
+- Updated dependencies [59a35ae]
+- Updated dependencies [a8b432b]
+- Updated dependencies [910c240]
+- Updated dependencies [db5687e]
+- Updated dependencies [e2466a5]
+- Updated dependencies [2d06817]
+  - octane@0.1.35
+
 ## 0.1.33
 
 ### Patch Changes
