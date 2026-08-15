@@ -1125,6 +1125,46 @@ describe('evidence CLI', () => {
 		assert.match(result.stdout, /report.*runnable package test file/i);
 	});
 
+	test('does not require Vitest reports to cover sibling Node or Playwright specs', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\ntest('vitest lane', () => {});\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/node.test.mjs'),
+			"import { test } from 'node:test';\ntest('node lane', () => {});\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/browser.test.ts'),
+			"import { test } from '@playwright/test';\ntest('browser lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/tests/widget.test.ts']),
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
 	test('merges machine reports from every Vitest command in a chained package script', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];

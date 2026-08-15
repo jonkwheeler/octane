@@ -377,9 +377,7 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 	const reportableRunners = new Set(
 		runners.filter((runner) => runner === 'vitest' || runner === 'jest'),
 	);
-	const hasNonReportableRunner = runners.some((runner) => runner !== 'vitest' && runner !== 'jest');
 	const reportableTestFiles = [...runnableTestFiles].filter((filePath) => {
-		if (!hasNonReportableRunner) return true;
 		const source = readFileSync(filePath, 'utf8');
 		if (/\b(?:from\s+|require\s*\()['"]node:test['"]/.test(source)) return false;
 		if (/\b(?:from\s+|require\s*\()['"]@playwright\/test['"]/.test(source)) return false;
