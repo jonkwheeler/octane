@@ -356,7 +356,8 @@ function assertPackageTestReport(plan, reportDirectory, stdout, stderr) {
 	const passed = reports.reduce((total, report) => total + Number(report.numPassedTests ?? 0), 0);
 	const failed = reports.reduce((total, report) => total + Number(report.numFailedTests ?? 0), 0);
 	const skipped = reports.reduce(
-		(total, report) => total + Number(report.numPendingTests ?? report.numTodoTests ?? 0),
+		(total, report) =>
+			total + Number(report.numPendingTests ?? 0) + Number(report.numTodoTests ?? 0),
 		0,
 	);
 	if (passed === 0 || failed !== 0 || skipped !== 0) {
@@ -517,7 +518,12 @@ function typeContainsUnsafe(type, checker, seen = new Set()) {
 			}
 		}
 		for (const property of checker.getPropertiesOfType(type)) {
-			const declaration = property.valueDeclaration ?? property.declarations?.[0];
+			const declarations = property.declarations ?? [];
+			const authoredDeclaration = declarations.find(
+				(declaration) => !declaration.getSourceFile().hasNoDefaultLib,
+			);
+			if (!authoredDeclaration && declarations.length > 0) continue;
+			const declaration = authoredDeclaration ?? property.valueDeclaration;
 			if (
 				declaration &&
 				typeContainsUnsafe(checker.getTypeOfSymbolAtLocation(property, declaration), checker, seen)

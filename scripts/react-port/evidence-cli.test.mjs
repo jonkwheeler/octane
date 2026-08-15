@@ -103,6 +103,8 @@ if (process.env.REACT_PORT_TEST_REPORT_DIR && process.env.FIXTURE_NO_TEST_REPORT
 		writeFileSync(path.join(process.env.REACT_PORT_TEST_REPORT_DIR, 'report-' + index + '.json'), JSON.stringify({
 			numPassedTests: reportFiles.length,
 			numFailedTests: 0,
+			numPendingTests: Number(process.env.FIXTURE_PENDING_TESTS ?? 0),
+			numTodoTests: Number(process.env.FIXTURE_TODO_TESTS ?? 0),
 			testResults: reportFiles.map((file) => ({ name: path.join(process.cwd(), file) })),
 		}));
 	}
@@ -741,6 +743,7 @@ describe('evidence CLI', () => {
 			['return', 'export declare function unsafe(): any;\n'],
 			['property', 'export declare const unsafe: { value: any };\n'],
 			['nested-unknown', 'export declare const unsafe: { value: unknown };\n'],
+			['promise-argument', 'export declare function unsafe(): Promise<any>;\n'],
 		]) {
 			const { workspaceRoot } = createReadyBatch();
 			const packageDirectory = createCompletePackage(workspaceRoot);
@@ -780,11 +783,11 @@ describe('evidence CLI', () => {
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		writeFileSync(
 			path.join(packageDirectory, 'src/index.ts'),
-			'export declare function safe(input: { value: string }): { value: number };\n',
+			'export declare function safe(input: { value: string }): { value: number };\nexport declare function load(): Promise<{ value: string }>;\n',
 		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/types/public/public.ts'),
-			"import { safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
+			"import { load, safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\nload satisfies () => Promise<{ value: string }>;\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
 		);
 
 		assert.doesNotThrow(() =>
@@ -1007,6 +1010,31 @@ describe('evidence CLI', () => {
 
 		assert.equal(result.status, 2);
 		assert.match(result.stdout, /created 1 machine-readable.*for 2 reportable runner/i);
+	});
+
+	test('rejects todo registrations when a runner also reports zero pending tests', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{ env: { FIXTURE_PENDING_TESTS: '0', FIXTURE_TODO_TESTS: '1' } },
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stdout, /complete passing registration set/i);
 	});
 
 	test('accepts existing workspace package test registration patterns before execution', () => {
