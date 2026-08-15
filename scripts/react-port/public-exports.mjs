@@ -5,16 +5,58 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 
-function exportTargets(value, keyPath = 'exports', subpath = '.') {
-	if (typeof value === 'string') return [{ keyPath, subpath, target: value }];
+function exportTargets(value, keyPath = 'exports', subpath = '.', conditions = []) {
+	if (typeof value === 'string') return [{ conditions, keyPath, subpath, target: value }];
+	if (value === null) return [{ conditions, excluded: true, keyPath, subpath }];
 	if (Array.isArray(value)) {
-		return value.flatMap((nested, index) => exportTargets(nested, `${keyPath}[${index}]`, subpath));
+		return value.flatMap((nested, index) =>
+			exportTargets(nested, `${keyPath}[${index}]`, subpath, conditions),
+		);
 	}
 	if (!value || typeof value !== 'object') return [];
 	const entries = Object.entries(value);
 	const hasSubpaths = entries.some(([key]) => key.startsWith('.'));
 	return entries.flatMap(([key, nested]) =>
-		exportTargets(nested, `${keyPath}.${key}`, hasSubpaths ? key : subpath),
+		exportTargets(
+			nested,
+			`${keyPath}.${key}`,
+			hasSubpaths ? key : subpath,
+			hasSubpaths ? conditions : [...conditions, key],
+		),
+	);
+}
+
+function matchesExportPattern(pattern, subpath) {
+	if (!pattern.includes('*')) return pattern === subpath;
+	const expression = new RegExp(
+		`^${pattern
+			.split('*')
+			.map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+			.join('(.+)')}$`,
+	);
+	return expression.test(subpath);
+}
+
+function exportPatternSpecificity(pattern) {
+	const wildcard = pattern.indexOf('*');
+	return wildcard === -1
+		? [1, pattern.length, 0, pattern.length]
+		: [0, wildcard, pattern.length - wildcard - 1, pattern.length - 1];
+}
+
+function compareSpecificity(left, right) {
+	for (let index = 0; index < left.length; index++) {
+		if (left[index] !== right[index]) return left[index] - right[index];
+	}
+	return 0;
+}
+
+function isExcludedSubpath(subpath, includedPattern, exclusions) {
+	const includedSpecificity = exportPatternSpecificity(includedPattern);
+	return exclusions.some(
+		(exclusion) =>
+			matchesExportPattern(exclusion.subpath, subpath) &&
+			compareSpecificity(exportPatternSpecificity(exclusion.subpath), includedSpecificity) > 0,
 	);
 }
 
@@ -172,6 +214,10 @@ function inspectModule(targetPath, packageDirectory, visiting = new Set()) {
 	if (/\.d\.[cm]?ts$/i.test(targetPath)) {
 		return { exports: new Set(['declaration-contract']), sideEffect: false };
 	}
+	const emptyRuntimeMarker =
+		/^\s*(?:\/\*\s*@octane-public-empty-marker\s*\*\/|\/\/\s*@octane-public-empty-marker)\s*$/.test(
+			source,
+		);
 	const sourceFile = ts.createSourceFile(
 		targetPath,
 		source,
@@ -301,7 +347,7 @@ function inspectModule(targetPath, packageDirectory, visiting = new Set()) {
 			sideEffect = true;
 		}
 	}
-	return { exports, sideEffect };
+	return { emptyRuntimeMarker, exports, sideEffect };
 }
 
 function validatesAfterPrepack(manifest, target) {
@@ -314,7 +360,9 @@ export function inspectPublicExports(packageDirectory) {
 	const resolvedPackageDirectory = realpathSync(packageDirectory);
 	const manifestPath = path.join(resolvedPackageDirectory, 'package.json');
 	const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-	const declaredTargets = exportTargets(manifest.exports);
+	const entries = exportTargets(manifest.exports);
+	const declaredTargets = entries.filter(({ excluded }) => !excluded);
+	const exclusions = entries.filter(({ excluded }) => excluded);
 	if (declaredTargets.length === 0)
 		throw new Error('Package exports must declare at least one target');
 	const files = packageFiles(resolvedPackageDirectory);
@@ -324,7 +372,7 @@ export function inspectPublicExports(packageDirectory) {
 		if (!target.startsWith('./')) {
 			throw new Error(`${keyPath} must use a package-relative target: ${target}`);
 		}
-		const concreteTargets = target.includes('*')
+		const matchedTargets = target.includes('*')
 			? wildcardMatches(resolvedPackageDirectory, target, files).map(
 					({ captures, targetPath }) => ({
 						concreteSubpath: captures.reduce(
@@ -334,7 +382,16 @@ export function inspectPublicExports(packageDirectory) {
 						targetPath,
 					}),
 				)
-			: [{ concreteSubpath: subpath, targetPath: path.resolve(resolvedPackageDirectory, target) }];
+			: [
+					{
+						concreteSubpath: subpath,
+						targetPath: path.resolve(resolvedPackageDirectory, target),
+					},
+				];
+		const concreteTargets = matchedTargets.filter(
+			({ concreteSubpath }) => !isExcludedSubpath(concreteSubpath, subpath, exclusions),
+		);
+		if (matchedTargets.length > 0 && concreteTargets.length === 0) continue;
 		if (concreteTargets.length === 0 && validatesAfterPrepack(manifest, target)) {
 			targets.push({ ...declared, validation: 'packed-artifact' });
 			continue;
@@ -362,6 +419,7 @@ export function inspectPublicExports(packageDirectory) {
 				...declared,
 				concreteSubpath: concrete.concreteSubpath,
 				concreteTarget: `./${relativeTarget.replaceAll('\\', '/')}`,
+				emptyRuntimeMarker: contract.emptyRuntimeMarker === true,
 				validation:
 					contract.exports.size > 0
 						? 'module-exports'
@@ -379,6 +437,20 @@ export function inspectPublicExports(packageDirectory) {
 		);
 		if (conditions.every(({ validation }) => validation === 'empty')) {
 			throw new Error(`${subpath} exposes no public contract through any export condition`);
+		}
+		for (const target of conditions) {
+			if (
+				!target.conditions.includes('types') &&
+				target.validation === 'empty' &&
+				target.emptyRuntimeMarker
+			) {
+				target.validation = 'empty-marker';
+			}
+			if (!target.conditions.includes('types') && target.validation === 'empty') {
+				throw new Error(
+					`${subpath} runtime export condition ${target.conditions.join('.') || 'default'} exposes no public contract`,
+				);
+			}
 		}
 	}
 	return { status: 'passed', package: manifest.name, targets };

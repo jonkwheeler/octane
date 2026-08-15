@@ -7,6 +7,7 @@ import {
 	mkdirSync,
 	mkdtempSync,
 	readFileSync,
+	readdirSync,
 	symlinkSync,
 	writeFileSync,
 } from 'node:fs';
@@ -95,7 +96,17 @@ import { appendFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 if (process.env.FIXTURE_COUNTER) appendFileSync(process.env.FIXTURE_COUNTER, process.env.FIXTURE_COUNTER_VALUE ?? 'x');
 const outputFile = process.argv.find((argument) => argument.startsWith('--outputFile='))?.slice('--outputFile='.length);
-if (outputFile && process.env.FIXTURE_NO_TEST_REPORT !== '1') {
+if (process.env.REACT_PORT_TEST_REPORT_DIR && process.env.FIXTURE_NO_TEST_REPORT !== '1') {
+	const files = JSON.parse(process.env.FIXTURE_REPORT_FILES ?? '["packages/widget/tests/widget.test.ts"]');
+	const reportGroups = process.env.FIXTURE_SINGLE_REPORT === '1' ? [files] : files.map((file) => [file]);
+	for (const [index, reportFiles] of reportGroups.entries()) {
+		writeFileSync(path.join(process.env.REACT_PORT_TEST_REPORT_DIR, 'report-' + index + '.json'), JSON.stringify({
+			numPassedTests: reportFiles.length,
+			numFailedTests: 0,
+			testResults: reportFiles.map((file) => ({ name: path.join(process.cwd(), file) })),
+		}));
+	}
+} else if (outputFile && process.env.FIXTURE_NO_TEST_REPORT !== '1') {
 	writeFileSync(outputFile, JSON.stringify({
 		numPassedTests: Number(process.env.FIXTURE_PASSED_TESTS ?? 1),
 		numFailedTests: 0,
@@ -690,6 +701,337 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('requires a meaningful positive assertion for every imported public export', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			'export const widget = true;\nexport const helper = 1;\n',
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/public.ts'),
+			"import { widget, helper } from '@octanejs/widget';\nwidget satisfies boolean;\nvoid helper;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					{
+						binding: '@octanejs/widget',
+						bindingDirectory: 'packages/widget',
+						upstreamTestInventory: [],
+					},
+					{ workspaceRoot },
+				),
+			/every imported public export.*helper|positive assertion.*helper/i,
+		);
+	});
+
+	test('rejects nested any and unknown in imported public contracts', () => {
+		for (const [label, source] of [
+			['return', 'export declare function unsafe(): any;\n'],
+			['property', 'export declare const unsafe: { value: any };\n'],
+			['nested-unknown', 'export declare const unsafe: { value: unknown };\n'],
+		]) {
+			const { workspaceRoot } = createReadyBatch();
+			const packageDirectory = createCompletePackage(workspaceRoot);
+			writeFileSync(path.join(packageDirectory, 'src/index.ts'), source);
+			writeFileSync(
+				path.join(packageDirectory, 'tests/types/public/public.ts'),
+				"import { unsafe } from '@octanejs/widget';\nunsafe satisfies {};\n// @ts-expect-error public contract rejects an impossible property\nunsafe.__missing;\n",
+			);
+
+			assert.throws(
+				() =>
+					assertApprovedGateCommand(
+						['public-types'],
+						[
+							'pnpm',
+							'exec',
+							'tsrx-tsc',
+							'--noEmit',
+							'-p',
+							'packages/widget/tests/types/public/tsconfig.json',
+						],
+						{
+							binding: '@octanejs/widget',
+							bindingDirectory: 'packages/widget',
+							upstreamTestInventory: [],
+						},
+						{ workspaceRoot },
+					),
+				/imported public type.*any or unknown/i,
+				label,
+			);
+		}
+	});
+
+	test('accepts recursively safe callable and object public contracts', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			'export declare function safe(input: { value: string }): { value: number };\n',
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/public.ts'),
+			"import { safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
+		);
+
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['public-types'],
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/public/tsconfig.json',
+				],
+				{
+					binding: '@octanejs/widget',
+					bindingDirectory: 'packages/widget',
+					upstreamTestInventory: [],
+				},
+				{ workspaceRoot },
+			),
+		);
+	});
+
+	test('rejects vacuous satisfies and false bare Equal aliases as positive assertions', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const publicPath = path.join(packageDirectory, 'tests/types/public/public.ts');
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nwidget satisfies unknown;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [],
+		};
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					node,
+					{ workspaceRoot },
+				),
+			/positive type assertion/i,
+		);
+
+		const registrationId = 'react-registration-v1:pinned-type-case';
+		const upstreamPath = path.join(packageDirectory, 'tests/types/upstream/pristine.ts');
+		writeFileSync(
+			upstreamPath,
+			`import { widget } from 'widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('${registrationId}', () => { type WidgetIsFalse = Equal<typeof widget, false>; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n`,
+		);
+		const configPath = path.join(packageDirectory, 'tests/types/upstream/tsconfig.pristine.json');
+		const config = JSON.parse(readFileSync(configPath, 'utf8'));
+		config.reactPortEvidence.upstreamRegistrations = [registrationId];
+		writeFileSync(configPath, JSON.stringify(config));
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-pristine'],
+					[
+						'pnpm',
+						'exec',
+						'tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+					],
+					{
+						...node,
+						packageName: 'widget',
+						upstreamTestInventory: [{ kind: 'type', registrations: [{ id: registrationId }] }],
+					},
+					{ workspaceRoot },
+				),
+			/real assertion group|positive(?: type)?(?: and negative)? assertions?/i,
+		);
+	});
+
+	test('rejects locally spoofed assertion helpers', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/public.ts'),
+			"import { widget } from '@octanejs/widget';\ndeclare function expectType<T>(value: any): void;\nexpectType<boolean>(widget);\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					{
+						binding: '@octanejs/widget',
+						bindingDirectory: 'packages/widget',
+						upstreamTestInventory: [],
+					},
+					{ workspaceRoot },
+				),
+			/positive type assertion/i,
+		);
+	});
+
+	test('accepts dynamic package registrations when the machine report proves execution', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\nconst cases = ['one', 'two'];\ntest('function callback', function () {});\ntest.each(cases)('case %s', () => {});\nfor (const value of cases) test(`loop ${value}`, () => {});\n",
+		);
+
+		const result = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			'pnpm',
+			'--dir',
+			'packages/widget',
+			'test',
+		]);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('merges machine reports from every Vitest command in a chained package script', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test =
+			'vitest run --root ../.. --project widget && vitest run --root ../.. --project widget-differential';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-differential.test.ts'),
+			"import { test } from 'vitest';\ntest('differential', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify([
+						'packages/widget/tests/widget.test.ts',
+						'packages/widget/tests/widget-differential.test.ts',
+					]),
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('requires a machine report from every chained test-runner invocation', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'vitest run --project widget && vitest run --project differential';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-differential.test.ts'),
+			"import { test } from 'vitest';\ntest('differential', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_SINGLE_REPORT: '1',
+					FIXTURE_REPORT_FILES: JSON.stringify([
+						'packages/widget/tests/widget.test.ts',
+						'packages/widget/tests/widget-differential.test.ts',
+					]),
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stdout, /created 1 machine-readable.*for 2 reportable runner/i);
+	});
+
+	test('accepts existing workspace package test registration patterns before execution', () => {
+		const workspaceRoot = path.resolve(SCRIPT_DIRECTORY, '../..');
+		const failures = [];
+		for (const directory of readdirSync(path.join(workspaceRoot, 'packages'))) {
+			const manifestPath = path.join(workspaceRoot, 'packages', directory, 'package.json');
+			if (!existsSync(manifestPath)) continue;
+			const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+			if (!manifest.name?.startsWith('@octanejs/') || !manifest.scripts?.test) continue;
+			try {
+				assertApprovedGateCommand(
+					['package-tests'],
+					['pnpm', '--dir', `packages/${directory}`, 'test'],
+					{ bindingDirectory: `packages/${directory}` },
+					{ workspaceRoot },
+				);
+			} catch (error) {
+				failures.push(`${directory}: ${error instanceof Error ? error.message : String(error)}`);
+			}
+		}
+
+		assert.deepEqual(failures, []);
+	});
+
 	test('rejects package-test evidence that never runs a passing test', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -717,7 +1059,7 @@ describe('evidence CLI', () => {
 		]);
 
 		assert.equal(result.status, 2);
-		assert.match(result.stderr, /finish with a running|runnable test registrations/i);
+		assert.match(result.stderr, /must run Vitest|runnable test registrations/i);
 		const manifest = JSON.parse(readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'));
 		assert.equal(
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
@@ -759,7 +1101,7 @@ describe('evidence CLI', () => {
 		);
 		assert.match(
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			/machine-readable test report/i,
+			/machine-readable report/i,
 		);
 	});
 
@@ -791,7 +1133,7 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 2);
 		assert.match(
 			result.stderr,
-			/machine-readable|test report|executed passing test|finish with a running/i,
+			/machine-readable|test report|executed passing test|must run Vitest/i,
 		);
 		const batchManifest = JSON.parse(
 			readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'),
@@ -802,7 +1144,7 @@ describe('evidence CLI', () => {
 		);
 	});
 
-	test('requires Node TAP to pass every counted package test registration', () => {
+	test('requires Node TAP to report a complete passing test set', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
@@ -846,7 +1188,7 @@ describe('evidence CLI', () => {
 		);
 		assert.match(
 			batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			/passed 1, total 2, expected 2/i,
+			/passed 1, total 2, failed 0, skipped 1/i,
 		);
 	});
 

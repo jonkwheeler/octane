@@ -5,7 +5,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSyn
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import {
 	extractTestCases,
@@ -234,70 +234,68 @@ function bindingPackageDirectory(node, workspaceRoot) {
 	return packageDirectory;
 }
 
-function packageTestRunner(manifest, scriptName = 'test', visiting = new Set()) {
-	if (visiting.has(scriptName)) return null;
+function packageTestRunners(manifest, scriptName = 'test', visiting = new Set()) {
+	if (visiting.has(scriptName)) return [];
 	const script = manifest.scripts?.[scriptName]?.trim();
-	if (!script) return null;
+	if (!script) return [];
 	const nextVisiting = new Set(visiting).add(scriptName);
 	const segments = script
 		.split(/&&|\|\||;/)
 		.map((segment) => segment.trim().replace(/^(?:[A-Za-z_][A-Za-z0-9_]*=[^\s]+\s+)+/, ''));
-	const segment = segments.at(-1) ?? '';
-	const direct = segment.match(/^(?:(?:pnpm\s+(?:exec\s+)?)?)(vitest|jest)(?:\s+(.*))?$/);
-	if (direct) {
-		const [, runner, rawArguments = ''] = direct;
+	const runners = [];
+	for (const segment of segments) {
+		const direct = segment.match(/^(?:(?:pnpm\s+(?:exec\s+)?)?)(vitest|jest)(?:\s+(.*))?$/);
+		if (direct) {
+			const [, runner, rawArguments = ''] = direct;
+			if (
+				!/--(?:version|help|listTests|showConfig)\b|(?:^|\s)(?:list|--watch)(?:\s|$)/.test(
+					rawArguments,
+				) &&
+				(runner !== 'vitest' || /(?:^|\s)(?:run|--run)(?:\s|$)/.test(rawArguments))
+			) {
+				runners.push(runner);
+			}
+			continue;
+		}
+		if (/^node\s+--test(?:\s|$)/.test(segment)) {
+			if (
+				!/--(?:help|test-name-pattern|test-only|watch)\b|(?:^|\s)--version(?:\s|$)/.test(segment)
+			) {
+				runners.push('node-test');
+			}
+			continue;
+		}
 		if (
-			/--(?:version|help|listTests|showConfig)\b|(?:^|\s)(?:list|--watch)(?:\s|$)/.test(
-				rawArguments,
+			/^node\s+(?:(?:\.\.\/)+)?scripts\/react-parity\/harness\.mjs\s+run-required(?:\s|$)/.test(
+				segment,
 			)
 		) {
-			return null;
+			runners.push('react-parity');
+			continue;
 		}
-		if (runner === 'vitest' && !/(?:^|\s)(?:run|--run)(?:\s|$)/.test(rawArguments)) {
-			return null;
-		}
-		return runner;
+		const delegated = segment.match(/^pnpm\s+(?:run\s+)?([^\s]+)$/)?.[1];
+		if (delegated) runners.push(...packageTestRunners(manifest, delegated, nextVisiting));
 	}
-	if (/^node\s+--test(?:\s|$)/.test(segment)) {
-		if (/--(?:help|test-name-pattern|test-only|watch)\b|(?:^|\s)--version(?:\s|$)/.test(segment)) {
-			return null;
-		}
-		return 'node-test';
-	}
-	if (
-		/^node\s+(?:(?:\.\.\/)+)?scripts\/react-parity\/harness\.mjs\s+run-required(?:\s|$)/.test(
-			segment,
-		)
-	) {
-		return 'react-parity';
-	}
-	const delegated = segment.match(/^pnpm\s+(?:run\s+)?([^\s]+)$/)?.[1];
-	return delegated ? packageTestRunner(manifest, delegated, nextVisiting) : null;
+	return runners;
 }
 
 function packageTestExecutionPlan(node, workspaceRoot) {
 	const packageDirectory = bindingPackageDirectory(node, workspaceRoot);
 	const manifest = JSON.parse(readFileSync(path.join(packageDirectory, 'package.json'), 'utf8'));
-	const runner = packageTestRunner(manifest);
-	if (!runner) {
+	const runners = packageTestRunners(manifest);
+	if (runners.length === 0) {
 		throw new Error(
-			'Package test script must finish with a running Vitest, Jest, node --test, or repository parity command',
+			'Package test script must run Vitest, Jest, node --test, or the repository parity command',
 		);
 	}
-	let countedRegistrations = 0;
+	let hasRunnableRegistration = false;
 	const testFiles = discoverPackageTests(packageDirectory).map((filePath) =>
 		realpathSync(filePath),
 	);
 	for (const testPath of testFiles) {
 		const source = readFileSync(testPath, 'utf8');
 		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
-		if (possibleRegistrars.length > 0) {
-			throw new Error(
-				`Package tests contain unexpanded registrar(s): ${possibleRegistrars
-					.map(({ name }) => name)
-					.join(', ')}`,
-			);
-		}
+		hasRunnableRegistration ||= possibleRegistrars.length > 0;
 		for (const testCase of extractTestCases(source, { file: testPath })) {
 			if (
 				testCase.kind === 'xit' ||
@@ -305,55 +303,68 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 			) {
 				continue;
 			}
-			if (!Number.isSafeInteger(testCase.estimatedRegistrations)) {
-				throw new Error(`Package test registration count is unknown in ${testPath}`);
-			}
-			countedRegistrations += testCase.estimatedRegistrations;
+			hasRunnableRegistration ||=
+				!Number.isSafeInteger(testCase.estimatedRegistrations) ||
+				testCase.estimatedRegistrations > 0;
 		}
 	}
-	if (countedRegistrations === 0) {
+	if (!hasRunnableRegistration) {
 		throw new Error('Package test gate has no runnable test registrations');
 	}
-	return { countedRegistrations, packageDirectory, runner, testFiles };
+	return { packageDirectory, runners, testFiles };
 }
 
-function packageTestCommand(commandArguments, plan, reportPath) {
-	if (plan.runner === 'vitest') {
-		return [...commandArguments, '--reporter=json', `--outputFile=${reportPath}`];
-	}
-	if (plan.runner === 'jest') {
-		return [...commandArguments, '--json', `--outputFile=${reportPath}`];
-	}
-	if (plan.runner === 'node-test') {
+function packageTestCommand(commandArguments, plan) {
+	if (plan.runners.length === 1 && plan.runners[0] === 'node-test') {
 		return [...commandArguments, '--test-reporter=tap', ...plan.testFiles];
 	}
 	return commandArguments;
 }
 
-function assertPackageTestReport(plan, reportPath, stdout, stderr) {
-	if (plan.runner === 'react-parity') return;
-	if (plan.runner === 'node-test') {
+function assertPackageTestReport(plan, reportDirectory, stdout, stderr) {
+	if (plan.runners.every((runner) => runner === 'react-parity')) return;
+	if (plan.runners.every((runner) => runner === 'node-test')) {
 		const output = `${stdout ?? ''}\n${stderr ?? ''}`;
-		const passed = Number(output.match(/^#\s*pass\s+(\d+)\s*$/im)?.[1] ?? 0);
-		const total = Number(output.match(/^#\s*tests\s+(\d+)\s*$/im)?.[1] ?? 0);
-		if (passed < plan.countedRegistrations || total < plan.countedRegistrations) {
+		const sum = (label) =>
+			[...output.matchAll(new RegExp(`^#\\s*${label}\\s+(\\d+)\\s*$`, 'gim'))].reduce(
+				(total, match) => total + Number(match[1]),
+				0,
+			);
+		const passed = sum('pass');
+		const total = sum('tests');
+		const failed = sum('fail');
+		const skipped = sum('skipped') + sum('todo');
+		if (passed === 0 || passed !== total || failed !== 0 || skipped !== 0) {
 			throw new Error(
-				`Package test runner reported no complete executed passing test set (passed ${passed}, total ${total}, expected ${plan.countedRegistrations}); runner output: ${output.slice(-1_000) || 'none'}`,
+				`Package test runner reported no complete executed passing test set (passed ${passed}, total ${total}, failed ${failed}, skipped ${skipped}); runner output: ${output.slice(-1_000) || 'none'}`,
 			);
 		}
 		return;
 	}
-	if (!existsSync(reportPath)) {
-		throw new Error('Package test runner did not create its machine-readable test report');
+	const reportPaths = readdirSync(reportDirectory)
+		.filter((name) => name.endsWith('.json'))
+		.map((name) => path.join(reportDirectory, name));
+	const expectedReports = plan.runners.filter((runner) =>
+		['vitest', 'jest'].includes(runner),
+	).length;
+	if (reportPaths.length < expectedReports) {
+		throw new Error(
+			`Package test runner created ${reportPaths.length} machine-readable report(s) for ${expectedReports} reportable runner invocation(s)`,
+		);
 	}
-	const report = readJson(reportPath, 'package test report');
-	const passed = Number(report.numPassedTests ?? 0);
-	const failed = Number(report.numFailedTests ?? 0);
-	if (passed < plan.countedRegistrations || failed !== 0) {
+	const reports = reportPaths.map((reportPath) => readJson(reportPath, 'package test report'));
+	const passed = reports.reduce((total, report) => total + Number(report.numPassedTests ?? 0), 0);
+	const failed = reports.reduce((total, report) => total + Number(report.numFailedTests ?? 0), 0);
+	const skipped = reports.reduce(
+		(total, report) => total + Number(report.numPendingTests ?? report.numTodoTests ?? 0),
+		0,
+	);
+	if (passed === 0 || failed !== 0 || skipped !== 0) {
 		throw new Error('Package test report does not contain the complete passing registration set');
 	}
 	const reportedFiles = new Set(
-		(report.testResults ?? [])
+		reports
+			.flatMap((report) => report.testResults ?? [])
 			.map((result) => result.name ?? result.testFilePath)
 			.filter((filePath) => typeof filePath === 'string')
 			.map((filePath) => canonicalPath(path.resolve(plan.packageDirectory, filePath))),
@@ -463,29 +474,129 @@ function referencesSymbols(node, checker, symbols) {
 	return found;
 }
 
-function typeAssertionName(node, sourceFile) {
-	const text = node.getText(sourceFile);
-	return /\b(?:Assert|AssertNotAny|Equal|Expect|IsAny|expectType|expectTypeOf)\b/.test(text);
-}
-
-function containsPositiveTypeAssertion(node, sourceFile, checker, symbols) {
-	let found = false;
+function referencedProvenance(node, checker, provenanceBySymbol) {
+	const keys = new Set();
 	const visit = (child) => {
-		if (
-			(ts.isSatisfiesExpression(child) && referencesSymbols(child, checker, symbols)) ||
-			(ts.isCallExpression(child) &&
-				/\bexpectType(?:Of)?\b/.test(child.expression.getText(sourceFile)) &&
-				referencesSymbols(child, checker, symbols)) ||
-			(ts.isTypeAliasDeclaration(child) &&
-				typeAssertionName(child.type, sourceFile) &&
-				referencesSymbols(child.type, checker, symbols))
-		) {
-			found = true;
+		if (ts.isIdentifier(child)) {
+			for (const key of provenanceBySymbol.get(checker.getSymbolAtLocation(child)) ?? []) {
+				keys.add(key);
+			}
 		}
-		if (!found) ts.forEachChild(child, visit);
+		ts.forEachChild(child, visit);
 	};
 	visit(node);
-	return found;
+	return keys;
+}
+
+function typeContainsUnsafe(type, checker, seen = new Set()) {
+	if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) return true;
+	if (seen.has(type)) return false;
+	seen.add(type);
+	if (type.isUnionOrIntersection?.()) {
+		return type.types.some((nested) => typeContainsUnsafe(nested, checker, seen));
+	}
+	for (const signature of [
+		...checker.getSignaturesOfType(type, ts.SignatureKind.Call),
+		...checker.getSignaturesOfType(type, ts.SignatureKind.Construct),
+	]) {
+		if (typeContainsUnsafe(checker.getReturnTypeOfSignature(signature), checker, seen)) return true;
+		for (const parameter of signature.parameters) {
+			const declaration = parameter.valueDeclaration ?? parameter.declarations?.[0];
+			if (
+				declaration &&
+				typeContainsUnsafe(checker.getTypeOfSymbolAtLocation(parameter, declaration), checker, seen)
+			) {
+				return true;
+			}
+		}
+	}
+	if (type.flags & ts.TypeFlags.Object) {
+		if (type.objectFlags & ts.ObjectFlags.Reference) {
+			for (const argument of checker.getTypeArguments(type)) {
+				if (typeContainsUnsafe(argument, checker, seen)) return true;
+			}
+		}
+		for (const property of checker.getPropertiesOfType(type)) {
+			const declaration = property.valueDeclaration ?? property.declarations?.[0];
+			if (
+				declaration &&
+				typeContainsUnsafe(checker.getTypeOfSymbolAtLocation(property, declaration), checker, seen)
+			) {
+				return true;
+			}
+		}
+		for (const indexInfo of checker.getIndexInfosOfType(type)) {
+			if (typeContainsUnsafe(indexInfo.type, checker, seen)) return true;
+		}
+	}
+	return false;
+}
+
+function assertionRootIdentifier(expression) {
+	if (ts.isIdentifier(expression)) return expression;
+	if (ts.isPropertyAccessExpression(expression)) {
+		return assertionRootIdentifier(expression.expression);
+	}
+	if (ts.isCallExpression(expression)) return assertionRootIdentifier(expression.expression);
+	return null;
+}
+
+function positiveAssertionProvenance(node, checker, provenanceBySymbol, trustedAssertionSymbols) {
+	const provenance = referencedProvenance(node, checker, provenanceBySymbol);
+	if (provenance.size === 0) return null;
+	if (ts.isSatisfiesExpression(node)) {
+		const constraint = checker.getTypeFromTypeNode(node.type);
+		const emptyObjectConstraint = ts.isTypeLiteralNode(node.type) && node.type.members.length === 0;
+		return constraint.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown) || emptyObjectConstraint
+			? null
+			: provenance;
+	}
+	if (ts.isTypeAliasDeclaration(node)) {
+		const result = checker.getTypeFromTypeNode(node.type);
+		return result.flags & ts.TypeFlags.BooleanLiteral && result.intrinsicName === 'true'
+			? provenance
+			: null;
+	}
+	if (ts.isCallExpression(node)) {
+		const root = assertionRootIdentifier(node.expression);
+		const rootSymbol = root && checker.getSymbolAtLocation(root);
+		if (!rootSymbol || !trustedAssertionSymbols.has(rootSymbol)) return null;
+		if (
+			node.typeArguments?.some((argument) =>
+				typeContainsUnsafe(checker.getTypeFromTypeNode(argument), checker),
+			)
+		) {
+			return null;
+		}
+		if (root.text === 'expectType') {
+			return node.typeArguments?.length && node.arguments.length ? provenance : null;
+		}
+		return ts.isPropertyAccessExpression(node.expression) ? provenance : null;
+	}
+	return null;
+}
+
+function collectPositiveAssertionProvenance(
+	node,
+	checker,
+	provenanceBySymbol,
+	trustedAssertionSymbols,
+) {
+	const asserted = new Set();
+	const visit = (child) => {
+		const provenance = positiveAssertionProvenance(
+			child,
+			checker,
+			provenanceBySymbol,
+			trustedAssertionSymbols,
+		);
+		if (provenance) {
+			for (const key of provenance) asserted.add(key);
+		}
+		ts.forEachChild(child, visit);
+	};
+	visit(node);
+	return asserted;
 }
 
 function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
@@ -497,6 +608,15 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 	const importedBindings = [];
 	const fileEvidence = new Map();
 	const projectImportsBySpecifier = new Map();
+	const provenanceBySymbol = new Map();
+	const publicExports = new Map();
+	const trustedAssertionSymbols = new Set();
+	const addProvenance = (symbol, key) => {
+		if (!symbol) return;
+		const provenance = provenanceBySymbol.get(symbol) ?? new Set();
+		provenance.add(key);
+		provenanceBySymbol.set(symbol, provenance);
+	};
 
 	for (const filePath of checkerFiles) {
 		const source = readFileSync(filePath, 'utf8');
@@ -505,6 +625,22 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 			ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKind(filePath));
 		const taintedSymbols = new Set();
 		for (const statement of sourceFile.statements) {
+			if (
+				ts.isImportDeclaration(statement) &&
+				ts.isStringLiteral(statement.moduleSpecifier) &&
+				['vitest', 'expect-type', 'tsd'].includes(statement.moduleSpecifier.text) &&
+				statement.importClause?.namedBindings &&
+				ts.isNamedImports(statement.importClause.namedBindings)
+			) {
+				for (const element of statement.importClause.namedBindings.elements) {
+					if (
+						['expectType', 'expectTypeOf'].includes(element.propertyName?.text ?? element.name.text)
+					) {
+						const symbol = checker.getSymbolAtLocation(element.name);
+						if (symbol) trustedAssertionSymbols.add(symbol);
+					}
+				}
+			}
 			if (
 				!ts.isImportDeclaration(statement) ||
 				!ts.isStringLiteral(statement.moduleSpecifier) ||
@@ -524,6 +660,7 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 				bindingSymbols(clause.name, checker, taintedSymbols);
 				record.coveredExports.add('default');
 				importedBindings.push(clause.name);
+				addProvenance(checker.getSymbolAtLocation(clause.name), `${specifier}:default`);
 			}
 			if (clause?.namedBindings && ts.isNamespaceImport(clause.namedBindings)) {
 				bindingSymbols(clause.namedBindings.name, checker, taintedSymbols);
@@ -533,8 +670,10 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 			if (clause?.namedBindings && ts.isNamedImports(clause.namedBindings)) {
 				for (const element of clause.namedBindings.elements) {
 					bindingSymbols(element.name, checker, taintedSymbols);
-					record.coveredExports.add(element.propertyName?.text ?? element.name.text);
+					const exportName = element.propertyName?.text ?? element.name.text;
+					record.coveredExports.add(exportName);
 					importedBindings.push(element.name);
+					addProvenance(checker.getSymbolAtLocation(element.name), `${specifier}:${exportName}`);
 				}
 			}
 			projectImportsBySpecifier.set(specifier, record);
@@ -561,6 +700,9 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 			}
 		}
 		for (const symbol of exports) {
+			const exportKey = `${specifier}:${symbol.name}`;
+			publicExports.set(exportKey, { name: symbol.name, specifier });
+			addProvenance(symbol, exportKey);
 			const declaration =
 				symbol.valueDeclaration ?? symbol.declarations?.[0] ?? record.moduleSpecifier;
 			let type;
@@ -569,10 +711,12 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 					symbol.flags & (ts.SymbolFlags.TypeAlias | ts.SymbolFlags.Interface)
 						? checker.getDeclaredTypeOfSymbol(symbol)
 						: checker.getTypeOfSymbolAtLocation(symbol, declaration);
-			} catch {
-				continue;
+			} catch (error) {
+				throw new Error(
+					`Type project cannot inspect public export ${specifier}.${symbol.name}: ${error instanceof Error ? error.message : String(error)}`,
+				);
 			}
-			if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
+			if (typeContainsUnsafe(type, checker)) {
 				throw new Error(
 					`Imported public type ${specifier}.${symbol.name} resolves to any or unknown`,
 				);
@@ -597,6 +741,12 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 				) {
 					const before = evidence.taintedSymbols.size;
 					bindingSymbols(node.name, checker, evidence.taintedSymbols);
+					const provenance = referencedProvenance(node.initializer, checker, provenanceBySymbol);
+					const bindings = new Set();
+					bindingSymbols(node.name, checker, bindings);
+					for (const symbol of bindings) {
+						for (const key of provenance) addProvenance(symbol, key);
+					}
 					changed ||= evidence.taintedSymbols.size !== before;
 				}
 				if (
@@ -605,6 +755,9 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 				) {
 					const before = evidence.taintedSymbols.size;
 					bindingSymbols(node.name, checker, evidence.taintedSymbols);
+					const provenance = referencedProvenance(node.type, checker, provenanceBySymbol);
+					const symbol = checker.getSymbolAtLocation(node.name);
+					for (const key of provenance) addProvenance(symbol, key);
 					changed ||= evidence.taintedSymbols.size !== before;
 				}
 				ts.forEachChild(node, visit);
@@ -615,12 +768,18 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 
 	let hasPositiveAssertion = false;
 	let hasNegativeControl = false;
+	const assertedExports = new Set();
 	for (const evidence of fileEvidence.values()) {
 		const inspect = (node) => {
-			if (
-				containsPositiveTypeAssertion(node, evidence.sourceFile, checker, evidence.taintedSymbols)
-			) {
+			const asserted = positiveAssertionProvenance(
+				node,
+				checker,
+				provenanceBySymbol,
+				trustedAssertionSymbols,
+			);
+			if (asserted) {
 				hasPositiveAssertion = true;
+				for (const key of asserted) assertedExports.add(key);
 			}
 			if (ts.isStatement(node)) {
 				const leading = evidence.source.slice(
@@ -638,7 +797,20 @@ function analyzeTypeEvidence(programFiles, parsed, expectedSpecifiers) {
 		};
 		inspect(evidence.sourceFile);
 	}
-	return { checker, fileEvidence, hasNegativeControl, hasPositiveAssertion, importedEntries };
+	const missingPositiveExports = [...publicExports]
+		.filter(([key]) => !assertedExports.has(key))
+		.map(([, { name, specifier }]) => `${specifier}.${name}`)
+		.sort();
+	return {
+		checker,
+		fileEvidence,
+		hasNegativeControl,
+		hasPositiveAssertion,
+		importedEntries,
+		missingPositiveExports,
+		provenanceBySymbol,
+		trustedAssertionSymbols,
+	};
 }
 
 function structurallyMappedRegistrations(programFiles, analysis) {
@@ -655,12 +827,12 @@ function structurallyMappedRegistrations(programFiles, analysis) {
 				ts.isStringLiteral(node.arguments[0]) &&
 				node.arguments[1] &&
 				referencesSymbols(node.arguments[1], analysis.checker, taintedSymbols) &&
-				containsPositiveTypeAssertion(
+				collectPositiveAssertionProvenance(
 					node.arguments[1],
-					sourceFile,
 					analysis.checker,
-					taintedSymbols,
-				)
+					analysis.provenanceBySymbol,
+					analysis.trustedAssertionSymbols,
+				).size > 0
 			) {
 				registrations.add(node.arguments[0].text);
 			}
@@ -733,6 +905,11 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 			if (!semantics.hasPositiveAssertion) {
 				throw new Error('Public type project must contain a positive type assertion');
 			}
+			if (semantics.missingPositiveExports.length > 0) {
+				throw new Error(
+					`Public type project must contain a positive assertion for every imported public export: ${semantics.missingPositiveExports.join(', ')}`,
+				);
+			}
 			if (!semantics.hasNegativeControl) {
 				throw new Error(
 					'Public type project must contain a @ts-expect-error negative control tied to an imported public binding',
@@ -765,6 +942,11 @@ function assertTypeProjectSemantics(gateId, commandArguments, node, workspaceRoo
 		if (!analysis.hasPositiveAssertion || !analysis.hasNegativeControl) {
 			throw new Error(
 				`Type project for ${gateId} must contain positive and negative assertions tied to ${expectedImport}`,
+			);
+		}
+		if (analysis.missingPositiveExports.length > 0) {
+			throw new Error(
+				`Type project for ${gateId} must contain a positive assertion for every imported public export: ${analysis.missingPositiveExports.join(', ')}`,
 			);
 		}
 		const mappedRegistrations = structurallyMappedRegistrations(programFiles, analysis);
@@ -979,9 +1161,8 @@ async function operate(
 		const reportDirectory = packageTestPlan
 			? mkdtempSync(path.join(tmpdir(), 'react-port-package-tests-'))
 			: null;
-		const reportPath = reportDirectory ? path.join(reportDirectory, 'report.json') : null;
 		const executedArguments = packageTestPlan
-			? packageTestCommand(commandArguments, packageTestPlan, reportPath)
+			? packageTestCommand(commandArguments, packageTestPlan)
 			: commandArguments;
 		const commandDisplay = sanitizeForReport(
 			JSON.stringify(executedArguments),
@@ -996,12 +1177,22 @@ async function operate(
 				{
 					cwd: manifest.workspaceRoot ?? process.cwd(),
 					encoding: 'utf8',
+					env: reportDirectory
+						? {
+								...process.env,
+								NODE_OPTIONS:
+									`${process.env.NODE_OPTIONS ?? ''} --import=${pathToFileURL(path.join(path.dirname(fileURLToPath(import.meta.url)), 'package-test-reporter-hook.mjs')).href}`.trim(),
+								REACT_PORT_TEST_REPORT_DIR: reportDirectory,
+							}
+						: process.env,
 					maxBuffer: MAX_COMMAND_OUTPUT_BYTES,
 					timeout: commandTimeout(options),
 					windowsHide: true,
 				},
 			);
-			if (packageTestPlan) assertPackageTestReport(packageTestPlan, reportPath, stdout, stderr);
+			if (packageTestPlan) {
+				assertPackageTestReport(packageTestPlan, reportDirectory, stdout, stderr);
+			}
 			evidence = {
 				status: 'passed',
 				command: commandDisplay,

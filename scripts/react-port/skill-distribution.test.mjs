@@ -151,10 +151,20 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /parsed import[\s\S]*positive[\s\S]*negative control/i);
 		assert.match(implementation, /public-exports\.mjs/);
 		assert.match(implementation, /runner-owned machine evidence[\s\S]*executed file identities/i);
+		assert.match(implementation, /every (?:Vitest|test-runner)[\s\S]*invocation[\s\S]*merge/i);
+		assert.match(implementation, /dynamic registration[\s\S]*machine report/i);
 		assert.match(implementation, /console[\s\S]*text[\s\S]*cannot manufacture a pass/i);
 		assert.match(implementation, /every concrete public entry[\s\S]*every exported[\s\S]*symbol/i);
-		assert.match(implementation, /Assert<Equal<[\s\S]*AssertNotAny[\s\S]*expectTypeOf/i);
+		assert.match(
+			implementation,
+			/AssertNotAny[\s\S]*does not replace[\s\S]*Assert<Equal<[\s\S]*expectTypeOf/i,
+		);
+		assert.match(implementation, /each exported symbol[\s\S]*own\s+positive assertion/i);
+		assert.match(implementation, /signatures[\s\S]*nested properties[\s\S]*any[\s\S]*unknown/i);
+		assert.match(implementation, /`satisfies unknown`[\s\S]*bare false `Equal`/i);
 		assert.match(implementation, /wildcard[\s\S]*targets[\s\S]*CommonJS[\s\S]*side-effect/i);
+		assert.match(implementation, /runtime-capable\s+condition[\s\S]*`?null`?\s+exclusions?/i);
+		assert.match(implementation, /@octane-public-empty-marker/);
 		assert.match(implementation, /prepack-generated[\s\S]*packed-artifact/i);
 	});
 

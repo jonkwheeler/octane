@@ -98,7 +98,7 @@ test('expands wildcard exports into concrete public specifiers', () => {
 	]);
 });
 
-test('accepts CommonJS, side-effect, and intentionally empty declaration contracts', () => {
+test('accepts CommonJS, side-effect, and intentionally empty type-only declaration contracts', () => {
 	const commonjs = createPackage(
 		'@octanejs/commonjs-fixture',
 		{ '.': './index.cjs' },
@@ -111,13 +111,39 @@ test('accepts CommonJS, side-effect, and intentionally empty declaration contrac
 	);
 	const declaration = createPackage(
 		'@octanejs/declaration-fixture',
-		{ '.': { types: './index.d.ts', import: './index.js' } },
-		{ 'index.d.ts': 'export {};\n', 'index.js': '' },
+		{ '.': { types: './index.d.ts' } },
+		{ 'index.d.ts': 'export {};\n' },
 	);
 
 	assert.equal(inspectPublicExports(commonjs).status, 'passed');
 	assert.equal(inspectPublicExports(sideEffect).status, 'passed');
 	assert.equal(inspectPublicExports(declaration).status, 'passed');
+});
+
+test('rejects an empty runtime condition even when its declaration condition is nonempty', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/empty-runtime-condition-fixture',
+		{ '.': { types: './index.d.ts', import: './index.js' } },
+		{ 'index.d.ts': 'export declare const ready: true;\n', 'index.js': 'export {};\n' },
+	);
+
+	assert.throws(() => inspectPublicExports(packageDirectory), /runtime export condition.*import/i);
+});
+
+test('requires an explicit source marker for an intentionally empty runtime condition', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/empty-runtime-marker-fixture',
+		{ '.': { types: './index.d.ts', import: './index.js' } },
+		{
+			'index.d.ts': 'export {};\n',
+			'index.js': '/* @octane-public-empty-marker */\n',
+		},
+	);
+
+	assert.deepEqual(
+		inspectPublicExports(packageDirectory).targets.map(({ validation }) => validation),
+		['module-exports', 'empty-marker'],
+	);
 });
 
 test('does not treat erased type-only imports as a side-effect contract', () => {
@@ -162,6 +188,27 @@ test('defers prepack-generated public targets to packed-artifact validation', ()
 	assert.deepEqual(
 		inspectPublicExports(packageDirectory).targets.map(({ validation }) => validation),
 		['packed-artifact', 'packed-artifact'],
+	);
+});
+
+test('applies exact and more-specific null exclusions before expanding wildcard exports', () => {
+	const packageDirectory = createPackage(
+		'@octanejs/wildcard-exclusion-fixture',
+		{
+			'./features/*': './src/features/*.ts',
+			'./features/private/*': null,
+			'./features/hidden': null,
+		},
+		{
+			'src/features/public.ts': 'export const visible = true;\n',
+			'src/features/hidden.ts': 'export const hidden = true;\n',
+			'src/features/private/secret.ts': 'export const secret = true;\n',
+		},
+	);
+
+	assert.deepEqual(
+		concretePublicSpecifiers(packageDirectory, '@octanejs/wildcard-exclusion-fixture'),
+		['@octanejs/wildcard-exclusion-fixture/features/public'],
 	);
 });
 

@@ -185,12 +185,24 @@ gates. Neither upstream command observation substitutes for the other:
    parsed imports from every graph-planned public entry, consume every exported
    symbol directly or through a namespace import, and contain both a positive
    assertion and a real `@ts-expect-error` negative control whose symbol identity
-   resolves back to an imported binding.
-   Supported positive styles include `Assert<Equal<...>>`, `AssertNotAny`,
-   `expectType`, `expectTypeOf`, and `satisfies` after the type checker has proved
-   the binding is not `any`/`unknown`. Comments and unrelated failures cannot
-   satisfy package consumption. A declaration file may describe the public
-   surface, but it never replaces direct source compilation.
+   resolves back to an imported binding. Each exported symbol needs its own
+   positive assertion; one assertion for the project cannot stand in for the
+   remaining exports. Inspect complete callable signatures, return values, type
+   arguments, index values, and nested properties for `any` and `unknown`, not
+   only the top-level imported symbol.
+   The verifier applies the equivalent of `AssertNotAny` recursively to each
+   exported type, but that non-`any` guard does not replace an expected-shape
+   assertion. Supported positive styles include `Assert<Equal<...>>`,
+   `expectType`, `expectTypeOf`, and a non-vacuous `satisfies` after the type
+   checker has proved the binding is not `any`/`unknown`. Assertions must be semantically
+   constraining: `satisfies unknown`, a bare false `Equal`, a merely name-matched
+   local helper, and an assertion group whose only real assertion belongs to a
+   different export do not count. Imported helpers are recognized by their
+   resolved symbol identity, not a substring in source text. Comments and
+   unrelated failures cannot satisfy package consumption. Every
+   `assertUpstreamRegistration` group needs its own real positive assertion. A
+   declaration file may describe the public surface, but it never replaces
+   direct source compilation.
 4. Pack the binding and typecheck the installed authored source with Node
    ambient types. Install the complete packed dependency closure across
    `dependencies`, `optionalDependencies`, `peerDependencies`, internal
@@ -248,23 +260,35 @@ pnpm react-port:evidence run --batch <id> --node pkg:<name> \
 ```
 
 The runner binds each gate to an approved command shape and validates the
-referenced package/project semantics before execution. Package tests must finish
-with a running Vitest, Jest, `node --test`, or repository parity command, contain
-a nonzero runnable registration count, and produce runner-owned machine evidence
-from that invocation. The evidence runner injects a machine reporter (and a report
-destination where supported) and checks the executed file identities, passed
-count, and zero-failure result against the discovered package tests; the
-repository parity wrapper owns the equivalent checks internally. Console text
-cannot manufacture a pass. Version, help, list, and watch modes are rejected.
-Skipped, todo, conditional, and expected-failure registrations do not count. Type
+referenced package/project semantics before execution. Package tests must run
+Vitest, Jest, `node --test`, or the repository parity command and contain at
+least one runnable or dynamically registered test. Static discovery rejects
+obvious no-op and all-skipped suites, but a normal dynamic registration from a
+function callback, local `for...of`, or const-backed `test.each` table is proved
+by the machine report instead of rejected for an unknown estimate. The evidence
+runner injects a process-level machine reporter into every Vitest or Jest
+invocation in the package script, including chained and delegated commands,
+then merges every report and checks the runner-owned executed file identities,
+passed result, and zero failures or skips against the discovered package tests.
+That merged runner-owned machine evidence is authoritative for executed file identities
+and dynamic registration counts.
+The repository parity wrapper owns the equivalent checks internally. Console
+text cannot manufacture a pass. Version, help, list, and watch modes are
+rejected. Skipped, todo, conditional, and expected-failure registrations do not
+count. Type
 projects require complete expected source roots, `strict: true`,
 `skipLibCheck: false`, and matching `reactPortEvidence`; pristine/adapted projects
 are bound to the pinned immutable type inventory and assertion groups. The
 public-export checker expands wildcard targets, follows ESM/CommonJS re-export
 chains, uses the correct source kind, recognizes value, type, asset, side-effect,
 and intentionally empty declaration contracts, and defers prepack-generated
-conditions to packed-artifact validation. It rejects a subpath when every
-resolved condition is empty.
+conditions to packed-artifact validation. It validates each runtime-capable
+condition independently so a declaration condition cannot mask an empty runtime
+target. An intentionally empty runtime marker must contain only the explicit
+`@octane-public-empty-marker` source marker; a sibling declaration is not an
+implicit exemption. The checker also preserves exact and wildcard `null`
+exclusions and applies the most-specific export-pattern precedence before
+expanding concrete public specifiers.
 It rejects `true`, ad hoc `node -e`, unrelated package scripts, incompatible
 multi-gate groups, and any other successful command that does not prove the requested row.
 The approved shapes are:
