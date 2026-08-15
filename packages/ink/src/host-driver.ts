@@ -1,4 +1,4 @@
-import Yoga from 'yoga-layout';
+import Yoga, { type Node as YogaNode } from 'yoga-layout';
 import type {
 	UniversalHostBatch,
 	UniversalHostDriver,
@@ -32,6 +32,11 @@ export const createInkContainer = (root: DOMElement): InkHostContainer => ({
 	instances: new Map(),
 	parents: new Map(),
 });
+
+const cleanupYogaNode = (node?: YogaNode): void => {
+	node?.unsetMeasureFunc();
+	node?.freeRecursive();
+};
 
 const assertParent = (parent: UniversalHostParent): number | null => {
 	if (parent !== null && typeof parent !== 'number') {
@@ -174,7 +179,7 @@ export const createInkDriver = (): UniversalHostDriver<InkHostContainer, DOMNode
 							(parent.nodeName === 'ink-text' || parent.nodeName === 'ink-virtual-text') &&
 							node.nodeName === 'ink-text'
 						) {
-							node.yogaNode?.free();
+							cleanupYogaNode(node.yogaNode);
 							(node as DOMElement).nodeName = 'ink-virtual-text';
 							(node as { yogaNode?: undefined }).yogaNode = undefined;
 						}
@@ -201,7 +206,7 @@ export const createInkDriver = (): UniversalHostDriver<InkHostContainer, DOMNode
 						}
 					} else if (command.op === 'destroy') {
 						const node = container.instances.get(command.id);
-						if (node?.yogaNode) node.yogaNode.freeRecursive();
+						cleanupYogaNode(node?.yogaNode);
 						container.instances.delete(command.id);
 						container.parents.delete(command.id);
 					} else if (command.op === 'visibility') {
@@ -239,7 +244,7 @@ export const createInkDriver = (): UniversalHostDriver<InkHostContainer, DOMNode
 			abort() {
 				if (status !== 'prepared') return;
 				status = 'aborted';
-				for (const node of staged.values()) node.yogaNode?.freeRecursive();
+				for (const node of staged.values()) cleanupYogaNode(node.yogaNode);
 				staged.clear();
 			},
 		};
