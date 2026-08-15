@@ -741,6 +741,8 @@ describe('evidence CLI', () => {
 	test('rejects nested any and unknown in imported public contracts', () => {
 		for (const [label, source] of [
 			['return', 'export declare function unsafe(): any;\n'],
+			['generic-default-any', 'export declare function unsafe<T = any>(): T;\n'],
+			['generic-default-unknown', 'export declare function unsafe<T = unknown>(): T;\n'],
 			['property', 'export declare const unsafe: { value: any };\n'],
 			['nested-unknown', 'export declare const unsafe: { value: unknown };\n'],
 			['promise-argument', 'export declare function unsafe(): Promise<any>;\n'],
@@ -756,9 +758,12 @@ describe('evidence CLI', () => {
 			const { workspaceRoot } = createReadyBatch();
 			const packageDirectory = createCompletePackage(workspaceRoot);
 			writeFileSync(path.join(packageDirectory, 'src/index.ts'), source);
+			const probe = label.startsWith('generic-default')
+				? 'unsafe satisfies <T = string>() => T;\n// @ts-expect-error an explicit numeric result is not a string\nconst invalid: string = unsafe<number>();\n'
+				: 'unsafe satisfies {};\n// @ts-expect-error public contract rejects an impossible property\nunsafe.__missing;\n';
 			writeFileSync(
 				path.join(packageDirectory, 'tests/types/public/public.ts'),
-				"import { unsafe } from '@octanejs/widget';\nunsafe satisfies {};\n// @ts-expect-error public contract rejects an impossible property\nunsafe.__missing;\n",
+				`import { unsafe } from '@octanejs/widget';\n${probe}`,
 			);
 
 			assert.throws(
@@ -791,13 +796,81 @@ describe('evidence CLI', () => {
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		writeFileSync(
 			path.join(packageDirectory, 'src/index.ts'),
-			'interface SafePromise extends Promise<{ value: string }> {}\ninterface SafeArray extends Array<string> {}\nexport declare function safe(input: { value: string }): { value: number };\nexport declare function load(): SafePromise;\nexport declare function list(): SafeArray;\n',
+			'interface SafePromise extends Promise<{ value: string }> {}\ninterface SafeArray extends Array<string> {}\nexport declare function safe<T = string>(input: { value: T }): { value: T };\nexport declare function load(): SafePromise;\nexport declare function list(): SafeArray;\n',
 		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/types/public/public.ts'),
-			"import { list, load, safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\nload satisfies () => Promise<{ value: string }>;\nlist satisfies () => Array<string>;\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
+			"import { list, load, safe } from '@octanejs/widget';\nsafe satisfies <T = string>(input: { value: T }) => { value: T };\nload satisfies () => Promise<{ value: string }>;\nlist satisfies () => Array<string>;\n// @ts-expect-error safe rejects a mismatched value\nsafe<string>({ value: 1 });\n",
 		);
 
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['public-types'],
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/public/tsconfig.json',
+				],
+				{
+					binding: '@octanejs/widget',
+					bindingDirectory: 'packages/widget',
+					upstreamTestInventory: [],
+				},
+				{ workspaceRoot },
+			),
+		);
+	});
+
+	test('rejects unsafe defaults on public generic type aliases', () => {
+		for (const defaultType of ['any', 'unknown']) {
+			const { workspaceRoot } = createReadyBatch();
+			const packageDirectory = createCompletePackage(workspaceRoot);
+			writeFileSync(
+				path.join(packageDirectory, 'src/index.ts'),
+				`export type Unsafe<T = ${defaultType}> = { value: T };\n`,
+			);
+			writeFileSync(
+				path.join(packageDirectory, 'tests/types/public/public.ts'),
+				"import type { Unsafe } from '@octanejs/widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ntype Assert<T extends true> = T;\ntype Shape = Assert<Equal<Unsafe<string>, { value: string }>>;\n// @ts-expect-error Unsafe<string> requires a string value\nconst invalid: Unsafe<string> = { value: 1 };\n",
+			);
+
+			assert.throws(
+				() =>
+					assertApprovedGateCommand(
+						['public-types'],
+						[
+							'pnpm',
+							'exec',
+							'tsrx-tsc',
+							'--noEmit',
+							'-p',
+							'packages/widget/tests/types/public/tsconfig.json',
+						],
+						{
+							binding: '@octanejs/widget',
+							bindingDirectory: 'packages/widget',
+							upstreamTestInventory: [],
+						},
+						{ workspaceRoot },
+					),
+				/imported public type.*any or unknown/i,
+				defaultType,
+			);
+		}
+
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			'export type Safe<T = string> = { value: T };\n',
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/types/public/public.ts'),
+			"import type { Safe } from '@octanejs/widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ntype Assert<T extends true> = T;\ntype Shape = Assert<Equal<Safe, { value: string }>>;\n// @ts-expect-error Safe uses a string by default\nconst invalid: Safe = { value: 1 };\n",
+		);
 		assert.doesNotThrow(() =>
 			assertApprovedGateCommand(
 				['public-types'],
@@ -849,17 +922,64 @@ describe('evidence CLI', () => {
 				),
 			/positive type assertion/i,
 		);
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\ntype PretendCheck = true extends true ? true : typeof widget;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					node,
+					{ workspaceRoot },
+				),
+			/positive type assertion/i,
+		);
 
 		const registrationId = 'react-registration-v1:pinned-type-case';
 		const upstreamPath = path.join(packageDirectory, 'tests/types/upstream/pristine.ts');
-		writeFileSync(
-			upstreamPath,
-			`import { widget } from 'widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('${registrationId}', () => { type WidgetIsFalse = Equal<typeof widget, false>; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n`,
-		);
 		const configPath = path.join(packageDirectory, 'tests/types/upstream/tsconfig.pristine.json');
 		const config = JSON.parse(readFileSync(configPath, 'utf8'));
 		config.reactPortEvidence.upstreamRegistrations = [registrationId];
 		writeFileSync(configPath, JSON.stringify(config));
+		writeFileSync(
+			upstreamPath,
+			`import { widget } from 'widget';\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('${registrationId}', () => { type PretendCheck = true extends true ? true : typeof widget; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n`,
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['upstream-types-pristine'],
+					[
+						'pnpm',
+						'exec',
+						'tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/upstream/tsconfig.pristine.json',
+					],
+					{
+						...node,
+						packageName: 'widget',
+						upstreamTestInventory: [{ kind: 'type', registrations: [{ id: registrationId }] }],
+					},
+					{ workspaceRoot },
+				),
+			/real assertion group|positive(?: type)?(?: and negative)? assertions?/i,
+		);
+
+		writeFileSync(
+			upstreamPath,
+			`import { widget } from 'widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('${registrationId}', () => { type WidgetIsFalse = Equal<typeof widget, false>; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n`,
+		);
 		assert.throws(
 			() =>
 				assertApprovedGateCommand(
@@ -971,6 +1091,154 @@ describe('evidence CLI', () => {
 					FIXTURE_REPORT_FILES: JSON.stringify([
 						'packages/widget/tests/widget.test.ts',
 						'packages/widget/tests/widget-differential.test.ts',
+					]),
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('rejects repeated Node commands that cannot prove distinct test-file execution', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'node --test tests/widget.test.ts && node --test tests/widget.test.ts';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/omitted.test.mjs'),
+			"import { test } from 'node:test';\ntest('must not be omitted', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_STDOUT:
+						'TAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\nTAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\n',
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stderr, /multiple Node test invocations.*file identit/i);
+	});
+
+	test('combines independently validated Node and Vitest evidence', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'node --test tests/widget.test.ts && vitest run --project widget';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-vitest.test.ts'),
+			"import { test } from 'vitest';\ntest('vitest lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/tests/widget-vitest.test.ts']),
+					FIXTURE_STDOUT: 'TAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\n',
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('combines independently validated Node and parity evidence', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test =
+			'node --test tests/widget.test.ts && node ../../scripts/react-parity/harness.mjs run-required --manifest packages/widget/audit/react-parity.json';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_NO_TEST_REPORT: '1',
+					FIXTURE_STDOUT: 'TAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\n',
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('merges machine reports from Jest and Vitest in one package script', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'jest --runInBand && vitest run --project widget';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-jest.test.ts'),
+			"test('jest lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify([
+						'packages/widget/tests/widget-jest.test.ts',
+						'packages/widget/tests/widget.test.ts',
 					]),
 				},
 			},
