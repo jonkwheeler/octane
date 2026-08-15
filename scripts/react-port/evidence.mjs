@@ -512,6 +512,11 @@ function typeContainsUnsafe(type, checker, seen = new Set()) {
 		}
 	}
 	if (type.flags & ts.TypeFlags.Object) {
+		if (type.objectFlags & (ts.ObjectFlags.Class | ts.ObjectFlags.Interface)) {
+			for (const baseType of checker.getBaseTypes(type)) {
+				if (typeContainsUnsafe(baseType, checker, seen)) return true;
+			}
+		}
 		if (type.objectFlags & ts.ObjectFlags.Reference) {
 			for (const argument of checker.getTypeArguments(type)) {
 				if (typeContainsUnsafe(argument, checker, seen)) return true;

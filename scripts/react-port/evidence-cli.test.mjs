@@ -744,6 +744,14 @@ describe('evidence CLI', () => {
 			['property', 'export declare const unsafe: { value: any };\n'],
 			['nested-unknown', 'export declare const unsafe: { value: unknown };\n'],
 			['promise-argument', 'export declare function unsafe(): Promise<any>;\n'],
+			[
+				'promise-base',
+				'interface UnsafePromise extends Promise<any> {}\nexport declare const unsafe: UnsafePromise;\n',
+			],
+			[
+				'array-base',
+				'interface UnsafeArray extends Array<any> {}\nexport declare const unsafe: UnsafeArray;\n',
+			],
 		]) {
 			const { workspaceRoot } = createReadyBatch();
 			const packageDirectory = createCompletePackage(workspaceRoot);
@@ -783,11 +791,11 @@ describe('evidence CLI', () => {
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		writeFileSync(
 			path.join(packageDirectory, 'src/index.ts'),
-			'export declare function safe(input: { value: string }): { value: number };\nexport declare function load(): Promise<{ value: string }>;\n',
+			'interface SafePromise extends Promise<{ value: string }> {}\ninterface SafeArray extends Array<string> {}\nexport declare function safe(input: { value: string }): { value: number };\nexport declare function load(): SafePromise;\nexport declare function list(): SafeArray;\n',
 		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/types/public/public.ts'),
-			"import { load, safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\nload satisfies () => Promise<{ value: string }>;\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
+			"import { list, load, safe } from '@octanejs/widget';\nsafe satisfies (input: { value: string }) => { value: number };\nload satisfies () => Promise<{ value: string }>;\nlist satisfies () => Array<string>;\n// @ts-expect-error safe rejects a numeric value\nsafe({ value: 1 });\n",
 		);
 
 		assert.doesNotThrow(() =>
