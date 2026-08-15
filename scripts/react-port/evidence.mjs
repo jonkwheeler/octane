@@ -374,7 +374,31 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 			);
 		}
 	}
-	return { invocations, packageDirectory, runners, testFiles };
+	const reportableRunners = new Set(
+		runners.filter((runner) => runner === 'vitest' || runner === 'jest'),
+	);
+	const hasNonReportableRunner = runners.some((runner) => runner !== 'vitest' && runner !== 'jest');
+	const reportableTestFiles = [...runnableTestFiles].filter((filePath) => {
+		if (!hasNonReportableRunner) return true;
+		const source = readFileSync(filePath, 'utf8');
+		if (/\b(?:from\s+|require\s*\()['"]node:test['"]/.test(source)) return false;
+		if (/\b(?:from\s+|require\s*\()['"]@playwright\/test['"]/.test(source)) return false;
+		if (/\b(?:from\s+|require\s*\()['"]vitest['"]/.test(source)) {
+			return reportableRunners.has('vitest');
+		}
+		if (/\b(?:from\s+|require\s*\()['"]@jest\/globals['"]/.test(source)) {
+			return reportableRunners.has('jest');
+		}
+		return reportableRunners.size > 0;
+	});
+	return {
+		invocations,
+		packageDirectory,
+		reportableTestFiles,
+		runnableTestFiles: [...runnableTestFiles],
+		runners,
+		testFiles,
+	};
 }
 
 function packageTestCommand(commandArguments, plan) {
@@ -450,6 +474,25 @@ function assertPackageTestReport(plan, reportDirectory, stdout, stderr) {
 		});
 		if (packageFiles.length === 0) {
 			throw new Error('Package test reports no executed test file inside the binding package');
+		}
+		const runnableTestFiles = new Set(plan.runnableTestFiles);
+		const unexpectedFiles = packageFiles.filter((filePath) => !runnableTestFiles.has(filePath));
+		if (unexpectedFiles.length > 0) {
+			throw new Error(
+				`Package test report names a non-runnable package test file: ${unexpectedFiles
+					.map((filePath) => path.relative(packageDirectory, filePath))
+					.join(', ')}`,
+			);
+		}
+		const missingFiles = plan.reportableTestFiles.filter(
+			(filePath) => !reportedFiles.has(filePath),
+		);
+		if (missingFiles.length > 0) {
+			throw new Error(
+				`Package test report omits package test file(s): ${missingFiles
+					.map((filePath) => path.relative(packageDirectory, filePath))
+					.join(', ')}`,
+			);
 		}
 		executedPassingTests += passed;
 	}

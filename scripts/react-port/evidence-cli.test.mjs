@@ -1059,6 +1059,72 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
+	test('rejects a runner report that omits a discovered runnable test file', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\ntest('first lane', () => {});\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/omitted.test.ts'),
+			"import { test } from 'vitest';\ntest('second lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/tests/widget.test.ts']),
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stdout, /omits package test file.*omitted\.test\.ts/i);
+	});
+
+	test('rejects a runner report that names a non-test package file', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		createCompletePackage(workspaceRoot);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/package.json']),
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stdout, /report.*runnable package test file/i);
+	});
+
 	test('merges machine reports from every Vitest command in a chained package script', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
