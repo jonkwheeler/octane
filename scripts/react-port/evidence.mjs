@@ -42,7 +42,8 @@ import {
 } from './state-lib.mjs';
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
 import { concretePublicSpecifiers, inspectPublicExports } from './public-exports.mjs';
-import { discoverPackageTests } from './package-tests-lib.mjs';
+import { discoverPackageTests, discoverReportEligiblePackageTests } from './package-tests-lib.mjs';
+import { isNodeTestInvocation } from './node-test-invocation-wrapper.mjs';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
@@ -330,6 +331,9 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 	const testFiles = discoverPackageTests(packageDirectory).map((filePath) =>
 		realpathSync(filePath),
 	);
+	const reportEligibleTestFiles = discoverReportEligiblePackageTests(packageDirectory).map(
+		(filePath) => realpathSync(filePath),
+	);
 	for (const testPath of testFiles) {
 		const source = readFileSync(testPath, 'utf8');
 		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
@@ -386,6 +390,7 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 	return {
 		invocations,
 		packageDirectory,
+		reportEligibleTestFiles,
 		runnableTestFiles: [...runnableTestFiles],
 		runners,
 	};
@@ -451,7 +456,7 @@ function assertPackageTestReport(plan, reportDirectory) {
 
 	let executedPassingTests = 0;
 	const packageDirectory = canonicalPath(plan.packageDirectory);
-	const runnableTestFiles = new Set(plan.runnableTestFiles);
+	const reportEligibleTestFiles = new Set(plan.reportEligibleTestFiles);
 	for (const [index, report] of reports.entries()) {
 		const passed = Number(report.numPassedTests ?? 0);
 		const failed = Number(report.numFailedTests ?? 0);
@@ -476,10 +481,12 @@ function assertPackageTestReport(plan, reportDirectory) {
 				`Package ${invocations[index].runner} test report names no executed test file inside the binding package`,
 			);
 		}
-		const unexpectedFiles = packageFiles.filter((filePath) => !runnableTestFiles.has(filePath));
+		const unexpectedFiles = packageFiles.filter(
+			(filePath) => !reportEligibleTestFiles.has(filePath),
+		);
 		if (unexpectedFiles.length > 0) {
 			throw new Error(
-				`Package test report names a non-runnable package test file: ${unexpectedFiles
+				`Package test report names a non-test package file: ${unexpectedFiles
 					.map((filePath) => path.relative(packageDirectory, filePath))
 					.join(', ')}`,
 			);
@@ -515,9 +522,7 @@ function createNodeCommandProxy() {
 function instrumentPackageTestCommand(commandArguments, plan) {
 	if (
 		!plan?.runners.includes('node-test') ||
-		!commandArguments
-			.slice(1)
-			.some((argument) => argument === '--test' || argument.startsWith('--test=')) ||
+		!isNodeTestInvocation(commandArguments.slice(1)) ||
 		!existsSync(commandArguments[0]) ||
 		canonicalPath(commandArguments[0]) !== canonicalPath(process.execPath)
 	) {
@@ -732,6 +737,21 @@ function resolvedSymbolAtLocation(node, checker) {
 	return symbol;
 }
 
+function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
+	let containsConditionalProof = false;
+	const inspect = (child) => {
+		if (ts.isConditionalTypeNode(child)) {
+			containsConditionalProof = true;
+			return;
+		}
+		ts.forEachChild(child, inspect);
+	};
+	inspect(node);
+	if (containsConditionalProof) return null;
+	const provenance = referencedProvenance(node, checker, provenanceBySymbol);
+	return provenance.size > 0 ? provenance : null;
+}
+
 function constrainedTypeAliasProvenance(
 	node,
 	checker,
@@ -758,7 +778,11 @@ function constrainedTypeAliasProvenance(
 	const leftHasProvenance = leftProvenance.size > 0;
 	const rightHasProvenance = rightProvenance.size > 0;
 	if (leftHasProvenance === rightHasProvenance) return null;
-	return leftProvenance.size > 0 ? leftProvenance : rightProvenance;
+	return directBindingDerivedTypeProvenance(
+		leftHasProvenance ? proof.typeArguments[0] : proof.typeArguments[1],
+		checker,
+		provenanceBySymbol,
+	);
 }
 
 function positiveAssertionProvenance(
@@ -773,9 +797,12 @@ function positiveAssertionProvenance(
 	if (ts.isSatisfiesExpression(node)) {
 		const constraint = checker.getTypeFromTypeNode(node.type);
 		const emptyObjectConstraint = ts.isTypeLiteralNode(node.type) && node.type.members.length === 0;
-		return constraint.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown) || emptyObjectConstraint
+		const constraintProvenance = referencedProvenance(node.type, checker, provenanceBySymbol);
+		return constraint.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown) ||
+			emptyObjectConstraint ||
+			constraintProvenance.size > 0
 			? null
-			: provenance;
+			: referencedProvenance(node.expression, checker, provenanceBySymbol);
 	}
 	if (ts.isTypeAliasDeclaration(node)) {
 		return constrainedTypeAliasProvenance(

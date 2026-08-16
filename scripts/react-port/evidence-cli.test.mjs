@@ -163,6 +163,19 @@ function runEvidence(arguments_, { env = {} } = {}) {
 	});
 }
 
+function runNodeTestWrapper(arguments_) {
+	const reportDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-node-test-reports-'));
+	const result = spawnSync(
+		process.execPath,
+		[path.join(SCRIPT_DIRECTORY, 'node-test-invocation-wrapper.mjs'), ...arguments_],
+		{
+			encoding: 'utf8',
+			env: { ...process.env, REACT_PORT_TEST_REPORT_DIR: reportDirectory },
+		},
+	);
+	return { reportDirectory, result };
+}
+
 function createCompletePackage(root) {
 	const packageDirectory = path.join(root, 'packages/widget');
 	mkdirSync(path.join(packageDirectory, 'src'), { recursive: true });
@@ -295,6 +308,68 @@ function recordRequiredEvidence(batchDirectory) {
 }
 
 describe('evidence CLI', () => {
+	test('leaves an application --test argument outside Node test instrumentation', () => {
+		const fixtureDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-node-application-'));
+		const applicationPath = path.join(fixtureDirectory, 'prepare.mjs');
+		writeFileSync(
+			applicationPath,
+			"process.stdout.write(`prepare ${process.argv.slice(2).join(' ')}\\n`);\n",
+		);
+
+		const { reportDirectory, result } = runNodeTestWrapper([applicationPath, '--test']);
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.equal(result.stdout, 'prepare --test\n');
+		assert.deepEqual(readdirSync(reportDirectory), []);
+	});
+
+	test('preserves an existing Node test reporter while collecting machine evidence', () => {
+		const fixtureDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-node-reporter-'));
+		const testPath = path.join(fixtureDirectory, 'existing-reporter.test.mjs');
+		writeFileSync(
+			testPath,
+			"import { test } from 'node:test';\ntest('existing reporter remains visible', () => {});\n",
+		);
+
+		const { reportDirectory, result } = runNodeTestWrapper([
+			'--test',
+			'--test-reporter=spec',
+			testPath,
+		]);
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.match(result.stdout, /existing reporter remains visible/);
+		assert.match(result.stdout, /# pass 1/);
+		assert.equal(
+			readdirSync(reportDirectory).filter((name) => name.endsWith('.report.json')).length,
+			1,
+		);
+		assert.equal(
+			readdirSync(reportDirectory).filter((name) => name.endsWith('.invocation.json')).length,
+			1,
+		);
+	});
+
+	test('collects machine evidence for a normal Node test invocation', () => {
+		const fixtureDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-node-control-'));
+		const testPath = path.join(fixtureDirectory, 'control.test.mjs');
+		writeFileSync(testPath, "import { test } from 'node:test';\ntest('control', () => {});\n");
+
+		const { reportDirectory, result } = runNodeTestWrapper(['--test', testPath]);
+
+		assert.equal(result.status, 0, result.stderr);
+		assert.match(result.stdout, /# tests 1/);
+		assert.match(result.stdout, /# pass 1/);
+		assert.equal(
+			readdirSync(reportDirectory).filter((name) => name.endsWith('.report.json')).length,
+			1,
+		);
+		assert.equal(
+			readdirSync(reportDirectory).filter((name) => name.endsWith('.invocation.json')).length,
+			1,
+		);
+	});
+
 	test('maps every command gate family to a specific repository command', () => {
 		const node = { bindingDirectory: 'packages/widget' };
 		for (const [gateIds, command] of [
@@ -964,6 +1039,46 @@ describe('evidence CLI', () => {
 				),
 			/positive type assertion/i,
 		);
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nwidget satisfies typeof widget;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() =>
+				assertApprovedGateCommand(
+					['public-types'],
+					[
+						'pnpm',
+						'exec',
+						'tsrx-tsc',
+						'--noEmit',
+						'-p',
+						'packages/widget/tests/types/public/tsconfig.json',
+					],
+					node,
+					{ workspaceRoot },
+				),
+			/positive type assertion/i,
+		);
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nwidget satisfies boolean;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(
+				['public-types'],
+				[
+					'pnpm',
+					'exec',
+					'tsrx-tsc',
+					'--noEmit',
+					'-p',
+					'packages/widget/tests/types/public/tsconfig.json',
+				],
+				node,
+				{ workspaceRoot },
+			),
+		);
 
 		const registrationId = 'react-registration-v1:pinned-type-case';
 		const upstreamPath = path.join(packageDirectory, 'tests/types/upstream/pristine.ts');
@@ -1081,6 +1196,23 @@ describe('evidence CLI', () => {
 			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
 			/positive type assertion/i,
 		);
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype ReflexiveExpected = Assert<Equal<typeof widget, typeof widget extends typeof widget ? true : false>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/positive type assertion/i,
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype ReflexiveConditional = Assert<Equal<typeof widget extends typeof widget ? true : false, true>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/positive type assertion/i,
+		);
 
 		writeFileSync(
 			publicPath,
@@ -1094,6 +1226,14 @@ describe('evidence CLI', () => {
 		writeFileSync(
 			publicPath,
 			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetIsTrue = Assert<Equal<typeof widget, true>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WrappedWidgetIsTrue = Assert<Equal<Promise<typeof widget>, Promise<true>>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
 		);
 		assert.doesNotThrow(() =>
 			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
@@ -1170,7 +1310,9 @@ describe('evidence CLI', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
-		createCompletePackage(workspaceRoot);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		mkdirSync(path.join(packageDirectory, 'upstream/test'), { recursive: true });
+		writeFileSync(path.join(packageDirectory, 'upstream/test/setup.js'), 'export {};\n');
 
 		const result = runEvidence(
 			[
@@ -1186,13 +1328,13 @@ describe('evidence CLI', () => {
 			],
 			{
 				env: {
-					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/package.json']),
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/upstream/test/setup.js']),
 				},
 			},
 		);
 
 		assert.equal(result.status, 2);
-		assert.match(result.stdout, /report.*runnable package test file/i);
+		assert.match(result.stdout, /report.*non-test package file/i);
 	});
 
 	test('does not require Vitest reports to cover sibling Node or Playwright specs', () => {
@@ -1477,6 +1619,48 @@ describe('evidence CLI', () => {
 				env: {
 					FIXTURE_REPORT_FILES: JSON.stringify([
 						'packages/widget/tests/widget-jest.test.ts',
+						'packages/widget/tests/widget.test.ts',
+					]),
+					FIXTURE_REPORT_RUNNERS: JSON.stringify(['jest', 'vitest']),
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
+	test('accepts runner-owned Jest tests from a top-level upstream directory', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test =
+			'jest --config tests/upstream-jest.config.cjs --rootDir upstream --runInBand && vitest run --project widget';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		mkdirSync(path.join(packageDirectory, 'upstream/test'), { recursive: true });
+		writeFileSync(
+			path.join(packageDirectory, 'upstream/test/TransitionGroup-test.js'),
+			"test('upstream transition group lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify([
+						'packages/widget/upstream/test/TransitionGroup-test.js',
 						'packages/widget/tests/widget.test.ts',
 					]),
 					FIXTURE_REPORT_RUNNERS: JSON.stringify(['jest', 'vitest']),

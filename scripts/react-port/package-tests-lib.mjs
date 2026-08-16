@@ -4,7 +4,7 @@ import path from 'node:path';
 const PACKAGE_TEST_FILE_PATTERN = /(?:^|[.-])(?:test|spec)\.(?:[cm]?[jt]sx?|tsrx)$/i;
 const SKIPPED_DIRECTORIES = new Set(['dist', 'node_modules']);
 
-export function discoverPackageTests(packageDirectory) {
+function discoverMatchingPackageTests(packageDirectory, { includeTopLevelUpstream }) {
 	const packageRoot = path.resolve(packageDirectory);
 	if (!existsSync(packageRoot)) return [];
 	const files = [];
@@ -13,7 +13,7 @@ export function discoverPackageTests(packageDirectory) {
 			if (
 				entry.isDirectory() &&
 				(SKIPPED_DIRECTORIES.has(entry.name) ||
-					(directory === packageRoot && entry.name === 'upstream'))
+					(!includeTopLevelUpstream && directory === packageRoot && entry.name === 'upstream'))
 			) {
 				continue;
 			}
@@ -26,6 +26,14 @@ export function discoverPackageTests(packageDirectory) {
 	};
 	walk(packageRoot);
 	return files.sort();
+}
+
+export function discoverPackageTests(packageDirectory) {
+	return discoverMatchingPackageTests(packageDirectory, { includeTopLevelUpstream: false });
+}
+
+export function discoverReportEligiblePackageTests(packageDirectory) {
+	return discoverMatchingPackageTests(packageDirectory, { includeTopLevelUpstream: true });
 }
 
 export function hasObservablePackageTests(packageDirectory) {
