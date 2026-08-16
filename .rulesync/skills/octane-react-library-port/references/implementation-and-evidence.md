@@ -192,13 +192,18 @@ gates. Neither upstream command observation substitutes for the other:
    only the top-level imported symbol.
    The verifier applies the equivalent of `AssertNotAny` recursively to each
    exported type, but that non-`any` guard does not replace an expected-shape
-   assertion. Supported positive styles include `Assert<Equal<...>>`,
-   `expectType`, `expectTypeOf`, and a non-vacuous `satisfies` after the type
+   assertion. Supported positive styles include `Assert<Equal<...>>` imported
+   from `scripts/react-port/type-assertions`, `expectType`, `expectTypeOf`, and a
+   non-vacuous `satisfies` after the type
    checker has proved the binding is not `any`/`unknown`. Assertions must be semantically
    constraining: `satisfies unknown`, a bare false `Equal`, a merely name-matched
-   local helper, and an assertion group whose only real assertion belongs to a
-   different export do not count. Imported helpers are recognized by their
-   resolved symbol identity, not a substring in source text. Comments and
+   local helper, a reflexive comparison, and an assertion group whose only real
+   assertion belongs to a different export do not count. Type-alias assertions
+   must use the repository-owned helper; both `Assert` and `Equal` are recognized
+   by their resolved TypeScript symbol and declaration path, and exactly one side
+   of `Equal` must carry public-binding provenance. Trusted third-party
+   `expectType` and `expectTypeOf` helpers are likewise recognized by resolved
+   symbol identity, not a substring in source text. Comments and
    unrelated failures cannot satisfy package consumption. Every
    `assertUpstreamRegistration` group needs its own real positive assertion. A
    declaration file may describe the public surface, but it never replaces
@@ -267,11 +272,17 @@ obvious no-op and all-skipped suites, but a normal dynamic registration from a
 function callback, local `for...of`, or const-backed `test.each` table is proved
 by the machine report instead of rejected for an unknown estimate. The evidence
 runner injects a process-level machine reporter into every Vitest or Jest
-invocation in the package script, including chained and delegated commands,
-then merges every report and checks the runner-owned executed file identities,
-passed result, and zero failures or skips against the discovered package tests.
-That merged runner-owned machine evidence is authoritative for executed file identities
-and dynamic registration counts.
+invocation in the package script and intercepts every external `node --test`
+command, including chained and delegated commands. Every planned test-runner
+invocation must produce its own invocation record linked to its own runner
+report; a lane skipped by `||` or another control-flow path therefore fails
+rather than borrowing evidence from a sibling lane. Each report must name an
+executed, runnable file inside the binding package and prove a passed result with
+zero failures or skips. Those runner-owned collected/executed file identities
+are authoritative: never infer Vitest or Jest project ownership from source
+imports, and never require a runnable browser or sibling project that the
+selected runner project did not collect. The merged machine evidence is also
+authoritative for dynamic registration counts.
 The repository parity wrapper owns the equivalent checks internally. Console
 text cannot manufacture a pass. Version, help, list, and watch modes are
 rejected. Skipped, todo, conditional, and expected-failure registrations do not

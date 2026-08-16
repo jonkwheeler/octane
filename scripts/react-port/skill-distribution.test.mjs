@@ -150,14 +150,25 @@ describe('octane-react-library-port skill distribution', () => {
 		assert.match(implementation, /assertUpstreamRegistration[\s\S]*real positive type assertion/i);
 		assert.match(implementation, /parsed import[\s\S]*positive[\s\S]*negative control/i);
 		assert.match(implementation, /public-exports\.mjs/);
-		assert.match(implementation, /runner-owned machine evidence[\s\S]*executed file identities/i);
-		assert.match(implementation, /every (?:Vitest|test-runner)[\s\S]*invocation[\s\S]*merge/i);
+		assert.match(
+			implementation,
+			/every planned\s+test-runner[\s\S]*invocation record[\s\S]*runner\s+report/i,
+		);
+		assert.match(implementation, /lane skipped by `\|\|`[\s\S]*fails/i);
+		assert.match(
+			implementation,
+			/runner-owned collected\/executed file[\s\S]*authoritative[\s\S]*never infer[\s\S]*project\s+ownership\s+from\s+source\s+imports/i,
+		);
 		assert.match(implementation, /dynamic registration[\s\S]*machine report/i);
 		assert.match(implementation, /console[\s\S]*text[\s\S]*cannot manufacture a pass/i);
 		assert.match(implementation, /every concrete public entry[\s\S]*every exported[\s\S]*symbol/i);
 		assert.match(
 			implementation,
 			/AssertNotAny[\s\S]*does not replace[\s\S]*Assert<Equal<[\s\S]*expectTypeOf/i,
+		);
+		assert.match(
+			implementation,
+			/type-alias assertions[\s\S]*repository-owned helper[\s\S]*resolved TypeScript symbol\s+and declaration path[\s\S]*exactly one side/i,
 		);
 		assert.match(implementation, /each exported symbol[\s\S]*own\s+positive assertion/i);
 		assert.match(implementation, /signatures[\s\S]*nested properties[\s\S]*any[\s\S]*unknown/i);

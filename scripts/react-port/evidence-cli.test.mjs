@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
 	chmodSync,
+	copyFileSync,
 	existsSync,
 	mkdirSync,
 	mkdtempSync,
@@ -30,6 +31,11 @@ function sha256(content) {
 function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-port-work' } = {}) {
 	const workspaceRoot = mkdtempSync(path.join(tmpdir(), 'react-port-evidence-cli-'));
 	spawnSync('git', ['init', '--quiet'], { cwd: workspaceRoot });
+	mkdirSync(path.join(workspaceRoot, 'scripts/react-port'), { recursive: true });
+	copyFileSync(
+		path.join(SCRIPT_DIRECTORY, 'type-assertions.d.ts'),
+		path.join(workspaceRoot, 'scripts/react-port/type-assertions.d.ts'),
+	);
 	const workRoot = path.join(workspaceRoot, workRootPath);
 	const batchDirectory = path.join(workRoot, 'fixture-batch');
 	mkdirSync(batchDirectory, { recursive: true });
@@ -92,15 +98,30 @@ function createReadyBatch({ cleanRoomDependency = false, workRootPath = '.react-
 	writeFileSync(
 		fixturePnpm,
 		`#!/usr/bin/env node
+import { spawnSync } from 'node:child_process';
 import { appendFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 if (process.env.FIXTURE_COUNTER) appendFileSync(process.env.FIXTURE_COUNTER, process.env.FIXTURE_COUNTER_VALUE ?? 'x');
 const outputFile = process.argv.find((argument) => argument.startsWith('--outputFile='))?.slice('--outputFile='.length);
+for (const arguments_ of JSON.parse(process.env.FIXTURE_NODE_TEST_INVOCATIONS ?? '[]')) {
+	const result = spawnSync('node', arguments_, { stdio: 'inherit' });
+	if (result.status !== 0) process.exit(result.status ?? 1);
+}
 if (process.env.REACT_PORT_TEST_REPORT_DIR && process.env.FIXTURE_NO_TEST_REPORT !== '1') {
 	const files = JSON.parse(process.env.FIXTURE_REPORT_FILES ?? '["packages/widget/tests/widget.test.ts"]');
 	const reportGroups = process.env.FIXTURE_SINGLE_REPORT === '1' ? [files] : files.map((file) => [file]);
+	const runners = JSON.parse(process.env.FIXTURE_REPORT_RUNNERS ?? '[]');
 	for (const [index, reportFiles] of reportGroups.entries()) {
-		writeFileSync(path.join(process.env.REACT_PORT_TEST_REPORT_DIR, 'report-' + index + '.json'), JSON.stringify({
+		const runner = runners[index] ?? 'vitest';
+		const reportFile = runner + '-fixture-' + index + '.report.json';
+		writeFileSync(path.join(process.env.REACT_PORT_TEST_REPORT_DIR, runner + '-fixture-' + index + '.invocation.json'), JSON.stringify({
+			schemaVersion: 1,
+			invocationId: 'fixture-' + index,
+			runner,
+			argv: [runner, 'run'],
+			reportFile,
+		}));
+		writeFileSync(path.join(process.env.REACT_PORT_TEST_REPORT_DIR, reportFile), JSON.stringify({
 			numPassedTests: reportFiles.length,
 			numFailedTests: 0,
 			numPendingTests: Number(process.env.FIXTURE_PENDING_TESTS ?? 0),
@@ -571,7 +592,7 @@ describe('evidence CLI', () => {
 		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/types/upstream/pristine.ts'),
-			"import { widget } from 'widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ntype Assert<T extends true> = T;\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('react-registration-v1:pinned-type-case', () => { type WidgetIsTrue = Assert<Equal<typeof widget, true>>; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n",
+			"import { widget } from 'widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ndeclare function assertUpstreamRegistration(id: string, assertion: () => void): void;\nassertUpstreamRegistration('react-registration-v1:pinned-type-case', () => { type WidgetIsTrue = Assert<Equal<typeof widget, true>>; });\n// @ts-expect-error widget is the literal true\nconst invalidWidget: typeof widget = false;\n",
 		);
 		assert.doesNotThrow(() =>
 			assertApprovedGateCommand(
@@ -869,7 +890,7 @@ describe('evidence CLI', () => {
 		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/types/public/public.ts'),
-			"import type { Safe } from '@octanejs/widget';\ntype Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;\ntype Assert<T extends true> = T;\ntype Shape = Assert<Equal<Safe, { value: string }>>;\n// @ts-expect-error Safe uses a string by default\nconst invalid: Safe = { value: 1 };\n",
+			"import type { Safe } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype Shape = Assert<Equal<Safe, { value: string }>>;\n// @ts-expect-error Safe uses a string by default\nconst invalid: Safe = { value: 1 };\n",
 		);
 		assert.doesNotThrow(() =>
 			assertApprovedGateCommand(
@@ -1034,6 +1055,51 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('requires repository-owned non-reflexive type-alias assertions', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const publicPath = path.join(packageDirectory, 'tests/types/public/public.ts');
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [],
+		};
+		const command = [
+			'pnpm',
+			'exec',
+			'tsrx-tsc',
+			'--noEmit',
+			'-p',
+			'packages/widget/tests/types/public/tsconfig.json',
+		];
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype Reflexive = Assert<Equal<typeof widget, typeof widget>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/positive type assertion/i,
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert } from '../../../../../scripts/react-port/type-assertions.js';\ntype Equal<Left, Right> = true;\ntype Spoofed = Assert<Equal<typeof widget, false>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/positive type assertion/i,
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetIsTrue = Assert<Equal<typeof widget, true>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+		);
+	});
+
 	test('accepts dynamic package registrations when the machine report proves execution', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -1059,18 +1125,23 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
-	test('rejects a runner report that omits a discovered runnable test file', () => {
+	test('uses the selected Vitest project report instead of source imports for ownership', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'vitest run --root ../.. --project widget';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
 		writeFileSync(
 			path.join(packageDirectory, 'tests/widget.test.ts'),
 			"import { test } from 'vitest';\ntest('first lane', () => {});\n",
 		);
+		mkdirSync(path.join(packageDirectory, 'tests/browser'), { recursive: true });
 		writeFileSync(
-			path.join(packageDirectory, 'tests/omitted.test.ts'),
-			"import { test } from 'vitest';\ntest('second lane', () => {});\n",
+			path.join(packageDirectory, 'tests/browser/popper.browser.test.ts'),
+			"import { test } from 'vitest';\ntest('unselected browser project', () => {});\n",
 		);
 
 		const result = runEvidence(
@@ -1092,8 +1163,7 @@ describe('evidence CLI', () => {
 			},
 		);
 
-		assert.equal(result.status, 2);
-		assert.match(result.stdout, /omits package test file.*omitted\.test\.ts/i);
+		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
 	test('rejects a runner report that names a non-test package file', () => {
@@ -1243,6 +1313,52 @@ describe('evidence CLI', () => {
 		assert.match(result.stderr, /multiple Node test invocations.*file identit/i);
 	});
 
+	test('rejects a skipped Node test lane behind a successful or-chain', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test =
+			'node --test tests/primary.test.mjs || node --test tests/fallback.test.mjs';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+		writeFileSync(
+			path.join(packageDirectory, 'tests/primary.test.mjs'),
+			"import { test } from 'node:test';\ntest('primary lane', () => {});\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/fallback.test.mjs'),
+			"import { test } from 'node:test';\ntest('fallback lane', () => {});\n",
+		);
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_NO_TEST_REPORT: '1',
+					FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
+						['--test', 'packages/widget/tests/primary.test.mjs'],
+					]),
+				},
+			},
+		);
+
+		assert.equal(result.status, 2);
+		assert.match(result.stdout, /1 machine-readable invocation record.*2 required/i);
+	});
+
 	test('combines independently validated Node and Vitest evidence', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
@@ -1250,8 +1366,16 @@ describe('evidence CLI', () => {
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		const manifestPath = path.join(packageDirectory, 'package.json');
 		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-		manifest.scripts.test = 'node --test tests/widget.test.ts && vitest run --project widget';
+		manifest.scripts.test = 'node --test tests/widget-node.test.mjs && vitest run --project widget';
 		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\ntest('vitest primary lane', () => {});\n",
+		);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-node.test.mjs'),
+			"import { test } from 'node:test';\ntest('node lane', () => {});\n",
+		);
 		writeFileSync(
 			path.join(packageDirectory, 'tests/widget-vitest.test.ts'),
 			"import { test } from 'vitest';\ntest('vitest lane', () => {});\n",
@@ -1272,7 +1396,9 @@ describe('evidence CLI', () => {
 			{
 				env: {
 					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/tests/widget-vitest.test.ts']),
-					FIXTURE_STDOUT: 'TAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\n',
+					FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
+						['--test', 'packages/widget/tests/widget-node.test.mjs'],
+					]),
 				},
 			},
 		);
@@ -1288,8 +1414,13 @@ describe('evidence CLI', () => {
 		const manifestPath = path.join(packageDirectory, 'package.json');
 		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 		manifest.scripts.test =
-			'node --test tests/widget.test.ts && node ../../scripts/react-parity/harness.mjs run-required --manifest packages/widget/audit/react-parity.json';
+			'node --test tests/widget-node.test.mjs && node ../../scripts/react-parity/harness.mjs run-required --manifest packages/widget/audit/react-parity.json';
 		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget-node.test.mjs'),
+			"import { test } from 'node:test';\ntest('node lane', () => {});\n",
+		);
 
 		const result = runEvidence(
 			[
@@ -1306,7 +1437,9 @@ describe('evidence CLI', () => {
 			{
 				env: {
 					FIXTURE_NO_TEST_REPORT: '1',
-					FIXTURE_STDOUT: 'TAP version 13\n# tests 1\n# pass 1\n# fail 0\n# skipped 0\n# todo 0\n',
+					FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
+						['--test', 'packages/widget/tests/widget-node.test.mjs'],
+					]),
 				},
 			},
 		);
@@ -1346,6 +1479,7 @@ describe('evidence CLI', () => {
 						'packages/widget/tests/widget-jest.test.ts',
 						'packages/widget/tests/widget.test.ts',
 					]),
+					FIXTURE_REPORT_RUNNERS: JSON.stringify(['jest', 'vitest']),
 				},
 			},
 		);
@@ -1391,7 +1525,7 @@ describe('evidence CLI', () => {
 		);
 
 		assert.equal(result.status, 2);
-		assert.match(result.stdout, /created 1 machine-readable.*for 2 reportable runner/i);
+		assert.match(result.stdout, /created 1 machine-readable.*for 2 required test-runner/i);
 	});
 
 	test('rejects todo registrations when a runner also reports zero pending tests', () => {
@@ -1511,7 +1645,7 @@ describe('evidence CLI', () => {
 		);
 		assert.match(
 			manifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			/machine-readable report/i,
+			/machine-readable (?:invocation record|report)/i,
 		);
 	});
 
@@ -1554,18 +1688,19 @@ describe('evidence CLI', () => {
 		);
 	});
 
-	test('requires Node TAP to report a complete passing test set', () => {
+	test('requires Node runner evidence to report a complete passing test set', () => {
 		const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		const manifestPath = path.join(packageDirectory, 'package.json');
 		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-		manifest.scripts.test = 'node --test';
+		manifest.scripts.test = 'node --test tests/widget-node.test.mjs';
 		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
 		writeFileSync(
-			path.join(packageDirectory, 'tests/widget.test.ts'),
-			"import { test } from 'node:test';\ntest('first case', () => {});\ntest('second case', () => {});\n",
+			path.join(packageDirectory, 'tests/widget-node.test.mjs'),
+			"import { test } from 'node:test';\ntest('first case', () => {});\ntest.skip('second case', () => {});\n",
 		);
 
 		const result = runEvidence(
@@ -1582,8 +1717,10 @@ describe('evidence CLI', () => {
 			],
 			{
 				env: {
-					FIXTURE_STDOUT:
-						'TAP version 13\n# tests 2\n# suites 0\n# pass 1\n# fail 0\n# skipped 1\n# todo 0\n',
+					FIXTURE_NO_TEST_REPORT: '1',
+					FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
+						['--test', 'packages/widget/tests/widget-node.test.mjs'],
+					]),
 				},
 			},
 		);
@@ -1598,7 +1735,7 @@ describe('evidence CLI', () => {
 		);
 		assert.match(
 			batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].observed,
-			/passed 1, total 2, failed 0, skipped 1/i,
+			/complete passing registration set/i,
 		);
 	});
 
