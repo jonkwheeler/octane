@@ -1313,6 +1313,7 @@
     "dexie-react-hooks": "@octanejs/dexie",
     "embla-carousel-react": "@octanejs/embla-carousel",
     "framer-motion": "@octanejs/motion",
+    "ink": "@octanejs/ink",
     "input-otp": "@octanejs/input-otp",
     "jotai": "@octanejs/jotai",
     "lucide-react": "@octanejs/lucide",

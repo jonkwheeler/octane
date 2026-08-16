@@ -5330,6 +5330,12 @@ importers:
       '@alcalzone/ansi-tokenize':
         specifier: ^0.3.0
         version: 0.3.0
+      '@types/signal-exit':
+        specifier: ^3.0.0
+        version: 3.0.4
+      '@types/stack-utils':
+        specifier: ^2.0.3
+        version: 2.0.3
       ansi-escapes:
         specifier: ^7.3.0
         version: 7.3.0
@@ -5406,12 +5412,6 @@ importers:
       '@types/node':
         specifier: catalog:default
         version: 24.13.3
-      '@types/signal-exit':
-        specifier: ^3.0.0
-        version: 3.0.4
-      '@types/stack-utils':
-        specifier: ^2.0.3
-        version: 2.0.3
       octane:
         specifier: workspace:*
         version: link:../octane
