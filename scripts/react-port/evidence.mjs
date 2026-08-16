@@ -43,7 +43,10 @@ import {
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
 import { concretePublicSpecifiers, inspectPublicExports } from './public-exports.mjs';
 import { discoverPackageTests, discoverReportEligiblePackageTests } from './package-tests-lib.mjs';
-import { isNodeTestInvocation } from './node-test-invocation-wrapper.mjs';
+import {
+	isNodeTestInvocation,
+	nodeRuntimeOptionBoundary,
+} from './node-test-invocation-wrapper.mjs';
 
 const execFileAsync = promisify(execFile);
 const DEFAULT_COMMAND_TIMEOUT_MS = 10 * 60 * 1_000;
@@ -267,14 +270,21 @@ function packageTestInvocations(manifest, scriptName = 'test', visiting = new Se
 			}
 			continue;
 		}
-		const nodeTest = segment.match(/^node\s+--test(?:\s+(.*))?$/);
-		if (nodeTest) {
+		const nodeCommand = segment.match(/^node(?:\s+(.*))?$/);
+		const nodeArguments = (nodeCommand?.[1] ?? '')
+			.split(/\s+/)
+			.map((argument) => argument.replace(/^['"]|['"]$/g, ''))
+			.filter(Boolean);
+		if (nodeCommand && isNodeTestInvocation(nodeArguments)) {
+			const runtimeOptionBoundary = nodeRuntimeOptionBoundary(nodeArguments);
 			if (
-				!/--(?:help|test-name-pattern|test-only|watch)\b|(?:^|\s)--version(?:\s|$)/.test(segment)
+				runtimeOptionBoundary !== null &&
+				!nodeArguments
+					.slice(0, runtimeOptionBoundary)
+					.some((argument) => /^--(?:test-name-pattern|test-only|watch)(?:=|$)/.test(argument))
 			) {
-				const selectors = (nodeTest[1] ?? '')
-					.split(/\s+/)
-					.map((argument) => argument.replace(/^['"]|['"]$/g, ''))
+				const selectors = nodeArguments
+					.slice(runtimeOptionBoundary)
 					.filter(
 						(argument) =>
 							!argument.startsWith('-') &&

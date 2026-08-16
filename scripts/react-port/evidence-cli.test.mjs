@@ -323,6 +323,20 @@ describe('evidence CLI', () => {
 		assert.deepEqual(readdirSync(reportDirectory), []);
 	});
 
+	for (const entryOption of ['--eval', '--print']) {
+		test(`does not instrument ${entryOption} as a Node test invocation`, () => {
+			const { reportDirectory, result } = runNodeTestWrapper([
+				entryOption,
+				"'application entry point'",
+				'--test',
+			]);
+
+			assert.notEqual(result.status, 0);
+			assert.match(result.stderr, /either --test or --eval/i);
+			assert.deepEqual(readdirSync(reportDirectory), []);
+		});
+	}
+
 	test('preserves an existing Node test reporter while collecting machine evidence', () => {
 		const fixtureDirectory = mkdtempSync(path.join(tmpdir(), 'react-port-node-reporter-'));
 		const testPath = path.join(fixtureDirectory, 'existing-reporter.test.mjs');
@@ -1500,6 +1514,81 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 2);
 		assert.match(result.stdout, /1 machine-readable invocation record.*2 required/i);
 	});
+
+	for (const runtimePrefix of [
+		{
+			name: '--env-file',
+			packageValue: 'tests/node.env',
+			invocationValue: 'packages/widget/tests/node.env',
+			setup(packageDirectory) {
+				writeFileSync(path.join(packageDirectory, 'tests/node.env'), 'NODE_TEST_FIXTURE=1\n');
+			},
+		},
+		{
+			name: '--experimental-loader',
+			packageValue: './tests/node-loader.mjs',
+			invocationValue: './packages/widget/tests/node-loader.mjs',
+			setup(packageDirectory) {
+				writeFileSync(
+					path.join(packageDirectory, 'tests/node-loader.mjs'),
+					'export async function resolve(specifier, context, nextResolve) { return nextResolve(specifier, context); }\n',
+				);
+			},
+		},
+	]) {
+		test(`plans and instruments a Node test lane prefixed by ${runtimePrefix.name}`, () => {
+			const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
+			const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+			assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+			const packageDirectory = createCompletePackage(workspaceRoot);
+			const manifestPath = path.join(packageDirectory, 'package.json');
+			const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+			manifest.scripts.test = `node ${runtimePrefix.name} ${runtimePrefix.packageValue} --test tests/widget-node.test.mjs`;
+			writeFileSync(manifestPath, JSON.stringify(manifest));
+			writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+			writeFileSync(
+				path.join(packageDirectory, 'tests/widget-node.test.mjs'),
+				"import { test } from 'node:test';\ntest('prefixed node lane', () => {});\n",
+			);
+			runtimePrefix.setup(packageDirectory);
+
+			const result = runEvidence(
+				[
+					'run',
+					...common,
+					'--gate',
+					'package-tests',
+					'--',
+					'pnpm',
+					'--dir',
+					'packages/widget',
+					'test',
+				],
+				{
+					env: {
+						FIXTURE_NO_TEST_REPORT: '1',
+						FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
+							[
+								runtimePrefix.name,
+								path.resolve(workspaceRoot, runtimePrefix.invocationValue),
+								'--test',
+								path.resolve(workspaceRoot, 'packages/widget/tests/widget-node.test.mjs'),
+							],
+						]),
+					},
+				},
+			);
+
+			assert.equal(result.status, 0, result.stderr || result.stdout);
+			const batchManifest = JSON.parse(
+				readFileSync(path.join(batchDirectory, 'manifest.json'), 'utf8'),
+			);
+			assert.equal(
+				batchManifest.nodes['pkg:widget'].evidenceMatrix.gates['package-tests'].status,
+				'passed',
+			);
+		});
+	}
 
 	test('combines independently validated Node and Vitest evidence', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();

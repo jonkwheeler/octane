@@ -6,44 +6,95 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const OPTIONS_WITH_SEPARATE_VALUES = new Set([
-	'-C',
-	'-r',
-	'--conditions',
-	'--import',
-	'--loader',
-	'--require',
-	'--test-concurrency',
-	'--test-global-setup',
-	'--test-name-pattern',
-	'--test-reporter',
-	'--test-reporter-destination',
-	'--test-rerun-failures',
-	'--test-shard',
-	'--test-skip-pattern',
-	'--test-timeout',
+const MAX_NODE_RUNTIME_ARGUMENTS = 256;
+const NODE_ENTRY_POINT_OPTIONS = new Set([
+	'-c',
+	'--check',
+	'-e',
+	'--eval',
+	'-p',
+	'--print',
+	'--run',
+]);
+const NODE_TERMINATING_OPTIONS = new Set([
+	'--completion-bash',
+	'-h',
+	'--help',
+	'-v',
+	'--v8-options',
+	'--version',
 ]);
 
-function nodeRuntimeOptionBoundary(arguments_) {
-	let consumesNextValue = false;
-	for (let index = 0; index < arguments_.length; index += 1) {
-		const argument = arguments_[index];
-		if (consumesNextValue) {
-			consumesNextValue = false;
-			continue;
-		}
-		if (argument === '--' || argument === '-' || !argument.startsWith('-')) return index;
-		if (!argument.includes('=') && OPTIONS_WITH_SEPARATE_VALUES.has(argument)) {
-			consumesNextValue = true;
+function loadNodeRuntimeOptionSyntax() {
+	const result = spawnSync(process.execPath, ['--help'], {
+		encoding: 'utf8',
+		maxBuffer: 1024 * 1024,
+		timeout: 5_000,
+		windowsHide: true,
+	});
+	if (result.status !== 0 || typeof result.stdout !== 'string') return null;
+	const syntax = new Map();
+	for (const line of result.stdout.split(/\r?\n/)) {
+		if (!line.startsWith('  -') || line.startsWith('  - ')) continue;
+		const optionColumn = line
+			.slice(2)
+			.split(/\s{2,}/, 1)[0]
+			.trim();
+		const variants = optionColumn.split(/,\s+/).map((variant) => {
+			const match = variant.match(/^(-{1,2}[A-Za-z][A-Za-z0-9-]*)(.*)$/);
+			return match ? { name: match[1], suffix: match[2] } : null;
+		});
+		if (variants.some((variant) => variant === null)) continue;
+		const takesSeparateValue = variants.some(({ suffix }) => suffix.startsWith('='));
+		for (const { name, suffix } of variants) {
+			syntax.set(name, {
+				acceptsInlineValue: takesSeparateValue || suffix.startsWith('[='),
+				takesSeparateValue,
+			});
 		}
 	}
-	return arguments_.length;
+	return syntax.has('--test') ? syntax : null;
+}
+
+const NODE_RUNTIME_OPTION_SYNTAX = loadNodeRuntimeOptionSyntax();
+
+function inspectNodeRuntimeArguments(arguments_) {
+	if (!NODE_RUNTIME_OPTION_SYNTAX || arguments_.length > MAX_NODE_RUNTIME_ARGUMENTS) return null;
+	let isTestInvocation = false;
+	for (let index = 0; index < arguments_.length; index += 1) {
+		const argument = arguments_[index];
+		if (argument === '--' || argument === '-' || !argument.startsWith('-')) {
+			return { boundary: index, isTestInvocation };
+		}
+
+		const equalsIndex = argument.indexOf('=');
+		let optionName = equalsIndex === -1 ? argument : argument.slice(0, equalsIndex);
+		let syntax = NODE_RUNTIME_OPTION_SYNTAX.get(optionName);
+		if (!syntax && equalsIndex === -1 && argument.startsWith('-') && !argument.startsWith('--')) {
+			optionName = argument.slice(0, 2);
+			syntax = NODE_RUNTIME_OPTION_SYNTAX.get(optionName);
+			if (!syntax?.takesSeparateValue || argument.length === optionName.length) syntax = null;
+		}
+		if (!syntax) return null;
+		if (NODE_ENTRY_POINT_OPTIONS.has(optionName) || NODE_TERMINATING_OPTIONS.has(optionName)) {
+			return { boundary: arguments_.length, isTestInvocation: false };
+		}
+		if (equalsIndex !== -1 && !syntax.acceptsInlineValue && optionName !== '--test') return null;
+		if (syntax.takesSeparateValue && equalsIndex === -1 && argument === optionName) {
+			if (index + 1 >= arguments_.length) return null;
+			index += 1;
+		}
+		isTestInvocation ||= optionName === '--test';
+	}
+	return { boundary: arguments_.length, isTestInvocation };
+}
+
+export function nodeRuntimeOptionBoundary(arguments_) {
+	return inspectNodeRuntimeArguments(arguments_)?.boundary ?? null;
 }
 
 export function isNodeTestInvocation(arguments_) {
-	return arguments_
-		.slice(0, nodeRuntimeOptionBoundary(arguments_))
-		.some((argument) => argument === '--test' || argument.startsWith('--test='));
+	return inspectNodeRuntimeArguments(arguments_)?.isTestInvocation ?? false;
 }
 
 function countTestReportOptions(arguments_) {
@@ -61,6 +112,7 @@ function countTestReportOptions(arguments_) {
 
 function instrumentArguments(arguments_, reporterPath, reportPath) {
 	const insertionIndex = nodeRuntimeOptionBoundary(arguments_);
+	if (insertionIndex === null) return arguments_;
 	const { destinations, reporters } = countTestReportOptions(arguments_.slice(0, insertionIndex));
 	const existingReporterDestination =
 		reporters === 1 && destinations === 0 ? ['--test-reporter-destination=stdout'] : [];
