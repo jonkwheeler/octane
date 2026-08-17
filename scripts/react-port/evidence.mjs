@@ -71,6 +71,7 @@ const PACK_GATES = new Set([
 	'package-pack',
 ]);
 const NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails', 'skipIf', 'runIf']);
+const TYPESCRIPT_LIBRARY_DIRECTORY = path.dirname(ts.getDefaultLibFilePath({}));
 
 function usage() {
 	return `Usage:
@@ -747,6 +748,31 @@ function resolvedSymbolAtLocation(node, checker) {
 	return symbol;
 }
 
+function identifierIsImportBinding(identifier, checker) {
+	return Boolean(
+		checker
+			.getSymbolAtLocation(identifier)
+			?.declarations?.some(
+				(declaration) =>
+					ts.isImportClause(declaration) ||
+					ts.isImportSpecifier(declaration) ||
+					ts.isNamespaceImport(declaration),
+			),
+	);
+}
+
+function typeQueryRootIdentifier(name) {
+	return ts.isIdentifier(name) ? name : typeQueryRootIdentifier(name.left);
+}
+
+function isTypeScriptLibrarySymbol(symbol) {
+	return symbol?.declarations?.some((declaration) => {
+		const declarationPath = canonicalPath(declaration.getSourceFile().fileName);
+		const relative = path.relative(TYPESCRIPT_LIBRARY_DIRECTORY, declarationPath);
+		return !relative.startsWith('..') && !path.isAbsolute(relative);
+	});
+}
+
 function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	let containsConditionalProof = false;
 	const inspect = (child) => {
@@ -758,7 +784,28 @@ function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	};
 	inspect(node);
 	if (containsConditionalProof) return null;
-	const provenance = referencedProvenance(node, checker, provenanceBySymbol);
+	if (ts.isTypeQueryNode(node)) {
+		if (!identifierIsImportBinding(typeQueryRootIdentifier(node.exprName), checker)) return null;
+		const provenance = referencedProvenance(node.exprName, checker, provenanceBySymbol);
+		return provenance.size > 0 ? provenance : null;
+	}
+	if (!ts.isTypeReferenceNode(node)) return null;
+	const directProvenance = referencedProvenance(node.typeName, checker, provenanceBySymbol);
+	if (
+		directProvenance.size > 0 &&
+		identifierIsImportBinding(typeQueryRootIdentifier(node.typeName), checker)
+	) {
+		return directProvenance;
+	}
+	const wrapper = resolvedSymbolAtLocation(node.typeName, checker);
+	if (!isTypeScriptLibrarySymbol(wrapper)) return null;
+	const provenance = new Set();
+	for (const argument of node.typeArguments ?? []) {
+		for (const key of directBindingDerivedTypeProvenance(argument, checker, provenanceBySymbol) ??
+			[]) {
+			provenance.add(key);
+		}
+	}
 	return provenance.size > 0 ? provenance : null;
 }
 
@@ -808,11 +855,18 @@ function positiveAssertionProvenance(
 		const constraint = checker.getTypeFromTypeNode(node.type);
 		const emptyObjectConstraint = ts.isTypeLiteralNode(node.type) && node.type.members.length === 0;
 		const constraintProvenance = referencedProvenance(node.type, checker, provenanceBySymbol);
+		const root = assertionRootIdentifier(node.expression);
+		const expressionProvenance = root
+			? identifierIsImportBinding(root, checker)
+				? referencedProvenance(root, checker, provenanceBySymbol)
+				: new Set()
+			: new Set();
 		return constraint.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown) ||
 			emptyObjectConstraint ||
-			constraintProvenance.size > 0
+			constraintProvenance.size > 0 ||
+			expressionProvenance.size === 0
 			? null
-			: referencedProvenance(node.expression, checker, provenanceBySymbol);
+			: expressionProvenance;
 	}
 	if (ts.isTypeAliasDeclaration(node)) {
 		return constrainedTypeAliasProvenance(

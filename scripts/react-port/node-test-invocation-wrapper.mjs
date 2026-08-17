@@ -25,6 +25,18 @@ const NODE_TERMINATING_OPTIONS = new Set([
 	'--version',
 ]);
 
+function optionAliases(name) {
+	if (!name.startsWith('--')) return [name];
+	const body = name.slice(2);
+	return [...new Set([name, `--${body.replaceAll('_', '-')}`, `--${body.replaceAll('-', '_')}`])];
+}
+
+function addOptionSyntax(syntax, name, optionSyntax) {
+	for (const alias of optionAliases(name)) {
+		if (!syntax.has(alias)) syntax.set(alias, optionSyntax);
+	}
+}
+
 function loadNodeRuntimeOptionSyntax() {
 	const result = spawnSync(process.execPath, ['--help'], {
 		encoding: 'utf8',
@@ -47,9 +59,31 @@ function loadNodeRuntimeOptionSyntax() {
 		if (variants.some((variant) => variant === null)) continue;
 		const takesSeparateValue = variants.some(({ suffix }) => suffix.startsWith('='));
 		for (const { name, suffix } of variants) {
-			syntax.set(name, {
+			addOptionSyntax(syntax, name, {
 				acceptsInlineValue: takesSeparateValue || suffix.startsWith('[='),
 				takesSeparateValue,
+			});
+		}
+	}
+	for (const name of process.allowedNodeEnvironmentFlags) {
+		addOptionSyntax(syntax, name, {
+			acceptsInlineValue: true,
+			takesSeparateValue: false,
+		});
+	}
+	const v8Result = spawnSync(process.execPath, ['--v8-options'], {
+		encoding: 'utf8',
+		maxBuffer: 1024 * 1024,
+		timeout: 5_000,
+		windowsHide: true,
+	});
+	if (v8Result.status === 0 && typeof v8Result.stdout === 'string') {
+		for (const line of v8Result.stdout.split(/\r?\n/)) {
+			const name = line.match(/^\s+(--[A-Za-z0-9][A-Za-z0-9_-]*)\s+\(/)?.[1];
+			if (!name) continue;
+			addOptionSyntax(syntax, name, {
+				acceptsInlineValue: true,
+				takesSeparateValue: false,
 			});
 		}
 	}
