@@ -41,7 +41,7 @@ function loadNodeRuntimeOptionSyntax() {
 			.split(/\s{2,}/, 1)[0]
 			.trim();
 		const variants = optionColumn.split(/,\s+/).map((variant) => {
-			const match = variant.match(/^(-{1,2}[A-Za-z][A-Za-z0-9-]*)(.*)$/);
+			const match = variant.match(/^(-{1,2}\S+?)(?==|\s|\[|$)(.*)$/);
 			return match ? { name: match[1], suffix: match[2] } : null;
 		});
 		if (variants.some((variant) => variant === null)) continue;

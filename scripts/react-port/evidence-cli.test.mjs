@@ -1535,6 +1535,12 @@ describe('evidence CLI', () => {
 				);
 			},
 		},
+		{
+			name: '--tls-min-v1.0',
+			packageValue: null,
+			invocationValue: null,
+			setup() {},
+		},
 	]) {
 		test(`plans and instruments a Node test lane prefixed by ${runtimePrefix.name}`, () => {
 			const { workspaceRoot, workRoot, batchDirectory } = createReadyBatch();
@@ -1543,7 +1549,14 @@ describe('evidence CLI', () => {
 			const packageDirectory = createCompletePackage(workspaceRoot);
 			const manifestPath = path.join(packageDirectory, 'package.json');
 			const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-			manifest.scripts.test = `node ${runtimePrefix.name} ${runtimePrefix.packageValue} --test tests/widget-node.test.mjs`;
+			manifest.scripts.test = [
+				'node',
+				runtimePrefix.name,
+				runtimePrefix.packageValue,
+				'--test tests/widget-node.test.mjs',
+			]
+				.filter(Boolean)
+				.join(' ');
 			writeFileSync(manifestPath, JSON.stringify(manifest));
 			writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
 			writeFileSync(
@@ -1570,7 +1583,9 @@ describe('evidence CLI', () => {
 						FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify([
 							[
 								runtimePrefix.name,
-								path.resolve(workspaceRoot, runtimePrefix.invocationValue),
+								...(runtimePrefix.invocationValue
+									? [path.resolve(workspaceRoot, runtimePrefix.invocationValue)]
+									: []),
 								'--test',
 								path.resolve(workspaceRoot, 'packages/widget/tests/widget-node.test.mjs'),
 							],
