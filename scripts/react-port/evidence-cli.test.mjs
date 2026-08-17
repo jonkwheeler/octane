@@ -1267,6 +1267,46 @@ describe('evidence CLI', () => {
 		);
 	});
 
+	test('accepts a non-empty projection of a public object type', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			"export const widget = { label: 'ready', children: 1 } as const;\n",
+		);
+		const publicPath = path.join(packageDirectory, 'tests/types/public/public.ts');
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetWithoutChildren = Assert<Equal<Omit<typeof widget, 'children'>, { readonly label: 'ready' }>>;\n// @ts-expect-error widget label is the literal ready\nconst invalidWidget: typeof widget = { label: 'invalid', children: 1 };\n",
+		);
+
+		const command = [
+			'pnpm',
+			'exec',
+			'tsrx-tsc',
+			'--noEmit',
+			'-p',
+			'packages/widget/tests/types/public/tsconfig.json',
+		];
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [],
+		};
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype EmptyProjection = Assert<Equal<Omit<typeof widget, keyof typeof widget>, {}>>;\n// @ts-expect-error widget label is the literal ready\nconst invalidWidget: typeof widget = { label: 'invalid', children: 1 };\n",
+		);
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/positive type assertion/i,
+		);
+	});
+
 	test('tracks direct namespace-member satisfies assertions by export', () => {
 		const { workspaceRoot } = createReadyBatch();
 		const packageDirectory = createCompletePackage(workspaceRoot);

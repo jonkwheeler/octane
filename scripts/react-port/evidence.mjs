@@ -823,10 +823,26 @@ function typeNodeHasFlags(node, checker, flags) {
 	return Boolean(checker.getTypeFromTypeNode(node).flags & flags);
 }
 
+function typeProjectionHasObservableStructure(node, checker) {
+	const result = checker.getTypeFromTypeNode(node);
+	return (
+		checker.getPropertiesOfType(result).length > 0 ||
+		checker.getSignaturesOfType(result, ts.SignatureKind.Call).length > 0 ||
+		checker.getSignaturesOfType(result, ts.SignatureKind.Construct).length > 0 ||
+		checker.getIndexInfosOfType(result).length > 0
+	);
+}
+
 function typeAliasProjectionPreservesArgument(name, node, argumentIndex, checker) {
 	if (DIRECT_TYPESCRIPT_ALIAS_PROJECTIONS.has(name)) return argumentIndex === 0;
 	const arguments_ = node.typeArguments ?? [];
 	switch (name) {
+		case 'Omit':
+			return (
+				argumentIndex === 0 &&
+				arguments_.length === 2 &&
+				typeProjectionHasObservableStructure(node, checker)
+			);
 		case 'Pick':
 			return (
 				argumentIndex === 0 &&
