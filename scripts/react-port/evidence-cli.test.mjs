@@ -1206,6 +1206,21 @@ describe('evidence CLI', () => {
 			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetProof = Assert<Equal<ThisType<typeof widget>, {}>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
 		);
 		assertRejected();
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetProof = Assert<Equal<Extract<typeof widget, never>, never>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assertRejected();
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetProof = Assert<Equal<Exclude<typeof widget, unknown>, never>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assertRejected();
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WidgetProof = Assert<Equal<Extract<typeof widget, false>, never>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assertRejected();
 
 		writeFileSync(
 			publicPath,
@@ -1386,6 +1401,14 @@ describe('evidence CLI', () => {
 		writeFileSync(
 			publicPath,
 			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype WrappedWidgetIsTrue = Assert<Equal<Promise<typeof widget>, Promise<true>>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+		);
+
+		writeFileSync(
+			publicPath,
+			"import { widget } from '@octanejs/widget';\nimport type { Assert, Equal } from '../../../../../scripts/react-port/type-assertions.js';\ntype PreservedWidgetIsTrue = Assert<Equal<NoInfer<typeof widget>, true>>;\n// @ts-expect-error widget is not callable\nwidget();\n",
 		);
 		assert.doesNotThrow(() =>
 			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
@@ -1683,6 +1706,55 @@ describe('evidence CLI', () => {
 
 		assert.equal(result.status, 2);
 		assert.match(result.stderr, /multiple Node test invocations.*file identit/i);
+	});
+
+	test('does not treat a shared Node test helper as an omitted standalone suite', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		const manifestPath = path.join(packageDirectory, 'package.json');
+		const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+		manifest.scripts.test = 'node --test tests/first.test.mjs && node --test tests/second.test.mjs';
+		writeFileSync(manifestPath, JSON.stringify(manifest));
+		writeFileSync(path.join(packageDirectory, 'tests/widget.test.ts'), 'export {};\n');
+		writeFileSync(
+			path.join(packageDirectory, 'tests/test-helper.mjs'),
+			"export { test } from 'node:test';\n",
+		);
+		for (const name of ['first', 'second']) {
+			writeFileSync(
+				path.join(packageDirectory, `tests/${name}.test.mjs`),
+				`import { test } from './test-helper.mjs';\ntest('${name} lane', () => {});\n`,
+			);
+		}
+
+		const result = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_NO_TEST_REPORT: '1',
+					FIXTURE_NODE_TEST_INVOCATIONS: JSON.stringify(
+						['first', 'second'].map((name) => [
+							'--test',
+							path.resolve(workspaceRoot, `packages/widget/tests/${name}.test.mjs`),
+						]),
+					),
+				},
+			},
+		);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
 	test('rejects a skipped Node test lane behind a successful or-chain', () => {

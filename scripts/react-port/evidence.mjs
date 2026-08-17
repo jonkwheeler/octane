@@ -38,7 +38,11 @@ import {
 } from './state-lib.mjs';
 import { credentialValuesFromEnvironment } from './report-lib.mjs';
 import { concretePublicSpecifiers, inspectPublicExports } from './public-exports.mjs';
-import { discoverPackageTests, discoverReportEligiblePackageTests } from './package-tests-lib.mjs';
+import {
+	discoverPackageTests,
+	discoverReportEligiblePackageTests,
+	isConventionalPackageTestFile,
+} from './package-tests-lib.mjs';
 import {
 	isNodeTestInvocation,
 	nodeRuntimeOptionBoundary,
@@ -361,8 +365,10 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 		const duplicated = [...selectedCounts]
 			.filter(([, count]) => count > 1)
 			.map(([filePath]) => path.relative(packageRoot, filePath));
-		const nodeOwnedFiles = testFiles.filter((filePath) =>
-			/\b(?:from\s+|require\s*\()['"]node:test['"]/.test(readFileSync(filePath, 'utf8')),
+		const nodeOwnedFiles = testFiles.filter(
+			(filePath) =>
+				isConventionalPackageTestFile(filePath) &&
+				/\b(?:from\s+|require\s*\()['"]node:test['"]/.test(readFileSync(filePath, 'utf8')),
 		);
 		const omitted = nodeOwnedFiles
 			.filter((filePath) => !selectedCounts.has(filePath))
@@ -794,15 +800,56 @@ function typeParameterAffectsDeclaration(symbol, parameterIndex, checker) {
 	});
 }
 
-function typeReferenceErasesItsArguments(node, wrapper, checker) {
-	if (!['Omit', 'Pick', 'Record', 'ThisType'].includes(wrapper.getName())) return false;
-	const result = checker.getTypeFromTypeNode(node);
-	return (
-		checker.getPropertiesOfType(result).length === 0 &&
-		checker.getSignaturesOfType(result, ts.SignatureKind.Call).length === 0 &&
-		checker.getSignaturesOfType(result, ts.SignatureKind.Construct).length === 0 &&
-		checker.getIndexInfosOfType(result).length === 0
-	);
+const DIRECT_TYPESCRIPT_ALIAS_PROJECTIONS = new Set([
+	'Awaited',
+	'Capitalize',
+	'ConstructorParameters',
+	'InstanceType',
+	'Lowercase',
+	'NoInfer',
+	'NonNullable',
+	'OmitThisParameter',
+	'Parameters',
+	'Partial',
+	'Readonly',
+	'Required',
+	'ReturnType',
+	'ThisParameterType',
+	'Uncapitalize',
+	'Uppercase',
+]);
+
+function typeNodeHasFlags(node, checker, flags) {
+	return Boolean(checker.getTypeFromTypeNode(node).flags & flags);
+}
+
+function typeAliasProjectionPreservesArgument(name, node, argumentIndex, checker) {
+	if (DIRECT_TYPESCRIPT_ALIAS_PROJECTIONS.has(name)) return argumentIndex === 0;
+	const arguments_ = node.typeArguments ?? [];
+	switch (name) {
+		case 'Pick':
+			return (
+				argumentIndex === 0 &&
+				arguments_.length === 2 &&
+				!typeNodeHasFlags(
+					arguments_[1],
+					checker,
+					ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never,
+				)
+			);
+		case 'Record':
+			return (
+				argumentIndex === 1 &&
+				arguments_.length === 2 &&
+				!typeNodeHasFlags(
+					arguments_[0],
+					checker,
+					ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never,
+				)
+			);
+		default:
+			return false;
+	}
 }
 
 function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
@@ -843,16 +890,22 @@ function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	}
 	const wrapper = resolvedSymbolAtLocation(node.typeName, checker);
 	if (!isTypeScriptLibrarySymbol(wrapper)) return null;
-	if (typeReferenceErasesItsArguments(node, wrapper, checker)) return null;
 	const provenance = new Set();
+	const wrapperIsTypeAlias = wrapper.declarations?.some(ts.isTypeAliasDeclaration);
 	for (const [index, argument] of (node.typeArguments ?? []).entries()) {
 		const argumentProvenance = directBindingDerivedTypeProvenance(
 			argument,
 			checker,
 			provenanceBySymbol,
 		);
-		if (argumentProvenance && !typeParameterAffectsDeclaration(wrapper, index, checker))
+		if (
+			argumentProvenance &&
+			!(wrapperIsTypeAlias
+				? typeAliasProjectionPreservesArgument(wrapper.getName(), node, index, checker)
+				: typeParameterAffectsDeclaration(wrapper, index, checker))
+		) {
 			return null;
+		}
 		for (const key of argumentProvenance ?? []) {
 			provenance.add(key);
 		}

@@ -12,10 +12,11 @@ function isTestDirectorySource(packageRoot, filePath) {
 }
 
 function isTestFileCandidate(packageRoot, filePath) {
-	return (
-		PACKAGE_TEST_FILE_PATTERN.test(path.basename(filePath)) ||
-		isTestDirectorySource(packageRoot, filePath)
-	);
+	return isConventionalPackageTestFile(filePath) || isTestDirectorySource(packageRoot, filePath);
+}
+
+export function isConventionalPackageTestFile(filePath) {
+	return PACKAGE_TEST_FILE_PATTERN.test(path.basename(filePath));
 }
 
 function discoverMatchingPackageTests(packageDirectory, { includeTopLevelUpstream }) {
