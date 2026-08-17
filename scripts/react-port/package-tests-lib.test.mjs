@@ -35,13 +35,23 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		'upstream/__tests__/light-async.js',
 		'upstream/fixtures/setup.js',
 		'upstream/test/render.js',
+		'upstream/test/conditional-run.js',
 		'upstream/test/setup.js',
 		'upstream/tests/integration.ts',
+		'upstream/tests/conditional-skip.ts',
 		'dist/built.test.js',
 		'node_modules/dependency/dependency.test.js',
 	]) {
 		await writeFile(path.join(packageDirectory, relativePath), "test('observable', () => {});\n");
 	}
+	await writeFile(
+		path.join(packageDirectory, 'upstream/test/conditional-run.js'),
+		"test.runIf(true)('conditionally runnable', () => {});\n",
+	);
+	await writeFile(
+		path.join(packageDirectory, 'upstream/tests/conditional-skip.ts'),
+		"test.skipIf(false)('conditionally runnable', () => {});\n",
+	);
 	for (const relativePath of [
 		'tests/helper.ts',
 		'upstream/fixtures/setup.js',
@@ -66,7 +76,9 @@ test('uses one observable package-test inventory across supported layouts', asyn
 			'src/widget.spec.ts',
 			'tests/component.test.tsrx',
 			'upstream/__tests__/light-async.js',
+			'upstream/test/conditional-run.js',
 			'upstream/test/render.js',
+			'upstream/tests/conditional-skip.ts',
 			'upstream/tests/integration.ts',
 			'upstream/vendor.test.ts',
 		],

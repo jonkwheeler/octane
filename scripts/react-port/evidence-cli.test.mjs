@@ -1933,6 +1933,31 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
+	test('accepts conditional-only package test registrations when the runner executes them', () => {
+		const { workspaceRoot, workRoot } = createReadyBatch();
+		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
+		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'tests/widget.test.ts'),
+			"import { test } from 'vitest';\ntest.runIf(true)('enabled lane', () => {});\ntest.skipIf(false)('unblocked lane', () => {});\n",
+		);
+
+		const result = runEvidence([
+			'run',
+			...common,
+			'--gate',
+			'package-tests',
+			'--',
+			'pnpm',
+			'--dir',
+			'packages/widget',
+			'test',
+		]);
+
+		assert.equal(result.status, 0, result.stderr || result.stdout);
+	});
+
 	test('requires a machine report from every chained test-runner invocation', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];

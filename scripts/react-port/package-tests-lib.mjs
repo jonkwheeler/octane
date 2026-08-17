@@ -9,7 +9,7 @@ const PACKAGE_TEST_FILE_PATTERN = /(?:^|[.-])(?:test|spec)\.(?:[cm]?[jt]sx?|tsrx
 const PACKAGE_TEST_SOURCE_PATTERN = /\.(?:[cm]?[jt]sx?|tsrx)$/i;
 const TEST_DIRECTORIES = new Set(['__tests__', 'test', 'tests']);
 const SKIPPED_DIRECTORIES = new Set(['dist', 'node_modules']);
-const NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails', 'skipIf', 'runIf']);
+const ALWAYS_NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails']);
 
 function hasRunnableTestRegistration(filePath) {
 	const source = readFileSync(filePath, 'utf8');
@@ -17,7 +17,7 @@ function hasRunnableTestRegistration(filePath) {
 	return extractTestCases(source, { file: filePath }).some(
 		(testCase) =>
 			testCase.kind !== 'xit' &&
-			!testCase.modifiers.some((modifier) => NON_RUNNABLE_TEST_MODIFIERS.has(modifier)) &&
+			!testCase.modifiers.some((modifier) => ALWAYS_NON_RUNNABLE_TEST_MODIFIERS.has(modifier)) &&
 			(!Number.isSafeInteger(testCase.estimatedRegistrations) ||
 				testCase.estimatedRegistrations > 0),
 	);

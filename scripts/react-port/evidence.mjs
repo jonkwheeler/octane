@@ -70,7 +70,7 @@ const PACK_GATES = new Set([
 	'packed-source-types-browser',
 	'package-pack',
 ]);
-const NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails', 'skipIf', 'runIf']);
+const ALWAYS_NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails']);
 const TYPESCRIPT_LIBRARY_DIRECTORY = path.dirname(ts.getDefaultLibFilePath({}));
 
 function usage() {
@@ -352,7 +352,7 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 		for (const testCase of extractTestCases(source, { file: testPath })) {
 			if (
 				testCase.kind === 'xit' ||
-				testCase.modifiers.some((modifier) => NON_RUNNABLE_TEST_MODIFIERS.has(modifier))
+				testCase.modifiers.some((modifier) => ALWAYS_NON_RUNNABLE_TEST_MODIFIERS.has(modifier))
 			) {
 				continue;
 			}
