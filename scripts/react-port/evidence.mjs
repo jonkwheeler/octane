@@ -17,10 +17,6 @@ import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import {
-	extractTestCases,
-	findPossibleUnexpandedRegistrars,
-} from '../react-parity/inventory-lib.mjs';
-import {
 	auditShippedClosure,
 	assertCurrentEvidenceMatrix,
 	createEvidenceMatrix,
@@ -70,7 +66,6 @@ const PACK_GATES = new Set([
 	'packed-source-types-browser',
 	'package-pack',
 ]);
-const ALWAYS_NON_RUNNABLE_TEST_MODIFIERS = new Set(['skip', 'todo', 'fails']);
 const TYPESCRIPT_LIBRARY_DIRECTORY = path.dirname(ts.getDefaultLibFilePath({}));
 
 function usage() {
@@ -337,34 +332,14 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 			'Package test script must run Vitest, Jest, node --test, or the repository parity command',
 		);
 	}
-	let hasRunnableRegistration = false;
-	const runnableTestFiles = new Set();
 	const testFiles = discoverPackageTests(packageDirectory).map((filePath) =>
 		realpathSync(filePath),
 	);
 	const reportEligibleTestFiles = discoverReportEligiblePackageTests(packageDirectory).map(
 		(filePath) => realpathSync(filePath),
 	);
-	for (const testPath of testFiles) {
-		const source = readFileSync(testPath, 'utf8');
-		const possibleRegistrars = findPossibleUnexpandedRegistrars(source);
-		let fileHasRunnableRegistration = possibleRegistrars.length > 0;
-		for (const testCase of extractTestCases(source, { file: testPath })) {
-			if (
-				testCase.kind === 'xit' ||
-				testCase.modifiers.some((modifier) => ALWAYS_NON_RUNNABLE_TEST_MODIFIERS.has(modifier))
-			) {
-				continue;
-			}
-			fileHasRunnableRegistration ||=
-				!Number.isSafeInteger(testCase.estimatedRegistrations) ||
-				testCase.estimatedRegistrations > 0;
-		}
-		if (fileHasRunnableRegistration) runnableTestFiles.add(testPath);
-		hasRunnableRegistration ||= fileHasRunnableRegistration;
-	}
-	if (!hasRunnableRegistration) {
-		throw new Error('Package test gate has no runnable test registrations');
+	if (testFiles.length === 0) {
+		throw new Error('Package test gate has no package-local test file candidates');
 	}
 	const nodeInvocations = invocations.filter(({ runner }) => runner === 'node-test');
 	if (nodeInvocations.length > 1 || (nodeInvocations.length === 1 && runners.length > 1)) {
@@ -386,7 +361,7 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 		const duplicated = [...selectedCounts]
 			.filter(([, count]) => count > 1)
 			.map(([filePath]) => path.relative(packageRoot, filePath));
-		const nodeOwnedFiles = [...runnableTestFiles].filter((filePath) =>
+		const nodeOwnedFiles = testFiles.filter((filePath) =>
 			/\b(?:from\s+|require\s*\()['"]node:test['"]/.test(readFileSync(filePath, 'utf8')),
 		);
 		const omitted = nodeOwnedFiles
@@ -402,7 +377,6 @@ function packageTestExecutionPlan(node, workspaceRoot) {
 		invocations,
 		packageDirectory,
 		reportEligibleTestFiles,
-		runnableTestFiles: [...runnableTestFiles],
 		runners,
 	};
 }
@@ -797,6 +771,40 @@ function isTypeScriptLibrarySymbol(symbol) {
 	});
 }
 
+function typeParameterAffectsDeclaration(symbol, parameterIndex, checker) {
+	return symbol?.declarations?.some((declaration) => {
+		const parameter = declaration.typeParameters?.[parameterIndex];
+		const parameterSymbol = parameter && checker.getSymbolAtLocation(parameter.name);
+		if (!parameterSymbol) return false;
+		let affectsDeclaration = false;
+		const visit = (node) => {
+			if (affectsDeclaration) return;
+			if (ts.isIdentifier(node) && checker.getSymbolAtLocation(node) === parameterSymbol) {
+				affectsDeclaration = true;
+				return;
+			}
+			ts.forEachChild(node, visit);
+		};
+		if (ts.isTypeAliasDeclaration(declaration)) visit(declaration.type);
+		else {
+			for (const member of declaration.members ?? []) visit(member);
+			for (const clause of declaration.heritageClauses ?? []) visit(clause);
+		}
+		return affectsDeclaration;
+	});
+}
+
+function typeReferenceErasesItsArguments(node, wrapper, checker) {
+	if (!['Omit', 'Pick', 'Record', 'ThisType'].includes(wrapper.getName())) return false;
+	const result = checker.getTypeFromTypeNode(node);
+	return (
+		checker.getPropertiesOfType(result).length === 0 &&
+		checker.getSignaturesOfType(result, ts.SignatureKind.Call).length === 0 &&
+		checker.getSignaturesOfType(result, ts.SignatureKind.Construct).length === 0 &&
+		checker.getIndexInfosOfType(result).length === 0
+	);
+}
+
 function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	let containsConditionalProof = false;
 	const inspect = (child) => {
@@ -808,6 +816,18 @@ function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	};
 	inspect(node);
 	if (containsConditionalProof) return null;
+	if (ts.isParenthesizedTypeNode(node)) {
+		return directBindingDerivedTypeProvenance(node.type, checker, provenanceBySymbol);
+	}
+	if (ts.isTypeOperatorNode(node) && node.operator === ts.SyntaxKind.KeyOfKeyword) {
+		return directBindingDerivedTypeProvenance(node.type, checker, provenanceBySymbol);
+	}
+	if (ts.isIndexedAccessTypeNode(node)) {
+		const index = checker.getTypeFromTypeNode(node.indexType);
+		if (index.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown | ts.TypeFlags.Never)) return null;
+		if (referencedProvenance(node.indexType, checker, provenanceBySymbol).size > 0) return null;
+		return directBindingDerivedTypeProvenance(node.objectType, checker, provenanceBySymbol);
+	}
 	if (ts.isTypeQueryNode(node)) {
 		if (!identifierIsImportBinding(typeQueryRootIdentifier(node.exprName), checker)) return null;
 		const provenance = referencedProvenance(node.exprName, checker, provenanceBySymbol);
@@ -823,10 +843,17 @@ function directBindingDerivedTypeProvenance(node, checker, provenanceBySymbol) {
 	}
 	const wrapper = resolvedSymbolAtLocation(node.typeName, checker);
 	if (!isTypeScriptLibrarySymbol(wrapper)) return null;
+	if (typeReferenceErasesItsArguments(node, wrapper, checker)) return null;
 	const provenance = new Set();
-	for (const argument of node.typeArguments ?? []) {
-		for (const key of directBindingDerivedTypeProvenance(argument, checker, provenanceBySymbol) ??
-			[]) {
+	for (const [index, argument] of (node.typeArguments ?? []).entries()) {
+		const argumentProvenance = directBindingDerivedTypeProvenance(
+			argument,
+			checker,
+			provenanceBySymbol,
+		);
+		if (argumentProvenance && !typeParameterAffectsDeclaration(wrapper, index, checker))
+			return null;
+		for (const key of argumentProvenance ?? []) {
 			provenance.add(key);
 		}
 	}

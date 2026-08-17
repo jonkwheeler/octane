@@ -29,6 +29,7 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		'src/widget.spec.ts',
 		'__tests__/behavior.test.ts',
 		'__tests__/render.js',
+		'__tests__/shared.js',
 		'tests/component.test.tsrx',
 		'tests/helper.ts',
 		'upstream/vendor.test.ts',
@@ -52,6 +53,10 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		path.join(packageDirectory, 'upstream/tests/conditional-skip.ts'),
 		"test.skipIf(false)('conditionally runnable', () => {});\n",
 	);
+	await writeFile(
+		path.join(packageDirectory, '__tests__/shared.js'),
+		"require('../register-shared-suite.cjs')();\n",
+	);
 	for (const relativePath of [
 		'tests/helper.ts',
 		'upstream/fixtures/setup.js',
@@ -64,7 +69,14 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		discoverPackageTests(packageDirectory).map((file) =>
 			path.relative(packageDirectory, file).replaceAll('\\', '/'),
 		),
-		['__tests__/behavior.test.ts', 'src/widget.spec.ts', 'tests/component.test.tsrx'],
+		[
+			'__tests__/behavior.test.ts',
+			'__tests__/render.js',
+			'__tests__/shared.js',
+			'src/widget.spec.ts',
+			'tests/component.test.tsrx',
+			'tests/helper.ts',
+		],
 	);
 	assert.deepEqual(
 		discoverReportEligiblePackageTests(packageDirectory).map((file) =>
@@ -73,11 +85,14 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		[
 			'__tests__/behavior.test.ts',
 			'__tests__/render.js',
+			'__tests__/shared.js',
 			'src/widget.spec.ts',
 			'tests/component.test.tsrx',
+			'tests/helper.ts',
 			'upstream/__tests__/light-async.js',
 			'upstream/test/conditional-run.js',
 			'upstream/test/render.js',
+			'upstream/test/setup.js',
 			'upstream/tests/conditional-skip.ts',
 			'upstream/tests/integration.ts',
 			'upstream/vendor.test.ts',

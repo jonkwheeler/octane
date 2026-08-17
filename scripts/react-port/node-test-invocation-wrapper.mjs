@@ -78,13 +78,18 @@ function loadNodeRuntimeOptionSyntax() {
 		windowsHide: true,
 	});
 	if (v8Result.status === 0 && typeof v8Result.stdout === 'string') {
-		for (const line of v8Result.stdout.split(/\r?\n/)) {
+		const lines = v8Result.stdout.split(/\r?\n/);
+		for (const [index, line] of lines.entries()) {
 			const name = line.match(/^\s+(--[A-Za-z0-9][A-Za-z0-9_-]*)\s+\(/)?.[1];
 			if (!name) continue;
-			addOptionSyntax(syntax, name, {
+			const optionSyntax = {
 				acceptsInlineValue: true,
 				takesSeparateValue: false,
-			});
+			};
+			addOptionSyntax(syntax, name, optionSyntax);
+			if (/^\s+type:\s+bool\b/.test(lines[index + 1] ?? '')) {
+				addOptionSyntax(syntax, `--no-${name.slice(2)}`, optionSyntax);
+			}
 		}
 	}
 	return syntax.has('--test') ? syntax : null;
