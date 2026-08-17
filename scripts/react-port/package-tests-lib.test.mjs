@@ -18,6 +18,8 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		'upstream',
 		'upstream/__tests__',
 		'upstream/fixtures',
+		'upstream/test',
+		'upstream/tests',
 		'dist',
 		'node_modules/dependency',
 	]) {
@@ -28,13 +30,24 @@ test('uses one observable package-test inventory across supported layouts', asyn
 		'__tests__/behavior.test.ts',
 		'__tests__/render.js',
 		'tests/component.test.tsrx',
+		'tests/helper.ts',
 		'upstream/vendor.test.ts',
 		'upstream/__tests__/light-async.js',
 		'upstream/fixtures/setup.js',
+		'upstream/test/render.js',
+		'upstream/test/setup.js',
+		'upstream/tests/integration.ts',
 		'dist/built.test.js',
 		'node_modules/dependency/dependency.test.js',
 	]) {
 		await writeFile(path.join(packageDirectory, relativePath), "test('observable', () => {});\n");
+	}
+	for (const relativePath of [
+		'tests/helper.ts',
+		'upstream/fixtures/setup.js',
+		'upstream/test/setup.js',
+	]) {
+		await writeFile(path.join(packageDirectory, relativePath), 'export {};\n');
 	}
 
 	assert.deepEqual(
@@ -53,6 +66,8 @@ test('uses one observable package-test inventory across supported layouts', asyn
 			'src/widget.spec.ts',
 			'tests/component.test.tsrx',
 			'upstream/__tests__/light-async.js',
+			'upstream/test/render.js',
+			'upstream/tests/integration.ts',
 			'upstream/vendor.test.ts',
 		],
 	);

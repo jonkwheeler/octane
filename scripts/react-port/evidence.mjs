@@ -742,6 +742,30 @@ function assertionRootIdentifier(expression) {
 	return null;
 }
 
+function directBindingExpressionProvenance(expression, checker, provenanceBySymbol) {
+	const provenance = new Set();
+	const visit = (node) => {
+		if (ts.isIdentifier(node)) {
+			if (!identifierIsImportBinding(node, checker)) return false;
+			for (const key of referencedProvenance(node, checker, provenanceBySymbol)) {
+				provenance.add(key);
+			}
+			return true;
+		}
+		if (ts.isPropertyAccessExpression(node)) {
+			if (!visit(node.expression)) return false;
+			for (const key of referencedProvenance(node.name, checker, provenanceBySymbol)) {
+				provenance.add(key);
+			}
+			return true;
+		}
+		if (ts.isCallExpression(node)) return visit(node.expression);
+		if (ts.isParenthesizedExpression(node)) return visit(node.expression);
+		return false;
+	};
+	return visit(expression) && provenance.size > 0 ? provenance : null;
+}
+
 function resolvedSymbolAtLocation(node, checker) {
 	let symbol = checker.getSymbolAtLocation(node);
 	while (symbol?.flags & ts.SymbolFlags.Alias) symbol = checker.getAliasedSymbol(symbol);
@@ -855,16 +879,15 @@ function positiveAssertionProvenance(
 		const constraint = checker.getTypeFromTypeNode(node.type);
 		const emptyObjectConstraint = ts.isTypeLiteralNode(node.type) && node.type.members.length === 0;
 		const constraintProvenance = referencedProvenance(node.type, checker, provenanceBySymbol);
-		const root = assertionRootIdentifier(node.expression);
-		const expressionProvenance = root
-			? identifierIsImportBinding(root, checker)
-				? referencedProvenance(root, checker, provenanceBySymbol)
-				: new Set()
-			: new Set();
+		const expressionProvenance = directBindingExpressionProvenance(
+			node.expression,
+			checker,
+			provenanceBySymbol,
+		);
 		return constraint.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown) ||
 			emptyObjectConstraint ||
 			constraintProvenance.size > 0 ||
-			expressionProvenance.size === 0
+			!expressionProvenance
 			? null
 			: expressionProvenance;
 	}

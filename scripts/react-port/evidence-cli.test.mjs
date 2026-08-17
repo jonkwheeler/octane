@@ -1204,6 +1204,45 @@ describe('evidence CLI', () => {
 		assertRejected();
 	});
 
+	test('tracks direct namespace-member satisfies assertions by export', () => {
+		const { workspaceRoot } = createReadyBatch();
+		const packageDirectory = createCompletePackage(workspaceRoot);
+		writeFileSync(
+			path.join(packageDirectory, 'src/index.ts'),
+			'export const widget = true;\nexport const helper = 1;\n',
+		);
+		const publicPath = path.join(packageDirectory, 'tests/types/public/public.ts');
+		writeFileSync(
+			publicPath,
+			"import * as Widget from '@octanejs/widget';\nWidget.widget satisfies boolean;\n// @ts-expect-error widget is not callable\nWidget.widget();\n",
+		);
+		const command = [
+			'pnpm',
+			'exec',
+			'tsrx-tsc',
+			'--noEmit',
+			'-p',
+			'packages/widget/tests/types/public/tsconfig.json',
+		];
+		const node = {
+			binding: '@octanejs/widget',
+			bindingDirectory: 'packages/widget',
+			upstreamTestInventory: [],
+		};
+		assert.throws(
+			() => assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+			/helper/i,
+		);
+
+		writeFileSync(
+			publicPath,
+			"import * as Widget from '@octanejs/widget';\nWidget.widget satisfies boolean;\nWidget.helper satisfies number;\n// @ts-expect-error widget is not callable\nWidget.widget();\n",
+		);
+		assert.doesNotThrow(() =>
+			assertApprovedGateCommand(['public-types'], command, node, { workspaceRoot }),
+		);
+	});
+
 	test('rejects locally spoofed assertion helpers', () => {
 		const { workspaceRoot } = createReadyBatch();
 		const packageDirectory = createCompletePackage(workspaceRoot);
@@ -1371,13 +1410,14 @@ describe('evidence CLI', () => {
 		assert.equal(result.status, 0, result.stderr || result.stdout);
 	});
 
-	test('rejects a runner report that names a non-test package file', () => {
+	test('rejects runner reports that name non-test package files', () => {
 		const { workspaceRoot, workRoot } = createReadyBatch();
 		const common = ['--work-root', workRoot, '--batch', 'fixture-batch', '--node', 'pkg:widget'];
 		assert.equal(runEvidence(['init', ...common, '--category', 'thin-core']).status, 0);
 		const packageDirectory = createCompletePackage(workspaceRoot);
 		mkdirSync(path.join(packageDirectory, 'upstream/fixtures'), { recursive: true });
 		writeFileSync(path.join(packageDirectory, 'upstream/fixtures/setup.js'), 'export {};\n');
+		writeFileSync(path.join(packageDirectory, 'tests/helper.ts'), 'export {};\n');
 
 		const result = runEvidence(
 			[
@@ -1400,6 +1440,28 @@ describe('evidence CLI', () => {
 
 		assert.equal(result.status, 2);
 		assert.match(result.stdout, /report.*non-test package file/i);
+
+		const helperResult = runEvidence(
+			[
+				'run',
+				...common,
+				'--gate',
+				'package-tests',
+				'--',
+				'pnpm',
+				'--dir',
+				'packages/widget',
+				'test',
+			],
+			{
+				env: {
+					FIXTURE_REPORT_FILES: JSON.stringify(['packages/widget/tests/helper.ts']),
+				},
+			},
+		);
+
+		assert.equal(helperResult.status, 2);
+		assert.match(helperResult.stdout, /report.*non-test package file/i);
 	});
 
 	test('accepts a runner-owned plain filename inside a package __tests__ directory', () => {
