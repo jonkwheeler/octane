@@ -10,6 +10,7 @@ import { octaneMdx } from './packages/mdx/src/vite.js';
 import { stylex } from './packages/stylex/src/vite.js';
 import { lynxRspeedyRenderers } from './packages/lynx/src/config.runtime.js';
 import { threeRenderers as THREE_RENDERERS } from './packages/three/src/config.ts';
+import { inkRenderers as INK_RENDERERS } from './packages/ink/src/config.ts';
 import { websiteMdxOptions } from './website/mdx-options.ts';
 
 const requireReactTextareaAutosize = createRequire(
@@ -111,6 +112,25 @@ const THREE_ALIASES = [
 	{
 		find: /^@octanejs\/three\/intrinsics(?:\/jsx-runtime)?$/,
 		replacement: resolve(THREE_SOURCE, 'intrinsics.ts'),
+	},
+];
+const INK_SOURCE = resolve(import.meta.dirname, 'packages/ink/src');
+const INK_ALIASES = [
+	{
+		find: /^@octanejs\/ink$/,
+		replacement: resolve(INK_SOURCE, 'index.ts'),
+	},
+	{
+		find: /^@octanejs\/ink\/intrinsics(?:\/jsx-runtime)?$/,
+		replacement: resolve(INK_SOURCE, 'intrinsics.ts'),
+	},
+	{
+		find: /^@octanejs\/ink\/renderer$/,
+		replacement: resolve(INK_SOURCE, 'renderer-entry.ts'),
+	},
+	{
+		find: /^@octanejs\/ink\/(.*)$/,
+		replacement: `${INK_SOURCE}/$1.ts`,
 	},
 ];
 const DREI_RENDERERS = {
@@ -739,6 +759,26 @@ export default defineConfig({
 						{
 							find: /^@octanejs\/electron$/,
 							replacement: resolve(import.meta.dirname, 'packages/electron/src/renderer/index.ts'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'tanstack-db',
+					include: ['packages/tanstack-db/tests/**/*.test.tsx'],
+					environment: 'jsdom',
+					setupFiles: ['packages/tanstack-db/tests/test-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				// `@octanejs/tanstack-db` is the package under test; alias the public
+				// name to source so tests can import it exactly as a consumer would.
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/tanstack-db$/,
+							replacement: resolve(import.meta.dirname, 'packages/tanstack-db/src/index.ts'),
 						},
 					],
 				},
@@ -4139,6 +4179,27 @@ export default defineConfig({
 					environment: 'node',
 					globals: false,
 				},
+			},
+			{
+				test: {
+					name: 'ink',
+					include: ['packages/ink/tests/**/*.test.ts'],
+					exclude: ['packages/ink/tests/differential/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ renderers: INK_RENDERERS, ssr: false })],
+				resolve: { alias: INK_ALIASES },
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'ink-differential',
+					include: ['packages/ink/tests/differential/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				resolve: { alias: INK_ALIASES },
 			},
 			{
 				test: {

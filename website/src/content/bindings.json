@@ -24,6 +24,7 @@
       "@octanejs/dexie",
       "@octanejs/swr",
       "@octanejs/tanstack-query",
+      "@octanejs/tanstack-db",
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
       "@octanejs/remix-router",
@@ -106,6 +107,11 @@
     "title": "Web 3D",
     "description": "Technical-preview, React Three Fiber-style scene graphs on Octane's universal renderer.",
     "packages": ["@octanejs/three", "@octanejs/drei"]
+  },
+  {
+    "title": "Terminal UI",
+    "description": "Ink components, Yoga layout, input handling, and interactive ANSI terminal rendering.",
+    "packages": ["@octanejs/ink"]
   },
   {
     "title": "Desktop",

@@ -3,8 +3,9 @@
  * runtime.
  *
  * Architecture:
- *   1. Parse TSRX via @tsrx/core's parseModule and run its target-neutral
- *      semantic analysis on the authored module.
+ *   1. Parse TSRX through the environment-selected @tsrx/core-compatible
+ *      parser (native oxc-tsrx in Node, pure JavaScript elsewhere), then run
+ *      @tsrx/core's target-neutral semantic analysis on the authored module.
  *   2. For each top-level node:
  *        - Component (`@{ … }` body or a return-JSX function) → compile to a
  *          function taking the props-first ABI `(…userParams, __s, __extra)`.
@@ -30,7 +31,6 @@
 import {
 	analyzeCss,
 	analyzeTsrx,
-	parseModule,
 	prepareStylesheetForRender,
 	renderStylesheets,
 	builders as b,
@@ -38,6 +38,7 @@ import {
 	clone_ast_node as cloneAstNode,
 	strongHash,
 } from '@tsrx/core';
+import { parseModule } from '#octane/compiler-parser';
 import { print as esrapPrint } from 'esrap';
 import esrapTsx from 'esrap/languages/tsx';
 import { buildFatSegments } from './fat-segments.js';
@@ -8639,6 +8640,29 @@ function compileInternal(source, filename, options, analyzedAst, mode, bundlerMe
 					if (!locals.has(cname) && !ctx.componentInfo.has(cname) && !HOOK_NAMES.has(cname)) {
 						return true;
 					}
+				}
+				// METHOD-style custom hooks — `route.useLoaderData()`, `api.useSearch()`,
+				// `SomeContext.useSelector(fn)`. The free-identifier sweep above only sees
+				// bare names, and the unknown-call rule above only inspects Identifier
+				// callees, so without this a component whose ONLY hook is member-form
+				// looks hookless: it takes the lite path, gets no block of its own, and
+				// its hook state lands on the parent — an update from that hook then
+				// re-renders the parent and every sibling.
+				//
+				// Same `use[A-Z]` convention, applied to the PROPERTY name, that the
+				// slot-injection pass already uses for these calls. `useContext` is
+				// included rather than excluded: it is not lite-safe either (the sweep
+				// above rejects the bare name for the same reason).
+				if (
+					t === 'CallExpression' &&
+					n.callee &&
+					n.callee.type === 'MemberExpression' &&
+					!n.callee.computed &&
+					n.callee.property &&
+					n.callee.property.type === 'Identifier' &&
+					/^use[A-Z]/.test(n.callee.property.name)
+				) {
+					return true;
 				}
 				for (const k in n) {
 					if (AST_WALK_SKIP_KEYS.has(k)) continue;
