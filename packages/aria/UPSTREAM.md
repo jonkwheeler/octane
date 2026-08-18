@@ -43,6 +43,43 @@ Surface presence is not a behavioral parity claim. The upstream suites contain 1
 test files, one type test, and seven support artifacts. They are present but have not been
 adapted case-by-case, so this binding remains `recorded-unverified`.
 
+## React Aria Components public surface
+
+The `@octanejs/aria/components` entry point separately claims complete named-export parity
+with the pinned `react-aria-components@1.19.0` package. The completed inventory is 280 runtime
+exports and 313 type exports, including calendar/date/time, color, drag-and-drop,
+DropZone/FileTrigger, toast, data hooks, Virtualizer, and layout classes.
+
+`scripts/check-react-aria-components-exports.mjs` parses the installed pinned declaration
+barrel and `src/components/index.ts`, keeps runtime and type-only exports in separate lanes,
+and rejects missing or extra names in either direction:
+
+```sh
+pnpm --filter @octanejs/aria exports:check
+```
+
+This components-entry claim does not convert the broader `react-aria` and `react-stately`
+crosswalk into a full-export or full-upstream-suite claim.
+
+## Refreshing the advanced source staging tree
+
+The sparse `.react-spectrum` checkout must point at the exact coordinated commit above.
+`scripts/port-advanced-source.mjs` creates a reviewable staging tree, rewrites package
+boundaries to the local Octane adapters, copies locale dictionaries, and records provenance.
+It must not target `packages/aria`, because reviewed Octane adaptations must not be
+overwritten mechanically.
+
+```sh
+node packages/aria/scripts/port-advanced-source.mjs \
+  --output-root /tmp/octane-aria-upstream
+```
+
+Review the staged diff against `packages/aria`, preserve native-event, ref-as-prop,
+hook-slot, and compiler adaptations, then run the export audit, `tsrx-tsc`, and the Aria
+test projects. Updating the pin requires reviewing the upstream source and export diffs
+together. Newly adapted Adobe source retains its Apache-2.0 header; the required license
+text is shipped as `LICENSE-APACHE-2.0`.
+
 ## Executable evidence
 
 The only React-parity-owned executable lane today is the bounded differential project. It
