@@ -16,21 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/react-resizable-panels/src"
-      ],
-      "include": [
-        "\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/react-resizable-panels/src"],
+      "include": ["\\.(?:ts|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/react-resizable-panels/tests/upstream"
-      ],
-      "include": [
-        "\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"
-      ],
+      "roots": ["packages/react-resizable-panels/tests/upstream"],
+      "include": ["\\.(?:test|spec)\\.(?:ts|tsx|tsrx)$"],
       "exclude": []
     }
   },
@@ -122,7 +114,7 @@
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",
           "role": "support",
-          "sha256": "d8245036799e594b59277741b4cf2f757aca945a23a4922fa69382e6c0743874"
+          "sha256": "8aee6bb9f2f4c7048ab230e69d860eee0a15402146bfeecacb5bd01e2edcc6a6"
         },
         {
           "path": "packages/react-resizable-panels/audit/test-classifications.json",
@@ -251,9 +243,7 @@
   "divergences": [
     {
       "id": "react-resizable-panels-useId-fallback",
-      "caseIds": [
-        "runtime:react-resizable-panels:0415"
-      ],
+      "caseIds": ["runtime:react-resizable-panels:0415"],
       "upstreamResult": "With React.useId mocked to return ':r123:', useId(undefined) equals ':r123:'.",
       "octaneResult": "Octane's useId fallback returns a non-empty framework-owned id string; the adapted case cannot reproduce React's mock.",
       "rationale": "Octane does not expose React's useId mock seam; the fallback identity is an N-A framework boundary, not an equivalent upstream assertion.",

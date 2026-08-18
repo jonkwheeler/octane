@@ -845,8 +845,7 @@ function containsReachableBreak(node) {
 	if (ts.isBlock(node)) {
 		for (const stmt of node.statements) {
 			if (containsReachableBreak(stmt)) return true;
-			if (isFunctionExit(stmt) || ts.isContinueStatement(stmt)) break;
-			if (statementExitsFunction(stmt)) break;
+			if (statementAlwaysExits(stmt)) break;
 		}
 		return false;
 	}
