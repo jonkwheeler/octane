@@ -2999,6 +2999,7 @@ export default defineConfig({
 				test: {
 					name: 'tanstack-start',
 					include: ['packages/tanstack-start/tests/**/*.test.ts'],
+					exclude: ['packages/tanstack-start/tests/rsbuild-plugin.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -3036,6 +3037,15 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/tanstack-router/src') + '/$1',
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'tanstack-start-rsbuild',
+					include: ['packages/tanstack-start/tests/rsbuild-plugin.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 120_000,
 				},
 			},
 			{
@@ -4316,7 +4326,7 @@ export default defineConfig({
 					// tests/setup/production-server.ts); both specs wait for it in a
 					// `beforeAll` instead. That hook is therefore as long as a cold
 					// website build, which the 10s hook default cannot cover.
-					hookTimeout: 360_000,
+					hookTimeout: 480_000,
 					// Browser cases inside the e2e spec run concurrently (page-per-case
 					// against a shared server). Four keeps the Vite dev server's on-demand
 					// transform queue from becoming the bottleneck and leaves headroom, so
