@@ -27,7 +27,7 @@ import {
 import { focusWithoutScrolling } from '../utils/focusWithoutScrolling';
 import { getEventTarget } from '../utils/shadowdom/DOMFunctions';
 import { mergeProps } from '../utils/mergeProps';
-import React, { ChangeEvent, InputHTMLAttributes, useCallback, useRef } from '../compat/react';
+import React, { InputHTMLAttributes, useCallback, useRef } from '../compat/react';
 import { useFormReset } from '../utils/useFormReset';
 import { useGlobalListeners } from '../utils/useGlobalListeners';
 import { useKeyboard } from '../interactions/useKeyboard';
@@ -54,6 +54,8 @@ export interface ColorWheelAria {
 	/** Props for the visually hidden range input element. */
 	inputProps: InputHTMLAttributes<HTMLInputElement>;
 }
+
+type NativeInputEvent = Event & { currentTarget: HTMLInputElement };
 
 /**
  * Provides the behavior and accessibility implementation for a color wheel component.
@@ -381,7 +383,8 @@ export function useColorWheel(
 			value: `${state.value.getChannelValue('hue')}`,
 			name,
 			form,
-			onChange: (e: ChangeEvent<HTMLInputElement>) => {
+			// React's synthetic onChange for range inputs follows the native input event.
+			onInput: (e: NativeInputEvent) => {
 				state.setHue(parseFloat(e.currentTarget.value));
 			},
 			style: visuallyHiddenProps.style,

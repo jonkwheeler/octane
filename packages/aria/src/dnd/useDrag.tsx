@@ -370,9 +370,7 @@ export function useDrag(options: DragOptions): DragResult {
 		interactions = {
 			...descriptionProps,
 			onPointerDown(e: PointerEvent<HTMLElement>) {
-				modalityOnPointerDown.current = isVirtualPointerEvent(e.nativeEvent)
-					? 'virtual'
-					: e.pointerType;
+				modalityOnPointerDown.current = isVirtualPointerEvent(e) ? 'virtual' : e.pointerType;
 
 				// Try to detect virtual drag passthrough gestures.
 				if (e.width < 1 && e.height < 1) {
@@ -408,7 +406,7 @@ export function useDrag(options: DragOptions): DragResult {
 			},
 			onClick(e: MouseEvent<HTMLElement>) {
 				// Handle NVDA/JAWS in browse mode, and touch screen readers. In this case, no keyboard events are fired.
-				if (isVirtualClick(e.nativeEvent) || modalityOnPointerDown.current === 'virtual') {
+				if (isVirtualClick(e) || modalityOnPointerDown.current === 'virtual') {
 					e.preventDefault();
 					e.stopPropagation();
 					startDragging(getEventTarget(e) as HTMLElement);

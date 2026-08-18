@@ -298,7 +298,6 @@ export type { VisuallyHiddenProps } from '../visually-hidden/VisuallyHidden';
 // 'react-aria/Focusable'` — the same component the hooks surface already
 // exports, published under both entry points.
 export { Focusable } from '../interactions/useFocusable';
-export type { FocusableProps } from '../interactions/useFocusable';
 export type { Placement } from '../overlays/useOverlayPosition';
 export { useFilter } from '../i18n/useFilter';
 export type { Filter } from '../i18n/useFilter';
@@ -484,7 +483,6 @@ export { RouterProvider } from '../utils/openLink';
 export { I18nProvider, useLocale } from '../i18n/I18nProvider';
 export { isRTL } from '../i18n/utils';
 export { Pressable } from '../interactions/Pressable';
-export { Focusable } from '../interactions/useFocusable';
 export { FormValidationContext } from '../stately/form/useFormValidationState';
 export { parseColor, getColorChannels } from '../stately/color/Color';
 export { ToastQueue as UNSTABLE_ToastQueue } from '../stately/toast/useToastState';

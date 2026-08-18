@@ -28,13 +28,7 @@ import { focusWithoutScrolling } from '../utils/focusWithoutScrolling';
 import intlMessages from '../intl/color/index';
 import { isAndroid, isIOS } from '../utils/platform';
 import { mergeProps } from '../utils/mergeProps';
-import React, {
-	ChangeEvent,
-	InputHTMLAttributes,
-	useCallback,
-	useRef,
-	useState,
-} from '../compat/react';
+import React, { InputHTMLAttributes, useCallback, useRef, useState } from '../compat/react';
 import { useColorAreaGradient } from './useColorAreaGradient';
 import { useFocus } from '../interactions/useFocus';
 import { useFocusWithin } from '../interactions/useFocusWithin';
@@ -86,6 +80,8 @@ export interface AriaColorAreaOptions extends AriaColorAreaProps {
 	containerRef: RefObject<Element | null>;
 }
 
+type NativeInputEvent = Event & { currentTarget: HTMLInputElement };
+
 /**
  * Provides the behavior and accessibility implementation for a color area component. Color area
  * allows users to adjust two channels of an RGB, HSL or HSB color value against a two-dimensional
@@ -121,7 +117,7 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 	useFormReset(inputXRef, state.defaultValue, state.setValue);
 
 	let [valueChangedViaKeyboard, setValueChangedViaKeyboard] = useState(false);
-	let [valueChangedViaInputChangeEvent, setValueChangedViaInputChangeEvent] = useState(false);
+	let [valueChangedViaInputEvent, setValueChangedViaInputEvent] = useState(false);
 	let { xChannel, yChannel, zChannel } = state.channels;
 	let xChannelStep = state.xChannelStep;
 	let yChannelStep = state.yChannelStep;
@@ -235,7 +231,7 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 		onFocusWithinChange: (focusWithin: boolean) => {
 			if (!focusWithin) {
 				setValueChangedViaKeyboard(false);
-				setValueChangedViaInputChangeEvent(false);
+				setValueChangedViaInputEvent(false);
 			}
 		},
 	});
@@ -430,13 +426,13 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 		},
 	});
 
-	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const { target } = e;
-		setValueChangedViaInputChangeEvent(true);
-		if (target === inputXRef.current) {
-			state.setXValue(parseFloat(target.value));
-		} else if (target === inputYRef.current) {
-			state.setYValue(parseFloat(target.value));
+	const onInput = (e: NativeInputEvent) => {
+		const { currentTarget } = e;
+		setValueChangedViaInputEvent(true);
+		if (currentTarget === inputXRef.current) {
+			state.setXValue(parseFloat(currentTarget.value));
+		} else if (currentTarget === inputYRef.current) {
+			state.setYValue(parseFloat(currentTarget.value));
 		}
 	};
 
@@ -445,7 +441,7 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 	let value = state.getDisplayColor();
 	const getAriaValueTextForChannel = useCallback(
 		(channel: ColorChannel) => {
-			const isAfterInput = valueChangedViaInputChangeEvent || valueChangedViaKeyboard;
+			const isAfterInput = valueChangedViaInputEvent || valueChangedViaKeyboard;
 			return `${
 				isAfterInput
 					? stringFormatter.format('colorNameAndValue', {
@@ -472,7 +468,7 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 			locale,
 			value,
 			stringFormatter,
-			valueChangedViaInputChangeEvent,
+			valueChangedViaInputEvent,
 			valueChangedViaKeyboard,
 			xChannel,
 			yChannel,
@@ -568,7 +564,8 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
 				isMobile || !focusedInput || focusedInput === 'x' || valueChangedViaKeyboard
 					? undefined
 					: 'true',
-			onChange,
+			// React's synthetic onChange for range inputs follows the native input event.
+			onInput,
 		},
 		yInputProps: {
 			...yInputLabellingProps,
@@ -595,7 +592,8 @@ export function useColorArea(props: AriaColorAreaOptions, state: ColorAreaState)
       */
 			'aria-hidden':
 				isMobile || focusedInput === 'y' || valueChangedViaKeyboard ? undefined : 'true',
-			onChange,
+			// React's synthetic onChange for range inputs follows the native input event.
+			onInput,
 		},
 	};
 }

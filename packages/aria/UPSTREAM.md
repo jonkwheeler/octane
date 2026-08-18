@@ -37,8 +37,8 @@ git -C react-spectrum-aria-3.50.0 sparse-checkout set --skip-checks \
 ```
 
 `audit/upstream-crosswalk.json` records all 1,294 public entry-point exports and all 185
-test-root artifacts from that checkout. It currently classifies 767 exports as
-`surface-present-unverified`, with per-symbol entry-point evidence, and 527 as explicit gaps.
+test-root artifacts from that checkout. It currently classifies 998 exports as
+`surface-present-unverified`, with per-symbol entry-point evidence, and 296 as explicit gaps.
 Surface presence is not a behavioral parity claim. The upstream suites contain 177 runtime
 test files, one type test, and seven support artifacts. They are present but have not been
 adapted case-by-case, so this binding remains `recorded-unverified`.

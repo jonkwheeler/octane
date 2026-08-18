@@ -122,6 +122,13 @@ export function useDrop(options: DropOptions): DropResult {
 		dropActivateTimer: undefined,
 	}).current;
 
+	useLayoutEffect(() => {
+		return () => {
+			clearTimeout(state.dropActivateTimer);
+			state.dropActivateTimer = undefined;
+		};
+	}, [state]);
+
 	let fireDropEnter = (e: DragEvent) => {
 		setDropTarget(true);
 

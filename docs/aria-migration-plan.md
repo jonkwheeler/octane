@@ -6,7 +6,7 @@
 > families are calendar/date/time, color, the drag-and-drop engine,
 > DropZone/FileTrigger, toast, data hooks, Virtualizer, and layout classes.
 > `exports:check` makes the export inventory executable; the Aria client project
-> passes 49 files / 376 tests. Existing SSR evidence is unchanged, so the root
+> passes 45 files / 370 tests. Existing SSR evidence is unchanged, so the root
 > `react-aria` and `/stately` surfaces and advanced-family SSR remain explicit
 > follow-up scopes rather than being folded into this components-entry claim.
 

@@ -21,7 +21,7 @@ import {
 	ColorSpace,
 	Color as IColor,
 } from './types';
-import intlMessages from '../../intl/color/index';
+import intlMessages from '../../intl/stately-color/index';
 import { LocalizedStringDictionary, LocalizedStringFormatter } from '@internationalized/string';
 import { NumberFormatter } from '@internationalized/number';
 
