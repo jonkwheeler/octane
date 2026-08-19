@@ -5,7 +5,7 @@ import {
 	ColorWheelNativeInputScenario,
 } from './_fixtures/rac-color-native-input.tsx';
 
-// OCTANE DIVERGENCE: React routes range edits through synthetic onChange. These cases pin
+// React divergence: React routes range edits through synthetic onChange. These cases pin
 // Octane's equivalent native input contract and are not React-parity evidence.
 describe('@octanejs/aria/components — color range inputs', () => {
 	it('updates a ColorWheel immediately from its native input event', async () => {
