@@ -1,3 +1,3 @@
-export { MiniMap } from './MiniMap';
-export { MiniMapNode } from './MiniMapNode';
-export * from './types';
+export { MiniMap } from './MiniMap.tsrx';
+export { MiniMapNode } from './MiniMapNode.tsrx';
+/* Unknown: ExportAllDeclaration */

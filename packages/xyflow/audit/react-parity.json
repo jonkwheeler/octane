@@ -9,7 +9,7 @@
     "testRoot": "packages/react",
     "license": "MIT",
     "integrity": "sha256:ddfb74037a3979ed98c8784034071f24040b5a6b7d560254fcb6c6676946da47",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "absent",
@@ -22,14 +22,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/xyflow/tests/differential"],
+      "roots": ["packages/xyflow/tests/conformance"],
       "include": ["\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 4,
+    "uniqueIdentities": 4,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -40,10 +40,123 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4a48d3ad294b893861a3605432322a5d7cb3ae9f852be1384764efe1f253a0ca"
+      "lockfileSha256": "5afb5a6072de13ce54d12386638536269aa40ae51e6605ae7a0fa253851e10f8"
     }
   },
   "lanes": [
+    {
+      "id": "xyflow-adapted-full-suite",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "xyflow",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the complete adapted xyflow conformance suite and records every collected test identity, including repeated custom-hook slot isolation.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/xyflow/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/xyflow/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "5abc001a3cef4f2688ef70bcf4564517b640eebf23f7585f7752682c8e8087ae"
+        },
+        {
+          "path": "packages/xyflow/tests/conformance/connection-slots.test.ts",
+          "role": "support",
+          "sha256": "2fb613106976ebc8b33429e724225b063e2a4b2149b456460a8eecde195849f7"
+        },
+        {
+          "path": "packages/xyflow/tests/_fixtures/connection-slots.tsrx",
+          "role": "support",
+          "sha256": "bb6fbd8326b9da8cc373a2df87b8c9f60a960a266947784decf9992e7d978062"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "7cc1fc8bc15b0495d720e2408eb95c680edf26506df236b0e536875ef09fea51"
+        }
+      ]
+    },
+    {
+      "id": "xyflow-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "xyflow-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Eight matched public-surface assertion groups compiled against @xyflow/react 12.11.2 with tsc and pinned React types.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/xyflow/typetests/pristine/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/xyflow/typetests/pristine/types.test-d.ts",
+          "role": "test",
+          "sha256": "62732005c1565f01626a1500430529324bc3575a0dde4c114196abbf8d4ade28",
+          "cases": [
+            {
+              "id": "types:pristine",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/xyflow/typetests/pristine/tsconfig.json",
+          "role": "support",
+          "sha256": "cb82e03159b832dd6a70589b26cd2a47d7361981f4b9ff8e7550692c2896b46c"
+        },
+        {
+          "path": "packages/xyflow/typetests/assertions.md",
+          "role": "support",
+          "sha256": "de0250d71ff54f788247334fd050e8bbbe3864c84f385314cbf47517e4ff20f1"
+        }
+      ]
+    },
+    {
+      "id": "xyflow-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "available": true,
+      "environment": "workspace-node",
+      "project": "xyflow-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same eight public-surface assertion groups compiled against @octanejs/xyflow with tsrx-tsc; assertions.md records the permitted package-name-only adaptation.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/xyflow/typetests/adapted/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/xyflow/typetests/adapted/types.test-d.ts",
+          "role": "test",
+          "sha256": "a286c72b4462dd4e369dca7abca353a02b02c49ae6e9be9a2bad1e275b13f68e",
+          "cases": [
+            {
+              "id": "types:adapted",
+              "testName": "public surface type assertions",
+              "fullName": "public surface type assertions"
+            }
+          ]
+        },
+        {
+          "path": "packages/xyflow/typetests/adapted/tsconfig.json",
+          "role": "support",
+          "sha256": "3de7e4460619b8b94858cd931d0e2f4ca8fbfd9dd3ac234d4b9ffbc6cc33c7d6"
+        },
+        {
+          "path": "packages/xyflow/typetests/assertions.md",
+          "role": "support",
+          "sha256": "de0250d71ff54f788247334fd050e8bbbe3864c84f385314cbf47517e4ff20f1"
+        }
+      ]
+    },
     {
       "id": "xyflow-differential",
       "type": "differential",
@@ -83,7 +196,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "98288bd59bcc04c3b61f8854379326c05f2398c00cf5214e6438ec7da510c042"
+          "sha256": "7cc1fc8bc15b0495d720e2408eb95c680edf26506df236b0e536875ef09fea51"
         }
       ]
     }

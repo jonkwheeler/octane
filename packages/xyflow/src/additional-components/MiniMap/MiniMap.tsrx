@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useEffect, useRef, type MouseEvent, useCallback, CSSProperties } from 'octane';
+import { memo, useEffect, useRef, useCallback } from 'octane';
+import type { CSSProperties, MouseEvent } from '../../react-shim.js';
 import cc from 'classcat';
 import { getInternalNodesBounds, getBoundsOfRects, XYMinimap, type Rect, type XYMinimapInstance } from '@xyflow/system';
 
 import { useStore, useStoreApi } from '../../hooks/useStore';
-import { Panel } from '../../components/Panel';
+import { Panel } from '../../components/Panel/index.tsrx';
 import type { ReactFlowState, Node } from '../../types';
 
-import MiniMapNodes from './MiniMapNodes';
+import MiniMapNodes from './MiniMapNodes.tsrx';
 import type { MiniMapProps } from './types';
 
 const defaultWidth = 200;
@@ -84,7 +85,7 @@ function MiniMapComponent<NodeType extends Node = Node>({
   offsetScale = 5,
 }: MiniMapProps<NodeType>) {
   const store = useStoreApi<NodeType>();
-  const svg = useRef<SVGSVGElement>(null);
+  const svg = useRef<SVGSVGElement | null>(null);
   const { boundingRect, viewBB, rfId, panZoom, translateExtent, flowWidth, flowHeight, ariaLabelConfig } = useStore(
     selector,
     areEqual
@@ -103,7 +104,7 @@ function MiniMapComponent<NodeType extends Node = Node>({
   const height = viewHeight + offset * 2;
   const labelledBy = `${ARIA_LABEL_KEY}-${rfId}`;
   const viewScaleRef = useRef(0);
-  const minimapInstance = useRef<XYMinimapInstance>();
+  const minimapInstance = useRef<XYMinimapInstance | undefined>(undefined);
 
   viewScaleRef.current = viewScale;
 

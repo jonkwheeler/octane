@@ -1,4 +1,4 @@
-import { CSSProperties } from 'octane';
+import type { CSSProperties } from '../../react-shim.js';
 
 /**
  * The three variants are exported as an enum for convenience. You can either import

@@ -53,7 +53,7 @@ function ResizeControl({
   const contextNodeId = useNodeId();
   const id = typeof nodeId === 'string' ? nodeId : contextNodeId;
   const store = useStoreApi();
-  const resizeControlRef = useRef<HTMLDivElement>(null);
+  const resizeControlRef = useRef<HTMLDivElement | null>(null);
   const isHandleControl = variant === ResizeControlVariant.Handle;
   const scale = useStore(
     useCallback(scaleSelector(isHandleControl && autoScale), [isHandleControl, autoScale]),

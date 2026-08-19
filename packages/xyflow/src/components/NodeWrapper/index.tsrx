@@ -1,4 +1,5 @@
-import { type MouseEvent, type KeyboardEvent, memo } from 'octane';
+import { memo } from 'octane';
+import type { KeyboardEvent, MouseEvent } from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import {
@@ -12,11 +13,11 @@ import {
 
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { Provider } from '../../contexts/NodeIdContext';
-import { ARIA_NODE_DESC_KEY } from '../A11yDescriptions';
+import { ARIA_NODE_DESC_KEY } from '../A11yDescriptions/index.tsrx';
 import { useDrag } from '../../hooks/useDrag';
 import { useMoveSelectedNodes } from '../../hooks/useMoveSelectedNodes';
 import { handleNodeClick } from '../Nodes/utils';
-import { arrowKeyDiffs, builtinNodeTypes, getNodeInlineStyleDimensions } from './utils';
+import { arrowKeyDiffs, builtinNodeTypes, getNodeInlineStyleDimensions } from './utils.tsrx';
 import { useNodeObserver } from './useNodeObserver';
 import type { InternalNode, Node, NodeWrapperProps } from '../../types';
 
@@ -187,7 +188,6 @@ function NodeWrapper<NodeType extends Node>({
         'react-flow__node',
         `react-flow__node-${nodeType}`,
         {
-          // this is overwritable by passing `nopan` as a class name
           [noPanClassName]: isDraggable,
         },
         node.className,

@@ -2,8 +2,8 @@ import { useState, type OctaneNode } from 'octane';
 
 import { Provider } from '../../contexts/StoreContext';
 import { createStore } from '../../store';
-import { BatchProvider } from '../BatchProvider';
-import { HandleConfigProvider } from '../../contexts/HandleConfigContext';
+import { BatchProvider } from '../BatchProvider/index.tsrx';
+import { HandleConfigProvider } from '../../contexts/HandleConfigContext.tsrx';
 import type { Node, Edge, FitViewOptions } from '../../types';
 import { CoordinateExtent, NodeOrigin, ZIndexMode } from '@xyflow/system';
 

@@ -1,6 +1,6 @@
 import type { PanelPosition, ProOptions } from '@xyflow/system';
 
-import { Panel } from '../Panel';
+import { Panel } from '../Panel/index.tsrx';
 
 type AttributionProps = {
   proOptions?: ProOptions;

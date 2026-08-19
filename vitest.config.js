@@ -3082,13 +3082,11 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'xyflow',
 					include: ['packages/xyflow/tests/**/*.test.ts'],
-					exclude: [
-						...configDefaults.exclude,
-						'packages/xyflow/tests/differential/**/*.test.ts',
-					],
+					exclude: [...configDefaults.exclude, 'packages/xyflow/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					testTimeout: 30_000,
 					globals: false,

@@ -1,10 +1,10 @@
-import {
-  type HTMLAttributes,
-  type MouseEvent as ReactMouseEvent,
-  type TouchEvent as ReactTouchEvent,
-  type ForwardedRef,
-  memo,
-} from 'octane';
+import { memo } from 'octane';
+import type {
+  HTMLAttributes,
+  MouseEvent as ReactMouseEvent,
+  TouchEvent as ReactTouchEvent,
+  ForwardedRef,
+} from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import {
@@ -25,7 +25,7 @@ import {
 
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { useNodeId } from '../../contexts/NodeIdContext';
-import { useHandleConfig } from '../../contexts/HandleConfigContext';
+import { useHandleConfig } from '../../contexts/HandleConfigContext.tsrx';
 import { type ReactFlowState } from '../../types';
 import { fixedForwardRef } from '../../utils';
 import { addEdge } from '../../utils/edges';
@@ -205,7 +205,7 @@ function HandleComponent(
       return;
     }
 
-    const doc = getHostForElement(event.target);
+    const doc = getHostForElement(event.target as Element);
     const isValidConnectionHandler = isValidConnection || isValidConnectionStore;
     const { connection, isValid } = XYHandle.isValid(event, {
       handle: {

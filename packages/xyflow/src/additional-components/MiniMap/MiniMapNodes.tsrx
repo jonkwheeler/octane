@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ComponentType, memo } from 'octane';
+import { memo } from 'octane';
+import type { ComponentType } from '../../react-shim.js';
 import { getNodeDimensions, nodeHasDimensions } from '@xyflow/system';
 import { shallow } from '@octanejs/zustand/shallow';
 
 import { useStore } from '../../hooks/useStore';
-import { MiniMapNode } from './MiniMapNode';
+import { MiniMapNode } from './MiniMapNode.tsrx';
 import type { ReactFlowState, Node } from '../../types';
 import type { MiniMapNodes as MiniMapNodesProps, GetMiniMapNodeAttribute, MiniMapNodeProps } from './types';
 
 declare const window: any;
 
 const selectorNodeIds = (s: ReactFlowState) => s.nodes.map((node) => node.id);
-const getAttrFunction = <NodeType extends Node>(func: any): GetMiniMapNodeAttribute<NodeType> =>
+const getAttrFunction = <NodeType extends Node,>(func: any): GetMiniMapNodeAttribute<NodeType> =>
   func instanceof Function ? func : () => func;
 
 function MiniMapNodes<NodeType extends Node>({

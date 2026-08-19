@@ -14,7 +14,7 @@ import {
 
 import useViewportHelper from './useViewportHelper';
 import { useStore, useStoreApi } from './useStore';
-import { useBatchContext } from '../components/BatchProvider';
+import { useBatchContext } from '../components/BatchProvider/index.tsrx';
 import { resolveHookSlot } from './slot';
 import { elementToRemoveChange, isEdge, isNode } from '../utils';
 import type {
@@ -172,9 +172,9 @@ export function useReactFlow<NodeType extends Node = Node, EdgeType extends Edge
           onDelete,
           onBeforeDelete,
         } = store.getState();
-        const { nodes: matchingNodes, edges: matchingEdges } = await getElementsToRemove({
-          nodesToRemove,
-          edgesToRemove,
+        const { nodes: matchingNodes, edges: matchingEdges } = await getElementsToRemove<NodeType, EdgeType>({
+          nodesToRemove: nodesToRemove as Partial<NodeType>[],
+          edgesToRemove: edgesToRemove as Partial<EdgeType>[],
           nodes,
           edges,
           onBeforeDelete,

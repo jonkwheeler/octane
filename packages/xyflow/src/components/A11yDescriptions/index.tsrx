@@ -1,4 +1,4 @@
-import { CSSProperties } from 'octane';
+import type { CSSProperties } from '../../react-shim.js';
 
 import { useStore } from '../../hooks/useStore';
 import type { ReactFlowState } from '../../types';

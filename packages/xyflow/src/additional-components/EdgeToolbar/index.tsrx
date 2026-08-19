@@ -1,2 +1,2 @@
-export { EdgeToolbar } from './EdgeToolbar';
+export { EdgeToolbar } from './EdgeToolbar.tsrx';
 export type { EdgeToolbarProps } from './types';

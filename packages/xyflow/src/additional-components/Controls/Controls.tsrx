@@ -4,15 +4,15 @@ import { shallow } from '@octanejs/zustand/shallow';
 
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { useReactFlow } from '../../hooks/useReactFlow';
-import { Panel } from '../../components/Panel';
+import { Panel } from '../../components/Panel/index.tsrx';
 import { type ReactFlowState } from '../../types';
 
-import { PlusIcon } from './Icons/Plus';
-import { MinusIcon } from './Icons/Minus';
-import { FitViewIcon } from './Icons/FitView';
-import { LockIcon } from './Icons/Lock';
-import { UnlockIcon } from './Icons/Unlock';
-import { ControlButton } from './ControlButton';
+import { PlusIcon } from './Icons/Plus.tsrx';
+import { MinusIcon } from './Icons/Minus.tsrx';
+import { FitViewIcon } from './Icons/FitView.tsrx';
+import { LockIcon } from './Icons/Lock.tsrx';
+import { UnlockIcon } from './Icons/Unlock.tsrx';
+import { ControlButton } from './ControlButton.tsrx';
 import type { ControlProps } from './types';
 
 const selector = (s: ReactFlowState) => ({

@@ -1,14 +1,15 @@
-import { ForwardedRef, useCallback, type CSSProperties } from 'octane';
+import { useCallback } from 'octane';
+import type { CSSProperties, ForwardedRef, UIEvent as ReactUIEvent } from '../../react-shim.js';
 import cc from 'classcat';
 import { ConnectionLineType, PanOnScrollMode, SelectionMode, infiniteExtent, isMacOs } from '@xyflow/system';
 
-import { A11yDescriptions } from '../../components/A11yDescriptions';
-import { Attribution } from '../../components/Attribution';
-import { SelectionListener } from '../../components/SelectionListener';
-import { StoreUpdater } from '../../components/StoreUpdater';
+import { A11yDescriptions } from '../../components/A11yDescriptions/index.tsrx';
+import { Attribution } from '../../components/Attribution/index.tsrx';
+import { SelectionListener } from '../../components/SelectionListener/index.tsrx';
+import { StoreUpdater } from '../../components/StoreUpdater/index.tsrx';
 import { useColorModeClass } from '../../hooks/useColorModeClass';
-import { GraphView } from '../GraphView';
-import { Wrapper } from './Wrapper';
+import { GraphView } from '../GraphView/index.tsrx';
+import { Wrapper } from './Wrapper.tsrx';
 import type { Edge, Node, ReactFlowProps } from '../../types';
 import { defaultViewport as initViewport, defaultNodeOrigin } from './init-values';
 import { fixedForwardRef } from '../../utils/general';
@@ -159,7 +160,7 @@ function ReactFlow<NodeType extends Node = Node, EdgeType extends Edge = Edge>(
 
   // Undo scroll events, preventing viewport from shifting when nodes outside of it are focused
   const wrapperOnScroll = useCallback(
-    (e: React.UIEvent<HTMLDivElement>) => {
+    (e: ReactUIEvent<HTMLDivElement>) => {
       e.currentTarget.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       onScroll?.(e);
     },
@@ -347,4 +348,4 @@ function ReactFlow<NodeType extends Node = Node, EdgeType extends Edge = Edge>(
  *}
  *```
  */
-export default fixedForwardRef(ReactFlow);
+export default fixedForwardRef<HTMLDivElement, ReactFlowProps>(ReactFlow);

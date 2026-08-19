@@ -2,7 +2,6 @@ import { createContext, useContext } from 'octane';
 
 export const NodeIdContext = createContext<string | null>(null);
 export const Provider = NodeIdContext.Provider;
-export const Consumer = NodeIdContext.Consumer;
 
 /**
  * You can use this hook to get the id of the node it is used inside. It is useful

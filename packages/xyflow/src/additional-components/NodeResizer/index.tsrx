@@ -1,4 +1,4 @@
-export { NodeResizer } from './NodeResizer';
-export { NodeResizeControl } from './NodeResizeControl';
+export { NodeResizer } from './NodeResizer.tsrx';
+export { NodeResizeControl } from './NodeResizeControl.tsrx';
 
-export * from './types';
+/* Unknown: ExportAllDeclaration */

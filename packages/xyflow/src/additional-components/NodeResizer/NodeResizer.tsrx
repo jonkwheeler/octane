@@ -1,6 +1,6 @@
 import { ResizeControlVariant, XY_RESIZER_HANDLE_POSITIONS, XY_RESIZER_LINE_POSITIONS } from '@xyflow/system';
 
-import { NodeResizeControl } from './NodeResizeControl';
+import { NodeResizeControl } from './NodeResizeControl.tsrx';
 import type { NodeResizerProps } from './types';
 
 /**

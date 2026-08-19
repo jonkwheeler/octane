@@ -8,7 +8,8 @@ import {
   type Connection,
 } from '@xyflow/system';
 
-import { EdgeAnchor } from '../Edges/EdgeAnchor';
+import { EdgeAnchor } from '../Edges/EdgeAnchor.tsrx';
+import type { MouseEvent as ReactMouseEvent } from '../../react-shim.js';
 import type { EdgeWrapperProps, Edge } from '../../types/edges';
 import { useStoreApi } from '../../hooks/useStore';
 
@@ -42,7 +43,7 @@ export function EdgeUpdateAnchors<EdgeType extends Edge = Edge>({
   const store = useStoreApi();
 
   const handleEdgeUpdater = (
-    event: React.MouseEvent<SVGGElement, MouseEvent>,
+    event: ReactMouseEvent<SVGGElement, MouseEvent>,
     oppositeHandle: { nodeId: string; id: string | null; type: HandleType }
   ) => {
     // avoid triggering edge updater if mouse btn is not left
@@ -104,10 +105,18 @@ export function EdgeUpdateAnchors<EdgeType extends Edge = Edge>({
     });
   };
 
-  const onReconnectSourceMouseDown = (event: React.MouseEvent<SVGGElement, MouseEvent>): void =>
-    handleEdgeUpdater(event, { nodeId: edge.target, id: edge.targetHandle ?? null, type: 'target' });
-  const onReconnectTargetMouseDown = (event: React.MouseEvent<SVGGElement, MouseEvent>): void =>
-    handleEdgeUpdater(event, { nodeId: edge.source, id: edge.sourceHandle ?? null, type: 'source' });
+  const onReconnectSourceMouseDown = (event: ReactMouseEvent<SVGGElement, MouseEvent>): void =>
+    handleEdgeUpdater(event, {
+      nodeId: edge.target,
+      id: edge.targetHandle ?? null,
+      type: 'target',
+    });
+  const onReconnectTargetMouseDown = (event: ReactMouseEvent<SVGGElement, MouseEvent>): void =>
+    handleEdgeUpdater(event, {
+      nodeId: edge.source,
+      id: edge.sourceHandle ?? null,
+      type: 'source',
+    });
   const onReconnectMouseEnter = () => setUpdateHover(true);
   const onReconnectMouseOut = () => setUpdateHover(false);
 

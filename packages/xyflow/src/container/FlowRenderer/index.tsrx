@@ -4,10 +4,10 @@ import { shallow } from '@octanejs/zustand/shallow';
 import { useStore } from '../../hooks/useStore';
 import { useGlobalKeyHandler } from '../../hooks/useGlobalKeyHandler';
 import { useKeyPress } from '../../hooks/useKeyPress';
-import { GraphViewProps } from '../GraphView';
-import { ZoomPane } from '../ZoomPane';
-import { Pane } from '../Pane';
-import { NodesSelection } from '../../components/NodesSelection';
+import { GraphViewProps } from '../GraphView/index.tsrx';
+import { ZoomPane } from '../ZoomPane/index.tsrx';
+import { Pane } from '../Pane/index.tsrx';
+import { NodesSelection } from '../../components/NodesSelection/index.tsrx';
 import type { ReactFlowState, Node } from '../../types';
 
 export type FlowRendererProps<NodeType extends Node = Node> = Omit<
@@ -32,7 +32,10 @@ export type FlowRendererProps<NodeType extends Node = Node> = Omit<
 const win = typeof window !== 'undefined' ? window : undefined;
 
 const selector = (s: ReactFlowState) => {
-  return { nodesSelectionActive: s.nodesSelectionActive, userSelectionActive: s.userSelectionActive };
+  return {
+    nodesSelectionActive: s.nodesSelectionActive,
+    userSelectionActive: s.userSelectionActive,
+  };
 };
 
 function FlowRendererComponent<NodeType extends Node = Node>({

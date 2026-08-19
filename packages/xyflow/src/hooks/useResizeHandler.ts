@@ -1,4 +1,5 @@
-import { useEffect, type RefObject } from 'octane';
+import { useEffect } from 'octane';
+import type { RefObject } from '../react-shim.js';
 import { resolveHookSlot } from './slot';
 import { errorMessages, getDimensions } from '@xyflow/system';
 

@@ -1,9 +1,9 @@
 import type { XYPosition } from '@xyflow/system';
 
-import { InputNode } from '../Nodes/InputNode';
-import { DefaultNode } from '../Nodes/DefaultNode';
-import { GroupNode } from '../Nodes/GroupNode';
-import { OutputNode } from '../Nodes/OutputNode';
+import { InputNode } from '../Nodes/InputNode.tsrx';
+import { DefaultNode } from '../Nodes/DefaultNode.tsrx';
+import { GroupNode } from '../Nodes/GroupNode.tsrx';
+import { OutputNode } from '../Nodes/OutputNode.tsrx';
 import type { InternalNode, Node, NodeTypes } from '../../types';
 
 export const arrowKeyDiffs: Record<string, XYPosition> = {

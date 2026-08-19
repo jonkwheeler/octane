@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'octane';
-import { resolveHookSlot, withoutSlot } from './slot';
+import { resolveHookSlot, subSlot, withoutSlot } from './slot';
 import {
   areConnectionMapsEqual,
   errorMessages,
@@ -55,13 +55,16 @@ export function useNodeConnections(
     throw new Error(error014);
   }
 
-  const prevConnections = useRef<Map<string, NodeConnection> | null>(null);
+  const prevConnections = useRef<Map<string, NodeConnection> | null>(
+    null,
+    subSlot(slot, 'previous-connections'),
+  );
 
   const connections = useStore((state) =>
       state.connectionLookup.get(
         `${currentNodeId}${handleType ? (handleId ? `-${handleType}-${handleId}` : `-${handleType}`) : ''}`
       ),
-    areConnectionMapsEqual, slot);
+    areConnectionMapsEqual, subSlot(slot, 'connections'));
 
   useEffect(() => {
     // @todo discuss if onConnect/onDisconnect should be called when the component mounts/unmounts
@@ -72,7 +75,11 @@ export function useNodeConnections(
     }
 
     prevConnections.current = connections ?? new Map();
-  }, [connections, onConnect, onDisconnect]);
+  }, [connections, onConnect, onDisconnect], subSlot(slot, 'connection-change'));
 
-  return useMemo(() => Array.from(connections?.values() ?? []), [connections]);
+  return useMemo(
+    () => Array.from(connections?.values() ?? []),
+    [connections],
+    subSlot(slot, 'connection-list'),
+  );
 }
