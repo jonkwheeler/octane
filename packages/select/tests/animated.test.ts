@@ -8,6 +8,7 @@ import { needsInspectableValueChildren } from '../src/animated-registry.ts';
 import makeAnimated, * as animated from '../src/animated/index';
 import {
 	AnimatedInputFixture,
+	AnimatedSingleSelectFixture,
 	CollapseFixture,
 	FadeFixture,
 	FadeInnerPropsFixture,
@@ -47,6 +48,12 @@ describe('animated entry point parity', () => {
 		expect(readCapturedInputProps()).not.toHaveProperty('appear');
 		expect(readCapturedInputProps()).not.toHaveProperty('enter');
 		expect(readCapturedInputProps()).not.toHaveProperty('exit');
+	});
+
+	it('renders both the selected value and input in an animated single select', () => {
+		const html = renderToString(AnimatedSingleSelectFixture).html;
+		expect(html).toContain('Selected option');
+		expect(html).toContain('id="animated-single-input"');
 	});
 
 	it('renders entered fade and collapse server states without leaking transition props', () => {

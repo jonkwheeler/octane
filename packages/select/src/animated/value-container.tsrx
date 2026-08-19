@@ -18,7 +18,15 @@ function flattenKeyedChildren(children: unknown): unknown[] {
 	const flattened: unknown[] = [];
 	for (const child of Children.toArray(children)) {
 		if (isValidElement(child) && child.type === Fragment) {
-			flattened.push(...Children.toArray(child.props.children));
+			for (const innerChild of Children.toArray(child.props.children)) {
+				flattened.push(
+					isValidElement(innerChild)
+						? cloneElement(innerChild, {
+								key: JSON.stringify([child.key, innerChild.key]),
+							})
+						: innerChild,
+				);
+			}
 			continue;
 		}
 		flattened.push(child);

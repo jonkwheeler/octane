@@ -1,4 +1,5 @@
 import type { OctaneNode } from 'octane';
+import Select from '../src/index';
 import makeAnimated from '../src/animated/index';
 import { Collapse, Fade } from '../src/animated/transitions.tsrx';
 
@@ -17,6 +18,18 @@ function FadeProbe(props: Record<string, unknown>) @{
 export function AnimatedInputFixture() @{
 	const Input = makeAnimated({ Input: InputProbe as never }).Input!;
 	<Input in onExited={() => {}} appear enter exit consumer="preserved" />
+}
+
+export function AnimatedSingleSelectFixture() @{
+	<Select
+		components={makeAnimated()}
+		defaultValue={{ label: 'Selected option', value: 'selected' }}
+		inputId="animated-single-input"
+		instanceId="animated-single"
+		options={[
+			{ label: 'Selected option', value: 'selected' },
+		]}
+	/>
 }
 
 export function FadeFixture() @{
