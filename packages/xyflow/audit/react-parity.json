@@ -87,7 +87,7 @@
       "environment": "workspace-node",
       "project": "xyflow-pristine-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Eight matched public-surface assertion groups compiled against @xyflow/react 12.11.2 with tsc and pinned React types.",
+      "notes": "Nine matched public-surface assertion groups compiled against @xyflow/react 12.11.2 with tsc and pinned React types.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsc",
@@ -97,7 +97,7 @@
         {
           "path": "packages/xyflow/typetests/pristine/types.test-d.ts",
           "role": "test",
-          "sha256": "62732005c1565f01626a1500430529324bc3575a0dde4c114196abbf8d4ade28",
+          "sha256": "75cccd659ae636f2dabbe6eb9e5958b957b28a2fa598c6b642f1d23b64c39ba5",
           "cases": [
             {
               "id": "types:pristine",
@@ -114,7 +114,7 @@
         {
           "path": "packages/xyflow/typetests/assertions.md",
           "role": "support",
-          "sha256": "de0250d71ff54f788247334fd050e8bbbe3864c84f385314cbf47517e4ff20f1"
+          "sha256": "48c5c609584dc67b8c37ec610d719917bb9ec97b84b916355d1ff9f5ae64e247"
         }
       ]
     },
@@ -126,7 +126,7 @@
       "environment": "workspace-node",
       "project": "xyflow-adapted-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "The same eight public-surface assertion groups compiled against @octanejs/xyflow with tsrx-tsc; assertions.md records the permitted package-name-only adaptation.",
+      "notes": "The same nine public-surface assertion groups compiled against @octanejs/xyflow with tsrx-tsc; assertions.md records the permitted package-name-only adaptation.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -136,7 +136,7 @@
         {
           "path": "packages/xyflow/typetests/adapted/types.test-d.ts",
           "role": "test",
-          "sha256": "a286c72b4462dd4e369dca7abca353a02b02c49ae6e9be9a2bad1e275b13f68e",
+          "sha256": "df2b46f9f932bfb33521db1ccfa33d6ea6b1cf0f8a1560dfbb9ba214f80924e7",
           "cases": [
             {
               "id": "types:adapted",
@@ -153,7 +153,7 @@
         {
           "path": "packages/xyflow/typetests/assertions.md",
           "role": "support",
-          "sha256": "de0250d71ff54f788247334fd050e8bbbe3864c84f385314cbf47517e4ff20f1"
+          "sha256": "48c5c609584dc67b8c37ec610d719917bb9ec97b84b916355d1ff9f5ae64e247"
         }
       ]
     },

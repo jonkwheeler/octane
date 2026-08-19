@@ -16,3 +16,4 @@ The only permitted source difference is the import root:
 6. `addEdge` preserves the caller's edge subtype.
 7. `useNodesState` exposes typed nodes, a setter, and a change callback.
 8. `useEdgesState` exposes typed edges, a setter, and a change callback.
+9. MiniMap and NodeResizer prop types remain exported from the public package root.

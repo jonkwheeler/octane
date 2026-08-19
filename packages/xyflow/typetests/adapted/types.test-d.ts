@@ -10,9 +10,13 @@ import {
 	type Connection,
 	type Edge,
 	type HandleProps,
+	type MiniMapNodeProps,
+	type MiniMapProps,
 	type Node,
+	type NodeResizerProps,
 	type OnConnect,
 	type ReactFlowProps,
+	type ResizeControlProps,
 } from '@octanejs/xyflow';
 
 // 1. Node requires an id, position, and data payload.
@@ -83,3 +87,23 @@ const firstSource: string = edges[0].source;
 setEdges((current) => current);
 onEdgesChange([{ type: 'select', id: 'edge-1', selected: true }]);
 void firstSource;
+
+// 9. Additional-component prop types remain available from the public root.
+const miniMapProps: MiniMapProps = { pannable: true, zoomable: true };
+const miniMapNodeProps: MiniMapNodeProps = {
+	id: 'node-1',
+	x: 0,
+	y: 0,
+	width: 100,
+	height: 40,
+	borderRadius: 4,
+	className: 'node',
+	shapeRendering: 'geometricPrecision',
+	selected: false,
+};
+const nodeResizerProps: NodeResizerProps = { minWidth: 20, keepAspectRatio: true };
+const resizeControlProps: ResizeControlProps = { minHeight: 20 };
+void miniMapProps;
+void miniMapNodeProps;
+void nodeResizerProps;
+void resizeControlProps;
