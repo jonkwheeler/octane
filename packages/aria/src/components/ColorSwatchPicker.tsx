@@ -1,5 +1,6 @@
 /** @jsxImportSource octane */
 // Ported from adobe/react-spectrum@1c84a49a1faf50b571c84e00bcf9c60b22ddd03e (packages/react-aria-components/src/ColorSwatchPicker.tsx).
+import { isChildrenBlock } from 'octane';
 import {
 	AriaLabelingProps,
 	GlobalDOMAttributes,
@@ -147,7 +148,10 @@ export const ColorSwatchPickerItem = forwardRef(function ColorSwatchPickerItem(
 	}, [color, map]);
 
 	let wrap = (v: any) => {
-		if (typeof v === 'function') {
+		// A `.tsrx` `@{ … }` body compiles children to a tagged BLOCK function,
+		// which is not a render prop. Wrapping it would strip the block tag and
+		// cause composeRenderProps to invoke it with render values.
+		if (typeof v === 'function' && !isChildrenBlock(v)) {
 			return (renderProps: any) => v({ ...renderProps, color });
 		}
 		return v;
