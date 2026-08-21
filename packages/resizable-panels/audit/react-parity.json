@@ -104,7 +104,7 @@
         {
           "path": "packages/resizable-panels/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "33ebdc5a752b5630722ac7f8968b9b418ca2ffeea1ecef5b59a467ecfe82af9b"
+          "sha256": "48645e0c48a70c39efebfb862c6b4574b8daf33e9993cc349047487957f6a132"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",

@@ -22,11 +22,9 @@ async function fixture() {
 		upstreamRoot,
 		{ recursive: true },
 	);
-	await cp(
-		new URL('../../packages/resizable-panels/typetests', import.meta.url),
-		adaptedRoot,
-		{ recursive: true },
-	);
+	await cp(new URL('../../packages/resizable-panels/typetests', import.meta.url), adaptedRoot, {
+		recursive: true,
+	});
 	await rm(join(upstreamRoot, 'tsconfig.pristine.json'), { force: true });
 	await rm(join(upstreamRoot, 'tsconfig.json'), { force: true });
 	await rm(join(adaptedRoot, 'tsconfig.json'), { force: true });

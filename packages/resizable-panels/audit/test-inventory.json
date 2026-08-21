@@ -354,7 +354,11 @@
     {
       "path": "global/utils/calculateDefaultLayout.test.ts",
       "registrationCount": 3,
-      "identities": ["inferred", "explicit", "mix of explicit and inferred"],
+      "identities": [
+        "inferred",
+        "explicit",
+        "mix of explicit and inferred"
+      ],
       "disposition": "adapted",
       "adaptedPath": "tests/upstream/global/utils/calculateDefaultLayout.test.ts"
     },
@@ -507,7 +511,10 @@
     {
       "path": "hooks/useId.test.ts",
       "registrationCount": 2,
-      "identities": ["should prefer explicit id", "should fallback ot React useId"],
+      "identities": [
+        "should prefer explicit id",
+        "should fallback ot React useId"
+      ],
       "disposition": "adapted",
       "adaptedPath": "tests/upstream/hooks/useId.test.ts"
     },
@@ -534,7 +541,9 @@
     {
       "path": "utils/isArrayEqual.test.ts",
       "registrationCount": 1,
-      "identities": ["should work"],
+      "identities": [
+        "should work"
+      ],
       "disposition": "adapted",
       "adaptedPath": "tests/upstream/utils/isArrayEqual.test.ts"
     },
