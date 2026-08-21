@@ -2556,6 +2556,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'resizable-panels-browser',
 					include: ['packages/resizable-panels/tests/browser/**/*.browser.test.ts'],
