@@ -64,7 +64,7 @@
         {
           "path": "packages/resizable-panels/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "bd45502f43f5046ae879a8d40669252448cb2df2fc82903888a8217a2cc58ae6"
+          "sha256": "8a8a18d3c833584f751e3b9409a526f88de0e6ed254a13fd1ac2e2598e40baca"
         },
         {
           "path": "packages/resizable-panels/tests/upstream-original.test.ts",
@@ -79,12 +79,12 @@
         {
           "path": "scripts/react-parity/react-resizable-panels-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "feb0de30d62731e79eaac81c802a196fdac31d1eedd5a30a9aac83d5d0538f29"
+          "sha256": "afa56ebd1964a2f3f671ab23dcda874acf50f36e5c2320315bbb3b995058911e"
         },
         {
           "path": "packages/resizable-panels/audit/upstream.lock.json",
           "role": "support",
-          "sha256": "27106a2e934bb1b2c61791ce70b3d084972a80f5119e116b256e5d2ee4d23876"
+          "sha256": "bfa1599818cbec9935885c99e761e6046cab000f0bef1b3bcef23ead3ed6c336"
         }
       ]
     },

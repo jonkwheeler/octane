@@ -12,31 +12,3 @@ diff --git a/tests/upstream/global/utils/adjustLayoutByDelta.test.ts b/tests/ups
  
  type Args = Parameters<typeof adjustLayoutByDeltaExternal>[0];
  
-@@ -1078,12 +1078,7 @@ describe("adjustLayoutByDelta", () => {
-       adjustLayoutByDelta({
-         delta: 100,
-         initialLayout: l([25, 25, 25, 25]),
--        panelConstraints: c([
--          {},
--          { minSize: 10 },
--          { minSize: 10 },
--          { minSize: 10 }
--        ]),
-+        panelConstraints: c([{}, { minSize: 10 }, { minSize: 10 }, { minSize: 10 }]),
-         prevLayout: l([25, 25, 25, 25])
-       })
-     ).toEqual(l([70, 10, 10, 10]));
-@@ -1791,12 +1786,7 @@ describe("adjustLayoutByDelta", () => {
-       adjustLayoutByDelta({
-         delta: -50,
-         initialLayout: l([25, 25, 25, 25]),
--        panelConstraints: c([
--          { minSize: 10 },
--          { minSize: 10 },
--          { minSize: 10 },
--          {}
--        ]),
-+        panelConstraints: c([{ minSize: 10 }, { minSize: 10 }, { minSize: 10 }, {}]),
-         pivotIndices: [2, 3],
-         prevLayout: l([25, 25, 25, 25])
-       })

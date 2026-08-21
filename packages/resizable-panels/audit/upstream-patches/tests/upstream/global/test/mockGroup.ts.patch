@@ -18,25 +18,3 @@ diff --git a/tests/upstream/global/test/mockGroup.ts b/tests/upstream/global/tes
  import { setElementBounds } from "../../utils/test/mockBoundingClientRect";
  
  export type MockGroup = RegisteredGroup & {
-@@ -17,19 +11,12 @@ export type MockGroup = RegisteredGroup & {
-     id?: string,
-     constraints?: Partial<PanelConstraintProps>
-   ) => () => void;
--  addSeparator: (
--    relativeBounds: DOMRect,
--    id?: string,
--    disabled?: boolean
--  ) => () => void;
-+  addSeparator: (relativeBounds: DOMRect, id?: string, disabled?: boolean) => () => void;
- };
- 
- let groupIdCounter = 0;
- 
--export function mockGroup(
--  groupBounds: DOMRect,
--  config: Partial<RegisteredGroup> = {}
--): MockGroup {
-+export function mockGroup(groupBounds: DOMRect, config: Partial<RegisteredGroup> = {}): MockGroup {
-   const groupId = config.id ?? `group-${++groupIdCounter}`;
- 
-   let panelIdCounter = 0;

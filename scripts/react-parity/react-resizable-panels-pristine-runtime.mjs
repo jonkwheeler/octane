@@ -34,8 +34,12 @@ export function runPristineUpstreamSuite({
 	repoRoot = resolve(packageRoot, '../..'),
 	reportPath = join(tmpdir(), `octane-rrp-pristine-${process.pid}.json`),
 } = {}) {
+	// The pristine oracle runs on the package's own pinned toolchain
+	// (vitest 3 + jsdom 26, matching the pinned upstream devDependencies), not
+	// the workspace root's; jsdom 30 serializes styles differently
+	// (minHeight: 0 reads back '0px', upstream asserts '0').
 	const result = spawnSync(
-		join(repoRoot, 'node_modules/.bin/vitest'),
+		join(packageRoot, 'node_modules/.bin/vitest'),
 		[
 			'run',
 			'--config',
@@ -44,7 +48,7 @@ export function runPristineUpstreamSuite({
 			`--outputFile=${reportPath}`,
 		],
 		{
-			cwd: repoRoot,
+			cwd: packageRoot,
 			env: { ...process.env, CI: process.env.CI ?? 'true' },
 			encoding: 'utf8',
 		},

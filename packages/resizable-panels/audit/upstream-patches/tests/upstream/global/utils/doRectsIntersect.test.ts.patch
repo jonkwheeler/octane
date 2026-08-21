@@ -10,18 +10,3 @@ diff --git a/tests/upstream/global/utils/doRectsIntersect.test.ts b/tests/upstre
  
  const emptyRect = { x: 0, y: 0, width: 0, height: 0 };
  const rect = { x: 25, y: 25, width: 50, height: 50 };
-@@ -16,13 +16,7 @@ describe("doRectsIntersect", () => {
-     try {
-       expect(actual).toBe(expected);
-     } catch (thrown) {
--      console.log(
--        "Expected",
--        rectOne,
--        "to",
--        expected ? "intersect" : "not intersect",
--        rectTwo
--      );
-+      console.log("Expected", rectOne, "to", expected ? "intersect" : "not intersect", rectTwo);
- 
-       throw thrown;
-     }

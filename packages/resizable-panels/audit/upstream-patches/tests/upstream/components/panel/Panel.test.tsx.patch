@@ -52,43 +52,7 @@ diff --git a/tests/upstream/components/panel/Panel.test.tsx b/tests/upstream/com
  
  describe("Panel", () => {
    describe("disabled prop", () => {
-@@ -56,10 +82,7 @@ describe("Panel", () => {
-       const onLayoutChanged = vi.fn();
- 
-       const { rerender } = render(
--        <Group
--          onLayoutChange={onLayoutChange}
--          onLayoutChanged={onLayoutChanged}
--        >
-+        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
-           <Panel id="left" />
-           <Separator id="separator" />
-           <Panel id="right" />
-@@ -70,10 +93,7 @@ describe("Panel", () => {
-       onLayoutChanged.mockReset();
- 
-       rerender(
--        <Group
--          onLayoutChange={onLayoutChange}
--          onLayoutChanged={onLayoutChanged}
--        >
-+        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
-           <Panel disabled id="left" />
-           <Separator id="separator" />
-           <Panel id="right" />
-@@ -88,10 +108,7 @@ describe("Panel", () => {
-       onLayoutChanged.mockReset();
- 
-       rerender(
--        <Group
--          onLayoutChange={onLayoutChange}
--          onLayoutChanged={onLayoutChanged}
--        >
-+        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
-           <Panel id="left" />
-           <Separator id="separator" />
-           <Panel id="right" />
-@@ -113,39 +130,28 @@ describe("Panel", () => {
+@@ -113,39 +139,28 @@ describe("Panel", () => {
  
    describe("memoization", () => {
      test("Panels contents should not re-render on Group layout change", () => {
@@ -135,7 +99,7 @@ diff --git a/tests/upstream/components/panel/Panel.test.tsx b/tests/upstream/com
        onPanelChildrenRender.mockReset();
  
        const api = groupRef.current;
-@@ -158,8 +164,8 @@ describe("Panel", () => {
+@@ -158,8 +173,8 @@ describe("Panel", () => {
          });
        });
  
@@ -146,7 +110,7 @@ diff --git a/tests/upstream/components/panel/Panel.test.tsx b/tests/upstream/com
        expect(onPanelChildrenRender).not.toBeCalled();
      });
    });
-@@ -214,11 +220,12 @@ describe("Panel", () => {
+@@ -214,11 +229,12 @@ describe("Panel", () => {
  
        const panel = container.querySelector("[data-panel]") as HTMLElement;
  

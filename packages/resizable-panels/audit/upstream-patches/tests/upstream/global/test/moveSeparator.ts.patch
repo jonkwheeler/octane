@@ -30,27 +30,3 @@ diff --git a/tests/upstream/global/test/moveSeparator.ts b/tests/upstream/global
  
    let clientX = 0;
    let clientY = 0;
-@@ -45,19 +39,15 @@ export async function moveSeparator(
-     },
-     {
-       coords: {
--        clientX:
--          groupOrientation === "horizontal" ? clientX + deltaInPixels : clientX,
--        clientY:
--          groupOrientation === "vertical" ? clientY + deltaInPixels : clientY
-+        clientX: groupOrientation === "horizontal" ? clientX + deltaInPixels : clientX,
-+        clientY: groupOrientation === "vertical" ? clientY + deltaInPixels : clientY
-       }
-     },
-     {
-       keys: "[/MouseLeft]",
-       coords: {
--        clientX:
--          groupOrientation === "horizontal" ? clientX + deltaInPixels : clientX,
--        clientY:
--          groupOrientation === "vertical" ? clientY + deltaInPixels : clientY
-+        clientX: groupOrientation === "horizontal" ? clientX + deltaInPixels : clientX,
-+        clientY: groupOrientation === "vertical" ? clientY + deltaInPixels : clientY
-       }
-     }
-   ]);
