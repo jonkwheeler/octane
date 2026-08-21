@@ -46,14 +46,14 @@
     },
     {
       "kind": "support-user-event",
-      "rule": "global/test/moveSeparator.ts substitutes @testing-library/user-event and node:assert with tests/upstream/test/userEvent.ts plus the package assert helper; the authored adapter must keep pointer/type exports and the PointerEvent/KeyboardEvent dispatch behavioral contract (not only a refreshable structural hash).",
+      "rule": "global/test/moveSeparator.ts substitutes @testing-library/user-event and node:assert with tests/upstream/test/userEvent.ts plus the package assert helper; the authored adapter is structurally locked and covered by direct event-dispatch tests.",
       "files": ["global/test/moveSeparator.ts", "test/userEvent.ts"]
     }
   ],
   "authoredSupportLocks": [
     {
       "path": "../support/userEvent.ts",
-      "structuralSha256": "e7693008cdab6f9e1b81c49af9ca479781427f10b3e4e531b7389ccc304e6e4b"
+      "structuralSha256": "3237c810641f4c7e553d00213a017041babb75244fb87e21b636299531a2d762"
     }
   ],
   "divergences": [

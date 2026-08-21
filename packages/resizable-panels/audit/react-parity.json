@@ -109,17 +109,17 @@
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",
           "role": "support",
-          "sha256": "d5046b1c510d980c5821dc725f5347d0b62d12cac4ca023847bb00fd14de8d19"
+          "sha256": "bae76fd4e3395e0ef59438312cd2e33e574891a31fca5a68564d2e447ef0481e"
         },
         {
           "path": "packages/resizable-panels/audit/test-classifications.json",
           "role": "support",
-          "sha256": "abe458c57c739dbc47ca5fc7d4c5a3d3653026ea4706d547fe4f80928479dd93"
+          "sha256": "038cf680c72dd6a796196b572bdc71ca93d2354f11fbef4c2dd0b68ac1a6a5a9"
         },
         {
           "path": "packages/resizable-panels/audit/runtime-parity.json",
           "role": "support",
-          "sha256": "4a11570bbe20fb6b87affc28f2c81f813967607a49abda795fa1e72fd26dd46a"
+          "sha256": "a6f29a857a321c37deee9772962615eaad420730ceca2f454f9623328147c848"
         }
       ]
     },

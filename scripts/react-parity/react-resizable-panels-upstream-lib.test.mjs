@@ -7,8 +7,6 @@ import test from 'node:test';
 
 import {
 	applyUseIdFallbackDivergence,
-	authoredUserEventBehavior,
-	AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR,
 	compareRuntimeIdentityMultisets,
 	expectedAdaptedAssertionGroups,
 	expectedAdaptedCaseLedger,
@@ -49,6 +47,7 @@ test('support fixtures map to upstream after declared helper transforms', functi
 	const rewrites = new Map([
 		['@testing-library/user-event', '#rrp-user-event'],
 		['../../test/userEvent', '#rrp-user-event'],
+		['../../../support/userEvent', '#rrp-user-event'],
 		['node:assert', '#rrp-assert'],
 		['../../../../src/utils/assert', '#rrp-assert'],
 	]);
@@ -62,84 +61,11 @@ test('support fixtures map to upstream after declared helper transforms', functi
 			normalizeAssertImport: true,
 		}),
 	);
-	const userEvent = readRepo('packages/resizable-panels/tests/upstream/test/userEvent.ts');
-	const behavior = authoredUserEventBehavior(userEvent, 'test/userEvent.ts');
-	for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
-		assert.ok(behavior.includes(required), `missing ${required}`);
-	}
-	const decoyBodies = [
-		"import { act } from '@octanejs/testing-library';\n" +
-			'async function pointer(steps) {\n' +
-			'\treturn;\n' +
-			"\tfalse && act(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-			'}\n' +
-			'async function type(element, text) {\n' +
-			'\treturn;\n' +
-			"\tfalse && act(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-			'}\n' +
-			'export default { pointer, type };\n',
-		"import { act } from '@octanejs/testing-library';\n" +
-			'async function pointer(steps) {\n' +
-			'\tif (true) return;\n' +
-			'\tconst type = "pointerdown";\n' +
-			"\tact(() => document.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-			'}\n' +
-			'async function type(element, text) {\n' +
-			'\twhile (true) return;\n' +
-			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-			'}\n' +
-			'export default { pointer, type };\n',
-		"import { act } from '@octanejs/testing-library';\n" +
-			'async function pointer(steps) {\n' +
-			'\twhile (true) {}\n' +
-			"\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-			'}\n' +
-			'async function type(element, text) {\n' +
-			'\tfor (;;) {}\n' +
-			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-			'}\n' +
-			'export default { pointer, type };\n',
-		"import { act } from '@octanejs/testing-library';\n" +
-			'async function pointer(steps) {\n' +
-			'\twhile (true) { if (false) break; }\n' +
-			"\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-			'}\n' +
-			'async function type(element, text) {\n' +
-			'\tfor (;;) { if (false) break; }\n' +
-			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-			'}\n' +
-			'export default { pointer, type };\n',
-		"import { act } from '@octanejs/testing-library';\n" +
-			'async function pointer(steps) {\n' +
-			'\twhile (true) { if (true) continue; break; }\n' +
-			"\tact(() => document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-			"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-			'}\n' +
-			'async function type(element, text) {\n' +
-			'\tfor (;;) { while (true) {} break; }\n' +
-			"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-			'}\n' +
-			'export default { pointer, type };\n',
-	];
-	for (const decoy of decoyBodies) {
-		const decoyBehavior = authoredUserEventBehavior(decoy, 'test/userEvent.ts');
-		for (const required of AUTHORED_USER_EVENT_REQUIRED_BEHAVIOR) {
-			assert.equal(decoyBehavior.includes(required), false, `decoy must not satisfy ${required}`);
-		}
-	}
 });
 
 test('runtime inventories match one-for-one after explicit path mapping', function crosswalk() {
-	const pristine = JSON.parse(
-		readRepo('packages/resizable-panels/audit/pristine-runtime.json'),
-	);
-	const adapted = JSON.parse(
-		readRepo('packages/resizable-panels/audit/adapted-runtime.json'),
-	);
+	const pristine = JSON.parse(readRepo('packages/resizable-panels/audit/pristine-runtime.json'));
+	const adapted = JSON.parse(readRepo('packages/resizable-panels/audit/adapted-runtime.json'));
 	const expected = runtimeIdentityMultiset(pristine, mapPristineFileToAdapted);
 	const actual = runtimeIdentityMultiset(adapted, function identity(file) {
 		return file;
@@ -152,7 +78,7 @@ test('runtime inventories match one-for-one after explicit path mapping', functi
 test('hierarchy drift fails full-name case keys even when leaf titles stay equal', function hierarchyDrift() {
 	const adapted = readRepo('packages/resizable-panels/tests/upstream/hooks/useId.test.ts');
 	const baseline = extractCaseLedger(adapted, 'hooks/useId.test.ts');
-	const renamedDescribe = adapted.replace("describe('useId'", "describe('useIdRenamed'");
+	const renamedDescribe = adapted.replace(/describe\((["'])useId\1/, 'describe("useIdRenamed"');
 	const drifted = extractCaseLedger(renamedDescribe, 'hooks/useId.test.ts');
 	assert.deepEqual(
 		drifted.map(function titleOf(entry) {
@@ -177,10 +103,7 @@ test('deleting an adapted assertion fails the pristine mapping', async function 
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	const file = join(
-		repo,
-		'packages/resizable-panels/tests/upstream/utils/isArrayEqual.test.ts',
-	);
+	const file = join(repo, 'packages/resizable-panels/tests/upstream/utils/isArrayEqual.test.ts');
 	const upstream = await readFile(
 		join(repo, 'packages/resizable-panels/upstream/lib/utils/isArrayEqual.test.ts'),
 		'utf8',
@@ -194,18 +117,14 @@ test('deleting an adapted assertion fails the pristine mapping', async function 
 });
 
 test('moving an assertion between cases fails case-keyed mapping', function rejectsMovedAssertion() {
-	const upstream = readRepo(
-		'packages/resizable-panels/upstream/lib/utils/isArrayEqual.test.ts',
-	);
-	const adapted = readRepo(
-		'packages/resizable-panels/tests/upstream/utils/isArrayEqual.test.ts',
-	);
+	const upstream = readRepo('packages/resizable-panels/upstream/lib/utils/isArrayEqual.test.ts');
+	const adapted = readRepo('packages/resizable-panels/tests/upstream/utils/isArrayEqual.test.ts');
 	const expected = expectedAdaptedCaseLedger('utils/isArrayEqual.test.ts', upstream);
 	const actual = extractCaseLedger(adapted, 'utils/isArrayEqual.test.ts');
 	assert.equal(actual.length, 1);
 	const withSibling = adapted.replace(
-		"describe('isArrayEqual', () => {\n\ttest('should work', () => {\n\t\texpect(isArrayEqual([1, 2], [1])).toBe(false);\n",
-		"describe('isArrayEqual', () => {\n\ttest('sibling', () => {\n\t\texpect(isArrayEqual([1, 2], [1])).toBe(false);\n\t});\n\ttest('should work', () => {\n",
+		/(describe\(["']isArrayEqual["'], \(\) => \{\s*)(test\(["']should work["'], \(\) => \{\s*)(expect\(isArrayEqual\(\[1, 2\], \[1\]\)\)\.toBe\(false\);)/,
+		'$1test("sibling", () => {\n    $3\n  });\n  $2',
 	);
 	const drifted = extractCaseLedger(withSibling, 'utils/isArrayEqual.test.ts');
 	assert.notEqual(drifted.length, expected.length);
@@ -301,9 +220,7 @@ test('weakening a test.each body fails while expanded runtime identities stay in
 	assert.deepEqual(actual[0].parameterization, expected[0].parameterization);
 	assert.equal(actual[0].title, expected[0].title);
 	assert.notDeepEqual(actual[0].assertions, expected[0].assertions);
-	const pristine = JSON.parse(
-		readRepo('packages/resizable-panels/audit/pristine-runtime.json'),
-	);
+	const pristine = JSON.parse(readRepo('packages/resizable-panels/audit/pristine-runtime.json'));
 	const adaptedRuntime = JSON.parse(
 		readRepo('packages/resizable-panels/audit/adapted-runtime.json'),
 	);
@@ -318,9 +235,7 @@ test('weakening a test.each body fails while expanded runtime identities stay in
 });
 
 test('useId divergence transform keeps unrelated weakening fail-closed', function rejectsUnrelatedDivergedWeakening() {
-	const upstream = readRepo(
-		'packages/resizable-panels/upstream/lib/hooks/useId.test.ts',
-	);
+	const upstream = readRepo('packages/resizable-panels/upstream/lib/hooks/useId.test.ts');
 	const adapted = readRepo('packages/resizable-panels/tests/upstream/hooks/useId.test.ts');
 	const expected = expectedAdaptedCaseLedger('hooks/useId.test.ts', upstream);
 	const fallbackExpected = expected.find(function find(entry) {

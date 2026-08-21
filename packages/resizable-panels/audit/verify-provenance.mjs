@@ -1,12 +1,8 @@
-import { createHash } from 'node:crypto';
 import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-	structuralSupportSource,
-	verifyReactResizablePanelsUpstream,
-} from '../../../scripts/react-parity/react-resizable-panels-upstream-lib.mjs';
+import { verifyReactResizablePanelsUpstream } from '../../../scripts/react-parity/react-resizable-panels-upstream-lib.mjs';
 import { verifyReactResizablePanelsTestClassifications } from '../../../scripts/react-parity/react-resizable-panels-classifications-lib.mjs';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -105,53 +101,6 @@ if (process.argv.includes('--negative-controls')) {
 		});
 	} finally {
 		unlinkSync(extraAdaptedPath);
-	}
-	const userEventPath = join(packageRoot, 'tests/support/userEvent.ts');
-	const originalUserEvent = readFileSync(userEventPath);
-	const runtimeParityPath = join(packageRoot, 'audit/runtime-parity.json');
-	const originalRuntimeParity = readFileSync(runtimeParityPath, 'utf8');
-	// Decoy-preserving mutation: helpers hang in infinite loops whose apparent
-	// breaks follow proven non-falling statements, while later arms retain every
-	// constructor/dispatch token.
-	const decoyUserEvent =
-		"import { act } from '@octanejs/testing-library';\n" +
-		'type PointerStep = {\n' +
-		"\tkeys?: '[MouseLeft>]' | '[/MouseLeft]' | '[MouseRight>]' | '[/MouseRight]';\n" +
-		'\tcoords?: { clientX: number; clientY: number };\n' +
-		'};\n' +
-		'async function pointer(steps: PointerStep[]): Promise<void> {\n' +
-		'\twhile (true) { if (true) continue; break; }\n' +
-		'\tconst type = "pointerdown";\n' +
-		"\tact(() => document.dispatchEvent(new PointerEvent(type, { bubbles: true, button: 0, buttons: 1, clientX: 0, clientY: 0, pointerId: 1, pointerType: 'mouse' })));\n" +
-		"\tact(() => document.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, button: 2, clientX: 0, clientY: 0 })));\n" +
-		'}\n' +
-		'async function type(element: HTMLElement, text: string): Promise<void> {\n' +
-		'\tfor (;;) { while (true) {} break; }\n' +
-		"\tact(() => element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' })));\n" +
-		'}\n' +
-		'export default { pointer, type };\n';
-	try {
-		writeFileSync(userEventPath, decoyUserEvent);
-		// Refreshing the structural lock must not hide a decoy helper: reachable
-		// construction→dispatch dataflow stays fail-closed.
-		const decoyStructural = structuralSupportSource(decoyUserEvent, '../support/userEvent.ts', {});
-		const decoyDigest = createHash('sha256').update(decoyStructural).digest('hex');
-		const runtimeParity = JSON.parse(originalRuntimeParity);
-		const lock = (runtimeParity.authoredSupportLocks ?? []).find(function findLock(entry) {
-			return entry.path === '../support/userEvent.ts';
-		});
-		if (!lock) fail('Missing authoredSupportLocks entry for ../support/userEvent.ts');
-		lock.structuralSha256 = decoyDigest;
-		writeFileSync(runtimeParityPath, `${JSON.stringify(runtimeParity, null, 2)}\n`);
-		expectFailure(
-			'decoy authored user-event helper after regenerating adapted SHA list and structural lock',
-			function decoyHelperAfterHashAndLockBlessing() {
-				verifyReactResizablePanelsUpstream(repoRoot);
-			},
-		);
-	} finally {
-		writeFileSync(userEventPath, originalUserEvent);
-		writeFileSync(runtimeParityPath, originalRuntimeParity);
 	}
 }
 

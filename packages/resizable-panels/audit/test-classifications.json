@@ -27,6 +27,11 @@
       "reason": "SSR/server rendering contract for the Octane binding; not React-parity ownership."
     },
     {
+      "path": "packages/resizable-panels/tests/support/userEvent.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Observable native-event coverage for the Octane-specific user-event adapter used by adapted upstream tests; not React-suite identity evidence."
+    },
+    {
       "path": "packages/resizable-panels/tests/upstream-original.test.ts",
       "disposition": "unmodified-upstream-suite-wrapper",
       "oracle": "Runs the byte-exact pinned react-resizable-panels 4.12.2 Vitest suite against React through vitest.pristine.config.ts after vendored-byte verification."

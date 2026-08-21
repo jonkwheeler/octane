@@ -12,7 +12,7 @@ let clientX = 0;
 let clientY = 0;
 let buttons = 0;
 
-async function pointer(steps: PointerStep[]): Promise<void> {
+export async function pointer(steps: PointerStep[]): Promise<void> {
 	for (const step of steps) {
 		const previousX = clientX;
 		const previousY = clientY;
@@ -63,7 +63,7 @@ async function pointer(steps: PointerStep[]): Promise<void> {
 	}
 }
 
-async function type(element: HTMLElement, text: string): Promise<void> {
+export async function type(element: HTMLElement, text: string): Promise<void> {
 	for (const match of text.matchAll(/\{([^}]+)\}/g)) {
 		act(() =>
 			element.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: match[1] })),
