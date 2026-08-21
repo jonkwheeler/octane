@@ -58,7 +58,7 @@
       "@octanejs/sonner",
       "@octanejs/draggable",
       "@octanejs/react-error-boundary",
-      "@octanejs/react-resizable-panels",
+      "@octanejs/resizable-panels",
       "@octanejs/transition-group",
       "@octanejs/day-picker",
       "@octanejs/textarea-autosize",

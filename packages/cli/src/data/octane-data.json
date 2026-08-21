@@ -618,18 +618,6 @@
       "verified": "2026-08-06"
     },
     {
-      "name": "@octanejs/react-resizable-panels",
-      "version": "0.1.0",
-      "category": "UI and interaction",
-      "upstream": { "package": "react-resizable-panels", "version": "4.12.2" },
-      "surface": "Group, Panel, Separator, persistence hooks, refs, imperative APIs, layout constraints, pointer and keyboard interaction, ARIA, cursor handling, and ResizeObserver behavior are implemented against react-resizable-panels 4.12.2.",
-      "divergences": [
-        "useId(undefined) fallback cannot reproduce React's mocked ':r123:' seam; adapted upstream case asserts a non-empty Octane id and is recorded as react-resizable-panels-useId-fallback."
-      ],
-      "ssr": "Deterministic server rendering and live hydration adoption are covered by dedicated executable projects.",
-      "verified": "2026-08-02"
-    },
-    {
       "name": "@octanejs/recharts",
       "version": "0.1.39",
       "category": "Data-heavy screens",
@@ -682,6 +670,18 @@
         "Block-children `<Routes>` collects `<Route>`s by registration (mount order) instead of upstream's element-children walk (source order) — a conditionally-mounted `<Route>` between static siblings registers after them, which only affects matchRoutes score TIES; conformance-pinned."
       ],
       "ssr": "Shipped: StaticRouter/StaticRouterProvider/createStaticHandler/createStaticRouter render through octane/server (remix-router-ssr vitest project compiles the whole graph in server mode; markup matches react-dom/server byte-for-byte after framework-marker stripping). Block-children <Routes> is CLIENT-only (the registration collector runs in layout effects) — use descriptor children or route objects for SSR.",
+      "verified": "2026-08-02"
+    },
+    {
+      "name": "@octanejs/resizable-panels",
+      "version": "0.1.0",
+      "category": "UI and interaction",
+      "upstream": { "package": "react-resizable-panels", "version": "4.12.2" },
+      "surface": "Group, Panel, Separator, persistence hooks, refs, imperative APIs, layout constraints, pointer and keyboard interaction, ARIA, cursor handling, and ResizeObserver behavior are implemented against react-resizable-panels 4.12.2.",
+      "divergences": [
+        "useId(undefined) fallback cannot reproduce React's mocked ':r123:' seam; adapted upstream case asserts a non-empty Octane id and is recorded as react-resizable-panels-useId-fallback."
+      ],
+      "ssr": "Deterministic server rendering and live hydration adoption are covered by dedicated executable projects.",
       "verified": "2026-08-02"
     },
     {
@@ -1351,7 +1351,7 @@
     "react-pdf": "@octanejs/pdf",
     "react-popper": "@octanejs/popper",
     "react-redux": "@octanejs/redux",
-    "react-resizable-panels": "@octanejs/react-resizable-panels",
+    "react-resizable-panels": "@octanejs/resizable-panels",
     "react-router": "@octanejs/remix-router",
     "react-router-dom": "@octanejs/remix-router",
     "react-stately": "@octanejs/aria",

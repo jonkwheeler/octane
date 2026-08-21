@@ -1,10 +1,10 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
-const CONFIG = 'packages/react-resizable-panels/audit/test-classifications.json';
-const MANIFEST = 'packages/react-resizable-panels/audit/react-parity.json';
-const TEST_INVENTORY = 'packages/react-resizable-panels/audit/test-inventory.json';
-const PACKAGE_PREFIX = 'packages/react-resizable-panels/';
+const CONFIG = 'packages/resizable-panels/audit/test-classifications.json';
+const MANIFEST = 'packages/resizable-panels/audit/react-parity.json';
+const TEST_INVENTORY = 'packages/resizable-panels/audit/test-inventory.json';
+const PACKAGE_PREFIX = 'packages/resizable-panels/';
 const AUDIT_SCRIPT_TEST_ROOT = 'scripts/react-parity';
 const AUDIT_SCRIPT_TEST_PATTERN = /^react-resizable-panels-.+-lib\.test\.mjs$/;
 const DISPOSITIONS = new Set([
@@ -50,7 +50,7 @@ function discoverAuditScriptTests(root) {
  * Port-authored audit verifiers under scripts/react-parity/ are classified too.
  */
 export function verifyReactResizablePanelsTestClassifications(root) {
-	const testsRoot = resolve(root, 'packages/react-resizable-panels/tests');
+	const testsRoot = resolve(root, 'packages/resizable-panels/tests');
 	const discovered = discoverTestFiles(testsRoot, root);
 	const packagePortAuthored = discovered.filter(function excludeUpstreamCopy(path) {
 		return !path.includes('/tests/upstream/');

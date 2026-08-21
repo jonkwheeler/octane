@@ -137,7 +137,7 @@ playground/octane/debug/
 **/*.md
 
 # Byte-exact upstream evidence for the react-resizable-panels binding.
-packages/react-resizable-panels/upstream/
+packages/resizable-panels/upstream/
 
 # RuleSync generated files (source lives in .rulesync/; run `pnpm rules:generate`).
 # The .md outputs are already covered above; .cursor/ holds a .mdc with no Prettier parser.

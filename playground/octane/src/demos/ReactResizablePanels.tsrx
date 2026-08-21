@@ -1,4 +1,4 @@
-import { Group, Panel, Separator, useDefaultLayout } from '@octanejs/react-resizable-panels';
+import { Group, Panel, Separator, useDefaultLayout } from '@octanejs/resizable-panels';
 
 export function ReactResizablePanelsDemo() @{
 	const persistence = useDefaultLayout({

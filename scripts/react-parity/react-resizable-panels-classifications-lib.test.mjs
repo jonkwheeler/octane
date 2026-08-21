@@ -11,12 +11,12 @@ const repo = join(import.meta.dirname, '../..');
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), 'rrp-classifications-'));
 	cpSync(
-		join(repo, 'packages/react-resizable-panels/tests'),
-		join(root, 'packages/react-resizable-panels/tests'),
+		join(repo, 'packages/resizable-panels/tests'),
+		join(root, 'packages/resizable-panels/tests'),
 		{ recursive: true },
 	);
 	mkdirSync(join(root, 'scripts/react-parity'), { recursive: true });
-	mkdirSync(join(root, 'packages/react-resizable-panels/audit'), { recursive: true });
+	mkdirSync(join(root, 'packages/resizable-panels/audit'), { recursive: true });
 	for (const name of [
 		'react-resizable-panels-classifications-lib.test.mjs',
 		'react-resizable-panels-runtime-lib.test.mjs',
@@ -27,8 +27,8 @@ async function fixture() {
 	}
 	for (const file of ['test-classifications.json', 'react-parity.json', 'test-inventory.json']) {
 		cpSync(
-			join(repo, 'packages/react-resizable-panels/audit', file),
-			join(root, 'packages/react-resizable-panels/audit', file),
+			join(repo, 'packages/resizable-panels/audit', file),
+			join(root, 'packages/resizable-panels/audit', file),
 		);
 	}
 	return root;
@@ -46,7 +46,7 @@ test('rejects an extra adapted upstream file absent from inventory adaptedPath',
 		return rm(root, { recursive: true, force: true });
 	});
 	await writeFile(
-		join(root, 'packages/react-resizable-panels/tests/upstream/extra-unlisted.test.ts'),
+		join(root, 'packages/resizable-panels/tests/upstream/extra-unlisted.test.ts'),
 		"test('unlisted', () => {})\n",
 	);
 	assert.throws(function run() {
@@ -67,7 +67,7 @@ test('rejects an unclassified scripts/react-parity audit test', async function r
 	assert.throws(function run() {
 		verifyReactResizablePanelsTestClassifications(root);
 	}, /exactly one classification/);
-	const configPath = join(root, 'packages/react-resizable-panels/audit/test-classifications.json');
+	const configPath = join(root, 'packages/resizable-panels/audit/test-classifications.json');
 	const config = JSON.parse(readFileSync(configPath, 'utf8'));
 	config.tests = config.tests.filter(function keepPackage(entry) {
 		return !entry.path.startsWith('scripts/react-parity/');

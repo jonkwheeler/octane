@@ -10,7 +10,7 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const packageRoot = resolve(
 	dirname(fileURLToPath(import.meta.url)),
-	'../../packages/react-resizable-panels',
+	'../../packages/resizable-panels',
 );
 
 export function pristineTestIdentities(report, repoRoot = resolve(packageRoot, '../..')) {
@@ -82,7 +82,7 @@ export function inventoryFromIdentities(identities) {
 	return {
 		schemaVersion: 1,
 		project: 'react-resizable-panels-pristine',
-		roots: ['packages/react-resizable-panels/upstream/lib'],
+		roots: ['packages/resizable-panels/upstream/lib'],
 		files: [
 			...new Set(
 				tests.map(function fileOf(test) {

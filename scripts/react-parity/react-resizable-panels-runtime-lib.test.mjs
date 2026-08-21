@@ -5,7 +5,7 @@ import path from 'node:path';
 import { describe, test } from 'node:test';
 
 const repo = path.resolve(import.meta.dirname, '../..');
-const packageRoot = path.join(repo, 'packages/react-resizable-panels');
+const packageRoot = path.join(repo, 'packages/resizable-panels');
 
 describe('react-resizable-panels runtime parity evidence', () => {
 	test('provenance, identities, classifications, and negative controls are executable', () => {

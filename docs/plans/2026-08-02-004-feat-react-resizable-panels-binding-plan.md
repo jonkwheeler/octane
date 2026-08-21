@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Ship `@octanejs/react-resizable-panels` as the source-compatible Octane migration target for `react-resizable-panels@4.12.2`, including the full public runtime/type surface, SSR-safe initial layout, accessible pointer and keyboard resizing, persistence, and imperative handles.
+- **Objective:** Ship `@octanejs/resizable-panels` as the source-compatible Octane migration target for `react-resizable-panels@4.12.2`, including the full public runtime/type surface, SSR-safe initial layout, accessible pointer and keyboard resizing, persistence, and imperative handles.
 - **Authority:** The pinned upstream artifact and observable React behavior govern parity; repository guidance governs Octane adaptation and proof; session-settled one-binding/one-PR and tracker policies govern delivery.
 - **Execution profile:** Exact-source port with executable pristine React, adapted Octane, differential, SSR, type, and real-browser lanes.
 - **Stop conditions:** Stop only for an upstream contract that Octane cannot express without a product decision, a licensing contradiction, or a genuinely human-only repository/CI permission blocker.
@@ -34,7 +34,7 @@ Applications should be able to replace their React panel dependency with the Oct
 
 **Public package contract**
 
-- R1. Publish `@octanejs/react-resizable-panels` with the exact root runtime exports `Group`, `Panel`, `Separator`, `isCoarsePointer`, `useDefaultLayout`, `useGroupCallbackRef`, `useGroupRef`, `usePanelCallbackRef`, and `usePanelRef`, plus every public type exported by `react-resizable-panels@4.12.2`.
+- R1. Publish `@octanejs/resizable-panels` with the exact root runtime exports `Group`, `Panel`, `Separator`, `isCoarsePointer`, `useDefaultLayout`, `useGroupCallbackRef`, `useGroupRef`, `usePanelCallbackRef`, and `usePanelRef`, plus every public type exported by `react-resizable-panels@4.12.2`.
 - R2. Preserve upstream prop names, defaults, callback arguments, ref lifecycle, imperative handle methods, display names, package metadata entry points, and valid intrinsic DOM attributes without requiring React at consumer runtime or in shipped public types.
 - R3. Pin and retain auditable upstream source, tests, package metadata, license, tag commit, npm artifact hash, adapted-source hashes, export inventory, type inventory, and every upstream test identity.
 
@@ -159,7 +159,7 @@ The component layer owns context registration and DOM output. The source-near gl
 
 - **Goal:** Create an auditable package shell whose contract tests fail before implementation.
 - **Requirements:** R1-R3, R11-R12.
-- **Files:** `packages/react-resizable-panels/package.json`, `packages/react-resizable-panels/UPSTREAM.md`, `packages/react-resizable-panels/upstream/`, `packages/react-resizable-panels/audit/`, `packages/react-resizable-panels/status.json`, `packages/react-resizable-panels/tsconfig.json`, `pnpm-workspace.yaml`, `vitest.config.js`.
+- **Files:** `packages/resizable-panels/package.json`, `packages/resizable-panels/UPSTREAM.md`, `packages/resizable-panels/upstream/`, `packages/resizable-panels/audit/`, `packages/resizable-panels/status.json`, `packages/resizable-panels/tsconfig.json`, `pnpm-workspace.yaml`, `vitest.config.js`.
 - **Patterns:** `packages/hook-form/UPSTREAM.md`, `packages/hook-form/audit/`, `packages/hook-form/upstream/SHA256SUMS`.
 - **Approach:** Move the durable workspace tracker to In progress, vendor the exact canonical source/tests and npm publication artifacts, retain MIT notices, enumerate runtime/type/test identities, define package exports and dedicated test projects, and add failing export/type/checksum tests. Before U2, inventory every public dependency on React's node, intrinsic attribute, event, CSS, ref, dispatch, and JSX types and run paired accepted/rejected probes against the proposed Octane-owned forms; stop for a product decision if equal strictness is not expressible.
 - **Test Scenarios:** checksum detects modified/deleted/extra vendored files; export inventory detects missing/extra runtime exports; type inventory detects missing/weakened declarations; paired type probes falsify widening and narrowing for every React type-dependency category; test inventory detects missing/renamed/skipped identities; package metadata resolves authored source without publishing audit/upstream material.
@@ -170,7 +170,7 @@ The component layer owns context registration and DOM output. The source-near gl
 
 - **Goal:** Preserve framework-neutral parsing, constraint validation, default distribution, resizing, collapse thresholds, and ARIA calculations.
 - **Requirements:** R4, R6-R7, R10-R11.
-- **Files:** `packages/react-resizable-panels/src/global/`, `packages/react-resizable-panels/src/utils/`, `packages/react-resizable-panels/tests/upstream/`.
+- **Files:** `packages/resizable-panels/src/global/`, `packages/resizable-panels/src/utils/`, `packages/resizable-panels/tests/upstream/`.
 - **Patterns:** Pinned `lib/global/` source; Octane references in `packages/mantine-hooks/src/use-splitter/` remain non-authoritative.
 - **Approach:** Adapt source-near pure modules before framework code and preserve upstream test identities/parameter matrices.
 - **Test Scenarios:** all supported units and invalid units; constrained redistribution across 2+ panels; disabled and fixed-size panels; collapse/expand threshold; group resize preservation modes; default layout rounding; nested orientation math; separator ARIA values at min/max/current.
@@ -181,7 +181,7 @@ The component layer owns context registration and DOM output. The source-near gl
 
 - **Goal:** Implement the public component tree and live interaction engine with exact DOM, callbacks, accessibility, and refs.
 - **Requirements:** R1-R7, R9-R10.
-- **Files:** `packages/react-resizable-panels/src/components/`, `packages/react-resizable-panels/src/global/`, `packages/react-resizable-panels/src/hooks/`, `packages/react-resizable-panels/src/index.tsrx`, `packages/react-resizable-panels/tests/conformance/`.
+- **Files:** `packages/resizable-panels/src/components/`, `packages/resizable-panels/src/global/`, `packages/resizable-panels/src/hooks/`, `packages/resizable-panels/src/index.tsrx`, `packages/resizable-panels/tests/conformance/`.
 - **Patterns:** Pinned component/module graph; `packages/tanstack-virtual/src/internal.ts` for compiler slots; `packages/radix/src/Slider.ts` and `packages/base-ui/src/slider.ts` for native pointer cleanup.
 - **Approach:** First complete a compatibility checkpoint containing one two-panel group with pointer resize, keyboard resize, an imperative ref, hydration adoption, and real-browser geometry. Do not bulk-port the remaining surface until that checkpoint passes. Then port Group context/registration, Panel lifecycle and imperative handles, Separator input/ARIA, and global hit-region/cursor/event coordination. Keep public refs as props, use current-state getters in global callbacks, and isolate browser-only work in effects.
 - **Test Scenarios:** horizontal/vertical and nested DOM; multiple sibling groups and separate roots; defaults/classes/styles/IDs/data attributes; registration/reorder/unmount while another group remains active; sequential and overlapping interaction registry isolation; pointer start/move/release/cancel/out/leave; coarse/fine targets; reference-safe cursor/listener cleanup; double click; disabled combinations; keyboard arrows/Home/End/Enter; collapse/expand/resize/getSize/isCollapsed; group get/set layout; callback order/metadata and rerender freshness; ref attach/change/detach.
@@ -192,7 +192,7 @@ The component layer owns context registration and DOM output. The source-near gl
 
 - **Goal:** Preserve `useDefaultLayout` and no-browser rendering while producing a live hydrated group.
 - **Requirements:** R8-R9, R11.
-- **Files:** `packages/react-resizable-panels/src/components/group/auto-save/`, `packages/react-resizable-panels/src/components/group/useDefaultLayout.ts`, `packages/react-resizable-panels/tests/ssr/`, `packages/react-resizable-panels/tests/hydration/`.
+- **Files:** `packages/resizable-panels/src/components/group/auto-save/`, `packages/resizable-panels/src/components/group/useDefaultLayout.ts`, `packages/resizable-panels/tests/ssr/`, `packages/resizable-panels/tests/hydration/`.
 - **Patterns:** Pinned persistence source; SSR alias patterns in `vitest.config.js`; hydration observation guidance in `.agents/memories/testing.md`.
 - **Approach:** Preserve storage keys/serialization and deprecated compatibility surface, defer all browser access to client effects, and verify node adoption plus live refs/events after hydration.
 - **Test Scenarios:** valid/missing/malformed stored layout; group/id alias and conditional panel IDs; custom/blocked storage; debounce and interaction-only saving; initial precedence; server render without globals; deterministic markup; hydrate existing nodes; resize and save after hydration; cleanup on unmount.
@@ -203,7 +203,7 @@ The component layer owns context registration and DOM output. The source-near gl
 
 - **Goal:** Demonstrate exact migration behavior at every observation boundary and make omissions mechanically impossible.
 - **Requirements:** R1-R3, R5, R7-R12.
-- **Files:** `packages/react-resizable-panels/typetests/`, `packages/react-resizable-panels/tests/differential/`, `packages/react-resizable-panels/tests/browser/`, `packages/react-resizable-panels/audit/`, `scripts/react-parity/check.mjs`, `scripts/react-parity/react-resizable-panels-*-lib.test.mjs`, `scripts/check-package-packs.mjs`, `scripts/package-pack-canaries.mjs`.
+- **Files:** `packages/resizable-panels/typetests/`, `packages/resizable-panels/tests/differential/`, `packages/resizable-panels/tests/browser/`, `packages/resizable-panels/audit/`, `scripts/react-parity/check.mjs`, `scripts/react-parity/react-resizable-panels-*-lib.test.mjs`, `scripts/check-package-packs.mjs`, `scripts/package-pack-canaries.mjs`.
 - **Patterns:** `packages/hook-form/tests/differential/`, hook-form parity schema and negative controls, `packages/dexie/tests/browser/`.
 - **Approach:** Compile representative valid/invalid public usage for both packages, compare stable public observations with a pinned React oracle, test external packed consumption without React types, and execute actual layout/input/persistence in Chromium. Record a machine-readable per-test disposition of verbatim, mechanically adapted, behaviorally rewritten, or externally covered; rewritten tests name changed setup/assertions and the pristine/differential evidence retaining the original observation. Differential flows use identical external triggers and explicit checkpoints for synchronous dispatch, microtasks/effects, animation frames, ResizeObserver delivery, debounce completion, and callback traces.
 - **Test Scenarios:** every export and public type; valid and invalid props/ref handles; default/nested/collapsible DOM; sibling groups across separate roots; real pointer hit target and drag; ResizeObserver group resize; separator keyboard/focus/ARIA; cursor cleanup after release/unmount; reload persistence; SSR/hydration; a generated packed-consumer manifest, TSRX source, type probe, and SSR probe that import the package without React or `@types/react`; deliberate missing export/type/test/hash/disposition-evidence mutations rejected by the global checker.
@@ -227,13 +227,13 @@ The component layer owns context registration and DOM output. The source-near gl
 
 | Evidence | Command or lane | Done signal |
 |---|---|---|
-| Provenance | `pnpm --dir packages/react-resizable-panels upstream:verify` | Exact vendored and adapted hashes, tag/npm metadata, license, exports, types, and test identities validate. |
-| Adapted upstream | `pnpm --dir packages/react-resizable-panels test:upstream` | Every adapted upstream identity executes or is explicitly classified. |
-| DOM/differential | `pnpm exec vitest run --project react-resizable-panels` | Component, algorithm, ref, callback, persistence, and React differential scenarios pass. |
-| SSR | `pnpm exec vitest run --project react-resizable-panels-server` | The Node/server runtime renders deterministic output without browser globals. |
-| Hydration | `pnpm exec vitest run --project react-resizable-panels-hydration` or the binding's jsdom client project | Client runtime adopts existing nodes and preserves live events, refs, state, focus, and cleanup. |
+| Provenance | `pnpm --dir packages/resizable-panels upstream:verify` | Exact vendored and adapted hashes, tag/npm metadata, license, exports, types, and test identities validate. |
+| Adapted upstream | `pnpm --dir packages/resizable-panels test:upstream` | Every adapted upstream identity executes or is explicitly classified. |
+| DOM/differential | `pnpm exec vitest run --project resizable-panels` | Component, algorithm, ref, callback, persistence, and React differential scenarios pass. |
+| SSR | `pnpm exec vitest run --project resizable-panels-server` | The Node/server runtime renders deterministic output without browser globals. |
+| Hydration | `pnpm exec vitest run --project resizable-panels-hydration` or the binding's jsdom client project | Client runtime adopts existing nodes and preserves live events, refs, state, focus, and cleanup. |
 | Pristine oracle | `pnpm exec vitest run --project react-resizable-panels-pristine` | Pinned unmodified React evidence executes successfully. |
-| Browser | Dedicated `react-resizable-panels-browser` Vitest project | Chromium proves real geometry, pointer/keyboard, ResizeObserver, focus, cursor cleanup, sibling-root isolation, and reload persistence. Engine-sensitive code stays on standards-based APIs used by upstream; if the repository harness supports Firefox/WebKit without new infrastructure, run the representative interaction slice there too, otherwise record Chromium as the executable browser lane rather than claiming multi-engine proof. |
+| Browser | Dedicated `resizable-panels-browser` Vitest project | Chromium proves real geometry, pointer/keyboard, ResizeObserver, focus, cursor cleanup, sibling-root isolation, and reload persistence. Engine-sensitive code stays on standards-based APIs used by upstream; if the repository harness supports Firefox/WebKit without new infrastructure, run the representative interaction slice there too, otherwise record Chromium as the executable browser lane rather than claiming multi-engine proof. |
 | Types | Package `tsrx-tsc` projects plus adapted/pristine type parity | Public API retains strictness and Octane-only consumption resolves without React dependencies. |
 | Packed consumer | `pnpm packages:pack:check` | External install/import/typecheck/SSR canary passes from the packed artifact. |
 | Global parity | `pnpm react-parity:check` | Inventories, classifications, hashes, and negative controls reject omissions/drift. |

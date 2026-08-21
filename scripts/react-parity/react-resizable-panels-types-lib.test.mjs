@@ -18,12 +18,12 @@ async function fixture() {
 	const upstreamRoot = join(root, 'upstream');
 	const adaptedRoot = join(root, 'adapted');
 	await cp(
-		new URL('../../packages/react-resizable-panels/audit/type-probes', import.meta.url),
+		new URL('../../packages/resizable-panels/audit/type-probes', import.meta.url),
 		upstreamRoot,
 		{ recursive: true },
 	);
 	await cp(
-		new URL('../../packages/react-resizable-panels/typetests', import.meta.url),
+		new URL('../../packages/resizable-panels/typetests', import.meta.url),
 		adaptedRoot,
 		{ recursive: true },
 	);
@@ -95,13 +95,13 @@ test('rejects retargeting an adapted public import', async function rejectsRetar
 test('lane TypeScript projects include exactly the inventoried probes', function projectsMatchInventory() {
 	const includedPristine = projectIncludedProbes(
 		repo,
-		'packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json',
-		'packages/react-resizable-panels/audit/type-probes',
+		'packages/resizable-panels/audit/type-probes/tsconfig.pristine.json',
+		'packages/resizable-panels/audit/type-probes',
 	);
 	const includedAdapted = projectIncludedProbes(
 		repo,
-		'packages/react-resizable-panels/typetests/tsconfig.json',
-		'packages/react-resizable-panels/typetests',
+		'packages/resizable-panels/typetests/tsconfig.json',
+		'packages/resizable-panels/typetests',
 	);
 	assert.deepEqual(includedPristine, ['public-api.test-d.ts']);
 	assert.deepEqual(includedAdapted, ['public-api.test-d.ts']);
@@ -114,26 +114,26 @@ test('excluding a probe through tsconfig fails closed', async function rejectsTs
 	t.after(function cleanup() {
 		return rm(root, { recursive: true, force: true });
 	});
-	mkdirSync(join(root, 'packages/react-resizable-panels/audit'), { recursive: true });
-	mkdirSync(join(root, 'packages/react-resizable-panels/typetests'), { recursive: true });
+	mkdirSync(join(root, 'packages/resizable-panels/audit'), { recursive: true });
+	mkdirSync(join(root, 'packages/resizable-panels/typetests'), { recursive: true });
 	cpSync(
-		join(repo, 'packages/react-resizable-panels/audit/type-probes'),
-		join(root, 'packages/react-resizable-panels/audit/type-probes'),
+		join(repo, 'packages/resizable-panels/audit/type-probes'),
+		join(root, 'packages/resizable-panels/audit/type-probes'),
 		{ recursive: true },
 	);
 	cpSync(
-		join(repo, 'packages/react-resizable-panels/typetests'),
-		join(root, 'packages/react-resizable-panels/typetests'),
+		join(repo, 'packages/resizable-panels/typetests'),
+		join(root, 'packages/resizable-panels/typetests'),
 		{ recursive: true },
 	);
 	for (const file of ['type-parity.json', 'pristine-types.json', 'adapted-types.json']) {
 		cpSync(
-			join(repo, 'packages/react-resizable-panels/audit', file),
-			join(root, 'packages/react-resizable-panels/audit', file),
+			join(repo, 'packages/resizable-panels/audit', file),
+			join(root, 'packages/resizable-panels/audit', file),
 		);
 	}
 	writeFileSync(
-		join(root, 'packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json'),
+		join(root, 'packages/resizable-panels/audit/type-probes/tsconfig.pristine.json'),
 		`${JSON.stringify(
 			{
 				compilerOptions: {
@@ -157,7 +157,7 @@ test('excluding a probe through tsconfig fails closed', async function rejectsTs
 		verifyReactResizablePanelsTypes(root);
 	}, /TypeScript project must include exactly the inventoried probes/);
 	const config = JSON.parse(
-		readFileSync(join(root, 'packages/react-resizable-panels/audit/type-parity.json'), 'utf8'),
+		readFileSync(join(root, 'packages/resizable-panels/audit/type-parity.json'), 'utf8'),
 	);
 	const inventory = buildTypeInventory(root, config);
 	assert.throws(function run() {

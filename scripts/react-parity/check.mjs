@@ -145,7 +145,7 @@ const SPECIALIZED_CLASSIFICATION_BINDINGS = new Set([
 	'markdown',
 	'pdf',
 	'popper',
-	'react-resizable-panels',
+	'resizable-panels',
 	'transition-group',
 	'tanstack-devtools',
 	'tanstack-hotkeys',
@@ -179,9 +179,7 @@ await capture('react-dropzone evidence', () => verifyReactDropzoneEvidence(REPO)
 await capture('react-resizable-panels upstream evidence', () =>
 	verifyReactResizablePanelsUpstream(REPO),
 );
-await capture('react-resizable-panels type evidence', () =>
-	verifyReactResizablePanelsTypes(REPO),
-);
+await capture('react-resizable-panels type evidence', () => verifyReactResizablePanelsTypes(REPO));
 await capture('react-resizable-panels test classifications', () =>
 	verifyReactResizablePanelsTestClassifications(REPO),
 );

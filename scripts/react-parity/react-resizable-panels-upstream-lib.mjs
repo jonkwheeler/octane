@@ -3,13 +3,13 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-const UPSTREAM_TEST_ROOT = 'packages/react-resizable-panels/upstream/lib';
-const PORTED_TEST_ROOT = 'packages/react-resizable-panels/tests/upstream';
-const TEST_INVENTORY_PATH = 'packages/react-resizable-panels/audit/test-inventory.json';
-const RUNTIME_PARITY_CONFIG = 'packages/react-resizable-panels/audit/runtime-parity.json';
-const PRISTINE_RUNTIME_PATH = 'packages/react-resizable-panels/audit/pristine-runtime.json';
-const ADAPTED_RUNTIME_PATH = 'packages/react-resizable-panels/audit/adapted-runtime.json';
-const REACT_PARITY_MANIFEST = 'packages/react-resizable-panels/audit/react-parity.json';
+const UPSTREAM_TEST_ROOT = 'packages/resizable-panels/upstream/lib';
+const PORTED_TEST_ROOT = 'packages/resizable-panels/tests/upstream';
+const TEST_INVENTORY_PATH = 'packages/resizable-panels/audit/test-inventory.json';
+const RUNTIME_PARITY_CONFIG = 'packages/resizable-panels/audit/runtime-parity.json';
+const PRISTINE_RUNTIME_PATH = 'packages/resizable-panels/audit/pristine-runtime.json';
+const ADAPTED_RUNTIME_PATH = 'packages/resizable-panels/audit/adapted-runtime.json';
+const REACT_PARITY_MANIFEST = 'packages/resizable-panels/audit/react-parity.json';
 
 function filesBelow(root) {
 	return readdirSync(root, { recursive: true, withFileTypes: true })

@@ -2418,7 +2418,7 @@ export default defineConfig({
 				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'react-resizable-panels-pristine',
-					include: ['packages/react-resizable-panels/tests/upstream-original.test.ts'],
+					include: ['packages/resizable-panels/tests/upstream-original.test.ts'],
 					environment: 'node',
 					globals: false,
 					sequence: { groupOrder: 1 },
@@ -2430,16 +2430,16 @@ export default defineConfig({
 				// ordinary shards.
 				testExecution: {
 					group: 'react-parity',
-					include: ['packages/react-resizable-panels/tests/upstream/**/*.test.{ts,tsx,tsrx}'],
+					include: ['packages/resizable-panels/tests/upstream/**/*.test.{ts,tsx,tsrx}'],
 				},
 				test: {
-					name: 'react-resizable-panels',
-					include: ['packages/react-resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
+					name: 'resizable-panels',
+					include: ['packages/resizable-panels/tests/**/*.test.{ts,tsx,tsrx}'],
 					exclude: [
-						'packages/react-resizable-panels/tests/browser/**',
-						'packages/react-resizable-panels/tests/differential/**',
-						'packages/react-resizable-panels/tests/ssr/**',
-						'packages/react-resizable-panels/tests/upstream-original.test.ts',
+						'packages/resizable-panels/tests/browser/**',
+						'packages/resizable-panels/tests/differential/**',
+						'packages/resizable-panels/tests/ssr/**',
+						'packages/resizable-panels/tests/upstream-original.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -2448,11 +2448,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-resizable-panels$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'packages/react-resizable-panels/src/index.tsrx',
-							),
+							find: /^@octanejs\/resizable-panels$/,
+							replacement: resolve(import.meta.dirname, 'packages/resizable-panels/src/index.tsrx'),
 						},
 					],
 				},
@@ -2460,8 +2457,8 @@ export default defineConfig({
 			{
 				testExecution: { group: 'react-parity' },
 				test: {
-					name: 'react-resizable-panels-differential',
-					include: ['packages/react-resizable-panels/tests/differential/**/*.test.ts'],
+					name: 'resizable-panels-differential',
+					include: ['packages/resizable-panels/tests/differential/**/*.test.ts'],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -2469,19 +2466,16 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-resizable-panels$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'packages/react-resizable-panels/src/index.tsrx',
-							),
+							find: /^@octanejs\/resizable-panels$/,
+							replacement: resolve(import.meta.dirname, 'packages/resizable-panels/src/index.tsrx'),
 						},
 					],
 				},
 			},
 			{
 				test: {
-					name: 'react-resizable-panels-browser',
-					include: ['packages/react-resizable-panels/tests/browser/**/*.browser.test.ts'],
+					name: 'resizable-panels-browser',
+					include: ['packages/resizable-panels/tests/browser/**/*.browser.test.ts'],
 					environment: 'node',
 					globals: false,
 					testTimeout: 60_000,
@@ -2490,8 +2484,8 @@ export default defineConfig({
 			},
 			{
 				test: {
-					name: 'react-resizable-panels-server',
-					include: ['packages/react-resizable-panels/tests/**/*.server.test.{ts,tsx,tsrx}'],
+					name: 'resizable-panels-server',
+					include: ['packages/resizable-panels/tests/**/*.server.test.{ts,tsx,tsrx}'],
 					environment: 'node',
 					globals: false,
 				},
@@ -2499,11 +2493,8 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
-							find: /^@octanejs\/react-resizable-panels$/,
-							replacement: resolve(
-								import.meta.dirname,
-								'packages/react-resizable-panels/src/index.tsrx',
-							),
+							find: /^@octanejs\/resizable-panels$/,
+							replacement: resolve(import.meta.dirname, 'packages/resizable-panels/src/index.tsrx'),
 						},
 						{
 							find: /^octane$/,

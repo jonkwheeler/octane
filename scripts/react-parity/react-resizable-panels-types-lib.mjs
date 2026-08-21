@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import ts from 'typescript';
 
-export const TYPE_PARITY_CONFIG = 'packages/react-resizable-panels/audit/type-parity.json';
+export const TYPE_PARITY_CONFIG = 'packages/resizable-panels/audit/type-parity.json';
 
 function sha256(value) {
 	return createHash('sha256').update(value).digest('hex');
@@ -93,7 +93,7 @@ function normalizeSpecifier(specifier) {
 	if (
 		specifier === '../../upstream-artifact/dist/react-resizable-panels.js' ||
 		specifier === '../src/index.tsrx' ||
-		specifier === '@octanejs/react-resizable-panels'
+		specifier === '@octanejs/resizable-panels'
 	) {
 		return '#rrp-public';
 	}
