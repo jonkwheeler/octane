@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/hook-form",
-  "version": "0.1.30",
+  "version": "0.1.39",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -24,6 +24,7 @@
   "types": "src/index.ts",
   "files": [
     "src",
+    "LICENSE.upstream",
     "README.md",
     "UPSTREAM.md"
   ],
@@ -52,6 +53,7 @@
     "esbuild": "catalog:default",
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
+    "jest-environment-node": "30.4.1",
     "jest-fixed-jsdom": "0.0.10",
     "octane": "workspace:*",
     "react": "catalog:default",

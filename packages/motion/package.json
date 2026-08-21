@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/motion",
-  "version": "0.1.32",
+  "version": "0.1.41",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -14,7 +14,7 @@
       ]
     }
   },
-  "description": "Framer Motion bindings for the octane renderer — reuses motion-dom's animation engine, swaps the React components for octane host components.",
+  "description": "Framer Motion bindings for the octane renderer \u2014 reuses motion-dom's animation engine, swaps the React components for octane host components.",
   "author": {
     "name": "Dominic Gannaway",
     "email": "dg@domgan.com"
@@ -32,23 +32,40 @@
   "types": "src/index.ts",
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "LICENSE.upstream"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./react-m": "./src/react-m.ts"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --root ../.. --project motion",
+    "typecheck": "tsgo --noEmit -p tsconfig.json",
+    "test:upstream": "vitest run --root ../.. --project motion-pristine",
+    "upstream:verify": "node ../../scripts/react-port/materialize.mjs run --check --package-dir ."
   },
   "dependencies": {
-    "motion": "catalog:default"
+    "motion": "catalog:default",
+    "motion-dom": "catalog:default"
   },
   "peerDependencies": {
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@swc/core": "1.15.41",
+    "@swc/jest": "0.2.39",
+    "@testing-library/dom": "catalog:default",
+    "@testing-library/jest-dom": "catalog:default",
+    "@testing-library/react": "16.3.2",
+    "@tsrx/react": "catalog:default",
     "esbuild": "catalog:default",
+    "jest": "30.4.2",
+    "jest-environment-jsdom": "30.4.1",
+    "jest-fixed-jsdom": "0.0.10",
     "octane": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
     "vitest": "catalog:default"
   }
 }

@@ -1,0 +1,55 @@
+diff --git a/tests/upstream/utils/test/mockBoundingClientRect.ts b/tests/upstream/utils/test/mockBoundingClientRect.ts
+--- a/tests/upstream/utils/test/mockBoundingClientRect.ts
++++ b/tests/upstream/utils/test/mockBoundingClientRect.ts
+@@ -2,8 +2,7 @@ import EventEmitter from "node:events";
+ 
+ type GetDOMRect = (element: HTMLElement) => DOMRectReadOnly | undefined | void;
+ 
+-const originalGetBoundingClientRect =
+-  HTMLElement.prototype.getBoundingClientRect;
++const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect;
+ 
+ export const emitter = new EventEmitter();
+ emitter.setMaxListeners(100);
+@@ -25,12 +24,7 @@ function defaultGetDOMRect(element: Element) {
+     if (match) {
+       const [_, x, y, width, height] = match;
+ 
+-      return new DOMRect(
+-        parseInt(x),
+-        parseInt(y),
+-        parseInt(width),
+-        parseInt(height)
+-      );
++      return new DOMRect(parseInt(x), parseInt(y), parseInt(width), parseInt(height));
+     }
+   }
+ }
+@@ -79,19 +73,16 @@ export function setElementBounds(element: HTMLElement, rect: DOMRect) {
+ }
+ 
+ export function mockBoundingClientRect() {
+-  HTMLElement.prototype.getBoundingClientRect =
+-    function getBoundingClientRect() {
+-      if (getDOMRect) {
+-        const rectOverride = getDOMRect(this);
+-        if (rectOverride) {
+-          return rectOverride;
+-        }
++  HTMLElement.prototype.getBoundingClientRect = function getBoundingClientRect() {
++    if (getDOMRect) {
++      const rectOverride = getDOMRect(this);
++      if (rectOverride) {
++        return rectOverride;
+       }
++    }
+ 
+-      return (
+-        elementToDOMRect.get(this) || defaultGetDOMRect(this) || defaultDomRect
+-      );
+-    };
++    return elementToDOMRect.get(this) || defaultGetDOMRect(this) || defaultDomRect;
++  };
+ 
+   Object.defineProperty(HTMLElement.prototype, "clientHeight", {
+     configurable: true,

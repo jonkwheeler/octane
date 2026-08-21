@@ -3,19 +3,9 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const auditRoot = dirname(fileURLToPath(import.meta.url));
-const sourceRoot = resolve(auditRoot, '../upstream/source/lib');
+const sourceRoot = resolve(auditRoot, '../upstream/lib');
 const packageRoot = resolve(auditRoot, '..');
 const adaptedRoot = join(packageRoot, 'tests/upstream');
-const adaptedOverrides = new Map([
-	[
-		'global/utils/getImperativeGroupMethods.test.ts',
-		'components/group/getImperativeGroupMethods.test.ts',
-	],
-	[
-		'global/utils/getImperativePanelMethods.test.ts',
-		'components/panel/getImperativePanelMethods.test.ts',
-	],
-]);
 const paths = readdirSync(sourceRoot, { recursive: true })
 	.map((path) => join(sourceRoot, path))
 	.filter((path) => statSync(path).isFile())
@@ -27,8 +17,7 @@ const artifacts = paths.map((path) => {
 		(match) => match[2],
 	);
 	const upstreamPath = relative(sourceRoot, path);
-	const defaultAdaptedPath = upstreamPath.replace(/\.tsx$/, '.tsrx');
-	const adaptedPath = adaptedOverrides.get(upstreamPath) ?? defaultAdaptedPath;
+	const adaptedPath = upstreamPath;
 	const adaptedAbsolute = join(adaptedRoot, adaptedPath);
 	const isAdapted = statExists(adaptedAbsolute);
 	return {
@@ -53,7 +42,7 @@ writeFileSync(
 	`${JSON.stringify(
 		{
 			schemaVersion: 1,
-			root: 'upstream/source/lib',
+			root: 'upstream/lib',
 			artifactCount: artifacts.length,
 			registrationCount: artifacts.reduce(
 				(total, artifact) => total + artifact.registrationCount,

@@ -40,10 +40,18 @@ import {
 } from './core/native-events.js';
 import {
 	LYNX_BACKGROUND_TO_MAIN_EVENT,
+	LYNX_CAPABILITY_READY_REQUEST_BASE,
+	LYNX_COMPACT_ACKNOWLEDGEMENT,
+	LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS,
+	LYNX_LAZY_PUBLIC_INSTANCES,
+	LYNX_LAZY_PUBLIC_INSTANCE_READY_REQUEST_BASE,
+	LYNX_TEMPLATE_RUN_READY_REQUEST_BASE,
+	LYNX_TEARDOWN_RUN_READY_REQUEST_BASE,
 	LYNX_MAIN_TO_BACKGROUND_EVENT,
 	LYNX_READY_ANNOUNCEMENT_REQUEST,
 	LYNX_TRANSPORT_PROTOCOL_VERSION,
 	LYNX_TRANSPORT_RENDERER,
+	countLynxCompactAcknowledgementHosts,
 	sameLynxTransportIdentity,
 	selfCheckLynxBackgroundInboundMessage,
 	validateLynxBackgroundInboundMessage,
@@ -60,6 +68,7 @@ import {
 	type LynxHostAttachmentMessage,
 	type LynxHostFaultMessage,
 	type LynxMainCallPublicationMessage,
+	type LynxMainThreadCapabilities,
 	type LynxMainReadyReply,
 	type LynxMainReadyRequest,
 	type LynxPageDataMessage,
@@ -75,15 +84,13 @@ import {
 import { createLynxElementPAPI, type LynxElementPAPI, type LynxElementRef } from './core/papi.js';
 import { LYNX_PROFILE, lynxWireProfile } from './core/profiling.js';
 import {
-	createLynxMainThreadWorkletRegistry,
-	installLynxMainThreadWorkletRegistry,
-	installMainThreadCallBridge,
-	isLynxBackgroundFunctionDescriptor,
-	isolateLynxWorkletValue,
-	type LynxMainThreadWorkletRegistry,
-	type LynxWorkletValue,
-} from './core/worklets.js';
-import { installLynxFirstScreenHost } from './first-screen.js';
+	createReplaceableLynxMainThreadWorkletRegistry,
+	createUnavailableLynxMainThreadWorkletRegistry,
+	subscribeLynxMainThreadWorkletFeature,
+	type LynxMainThreadWorkletFeature,
+} from './core/main-thread-worklet-feature.js';
+import type { LynxMainThreadWorkletRegistry, LynxWorkletValue } from './core/worklets.js';
+import { installLynxFirstScreenHost } from './core/first-screen-host.js';
 import { renderLynxFirstScreen, type LynxFirstScreenRenderResult } from './main-renderer.js';
 
 interface LynxMainThreadGlobals {
@@ -162,6 +169,8 @@ interface LynxQueuedNativeEventDelivery {
 interface ActiveLynxMainRoot<Node extends LynxElementRef> {
 	readonly root: number;
 	readonly container: LynxHostContainer<Node>;
+	capabilities?: LynxMainThreadCapabilities;
+	postFirstTreeUpgrade?: true;
 	acceptedVersion: number;
 	lastMainCall: number;
 	lastMainCallPublication: number;
@@ -411,38 +420,46 @@ function acknowledgementHandles<Node extends LynxElementRef>(
 	prepared: LynxPreparedHostBatch,
 	batch: UniversalHostBatch,
 ): readonly LynxPublicHandleDelta[] {
-	const handles = new Map<number, LynxPublicHandleDelta>();
+	const handles: LynxPublicHandleDelta[] = [];
+	let publishedIds: Set<number> | null = null;
+	const alreadyPublished = (id: number): boolean => {
+		if (publishedIds === null) {
+			publishedIds = new Set();
+			for (const handle of handles) {
+				if ('id' in handle) publishedIds.add(handle.id);
+			}
+		}
+		return publishedIds.has(id);
+	};
 	for (const delta of prepared.handleDelta) {
-		if (delta.op === 'destroy') {
-			handles.set(
-				delta.id,
+		if (delta.op === 'destroy-run') {
+			handles.push(
 				Object.freeze({
-					op: 'remove',
-					id: delta.id,
+					op: 'remove-run',
+					firstId: delta.firstId,
+					hostCount: delta.hostCount,
 					generation: delta.generation,
 				}),
 			);
+		} else if (delta.op === 'destroy') {
+			handles.push(Object.freeze({ op: 'remove', id: delta.id, generation: delta.generation }));
 		} else {
-			handles.set(
-				delta.handle.id,
+			handles.push(
 				publicHandleUpsert(delta.handle, getLynxHostPublicState(container, delta.handle.id)),
 			);
 		}
 	}
 	for (const command of batch.commands) {
-		if (command.op !== 'update' || handles.has(command.id)) continue;
+		if (command.op !== 'update' || alreadyPublished(command.id)) continue;
 		const handle = driver.getPublicInstance(container, command.id);
 		if (handle !== null) {
-			handles.set(
-				command.id,
-				publicHandleUpsert(handle, getLynxHostPublicState(container, command.id)),
-			);
+			handles.push(publicHandleUpsert(handle, getLynxHostPublicState(container, command.id)));
+			publishedIds!.add(command.id);
 		}
 	}
 	for (const delta of prepared.listAncestryDelta) {
-		if (handles.has(delta.id)) continue;
-		handles.set(
-			delta.id,
+		if (alreadyPublished(delta.id)) continue;
+		handles.push(
 			Object.freeze({
 				op: 'list-ancestry',
 				id: delta.id,
@@ -450,8 +467,33 @@ function acknowledgementHandles<Node extends LynxElementRef>(
 				listDescendant: delta.listDescendant,
 			}),
 		);
+		publishedIds!.add(delta.id);
 	}
-	return Object.freeze([...handles.values()]);
+	return Object.freeze(handles);
+}
+
+function freezeValidatedIntrinsicRun(
+	run: Extract<UniversalHostBatch['commands'][number], { readonly op: 'mount-template-run' }>,
+): void {
+	// MessagePort structured-clones worker payloads and drops every frozen
+	// descriptor. Restore immutability only after the complete receive-boundary
+	// validator has rejected hostile prototypes, accessors, symbols, and scalars.
+	// The program is a tiny shared shape; its flat values are frozen in place.
+	const program = run.program;
+	for (const node of program.nodes) {
+		Object.freeze(node.props);
+		if (node.bindings !== undefined) {
+			for (const binding of node.bindings) Object.freeze(binding);
+			Object.freeze(node.bindings);
+		}
+		Object.freeze(node);
+	}
+	Object.freeze(program.nodes);
+	for (const event of program.events) Object.freeze(event);
+	Object.freeze(program.events);
+	Object.freeze(program);
+	Object.freeze(run.values);
+	Object.freeze(run);
 }
 
 /**
@@ -557,6 +599,8 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	let readyAnnouncementInProgress = false;
 	let dispatchingReadyRequest: number | null = null;
 	let correlatedReadySent = false;
+	let negotiatedCapabilities: LynxMainThreadCapabilities | undefined;
+	let deferredFirstTreeCapabilities: LynxMainThreadCapabilities | undefined;
 	let firstTreeSnapshotSent = false;
 	let uninstallFirstScreenHost: (() => void) | null = null;
 	const queuedCommits: LynxCommitMessage[] = [];
@@ -574,8 +618,11 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	let nextThreadCall = 1;
 	let uninstallWorkletRegistry: (() => void) | null = null;
 	let uninstallCallBridge: (() => void) | null = null;
+	let unsubscribeWorkletFeature: (() => void) | null = null;
 	let restoreHostHooks: (() => void) | null = null;
-	let worklets: LynxMainThreadWorkletRegistry;
+	let workletFeature: LynxMainThreadWorkletFeature | null = null;
+	let worklets: LynxMainThreadWorkletRegistry = createUnavailableLynxMainThreadWorkletRegistry();
+	const hostWorklets = createReplaceableLynxMainThreadWorkletRegistry(worklets);
 	let mainCallPublication: UniversalTransportIdentity | null = null;
 	let nativeDestroyListenerRegistered = false;
 	let nativeDestroyReceived = false;
@@ -592,6 +639,12 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			);
 		}
 		return error;
+	};
+	const requireWorkletFeature = (): LynxMainThreadWorkletFeature => {
+		if (workletFeature !== null) return workletFeature;
+		throw new Error(
+			'Octane Lynx received main-thread worklet traffic, but this bundle compiled no worklet feature.',
+		);
 	};
 	// Replaced with the terminal page-lifetime path before any host listener is
 	// registered. The bootstrap fallback only protects unexpected early reentry.
@@ -828,7 +881,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		if (message.type === 'call-background-result') {
 			try {
 				entry.deferred.resolve(
-					isolateLynxWorkletValue(
+					requireWorkletFeature().isolateValue(
 						message.value as LynxWorkletValue,
 						'background call result',
 					) as UniversalSerializableValue,
@@ -929,7 +982,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 				runningMainCalls.delete(message.call);
 				running.release();
 				try {
-					const isolated = isolateLynxWorkletValue(
+					const isolated = requireWorkletFeature().isolateValue(
 						value as LynxWorkletValue,
 						'main-thread call result',
 					);
@@ -1031,14 +1084,15 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			deferred.reject(new Error('Octane Lynx background call identity space is exhausted.'));
 			return Object.freeze({ promise: deferred.promise, cancel() {} });
 		}
-		const isolatedFn = isolateLynxWorkletValue(
+		const feature = requireWorkletFeature();
+		const isolatedFn = feature.isolateValue(
 			fn as LynxWorkletValue,
 			'background function call target',
 		);
-		if (!isLynxBackgroundFunctionDescriptor(isolatedFn)) {
+		if (!feature.isBackgroundFunction(isolatedFn)) {
 			throw new TypeError('Octane Lynx background function call target is invalid.');
 		}
-		const isolatedArgs = isolateLynxWorkletValue(
+		const isolatedArgs = feature.isolateValue(
 			args as unknown as LynxWorkletValue[],
 			'background function call arguments',
 		);
@@ -1071,14 +1125,56 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		});
 	};
 
-	worklets = createLynxMainThreadWorkletRegistry({
-		callBackground(fn, args) {
-			return callBackground(
-				fn as LynxBackgroundFunctionWireDescriptor,
-				args as readonly UniversalSerializableValue[],
-			).promise;
-		},
-	});
+	const installWorkletFeature = (feature: LynxMainThreadWorkletFeature): void => {
+		if (workletFeature === feature) return;
+		if (workletFeature !== null) {
+			throw new Error('Octane Lynx main-thread receiver changed worklet features after install.');
+		}
+		const registry = feature.createRegistry({
+			callBackground(fn, args) {
+				return callBackground(
+					fn as LynxBackgroundFunctionWireDescriptor,
+					args as readonly UniversalSerializableValue[],
+				).promise;
+			},
+		});
+		let uninstallRegistry: (() => void) | null = null;
+		let uninstallBridge: (() => void) | null = null;
+		try {
+			uninstallRegistry = feature.installRegistry(registry);
+			uninstallBridge = feature.installCallBridge({
+				callBackground<Result>(
+					fn: import('./core/worklets.js').LynxBackgroundFunctionDescriptor,
+					args: readonly import('./core/worklets.js').LynxWorkletValue[],
+				) {
+					const call = callBackground(
+						fn as LynxBackgroundFunctionWireDescriptor,
+						args as readonly UniversalSerializableValue[],
+					);
+					return {
+						promise: call.promise as Promise<Result>,
+						cancel: call.cancel,
+					};
+				},
+			});
+			workletFeature = feature;
+			worklets = registry;
+			hostWorklets.replace(registry);
+			uninstallWorkletRegistry = uninstallRegistry;
+			uninstallCallBridge = uninstallBridge;
+		} catch (error) {
+			uninstallBridge?.();
+			uninstallRegistry?.();
+			registry.close();
+			throw error;
+		}
+	};
+	const uninstallWorkletFeature = (): void => {
+		uninstallCallBridge?.();
+		uninstallCallBridge = null;
+		uninstallWorkletRegistry?.();
+		uninstallWorkletRegistry = null;
+	};
 	const hostGlobals = rawTarget as Record<string, unknown>;
 	const previousRunWorklet = hostGlobals.runWorklet;
 	// Captured before the wrapper is installed, because installing it creates an
@@ -1156,6 +1252,14 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		descriptor: import('./core/worklets.js').LynxMainThreadWorkletDescriptor,
 		args?: readonly unknown[],
 	) => {
+		if (workletFeature === null) {
+			report(
+				new Error(
+					'Octane Lynx host dispatched a main-thread worklet, but this bundle compiled none.',
+				),
+			);
+			return undefined;
+		}
 		hostDispatchDepth++;
 		try {
 			return worklets.runWorklet(descriptor, args);
@@ -1177,31 +1281,15 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		else hostGlobals.runWorklet = previousRunWorklet;
 	};
 	try {
-		uninstallWorkletRegistry = installLynxMainThreadWorkletRegistry(worklets);
-		uninstallCallBridge = installMainThreadCallBridge({
-			callBackground<Result>(
-				fn: import('./core/worklets.js').LynxBackgroundFunctionDescriptor,
-				args: readonly import('./core/worklets.js').LynxWorkletValue[],
-			) {
-				const call = callBackground(
-					fn as LynxBackgroundFunctionWireDescriptor,
-					args as readonly UniversalSerializableValue[],
-				);
-				return {
-					promise: call.promise as Promise<Result>,
-					cancel: call.cancel,
-				};
-			},
-		});
+		unsubscribeWorkletFeature = subscribeLynxMainThreadWorkletFeature(installWorkletFeature);
 		hostGlobals.runWorklet = installedRunWorklet;
 		hostGlobals.__FlushElementTree = installedFlush;
 	} catch (error) {
 		restoreHostHooks?.();
 		restoreHostHooks = null;
-		uninstallCallBridge?.();
-		uninstallCallBridge = null;
-		uninstallWorkletRegistry?.();
-		uninstallWorkletRegistry = null;
+		uninstallWorkletFeature();
+		unsubscribeWorkletFeature?.();
+		unsubscribeWorkletFeature = null;
 		worklets.close();
 		throw error;
 	}
@@ -1237,6 +1325,34 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			type: 'main-ready',
 			request,
 			...(snapshot == null ? null : { firstTree: snapshot }),
+			...(request < LYNX_CAPABILITY_READY_REQUEST_BASE
+				? null
+				: {
+						capabilities: {
+							compactAck: 1 as const,
+							...(driver.capabilities?.templateMount === true
+								? { templateMount: 1 as const }
+								: null),
+							...(driver.capabilities?.templateProgramMount === true
+								? { templateProgram: 1 as const }
+								: null),
+							...(request >= LYNX_LAZY_PUBLIC_INSTANCE_READY_REQUEST_BASE &&
+							driver.capabilities?.templateProgramMount === true &&
+							driver.capabilities?.lazyPublicInstances === true
+								? { lazyPublicInstances: 1 as const }
+								: null),
+							...(request >= LYNX_TEMPLATE_RUN_READY_REQUEST_BASE &&
+							driver.capabilities?.templateProgramMount === true &&
+							driver.capabilities?.templateProgramRuns === true
+								? { templateRuns: 1 as const }
+								: null),
+							...(request >= LYNX_TEARDOWN_RUN_READY_REQUEST_BASE &&
+							driver.capabilities?.templateProgramMount === true &&
+							driver.capabilities?.teardownRuns === true
+								? { teardownRuns: 1 as const }
+								: null),
+						},
+					}),
 		};
 		if (request !== LYNX_READY_ANNOUNCEMENT_REQUEST && !correlatedReadySent) {
 			correlatedReadySent = true;
@@ -1244,6 +1360,18 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 		}
 		if (lifecycleClosed) return false;
 		dispatch(reply);
+		if (request !== LYNX_READY_ANNOUNCEMENT_REQUEST) {
+			// Delivery must succeed before an inbound commit can exercise any optional
+			// wire behavior. Keep first-tree capabilities dormant until its exact
+			// legacy adoption has completed and the main-thread journal is released.
+			if (snapshot === null) {
+				negotiatedCapabilities = reply.capabilities;
+			} else {
+				negotiatedCapabilities = undefined;
+				deferredFirstTreeCapabilities =
+					reply.capabilities?.templateProgram === 1 ? reply.capabilities : undefined;
+			}
+		}
 		if (snapshot !== null) firstTreeSnapshotSent = true;
 		return true;
 	};
@@ -1302,6 +1430,16 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			return;
 		}
 		firstTree = null;
+	};
+
+	const activateFirstTreeCapabilities = (record: ActiveLynxMainRoot<Node>): void => {
+		if (firstTree !== null || record.faulted || deferredFirstTreeCapabilities === undefined) {
+			return;
+		}
+		record.capabilities = deferredFirstTreeCapabilities;
+		record.postFirstTreeUpgrade = true;
+		negotiatedCapabilities = deferredFirstTreeCapabilities;
+		deferredFirstTreeCapabilities = undefined;
 	};
 
 	const disposeAvailableFirstTree = (): boolean => {
@@ -1364,13 +1502,13 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	};
 
 	const forceCloseWorkletRuntime = (): void => {
+		unsubscribeWorkletFeature?.();
+		unsubscribeWorkletFeature = null;
 		restoreHostHooks?.();
 		restoreHostHooks = null;
-		uninstallCallBridge?.();
-		uninstallCallBridge = null;
-		uninstallWorkletRegistry?.();
-		uninstallWorkletRegistry = null;
+		uninstallWorkletFeature();
 		worklets.close();
+		workletFeature = null;
 	};
 
 	const closeWorkletRuntime = (): boolean => {
@@ -1776,7 +1914,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			source = createLynxHostContainer(papi, {
 				root: FIRST_SCREEN_ROOT_ID,
 				page,
-				worklets,
+				worklets: hostWorklets,
 			});
 			const prepared = prepareLynxHostBatch(source, result.batch);
 			prepared.apply();
@@ -1929,6 +2067,61 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			);
 			return;
 		}
+		const peerCapabilities = active === null ? negotiatedCapabilities : active.capabilities;
+		const postFirstTreeLazyPublicInstances =
+			message.instances === LYNX_LAZY_PUBLIC_INSTANCES && active !== null;
+		const incrementalRun =
+			message.batch.commands.length === 1 ? message.batch.commands[0] : undefined;
+		if (
+			message.instances === LYNX_LAZY_PUBLIC_INSTANCES &&
+			(peerCapabilities?.lazyPublicInstances !== 1 ||
+				(postFirstTreeLazyPublicInstances &&
+					(active?.postFirstTreeUpgrade !== true ||
+						message.batch.commands.length === 0 ||
+						!message.batch.commands.every(
+							(command) =>
+								command.op === 'mount-template-range' || command.op === 'mount-template-run',
+						))))
+		) {
+			reject(identity, new Error('Octane Lynx rejected unnegotiated lazy public instances.'));
+			return;
+		}
+		if (peerCapabilities?.templateProgram !== 1 || peerCapabilities.templateRuns !== 1) {
+			for (const command of message.batch.commands) {
+				if (command.op === 'mount-template-range' && peerCapabilities?.templateProgram !== 1) {
+					reject(
+						identity,
+						new Error('Octane Lynx rejected an unnegotiated intrinsic template program.'),
+					);
+					return;
+				}
+				if (command.op === 'mount-template-run' && peerCapabilities?.templateRuns !== 1) {
+					reject(
+						identity,
+						new Error('Octane Lynx rejected an unnegotiated intrinsic template run.'),
+					);
+					return;
+				}
+			}
+		}
+		let postFirstTreeIncrementalCompact = false;
+		if (
+			postFirstTreeLazyPublicInstances &&
+			active?.postFirstTreeUpgrade === true &&
+			peerCapabilities?.compactAck === 1 &&
+			peerCapabilities.templateProgram === 1 &&
+			peerCapabilities.templateRuns === 1 &&
+			message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT &&
+			incrementalRun?.op === 'mount-template-run'
+		) {
+			try {
+				freezeValidatedIntrinsicRun(incrementalRun);
+				postFirstTreeIncrementalCompact = true;
+			} catch (error) {
+				reject(identity, error);
+				return;
+			}
+		}
 
 		let record = active;
 		const provisional = record === null;
@@ -1936,10 +2129,11 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			try {
 				record = {
 					root: message.root,
+					...(peerCapabilities === undefined ? null : { capabilities: peerCapabilities }),
 					container: createLynxHostContainer(papi, {
 						root: message.root,
 						page,
-						worklets,
+						worklets: hostWorklets,
 						onAttachments: submitHostAttachments,
 						onCallbackFault: failAcceptedRoot,
 					}),
@@ -1965,7 +2159,15 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 				record.container,
 				message.batch,
 				candidateFirstTree === null
-					? undefined
+					? provisional && message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT
+						? message.instances === LYNX_LAZY_PUBLIC_INSTANCES
+							? { compact: true, lazyPublicInstances: true }
+							: { compact: true }
+						: postFirstTreeIncrementalCompact
+							? { compact: true, incrementalCompact: true, lazyPublicInstances: true }
+							: postFirstTreeLazyPublicInstances
+								? { lazyPublicInstances: true }
+								: undefined
 					: {
 							firstTree: candidateFirstTree,
 							onMismatch(error) {
@@ -2021,19 +2223,55 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			if (prepared.firstTreeAction === 'repair' || applyFailed) {
 				disposeAvailableFirstTree();
 			}
+			if (!applyFailed && prepared.firstTreeAction === 'repair') {
+				activateFirstTreeCapabilities(record);
+			}
 		}
 		const startedAck = LYNX_PROFILE ? performance.now() : 0;
-		const handles = acknowledgementHandles(driver, record.container, prepared, message.batch);
-		const acknowledgement: LynxTransportAcknowledgement = {
-			...identity,
-			type: 'ack',
-			handles,
-			...(prepared.firstTreeAction === 'none'
-				? null
+		let compactCount: number | null =
+			message.ack === LYNX_COMPACT_ACKNOWLEDGEMENT &&
+			(provisional || postFirstTreeIncrementalCompact) &&
+			!applyFailed &&
+			prepared.firstTreeAction === 'none' &&
+			prepared.listAncestryDelta.length === 0
+				? provisional
+					? (prepared.compactHostCount ?? countLynxCompactAcknowledgementHosts(message.batch))
+					: (prepared.compactHostCount ?? null)
+				: null;
+		if (compactCount !== null && compactCount < LYNX_COMPACT_ACKNOWLEDGEMENT_MIN_HOSTS) {
+			compactCount = null;
+		}
+		if (compactCount !== null && prepared.compactHostCount !== compactCount) {
+			if (prepared.handleDelta.length !== compactCount) {
+				compactCount = null;
+			} else {
+				for (let index = 0; index < prepared.handleDelta.length; index++) {
+					const delta = prepared.handleDelta[index]!;
+					if (delta.op !== 'create' || delta.handle.generation !== 1) {
+						compactCount = null;
+						break;
+					}
+				}
+			}
+		}
+		const acknowledgement: LynxTransportAcknowledgement =
+			compactCount === null
+				? {
+						...identity,
+						type: 'ack',
+						handles: acknowledgementHandles(driver, record.container, prepared, message.batch),
+						...(prepared.firstTreeAction === 'none'
+							? null
+							: {
+									adoption: prepared.firstTreeAction === 'adopt' ? 'adopted' : 'repaired',
+								}),
+					}
 				: {
-						adoption: prepared.firstTreeAction === 'adopt' ? 'adopted' : 'repaired',
-					}),
-		};
+						...identity,
+						type: 'ack',
+						encoding: LYNX_COMPACT_ACKNOWLEDGEMENT,
+						count: compactCount,
+					};
 		try {
 			dispatch(acknowledgement);
 			if (LYNX_PROFILE) lynxWireProfile().ackMs += performance.now() - startedAck;
@@ -2138,6 +2376,7 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 			awaitingAdoption = null;
 			releaseFirstTree();
 		}
+		activateFirstTreeCapabilities(active);
 		openBackgroundCalls();
 	};
 
@@ -2532,14 +2771,3 @@ export function installLynxMainThread<Node extends LynxElementRef = LynxElementR
 	};
 	return Object.freeze(controller);
 }
-
-export {
-	runOnBackground,
-	runOnMainThread,
-	LynxCrossThreadCallCancelledError,
-} from './core/worklets.js';
-export type {
-	LynxBackgroundFunctionDescriptor,
-	LynxCancelablePromise,
-	LynxMainThreadWorkletDescriptor,
-} from './core/worklets.js';

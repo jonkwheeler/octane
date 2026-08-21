@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/rspack-plugin",
-  "version": "0.1.28",
+  "version": "0.1.37",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -53,6 +53,7 @@
   "devDependencies": {
     "@rspack/core": "catalog:default",
     "@types/node": "catalog:default",
+    "css-loader": "6.11.0",
     "octane": "workspace:*",
     "vitest": "catalog:default"
   }

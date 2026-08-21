@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "upstreamDeclaration": "upstream/npm/dist/react-resizable-panels.d.ts",
+  "upstreamDeclaration": "upstream-artifact/dist/react-resizable-panels.d.ts",
   "reactTypeDependencies": [
     "ReactNode",
     "HTMLAttributes<HTMLDivElement>",

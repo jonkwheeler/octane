@@ -1,0 +1,224 @@
+diff --git a/tests/upstream/global/utils/getImperativePanelMethods.test.ts b/tests/upstream/global/utils/getImperativePanelMethods.test.ts
+--- a/tests/upstream/global/utils/getImperativePanelMethods.test.ts
++++ b/tests/upstream/global/utils/getImperativePanelMethods.test.ts
+@@ -1,57 +1,63 @@
+-import {
+-  afterEach,
+-  beforeEach,
+-  describe,
+-  expect,
+-  test,
+-  vi,
+-  type Mock
+-} from "vitest";
++// Fidelity: exact pinned upstream test identities and assertions; imports and DOM harness are Octane-adapted.
++import { afterEach, beforeEach, describe, expect, test, vi, type Mock } from "vitest";
+ import type {
+   PanelConstraints,
+   PanelImperativeHandle
+-} from "../../components/panel/types";
++} from "../../../../src/components/panel/types";
+ import {
+   mockGetComputedStyle,
+-  setDefaultElementStyle
++  setDefaultElementStyle,
++  unmockGetComputedStyle
+ } from "../../utils/test/mockGetComputedStyle";
+-import { mountGroup } from "../mountGroup";
+-import { subscribeToMountedGroup } from "../mutable-state/groups";
+-import { mockGroup } from "../test/mockGroup";
+-import { getImperativePanelMethods } from "./getImperativePanelMethods";
++import { mountGroup } from "../../../../src/global/mountGroup";
++import { subscribeToMountedGroup } from "../../../../src/global/mutable-state/groups";
++import { mockGroup } from "../../global/test/mockGroup";
++import { getImperativePanelMethods } from "../../../../src/global/utils/getImperativePanelMethods";
++import { resetMockGroupIdCounter } from "../../global/test/mockGroup";
++import {
++  mockBoundingClientRect,
++  unmockBoundingClientRect
++} from "../../utils/test/mockBoundingClientRect";
++import { mockResizeObserver, unmockResizeObserver } from "../../utils/test/mockResizeObserver";
++
++beforeEach(() => {
++  mockBoundingClientRect();
++  mockGetComputedStyle();
++  mockResizeObserver();
++});
++
++afterEach(() => {
++  resetMockGroupIdCounter();
++  unmockResizeObserver();
++  unmockGetComputedStyle();
++  unmockBoundingClientRect();
++});
+ 
+ describe("getImperativePanelMethods", () => {
+-  test.each([
+-    ["collapse"],
+-    ["expand"],
+-    ["getSize"],
+-    ["isCollapsed"],
+-    ["resize"]
+-  ])("method %o: throws if group or panel not mounted", (name) => {
+-    const key = name as keyof PanelImperativeHandle;
+-
+-    const group = mockGroup(new DOMRect(), {
+-      id: "group",
+-      orientation: "horizontal"
+-    });
++  test.each([["collapse"], ["expand"], ["getSize"], ["isCollapsed"], ["resize"]])(
++    "method %o: throws if group or panel not mounted",
++    (name) => {
++      const key = name as keyof PanelImperativeHandle;
+ 
+-    const api = getImperativePanelMethods({
+-      groupId: "group",
+-      panelId: "B"
+-    });
++      const group = mockGroup(new DOMRect(), {
++        id: "group",
++        orientation: "horizontal"
++      });
+ 
+-    expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow(
+-      "Group group not found"
+-    );
++      const api = getImperativePanelMethods({
++        groupId: "group",
++        panelId: "B"
++      });
+ 
+-    const unmountGroup = mountGroup(group);
++      expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow("Group group not found");
+ 
+-    expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow(
+-      /not found for Panel B/
+-    );
++      const unmountGroup = mountGroup(group);
+ 
+-    unmountGroup();
+-  });
++      expect(() => (key === "resize" ? api[key](1) : api[key]())).toThrow(/not found for Panel B/);
++
++      unmountGroup();
++    }
++  );
+ 
+   describe("mounted", () => {
+     let onLayoutChange: Mock;
+@@ -66,30 +72,19 @@ describe("getImperativePanelMethods", () => {
+       });
+ 
+       panelConstraints.forEach(
+-        ({
+-          collapsedSize,
+-          collapsible,
+-          defaultSize,
+-          disabled,
+-          maxSize,
+-          minSize
+-        }) => {
++        ({ collapsedSize, collapsible, defaultSize, disabled, maxSize, minSize }) => {
+           group.addPanel(
+             new DOMRect(
+               0,
+               0,
+-              defaultSize !== undefined
+-                ? defaultSize * 10
+-                : 1000 / panelConstraints.length,
++              defaultSize !== undefined ? defaultSize * 10 : 1000 / panelConstraints.length,
+               50
+             ),
+             undefined,
+             {
+-              collapsedSize:
+-                collapsedSize !== undefined ? `${collapsedSize}%` : 0,
++              collapsedSize: collapsedSize !== undefined ? `${collapsedSize}%` : 0,
+               collapsible,
+-              defaultSize:
+-                defaultSize !== undefined ? `${defaultSize}%` : undefined,
++              defaultSize: defaultSize !== undefined ? `${defaultSize}%` : undefined,
+               disabled,
+               maxSize: maxSize !== undefined ? `${maxSize}%` : undefined,
+               minSize: minSize !== undefined ? `${minSize}%` : 0
+@@ -189,20 +184,14 @@ describe("getImperativePanelMethods", () => {
+       });
+ 
+       test("does nothing if panel is not collapsed", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, defaultSize: 50 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, defaultSize: 50 }, {}]);
+         panelApis[0].expand();
+ 
+         expect(onLayoutChange).not.toHaveBeenCalled();
+       });
+ 
+       test("expands the panel to the previous pre-collapse size", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, defaultSize: 50, minSize: 25 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, defaultSize: 50, minSize: 25 }, {}]);
+ 
+         panelApis[0].resize("35");
+         expect(onLayoutChange).toHaveBeenCalledTimes(1);
+@@ -218,10 +207,7 @@ describe("getImperativePanelMethods", () => {
+       });
+ 
+       test("expands panel to the minimum size as a fallback", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, defaultSize: 0, minSize: 25 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, defaultSize: 0, minSize: 25 }, {}]);
+         panelApis[0].expand();
+ 
+         expect(onLayoutChange).toHaveBeenCalledTimes(1);
+@@ -230,10 +216,7 @@ describe("getImperativePanelMethods", () => {
+ 
+       // See github.com/bvaughn/react-resizable-panels/issues/561
+       test("edge case: expands panel to a non-zero size if minSize is 0", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, defaultSize: 0, minSize: 0 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, defaultSize: 0, minSize: 0 }, {}]);
+         panelApis[0].expand();
+ 
+         expect(onLayoutChange).toHaveBeenCalledTimes(1);
+@@ -273,19 +256,13 @@ describe("getImperativePanelMethods", () => {
+ 
+     describe("isCollapsed", () => {
+       test("returns true if collapsible and collapsed", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, collapsedSize: 10, defaultSize: 10 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, collapsedSize: 10, defaultSize: 10 }, {}]);
+ 
+         expect(panelApis[0].isCollapsed()).toBe(true);
+       });
+ 
+       test("returns false if collapsible and expanded", () => {
+-        const { panelApis } = init([
+-          { collapsible: true, collapsedSize: 10, defaultSize: 25 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ collapsible: true, collapsedSize: 10, defaultSize: 25 }, {}]);
+ 
+         expect(panelApis[0].isCollapsed()).toBe(false);
+       });
+@@ -365,10 +342,7 @@ describe("getImperativePanelMethods", () => {
+       });
+ 
+       test("allows disabled panel to be resized", () => {
+-        const { panelApis } = init([
+-          { defaultSize: 25, disabled: true, minSize: 10 },
+-          {}
+-        ]);
++        const { panelApis } = init([{ defaultSize: 25, disabled: true, minSize: 10 }, {}]);
+ 
+         panelApis[0].resize("0%");
+ 

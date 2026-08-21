@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/recharts",
-  "version": "0.1.30",
+  "version": "0.1.39",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -21,13 +21,16 @@
   },
   "main": "src/index.ts",
   "module": "src/index.ts",
-  "types": "src/index.ts",
+  "types": "src/index.d.ts",
   "files": [
     "src",
     "README.md"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.ts"
+    }
   },
   "scripts": {
     "test": "vitest run"

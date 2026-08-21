@@ -1,0 +1,13 @@
+diff --git a/tests/upstream/utils/test/mockGetComputedStyle.ts b/tests/upstream/utils/test/mockGetComputedStyle.ts
+--- a/tests/upstream/utils/test/mockGetComputedStyle.ts
++++ b/tests/upstream/utils/test/mockGetComputedStyle.ts
+@@ -17,8 +17,7 @@ export function mockGetComputedStyle() {
+       get(_, name) {
+         const key = name as keyof CSSStyleDeclaration;
+ 
+-        const mockedStyle =
+-          elementToStyle.get(element) ?? defaultStyle ?? emptyStyle;
++        const mockedStyle = elementToStyle.get(element) ?? defaultStyle ?? emptyStyle;
+ 
+         const actualStyle = originalGetComputedStyle(element);
+ 

@@ -24,6 +24,7 @@ of bridging by hand:
 | `styled-components` | `@octanejs/styled-components` |
 | `react-router` / `react-router-dom` | `@octanejs/remix-router` |
 | `@lexical/react` | `@octanejs/lexical` |
+| `@monaco-editor/react` | `@octanejs/monaco-editor` |
 | `lucide-react` | `@octanejs/lucide` |
 | `@floating-ui/react` | `@octanejs/floating-ui` |
 | `radix-ui` | `@octanejs/radix` |
@@ -45,6 +46,7 @@ of bridging by hand:
 | `@reduxjs/toolkit` | `@octanejs/redux-toolkit` |
 | `@testing-library/react` | `@octanejs/testing-library` |
 | `@mdx-js/react` | `@octanejs/mdx` |
+| `ink` | `@octanejs/ink` |
 
 The `octane_bindings` tool returns the same map machine-readably. For anything
 else, run the `octane_bridge_react_package` tool to get a scan of the

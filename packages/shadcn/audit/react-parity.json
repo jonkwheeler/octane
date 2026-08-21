@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7ac31e853b2941798e3e02e937329a50c5f5c73b479a756163879585ce67bb6c"
+      "lockfileSha256": "bcc38240a238410fcf0ac6928cef9bbbb39e289bd44c799ea845718a31c1d489"
     }
   },
   "lanes": [
@@ -56,7 +56,7 @@
         {
           "path": "packages/shadcn/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "3bf668a1e97dfdcaa4e5ed2f8ca436b83135e13a3787c31f851153a8ec52bd90",
+          "sha256": "fd1a2660f19696c297d9bab4d818b48ad9ea48e6d0537f23635d5d02be2419e4",
           "cases": [
             {
               "id": "differential:shadcn-badge-runtime",
@@ -80,8 +80,8 @@
             },
             {
               "id": "differential:shadcn-dropdown-upstream",
-              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical",
-              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item \u2014 byte-identical"
+              "testName": "DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical",
+              "fullName": "differential: @octanejs/shadcn vs curated shadcn references on React DropdownMenu (non-modal): open, toggle checkbox item, reopen, select item — byte-identical"
             }
           ]
         },
@@ -163,12 +163,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "3e97762d731f0899f33b4060672dd79f302582b317c0bdf8e8872b9135ee2d64"
         }
       ]
     }

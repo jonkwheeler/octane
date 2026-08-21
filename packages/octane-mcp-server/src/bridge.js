@@ -18,9 +18,11 @@ export const KNOWN_BINDINGS = {
 	'@apollo/client': '@octanejs/apollo-client',
 	'@solana/react': '@octanejs/solana-react',
 	'@tanstack/ai-react': '@octanejs/tanstack-ai',
+	'@tanstack/react-db': '@octanejs/tanstack-db',
 	'@tanstack/react-devtools': '@octanejs/tanstack-devtools',
 	'@tanstack/react-form': '@octanejs/tanstack-form',
 	'@tanstack/react-query': '@octanejs/tanstack-query',
+	swr: '@octanejs/swr',
 	wagmi: '@octanejs/wagmi',
 	'@rainbow-me/rainbowkit': '@octanejs/rainbowkit',
 	'@tanstack/react-router': '@octanejs/tanstack-router',
@@ -30,8 +32,11 @@ export const KNOWN_BINDINGS = {
 	'@tanstack/react-pacer': '@octanejs/tanstack-pacer',
 	'@tanstack/react-table': '@octanejs/tanstack-table',
 	'@tanstack/react-virtual': '@octanejs/tanstack-virtual',
+	'react-window': '@octanejs/window',
 	'framer-motion': '@octanejs/motion',
 	motion: '@octanejs/motion',
+	'@react-spring/web': '@octanejs/spring',
+	'@react-spring/parallax': '@octanejs/spring',
 	'@stylexjs/stylex': '@octanejs/stylex',
 	'styled-components': '@octanejs/styled-components',
 	'react-router': '@octanejs/remix-router',
@@ -40,9 +45,12 @@ export const KNOWN_BINDINGS = {
 	cmdk: '@octanejs/cmdk',
 	'@lexical/react': '@octanejs/lexical',
 	'@tiptap/react': '@octanejs/tiptap',
+	'react-pdf': '@octanejs/pdf',
+	'@monaco-editor/react': '@octanejs/monaco-editor',
 	'lucide-react': '@octanejs/lucide',
 	'@phosphor-icons/react': '@octanejs/phosphor-icons',
 	'@floating-ui/react': '@octanejs/floating-ui',
+	'react-popper': '@octanejs/popper',
 	'react-aria': '@octanejs/aria',
 	'react-aria-components': '@octanejs/aria',
 	'react-stately': '@octanejs/aria',
@@ -50,10 +58,22 @@ export const KNOWN_BINDINGS = {
 	'react-hook-form': '@octanejs/hook-form',
 	'@base-ui-components/react': '@octanejs/base-ui',
 	'@dnd-kit/react': '@octanejs/dnd-kit',
+	'embla-carousel-react': '@octanejs/embla-carousel',
+	'react-dropzone': '@octanejs/dropzone',
 	sonner: '@octanejs/sonner',
 	'react-error-boundary': '@octanejs/react-error-boundary',
 	'react-resizable-panels': '@octanejs/react-resizable-panels',
+	'react-transition-group': '@octanejs/transition-group',
+	'react-day-picker': '@octanejs/day-picker',
+	'input-otp': '@octanejs/input-otp',
+	vaul: '@octanejs/vaul',
+	'react-markdown': '@octanejs/markdown',
+	'react-textarea-autosize': '@octanejs/textarea-autosize',
+	'react-intersection-observer': '@octanejs/intersection-observer',
+	'react-draggable': '@octanejs/draggable',
+	'react-colorful': '@octanejs/colorful',
 	streamdown: '@octanejs/streamdown',
+	'react-syntax-highlighter': '@octanejs/syntax-highlighter',
 	// The official plugins are consolidated as subpaths of the same package.
 	// The bundled bridge skill documents each exact import rewrite.
 	'@streamdown/code': '@octanejs/streamdown',
@@ -62,12 +82,14 @@ export const KNOWN_BINDINGS = {
 	'@streamdown/cjk': '@octanejs/streamdown',
 	shadcn: '@octanejs/shadcn',
 	recharts: '@octanejs/recharts',
+	'react-alien-signals': '@octanejs/alien-signals',
 	// react-map-gl@8 is a re-export shell; the binding covers the package its
 	// ./mapbox subpath resolves to, so both specifiers map here.
 	'react-map-gl': '@octanejs/react-map-gl',
 	'react-map-gl/mapbox': '@octanejs/react-map-gl',
 	'@vis.gl/react-mapbox': '@octanejs/react-map-gl',
 	'@react-three/fiber': '@octanejs/three',
+	'@react-three/drei': '@octanejs/drei',
 	'@visx/visx': '@octanejs/visx',
 	'@visx/a11y': '@octanejs/visx',
 	'@visx/a11y/react': '@octanejs/visx',
@@ -119,11 +141,13 @@ export const KNOWN_BINDINGS = {
 	'@visx/zoom': '@octanejs/visx',
 	'react-redux': '@octanejs/redux',
 	'@reduxjs/toolkit': '@octanejs/redux-toolkit',
+	'@zag-js/react': '@octanejs/zag',
 	'@react-rxjs/core': '@octanejs/rxjs',
 	'@react-rxjs/utils': '@octanejs/rxjs',
 	'@testing-library/react': '@octanejs/testing-library',
 	'react-i18next': '@octanejs/i18next',
 	'@inertiajs/react': '@octanejs/inertia',
+	ink: '@octanejs/ink',
 	'@mdx-js/react': '@octanejs/mdx',
 	'dexie-react-hooks': '@octanejs/dexie',
 	'@livestore/react': '@octanejs/livestore',
@@ -150,6 +174,7 @@ export const KNOWN_BINDING_PACKAGE_DIRS = new Set(
 export const KNOWN_VANILLA_CORES = {
 	'@apollo/client': '@apollo/client',
 	'@solana/react': '@solana/kit',
+	'@tanstack/react-db': '@tanstack/db',
 	'@tanstack/react-query': '@tanstack/query-core',
 	wagmi: '@wagmi/core',
 	'@tanstack/react-table': '@tanstack/table-core',
@@ -157,16 +182,19 @@ export const KNOWN_VANILLA_CORES = {
 	'@tanstack/react-form': '@tanstack/form-core',
 	'@floating-ui/react': '@floating-ui/dom',
 	'@dnd-kit/react': '@dnd-kit/dom',
+	'embla-carousel-react': 'embla-carousel',
 	'@xstate/react': 'xstate',
 	'react-redux': 'redux',
 	'@reduxjs/toolkit': 'redux',
 	'react-i18next': 'i18next',
 	'react-hook-form': null,
+	'react-alien-signals': 'alien-signals',
 	zustand: 'zustand/vanilla',
 	valtio: 'valtio/vanilla',
 	jotai: 'jotai/vanilla',
 	'@lexical/react': 'lexical',
 	'@tiptap/react': '@tiptap/core',
+	'@monaco-editor/react': 'monaco-editor',
 	'@livestore/react': '@livestore/livestore',
 };
 
@@ -237,11 +265,11 @@ export const REACT_API_MAP = {
 		note: "Supported. Accepts React's { default } module shape and additionally a bare component from the loader; wrapping Suspense or ViewTransition in lazy() is valid (nested lazy wrappers are not).",
 	},
 	Component: {
-		status: 'unsupported',
+		status: 'rewrite',
 		note: 'No class components. Rewrite as a function component.',
 	},
 	PureComponent: {
-		status: 'unsupported',
+		status: 'rewrite',
 		note: 'No class components. Rewrite as a function component with memo.',
 	},
 	StrictMode: {
@@ -250,7 +278,7 @@ export const REACT_API_MAP = {
 	},
 	Profiler: { status: 'unsupported', note: 'Not present.' },
 	SuspenseList: { status: 'unsupported', note: 'Not present.' },
-	findDOMNode: { status: 'unsupported', note: 'Removed in React 19 too. Use refs.' },
+	findDOMNode: { status: 'rewrite', note: 'Removed in React 19 too. Use refs.' },
 	renderToString: {
 		status: 'rewrite',
 		note: 'Use renderToString() from octane/server (sync) or prerender() from octane/static (async, awaits Suspense); both return { html, css }.',
@@ -469,8 +497,8 @@ function apiRows(totals) {
 }
 
 function verdictFor(rows, classComponents) {
-	if (classComponents || rows.some((row) => row.status === 'unsupported')) return 'needs-rework';
-	if (rows.some((row) => row.status === 'rewrite' || row.status === 'partial')) {
+	if (rows.some((row) => row.status === 'unsupported')) return 'needs-rework';
+	if (classComponents || rows.some((row) => row.status === 'rewrite' || row.status === 'partial')) {
 		return 'bridgeable-with-rewrites';
 	}
 	return 'bridgeable';
@@ -560,9 +588,11 @@ export function bridgeReportFromSource(source, { packageName } = {}) {
 function planFor(report) {
 	const steps = [];
 	if (report.existingBinding) {
-		steps.push(
-			`An official Octane binding already exists: ${report.existingBinding}. Prefer installing it over bridging by hand.`,
-		);
+		return [
+			`Install the official Octane binding: ${report.existingBinding}.`,
+			`Replace imports from ${report.target} with imports from ${report.existingBinding}, preserving the imported API names.`,
+			'Run the application typecheck and the relevant unit, SSR, hydration, and browser tests; no manual React binding port is needed.',
+		];
 	}
 	if (report.vanillaCore) {
 		steps.push(

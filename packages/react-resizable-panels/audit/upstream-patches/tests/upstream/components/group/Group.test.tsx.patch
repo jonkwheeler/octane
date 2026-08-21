@@ -1,0 +1,297 @@
+diff --git a/tests/upstream/components/group/Group.test.tsx b/tests/upstream/components/group/Group.test.tsx
+--- a/tests/upstream/components/group/Group.test.tsx
++++ b/tests/upstream/components/group/Group.test.tsx
+@@ -1,27 +1,41 @@
+-import { act, render } from "@octanejs/testing-library";
+-import userEvent from "@testing-library/user-event";
+-import {
+-  createRef,
+-  useEffect,
+-  useLayoutEffect,
+-  useRef,
+-  type PropsWithChildren,
+-  type RefObject
+-} from "octane";
+-import { beforeEach, describe, expect, test, vi } from "vitest";
+-import { subscribeToMountedGroup } from "../../global/mutable-state/groups";
++// Fidelity: exact pinned-upstream case names, case count, component trees, interactions, and assertions.
++// Adaptation-only changes: Octane renderer/hooks/imports, structural ref objects, and explicit DOM observer setup.
++import { act, cleanup, render } from "@octanejs/testing-library";
++import userEvent from "../../../support/userEvent";
++import { useEffect, useLayoutEffect, useRef, type OctaneNode } from "octane";
++import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
++import { subscribeToMountedGroup } from "../../../../src/global/mutable-state/groups";
+ import { moveSeparator } from "../../global/test/moveSeparator";
+-import { assert } from "../../utils/assert";
++import { assert } from "../../../../src/utils/assert";
+ import {
++  mockBoundingClientRect,
+   setDefaultElementBounds,
+-  setElementBoundsFunction
++  setElementBoundsFunction,
++  unmockBoundingClientRect
+ } from "../../utils/test/mockBoundingClientRect";
+-import { Panel } from "../panel/Panel";
+-import type { PanelImperativeHandle } from "../panel/types";
+-import { Separator } from "../separator/Separator";
+-import { Group } from "./Group";
+-import type { GroupImperativeHandle, Layout } from "./types";
+-import { useGroupRef } from "./useGroupRef";
++import { mockResizeObserver, unmockResizeObserver } from "../../utils/test/mockResizeObserver";
++import { Panel } from "../../../../src/components/panel/Panel.tsrx";
++import type { PanelImperativeHandle } from "../../../../src/components/panel/types";
++import { Separator } from "../../../../src/components/separator/Separator.tsrx";
++import { Group } from "../../../../src/components/group/Group.tsrx";
++import type { GroupImperativeHandle, Layout } from "../../../../src/components/group/types";
++import { useGroupRef } from "../../../../src/components/group/useGroupRef";
++
++type RefObject<Value> = { current: Value };
++type PropsWithChildren = { children?: OctaneNode };
++function createRef<Value>(): RefObject<Value | null> {
++  return { current: null };
++}
++
++beforeEach(() => {
++  mockBoundingClientRect();
++  mockResizeObserver();
++});
++afterEach(() => {
++  cleanup();
++  unmockResizeObserver();
++  unmockBoundingClientRect();
++});
+ 
+ describe("Group", () => {
+   test("changes to defaultProps or disableCursor should not cause Group to remount", () => {
+@@ -161,7 +175,9 @@ describe("Group", () => {
+       expect(onLayoutChanged).toHaveBeenCalledTimes(3);
+       expect(onLayoutChanged).toHaveBeenLastCalledWith(
+         { right: 100 },
+-        { isUserInteraction: false }
++        {
++          isUserInteraction: false
++        }
+       );
+ 
+       rerender(
+@@ -201,9 +217,7 @@ describe("Group", () => {
+           const clientX = separatorElement.offsetLeft;
+           const clientY = separatorElement.offsetHeight / 2;
+ 
+-          expect(separatorElement.getAttribute("data-separator")).toBe(
+-            "inactive"
+-          );
++          expect(separatorElement.getAttribute("data-separator")).toBe("inactive");
+ 
+           await userEvent.pointer([
+             {
+@@ -221,9 +235,7 @@ describe("Group", () => {
+             }
+           ]);
+ 
+-          expect(separatorElement.getAttribute("data-separator")).toBe(
+-            "active"
+-          );
++          expect(separatorElement.getAttribute("data-separator")).toBe("active");
+ 
+           await userEvent.pointer([
+             {
+@@ -242,9 +254,7 @@ describe("Group", () => {
+             }
+           ]);
+ 
+-          expect(separatorElement.getAttribute("data-separator")).toBe(
+-            "inactive"
+-          );
++          expect(separatorElement.getAttribute("data-separator")).toBe("inactive");
+ 
+           // No-op
+           await userEvent.pointer([
+@@ -354,11 +364,7 @@ describe("Group", () => {
+ 
+       render(
+         <Group groupRef={groupRef} onLayoutChanged={onLayoutChanged}>
+-          <Panel
+-            defaultSize="25%"
+-            groupResizeBehavior="preserve-relative-size"
+-            id="left"
+-          />
++          <Panel defaultSize="25%" groupResizeBehavior="preserve-relative-size" id="left" />
+           <Panel id="right" />
+         </Group>
+       );
+@@ -403,11 +409,7 @@ describe("Group", () => {
+ 
+       render(
+         <Group groupRef={groupRef} onLayoutChanged={onLayoutChanged}>
+-          <Panel
+-            defaultSize="25%"
+-            groupResizeBehavior="preserve-pixel-size"
+-            id="left"
+-          />
++          <Panel defaultSize="25%" groupResizeBehavior="preserve-pixel-size" id="left" />
+           <Panel id="right" />
+         </Group>
+       );
+@@ -811,10 +813,7 @@ describe("Group", () => {
+       const onLayoutChanged = vi.fn();
+ 
+       const { rerender } = render(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" />
+           <Panel id="b" />
+         </Group>
+@@ -836,10 +835,7 @@ describe("Group", () => {
+       );
+ 
+       rerender(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" />
+           <Panel id="b" />
+         </Group>
+@@ -854,10 +850,7 @@ describe("Group", () => {
+       const onLayoutChanged = vi.fn();
+ 
+       const { rerender } = render(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" defaultSize={40} />
+           <Panel id="b" />
+         </Group>
+@@ -898,10 +891,7 @@ describe("Group", () => {
+       const onLayoutChanged = vi.fn();
+ 
+       const { rerender } = render(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" />
+           <Panel id="b" />
+         </Group>
+@@ -923,10 +913,7 @@ describe("Group", () => {
+       );
+ 
+       rerender(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" />
+           <Panel id="b" />
+           <Panel id="c" />
+@@ -973,10 +960,7 @@ describe("Group", () => {
+       const onLayoutChanged = vi.fn();
+ 
+       render(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" defaultSize={50} />
+           <Separator id="b" />
+           <Panel id="c" defaultSize={50} />
+@@ -1067,10 +1051,7 @@ describe("Group", () => {
+       );
+ 
+       rerender(
+-        <Group
+-          onLayoutChange={onLayoutChange}
+-          onLayoutChanged={onLayoutChanged}
+-        >
++        <Group onLayoutChange={onLayoutChange} onLayoutChanged={onLayoutChanged}>
+           <Panel id="a" />
+           <Panel id="b" />
+         </Group>
+@@ -1082,6 +1063,21 @@ describe("Group", () => {
+   });
+ 
+   describe("invariants", () => {
++    function captureLayoutEffectError(callback: () => void, message: string) {
++      // Fidelity: Octane reports layout-effect exceptions through console.error;
++      // React RTL rethrows the same exception from render(). Only the observation
++      // boundary differs here—the invariant and exact upstream message stay intact.
++      const report = vi.spyOn(console, "error").mockImplementation(() => {});
++      try {
++        callback();
++        return report.mock.calls.some((args) =>
++          args.some((value) => value instanceof Error && value.message === message)
++        );
++      } finally {
++        report.mockRestore();
++      }
++    }
++
+     test("duplicate panel ids", () => {
+       // This is allowed
+       render(
+@@ -1093,30 +1089,36 @@ describe("Group", () => {
+       );
+ 
+       // This is not allowed
+-      expect(() =>
+-        render(
+-          <Group>
+-            <Panel id="foo" />
+-            <Panel id="foo" />
+-          </Group>
++      expect(
++        captureLayoutEffectError(
++          () =>
++            render(
++              <Group>
++                <Panel id="foo" />
++                <Panel id="foo" />
++              </Group>
++            ),
++          'Panel ids must be unique; id "foo" was used more than once'
+         )
+-      ).toThrow('Panel ids must be unique; id "foo" was used more than once');
++      ).toBe(true);
+     });
+ 
+     test("duplicate separator ids", () => {
+-      expect(() =>
+-        render(
+-          <Group>
+-            <Panel id="left" />
+-            <Separator id="foo" />
+-            <Panel id="center" />
+-            <Separator id="foo" />
+-            <Panel id="right" />
+-          </Group>
++      expect(
++        captureLayoutEffectError(
++          () =>
++            render(
++              <Group>
++                <Panel id="left" />
++                <Separator id="foo" />
++                <Panel id="center" />
++                <Separator id="foo" />
++                <Panel id="right" />
++              </Group>
++            ),
++          'Separator ids must be unique; id "foo" was used more than once'
+         )
+-      ).toThrow(
+-        'Separator ids must be unique; id "foo" was used more than once'
+-      );
++      ).toBe(true);
+     });
+   });
+ 

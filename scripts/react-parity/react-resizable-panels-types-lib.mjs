@@ -91,7 +91,7 @@ function assertionGroups(source, fileName) {
 
 function normalizeSpecifier(specifier) {
 	if (
-		specifier === '../../upstream/npm/dist/react-resizable-panels.js' ||
+		specifier === '../../upstream-artifact/dist/react-resizable-panels.js' ||
 		specifier === '../src/index.tsrx' ||
 		specifier === '@octanejs/react-resizable-panels'
 	) {

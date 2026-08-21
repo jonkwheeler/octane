@@ -10,7 +10,7 @@ import type {
 	PanelSize,
 	SeparatorProps,
 	SizeUnit,
-} from '../../upstream/npm/dist/react-resizable-panels.js';
+} from '../../upstream-artifact/dist/react-resizable-panels.js';
 
 declare function expectType<T>(value: T): void;
 

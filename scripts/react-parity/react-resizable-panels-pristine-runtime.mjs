@@ -82,7 +82,7 @@ export function inventoryFromIdentities(identities) {
 	return {
 		schemaVersion: 1,
 		project: 'react-resizable-panels-pristine',
-		roots: ['packages/react-resizable-panels/upstream/source/lib'],
+		roots: ['packages/react-resizable-panels/upstream/lib'],
 		files: [
 			...new Set(
 				tests.map(function fileOf(test) {

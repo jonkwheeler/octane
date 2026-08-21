@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7ac31e853b2941798e3e02e937329a50c5f5c73b479a756163879585ce67bb6c"
+      "lockfileSha256": "bcc38240a238410fcf0ac6928cef9bbbb39e289bd44c799ea845718a31c1d489"
     }
   },
   "lanes": [
@@ -56,7 +56,7 @@
         {
           "path": "packages/rainbowkit/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "87ecf7b40d0f644390a3ddb3870f48b271b91144ed9bbcf49732ef4fd8ea5d2b",
+          "sha256": "85c4898e39296a83ef8ef39deac058495166be952958be557d07def74c1c27f6",
           "cases": [
             {
               "id": "differential:outside-provider-hooks",
@@ -78,12 +78,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "3e97762d731f0899f33b4060672dd79f302582b317c0bdf8e8872b9135ee2d64"
         }
       ]
     }

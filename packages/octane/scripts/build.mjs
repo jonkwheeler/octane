@@ -6,8 +6,8 @@
 //   1. The `.ts` runtime → ESM `.js`, transpiled PER FILE (no bundling) so the module
 //      structure and generated package-version literal remain intact for a plain Node
 //      ESM consumer.
-//   2. The compiler is already plain `.js` (its only deps are `@tsrx/core`,
-//      `es-module-lexer`, and `esrap`) — copy it verbatim.
+//   2. The compiler and its separately imported Node adapters are already plain
+//      `.js` — copy them and their hand-written declarations verbatim.
 //   3. Type declarations (`tsc --emitDeclarationOnly`) alongside the JS.
 //
 // Entry points are GLOBBED from `src/`, not hand-listed — a hand-maintained list
@@ -20,6 +20,7 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildPackageCommonjs } from '../../../scripts/build-package-commonjs.mjs';
 import { smokeDist, verifyDist } from './verify-dist.mjs';
 
 const pkgDir = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -52,6 +53,13 @@ await build({
 	platform: 'neutral',
 	target: 'esnext',
 	bundle: false,
+});
+
+await buildPackageCommonjs({
+	packageDir: pkgDir,
+	entries: ['src/index.ts', 'src/server/index.ts'],
+	outdir: 'dist/cjs',
+	sourceRoot: 'src',
 });
 
 cpSync(join(src, 'compiler'), join(dist, 'compiler'), { recursive: true });

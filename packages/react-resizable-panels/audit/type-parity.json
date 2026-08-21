@@ -21,7 +21,7 @@
   "permittedTransformations": [
     {
       "kind": "import-root",
-      "rule": "React probes import published upstream/npm dist declarations; Octane probes import the package public entry"
+      "rule": "React probes import published upstream-artifact dist declarations; Octane probes import the package public entry"
     },
     {
       "kind": "negative-control",

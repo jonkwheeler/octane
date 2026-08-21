@@ -8,7 +8,7 @@
     "sourceRoot": "modules/react-mapbox/src",
     "testRoot": "modules/react-mapbox/test",
     "license": "MIT",
-    "integrity": "sha256:3a2b9b8de9120db2e7f595e4c7e0c0d74ff76a9a41864464207f4e45f632bf8a",
+    "integrity": "sha256:ddc546dd19395818001f51431a8fc33a91915c13dbe2dc66b4299b4816feaf7a",
     "verification": "verified"
   },
   "upstreamSuites": {
@@ -43,7 +43,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7ac31e853b2941798e3e02e937329a50c5f5c73b479a756163879585ce67bb6c"
+      "lockfileSha256": "bcc38240a238410fcf0ac6928cef9bbbb39e289bd44c799ea845718a31c1d489"
     }
   },
   "lanes": [
@@ -103,6 +103,11 @@
           ]
         },
         {
+          "path": "packages/react-map-gl/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "587fe6f21f40cc74760669fb34d744f316c2857f115a315dcedd2ad34481181d"
+        },
+        {
           "path": "packages/react-map-gl/upstream/test/utils/apply-react-style.spec.js",
           "role": "support",
           "sha256": "77d8089345bf68c21f8969996f38d793b8bde0277011f07102bc0a4dc572348c"
@@ -135,7 +140,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "8c501be0bfe1028fd6eadc1a0d71765750270785ec04689f2965cbbbc7e59179"
         }
       ]
     },
@@ -195,6 +200,11 @@
           ]
         },
         {
+          "path": "packages/react-map-gl/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "587fe6f21f40cc74760669fb34d744f316c2857f115a315dcedd2ad34481181d"
+        },
+        {
           "path": "packages/react-map-gl/upstream/test/utils/apply-react-style.spec.js",
           "role": "support",
           "sha256": "77d8089345bf68c21f8969996f38d793b8bde0277011f07102bc0a4dc572348c"
@@ -227,7 +237,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "8c501be0bfe1028fd6eadc1a0d71765750270785ec04689f2965cbbbc7e59179"
         }
       ]
     },
@@ -429,7 +439,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "8c501be0bfe1028fd6eadc1a0d71765750270785ec04689f2965cbbbc7e59179"
         }
       ]
     },
@@ -527,7 +537,7 @@
         {
           "path": "packages/react-map-gl/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "2a60bf2dca6c3a5a49b592a073461cc72fd4bf53e0647ae4040166d9f04136a5",
+          "sha256": "2b23b967ca83fa2bc314bf973730e7e65913c1491550b9bb93b056432609f0a4",
           "cases": [
             {
               "id": "differential:1",
@@ -604,7 +614,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "70f1fe350c43ed3e89b8ac71567b150db64c4ea2c517f7114ce3389caab9360d"
+          "sha256": "8c501be0bfe1028fd6eadc1a0d71765750270785ec04689f2965cbbbc7e59179"
         }
       ]
     }

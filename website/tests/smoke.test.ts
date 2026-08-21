@@ -19,6 +19,7 @@ import {
 import {
 	FRAMEWORK_CARDS,
 	HOME_SUMMARY,
+	LYNX_CARDS,
 	OCTANE_CARDS,
 	TARGET_CARDS,
 	type BenchCard,
@@ -32,6 +33,21 @@ afterEach(cleanup);
 // needs focused assertions and a wider execution budget than generic route
 // smoke coverage. The real-browser hydration suite also visits this route.
 const smoke = docs.filter((doc) => doc.slug !== 'core-apis');
+
+const HOME_BINDING_LINKS = [
+	['View the TanStack binding on GitHub', 'tanstack-query'],
+	['View the React Router binding on GitHub', 'remix-router'],
+	['View the Redux binding on GitHub', 'redux'],
+	['View the Three.js binding on GitHub', 'three'],
+	['View the Radix UI binding on GitHub', 'radix'],
+	['View the Apollo Client binding on GitHub', 'apollo-client'],
+	['View the Lucide binding on GitHub', 'lucide'],
+	['View the React Hook Form binding on GitHub', 'hook-form'],
+	['View the i18next binding on GitHub', 'i18next'],
+	['View the MDX binding on GitHub', 'mdx'],
+	['View the visx binding on GitHub', 'visx'],
+	['View the Base UI binding on GitHub', 'base-ui'],
+] as const;
 
 function findLink(root: ParentNode, href: string): HTMLAnchorElement | undefined {
 	return Array.from(root.querySelectorAll<HTMLAnchorElement>('a')).find(
@@ -277,10 +293,23 @@ describe('website routes', () => {
 		]);
 		expect(why.querySelector('.why-coda')?.textContent?.trim()).toBeTruthy();
 		expect(findLink(why, '/docs/tsrx-vs-tsx')).toBeTruthy();
+		const bindingLinks = Array.from(why.querySelectorAll<HTMLAnchorElement>('.why-rail-tile'));
+		expect(bindingLinks).toHaveLength(HOME_BINDING_LINKS.length);
+		for (const [index, link] of bindingLinks.entries()) {
+			const [ariaLabel, packageDirectory] = HOME_BINDING_LINKS[index]!;
+			expect(link.getAttribute('href')).toBe(
+				`https://github.com/octanejs/octane/tree/main/packages/${packageDirectory}`,
+			);
+			expect(link.getAttribute('target')).toBe('_blank');
+			expect(link.getAttribute('rel')?.split(/\s+/)).toEqual(
+				expect.arrayContaining(['noopener', 'noreferrer']),
+			);
+			expect(link.getAttribute('aria-label')).toBe(ariaLabel);
+		}
 
 		// The home composes its sections in a fixed order: hero, features, proven, why,
-		// compat, lynx, spin, explorer. (Each section carries a compiler-added scoped
-		// class after its semantic one.)
+		// compat, lynx, spin, explorer, sponsor. (Each section carries a compiler-added
+		// scoped class after its semantic one.)
 		const homeSections = Array.from(container.querySelectorAll('main .home > section')).map(
 			(section) => section.classList[0],
 		);
@@ -293,6 +322,7 @@ describe('website routes', () => {
 			'lynx',
 			'spin',
 			'explorer',
+			'sponsor',
 		]);
 
 		// The Lynx section is the entry point to /docs/lynx: its own link, plus one
@@ -323,6 +353,27 @@ describe('website routes', () => {
 			if (!bx.querySelector('.bx-plot')) throw new Error('explorer plot missing');
 		});
 		expect(bx.querySelectorAll('.bx-heat tbody tr')).toHaveLength(HOME_SUMMARY.rows.length);
+
+		// The homepage closes by acknowledging the infrastructure sponsor with a
+		// descriptive, externally linked lockup rather than an unexplained logo.
+		const sponsor = container.querySelector<HTMLElement>(
+			'section.sponsor[aria-labelledby="sponsor-heading"]',
+		)!;
+		expect(sponsor.querySelector('#sponsor-heading')?.textContent?.trim()).toBe(
+			'Faster CI for a faster framework.',
+		);
+		expect(sponsor.querySelector('.sponsor-lead')?.textContent).toContain(
+			'Blacksmith supports Octane',
+		);
+		const sponsorLink = findLink(sponsor, 'https://blacksmith.sh')!;
+		expect(sponsorLink.getAttribute('target')).toBe('_blank');
+		expect(sponsorLink.getAttribute('rel')?.split(/\s+/)).toEqual(
+			expect.arrayContaining(['noopener', 'noreferrer']),
+		);
+		expect(sponsorLink.getAttribute('aria-label')).toBe(
+			'Visit Blacksmith, Octane’s infrastructure sponsor',
+		);
+		expect(sponsorLink.querySelector('img')?.getAttribute('alt')).toBe('CI powered by Blacksmith');
 
 		// Section links sit with the wordmark on the left; search and the social
 		// icons form the right cluster.
@@ -367,6 +418,7 @@ describe('website routes', () => {
 		const sections = [
 			{ id: 'bench-frameworks', cards: FRAMEWORK_CARDS },
 			{ id: 'bench-targets', cards: TARGET_CARDS },
+			{ id: 'bench-lynx', cards: LYNX_CARDS },
 			{ id: 'bench-internal', cards: OCTANE_CARDS },
 		];
 		for (const { id, cards } of sections) {
@@ -420,7 +472,7 @@ describe('website routes', () => {
 		expect(container.querySelectorAll('.benchpage-sidebar-toggle')).toHaveLength(1);
 		expect(mobileToggle?.textContent).toContain('Benchmarks');
 		expect(BENCH_SECTIONS.length).toBe(
-			4 + FRAMEWORK_CARDS.length + TARGET_CARDS.length + OCTANE_CARDS.length,
+			5 + FRAMEWORK_CARDS.length + TARGET_CARDS.length + LYNX_CARDS.length + OCTANE_CARDS.length,
 		);
 		for (const section of BENCH_SECTIONS) {
 			expect(findLink(toc, `#${section.id}`)?.textContent).toContain(section.title);

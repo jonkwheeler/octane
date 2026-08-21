@@ -41,7 +41,7 @@ test('support fixtures map to upstream after declared helper transforms', functi
 	const result = verifyReactResizablePanelsSupportFiles(repo);
 	assert.equal(result.supportFiles, 7);
 	const upstreamMove = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/global/test/moveSeparator.ts',
+		'packages/react-resizable-panels/upstream/lib/global/test/moveSeparator.ts',
 	);
 	const adaptedMove = readRepo(
 		'packages/react-resizable-panels/tests/upstream/global/test/moveSeparator.ts',
@@ -182,7 +182,7 @@ test('deleting an adapted assertion fails the pristine mapping', async function 
 		'packages/react-resizable-panels/tests/upstream/utils/isArrayEqual.test.ts',
 	);
 	const upstream = await readFile(
-		join(repo, 'packages/react-resizable-panels/upstream/source/lib/utils/isArrayEqual.test.ts'),
+		join(repo, 'packages/react-resizable-panels/upstream/lib/utils/isArrayEqual.test.ts'),
 		'utf8',
 	);
 	const adapted = await readFile(file, 'utf8');
@@ -195,7 +195,7 @@ test('deleting an adapted assertion fails the pristine mapping', async function 
 
 test('moving an assertion between cases fails case-keyed mapping', function rejectsMovedAssertion() {
 	const upstream = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/utils/isArrayEqual.test.ts',
+		'packages/react-resizable-panels/upstream/lib/utils/isArrayEqual.test.ts',
 	);
 	const adapted = readRepo(
 		'packages/react-resizable-panels/tests/upstream/utils/isArrayEqual.test.ts',
@@ -218,9 +218,9 @@ test('moving an assertion between cases fails case-keyed mapping', function reje
 
 test('replacing an interaction with direct state mutation fails scenario structure', function rejectsStateMutation() {
 	const adapted = readRepo(
-		'packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsrx',
+		'packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsx',
 	);
-	const cases = extractCaseLedger(adapted, 'hooks/useStableCallback.test.tsrx');
+	const cases = extractCaseLedger(adapted, 'hooks/useStableCallback.test.tsx');
 	const target = cases.find(function find(entry) {
 		return entry.scenarioSteps.some(function hasClick(step) {
 			return step.includes('fireEvent.click');
@@ -228,7 +228,7 @@ test('replacing an interaction with direct state mutation fails scenario structu
 	});
 	assert.ok(target, 'expected a fireEvent.click scenario step');
 	const mutated = adapted.replace(/fireEvent\.click\([^;]+;/, 'result.current = () => {};');
-	const drifted = extractCaseLedger(mutated, 'hooks/useStableCallback.test.tsrx');
+	const drifted = extractCaseLedger(mutated, 'hooks/useStableCallback.test.tsx');
 	const driftedCase = drifted.find(function find(entry) {
 		return entry.fullName === target.fullName;
 	});
@@ -243,7 +243,7 @@ test('replacing an interaction with direct state mutation fails scenario structu
 
 test('non-test.each forEach tables keep row data when collapsing assertions', function preservesForEachTables() {
 	const upstream = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/global/utils/adjustLayoutByDelta.test.ts',
+		'packages/react-resizable-panels/upstream/lib/global/utils/adjustLayoutByDelta.test.ts',
 	);
 	const cases = extractCaseLedger(upstream, 'global/utils/adjustLayoutByDelta.test.ts');
 	const target = cases.find(function find(entry) {
@@ -267,7 +267,7 @@ test('non-test.each forEach tables keep row data when collapsing assertions', fu
 
 test('test.each bodies enter the case ledger with table, title, and assertions', function recordsEach() {
 	const upstream = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/global/utils/objectsEqual.test.ts',
+		'packages/react-resizable-panels/upstream/lib/global/utils/objectsEqual.test.ts',
 	);
 	const adapted = readRepo(
 		'packages/react-resizable-panels/tests/upstream/global/utils/objectsEqual.test.ts',
@@ -286,7 +286,7 @@ test('test.each bodies enter the case ledger with table, title, and assertions',
 
 test('weakening a test.each body fails while expanded runtime identities stay intact', function rejectsWeakenedEach() {
 	const upstream = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/global/utils/objectsEqual.test.ts',
+		'packages/react-resizable-panels/upstream/lib/global/utils/objectsEqual.test.ts',
 	);
 	const adapted = readRepo(
 		'packages/react-resizable-panels/tests/upstream/global/utils/objectsEqual.test.ts',
@@ -319,7 +319,7 @@ test('weakening a test.each body fails while expanded runtime identities stay in
 
 test('useId divergence transform keeps unrelated weakening fail-closed', function rejectsUnrelatedDivergedWeakening() {
 	const upstream = readRepo(
-		'packages/react-resizable-panels/upstream/source/lib/hooks/useId.test.ts',
+		'packages/react-resizable-panels/upstream/lib/hooks/useId.test.ts',
 	);
 	const adapted = readRepo('packages/react-resizable-panels/tests/upstream/hooks/useId.test.ts');
 	const expected = expectedAdaptedCaseLedger('hooks/useId.test.ts', upstream);

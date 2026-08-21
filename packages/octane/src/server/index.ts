@@ -85,6 +85,8 @@ export {
 	requestFormReset,
 	preload,
 	preinit,
+	preloadModule,
+	preinitModule,
 	preconnect,
 	prefetchDNS,
 
@@ -94,6 +96,7 @@ export {
 	Hydrate,
 	Fragment,
 	Activity,
+	Activity as unstable_Activity,
 	// Transparent server twin of the client ViewTransition boundary (client-only
 	// behavior; SSR annotations are view-transitions plan Phase 5).
 	ViewTransition,
@@ -111,6 +114,7 @@ export {
 
 	// Compiler-emitted codegen helpers (private ABI — see module doc)
 	markChildrenBlock,
+	descriptorChildren,
 	createElement,
 	createScopedValue,
 	createScopedElement,
@@ -119,6 +123,7 @@ export {
 	escapeAttr,
 	ssrText,
 	ssrTextPre,
+	ssrNestingText,
 	ssrChild,
 	ssrChildText,
 	ssrAttr,
@@ -131,12 +136,14 @@ export {
 	ssrInnerHtml,
 	ssrScriptInnerHtml,
 	ssrChildrenSources,
+	ssrSpreadContent,
 	ssrVoidContent,
 	// Controlled form serialization (value/checked attrs, textarea content,
 	// select option-projection scope)
 	ssrValueAttr,
 	ssrCheckedAttr,
 	ssrInputAttrs,
+	ssrFormAuthoringDiagnostics,
 	ssrTextareaValue,
 	ssrTextareaValueSources,
 	ssrSelectAttrs,
@@ -149,6 +156,7 @@ export {
 	ssrComponentNS,
 	ssrInNamespace,
 	ssrBlock,
+	ssrFragmentMarker,
 	ssrActivity,
 	ssrForBlock,
 	mapSlot,
@@ -158,6 +166,10 @@ export {
 	ssrPortal,
 	injectStyle,
 	ssrHeadEl,
+	// React Float resources (stylesheet precedence links, style resources, async scripts)
+	ssrStylesheetResource,
+	ssrStyleResource,
+	ssrScriptResource,
 	namespaceHead,
 	namespaceHeadElement,
 	// SSR parallel-use mirror (compiler targets — see suspense-parallel-use plan).

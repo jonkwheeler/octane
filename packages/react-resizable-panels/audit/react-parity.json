@@ -34,12 +34,12 @@
   },
   "environments": {
     "workspace-node": {
-      "node": ">=22.22.2",
+      "node": ">=22",
       "platform": "any",
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "7ac31e853b2941798e3e02e937329a50c5f5c73b479a756163879585ce67bb6c"
+      "lockfileSha256": "bcc38240a238410fcf0ac6928cef9bbbb39e289bd44c799ea845718a31c1d489"
     }
   },
   "lanes": [
@@ -64,7 +64,7 @@
         {
           "path": "packages/react-resizable-panels/audit/pristine-runtime.json",
           "role": "support",
-          "sha256": "8d91108959e9bdc9685bfb6131a8ba8612a42eb7c6b92c12d333dc2d36b0d83c"
+          "sha256": "6d72536c4a813a0a0b7278d04c8bf4ed8981d4b47a08796194c09ffd94094a4b"
         },
         {
           "path": "packages/react-resizable-panels/tests/upstream-original.test.ts",
@@ -74,17 +74,17 @@
         {
           "path": "packages/react-resizable-panels/vitest.pristine.config.ts",
           "role": "support",
-          "sha256": "b8c186506980c14b44ea3ba07ef7d8fc074580c3bd72d8fd3cec2a82b02bf2bb"
+          "sha256": "c6e88fff14a5b14485a97b701aa2e3fac585460808c25c70875b3c9618443ebc"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "7234e386eaadc2eb56eaff3237f715b4253e3bb17edab5d726c5ceb0928c667b"
+          "sha256": "11fad1eba805bb6d42fd9e46aca7a29b2efc0da0ab1eaca4cd610cfc35ceaf2e"
         },
         {
-          "path": "packages/react-resizable-panels/upstream/SHA256SUMS",
+          "path": "packages/react-resizable-panels/audit/upstream.lock.json",
           "role": "support",
-          "sha256": "a1452a8710ddfa09cfa31330a10a687051f0568f4407bb95701c578baa7ce39b"
+          "sha256": "27106a2e934bb1b2c61791ce70b3d084972a80f5119e116b256e5d2ee4d23876"
         }
       ]
     },
@@ -95,7 +95,7 @@
       "environment": "workspace-node",
       "project": "react-resizable-panels",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Complete adapted upstream DOM suite with registration identity matching, pristine-to-adapted assertion-group mapping, permitted-transformation ledger, and SHA256-locked adapted bodies wired into react-parity:check.",
+      "notes": "Complete adapted upstream DOM suite regenerated from the immutable lock, mechanical rewrites, and committed divergence patches, with registration identity matching and a pristine-to-adapted assertion-group crosswalk.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/react-resizable-panels/audit/adapted-runtime.json"
@@ -104,27 +104,22 @@
         {
           "path": "packages/react-resizable-panels/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "912cc2bef4232d03d9623e64b49813c0d0f3c6a651501a576a969cee320b1704"
-        },
-        {
-          "path": "packages/react-resizable-panels/audit/upstream-adapted.SHA256SUMS",
-          "role": "support",
-          "sha256": "3663b84224ff4d1bd8710d4fcf2a188423d51299f53f20aa950a67f00d9c715c"
+          "sha256": "da0c8da33b23bcd188b234497a4db01e858bfc0ba84923d728807310a34bbf8c"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-upstream-lib.mjs",
           "role": "support",
-          "sha256": "8aee6bb9f2f4c7048ab230e69d860eee0a15402146bfeecacb5bd01e2edcc6a6"
+          "sha256": "a493cc5c5fcb9bcaa8dfea9765d3b5425a531b248e3d9f668edf9f2177f2287b"
         },
         {
           "path": "packages/react-resizable-panels/audit/test-classifications.json",
           "role": "support",
-          "sha256": "4f9f582058ff6abf658cd33ae0b09755bcb24dba98d29de41b370f32d4f202ab"
+          "sha256": "627a0446d2a9e4e4e32deab01da660a1d7633bd721ce0c7885fab8daccc0d528"
         },
         {
           "path": "packages/react-resizable-panels/audit/runtime-parity.json",
           "role": "support",
-          "sha256": "cc3aef3bd85ab599e71a6c882aca9f7c4f69acfc50d0a549a6e82a669edc9e16"
+          "sha256": "1fb66d14a236833936b2df0d15f7f5855f698f42801f6b9c9d7542a1dd759b37"
         }
       ]
     },
@@ -165,7 +160,7 @@
         {
           "path": "packages/react-resizable-panels/audit/pristine-types.json",
           "role": "test",
-          "sha256": "2df5486558652f2b6855a96bb1af783f06e2c9dd38db097ebe7a4f523c60bfb8",
+          "sha256": "686906387ba9750add3ac760a52f5b7110d90c13ec1028af573b275022ded1b9",
           "cases": [
             {
               "id": "types:rrp-pristine",
@@ -177,7 +172,7 @@
         {
           "path": "packages/react-resizable-panels/audit/type-probes/public-api.test-d.ts",
           "role": "support",
-          "sha256": "78c48e26411aa38beb8400d8ba3ed4cdb75e40716de0ae10866fc420ac0000ea"
+          "sha256": "c8715a22ea5e4955d650446cb5973a2d65ccb75b72e9d27d32678ca47d26d5b4"
         },
         {
           "path": "packages/react-resizable-panels/audit/type-probes/tsconfig.pristine.json",
@@ -187,7 +182,7 @@
         {
           "path": "packages/react-resizable-panels/audit/type-parity.json",
           "role": "support",
-          "sha256": "dbb8d7693a9230d7fc6765c16aa58b751a8f3ed56f710630349ac81f737fe256"
+          "sha256": "0114d6bb21e73bd525e68a68eb5bcf0e357874f46369e3dc68d0fe37b5d7c3ca"
         }
       ]
     },
@@ -230,12 +225,12 @@
         {
           "path": "packages/react-resizable-panels/audit/type-parity.json",
           "role": "support",
-          "sha256": "dbb8d7693a9230d7fc6765c16aa58b751a8f3ed56f710630349ac81f737fe256"
+          "sha256": "0114d6bb21e73bd525e68a68eb5bcf0e357874f46369e3dc68d0fe37b5d7c3ca"
         },
         {
           "path": "scripts/react-parity/react-resizable-panels-types-lib.mjs",
           "role": "support",
-          "sha256": "8e207a892aae810b33f4eedeb4530bb284c74788b74e046cff7e549d394eb2f9"
+          "sha256": "0a06f07a4ba9663cc212abe55b0dde0047203a774382504f198cd3d2778a8f88"
         }
       ]
     }

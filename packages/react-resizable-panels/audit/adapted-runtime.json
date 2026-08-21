@@ -5,13 +5,13 @@
     "packages/react-resizable-panels/tests/upstream"
   ],
   "files": [
-    "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
-    "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+    "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
+    "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
     "packages/react-resizable-panels/tests/upstream/components/group/sortByElementOffset.test.ts",
-    "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
-    "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
-    "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
-    "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+    "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
+    "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
+    "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
+    "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
     "packages/react-resizable-panels/tests/upstream/global/cursor/getCursorStyle.test.ts",
     "packages/react-resizable-panels/tests/upstream/global/dom/calculateAvailableGroupSize.test.ts",
     "packages/react-resizable-panels/tests/upstream/global/dom/calculateHitRegions.test.ts",
@@ -30,180 +30,180 @@
     "packages/react-resizable-panels/tests/upstream/global/utils/objectsEqual.test.ts",
     "packages/react-resizable-panels/tests/upstream/global/utils/validatePanelGroupLayout.test.ts",
     "packages/react-resizable-panels/tests/upstream/hooks/useId.test.ts",
-    "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsrx",
-    "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsrx",
+    "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsx",
+    "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsx",
     "packages/react-resizable-panels/tests/upstream/utils/isArrayEqual.test.ts",
     "packages/react-resizable-panels/tests/upstream/utils/parseNumericStyleValue.test.ts"
   ],
   "tests": [
     {
       "id": "runtime:react-resizable-panels:0001",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods getLayout returns the current group layout"
     },
     {
       "id": "runtime:react-resizable-panels:0002",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods getLayout throws if group not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0003",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods setLayout allows disabled panels to be resized"
     },
     {
       "id": "runtime:react-resizable-panels:0004",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods setLayout ignores a no-op layout update"
     },
     {
       "id": "runtime:react-resizable-panels:0005",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods setLayout ignores an invalid layout update"
     },
     {
       "id": "runtime:react-resizable-panels:0006",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods setLayout throws if group not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0007",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/getImperativeGroupMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativeGroupMethods.test.ts",
       "fullName": "getImperativeGroupMethods setLayout validates and updates the group layout"
     },
     {
       "id": "runtime:react-resizable-panels:0008",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group changes to defaultProps or disableCursor should not cause Group to remount"
     },
     {
       "id": "runtime:react-resizable-panels:0009",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group defaultLayout should be ignored if it does not match Panel ids"
     },
     {
       "id": "runtime:react-resizable-panels:0010",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group defaultLayout should be ignored if it does not match Panel ids (mounted within hidden subtree)"
     },
     {
       "id": "runtime:react-resizable-panels:0011",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group defaultLayout should not break the layout if layout Panel ids are in an unexpected order three panel vertical group"
     },
     {
       "id": "runtime:react-resizable-panels:0012",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group defaultLayout should not break the layout if layout Panel ids are in an unexpected order two panel horizontal group"
     },
     {
       "id": "runtime:react-resizable-panels:0013",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group defaultLayout should not require multiple render passes"
     },
     {
       "id": "runtime:react-resizable-panels:0014",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group groupRef should allow layout to be read or written on mount"
     },
     {
       "id": "runtime:react-resizable-panels:0015",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group groupRef should work with an empty Group"
     },
     {
       "id": "runtime:react-resizable-panels:0016",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group groupRef should work within a hidden subtree"
     },
     {
       "id": "runtime:react-resizable-panels:0017",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group groupResizeBehavior preserve-pixel-size preserves pixel size Group size changes"
     },
     {
       "id": "runtime:react-resizable-panels:0018",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group groupResizeBehavior preserve-relative-size preserves relative (percentage based) size Group size changes"
     },
     {
       "id": "runtime:react-resizable-panels:0019",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group HTML attributes problematic styles should be suppressed"
     },
     {
       "id": "runtime:react-resizable-panels:0020",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group HTML attributes should expose explicit id and testid"
     },
     {
       "id": "runtime:react-resizable-panels:0021",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group HTML attributes should pass through ...rest attributes"
     },
     {
       "id": "runtime:react-resizable-panels:0022",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group in-memory layout cache should not break if right click occurs while left click is active"
     },
     {
       "id": "runtime:react-resizable-panels:0023",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group in-memory layout cache should update when resized via Group imperative API"
     },
     {
       "id": "runtime:react-resizable-panels:0024",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group in-memory layout cache should update when resized via keyboard"
     },
     {
       "id": "runtime:react-resizable-panels:0025",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group in-memory layout cache should update when resized via Panel imperative API"
     },
     {
       "id": "runtime:react-resizable-panels:0026",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group in-memory layout cache should update when resized via pointer"
     },
     {
       "id": "runtime:react-resizable-panels:0027",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group invariants duplicate panel ids"
     },
     {
       "id": "runtime:react-resizable-panels:0028",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group invariants duplicate separator ids"
     },
     {
       "id": "runtime:react-resizable-panels:0029",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group onLayoutChange and onLayoutChanged should be called in response to imperative API"
     },
     {
       "id": "runtime:react-resizable-panels:0030",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group onLayoutChange and onLayoutChanged should be called once per layout change"
     },
     {
       "id": "runtime:react-resizable-panels:0031",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group onLayoutChange and onLayoutChanged should be called when panels change"
     },
     {
       "id": "runtime:react-resizable-panels:0032",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group onLayoutChange and onLayoutChanged should be called with default layout"
     },
     {
       "id": "runtime:react-resizable-panels:0033",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group onLayoutChange and onLayoutChanged should not be called before layout has been initialized"
     },
     {
       "id": "runtime:react-resizable-panels:0034",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/Group.test.tsx",
       "fullName": "Group should support updates to either Group or Panel ids"
     },
     {
@@ -233,352 +233,352 @@
     },
     {
       "id": "runtime:react-resizable-panels:0040",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback updates persisted modern layout"
     },
     {
       "id": "runtime:react-resizable-panels:0041",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback with panel ids prop prefers matching modern layouts if both are present"
     },
     {
       "id": "runtime:react-resizable-panels:0042",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback with panel ids prop returns matching legacy layout"
     },
     {
       "id": "runtime:react-resizable-panels:0043",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback with panel ids prop skips mismatched legacy layout"
     },
     {
       "id": "runtime:react-resizable-panels:0044",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback without panel ids prop prefers matching modern layouts if both are present"
     },
     {
       "id": "runtime:react-resizable-panels:0045",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback without panel ids prop returns matching legacy layout"
     },
     {
       "id": "runtime:react-resizable-panels:0046",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy layout fallback without panel ids prop skips mismatched legacy layout"
     },
     {
       "id": "runtime:react-resizable-panels:0047",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should cancel pending debounced write on unmount"
     },
     {
       "id": "runtime:react-resizable-panels:0048",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should ignore invalid layouts (panel ids mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0049",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should ignore temporarily invalid layouts after update (num panels mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0050",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should ignore temporarily invalid layouts on mount (ids mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0051",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should ignore temporarily invalid layouts on mount (num panels mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0052",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should override pending debounce with newer value"
     },
     {
       "id": "runtime:react-resizable-panels:0053",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should read/write from the provided Storage API"
     },
     {
       "id": "runtime:react-resizable-panels:0054",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should save separate layouts per panel group when panelIds param is present"
     },
     {
       "id": "runtime:react-resizable-panels:0055",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout legacy onLayoutChange prop should support debounced write"
     },
     {
       "id": "runtime:react-resizable-panels:0056",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore debounce param when using onLayoutChanged"
     },
     {
       "id": "runtime:react-resizable-panels:0057",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore invalid layouts (panel ids mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0058",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore non-user interactions"
     },
     {
       "id": "runtime:react-resizable-panels:0059",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore temporarily invalid layouts after update (num panels mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0060",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore temporarily invalid layouts on mount (ids mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0061",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should ignore temporarily invalid layouts on mount (num panels mismatch)"
     },
     {
       "id": "runtime:react-resizable-panels:0062",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should read/write from the provided Storage API"
     },
     {
       "id": "runtime:react-resizable-panels:0063",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should save separate layouts per panel group when panelIds param is present"
     },
     {
       "id": "runtime:react-resizable-panels:0064",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout modern onLayoutChanged prop should support out-of-order panel ids"
     },
     {
       "id": "runtime:react-resizable-panels:0065",
-      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/group/useDefaultLayout.test.tsx",
       "fullName": "useDefaultLayout should only write once if both onLayoutChange and onLayoutChanged props are used"
     },
     {
       "id": "runtime:react-resizable-panels:0066",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods method 'collapse': throws if group or panel not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0067",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods method 'expand': throws if group or panel not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0068",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods method 'getSize': throws if group or panel not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0069",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods method 'isCollapsed': throws if group or panel not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0070",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods method 'resize': throws if group or panel not mounted"
     },
     {
       "id": "runtime:react-resizable-panels:0071",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted collapse allows disabled panel to be collapsed"
     },
     {
       "id": "runtime:react-resizable-panels:0072",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted collapse does nothing if panel is already collapsed"
     },
     {
       "id": "runtime:react-resizable-panels:0073",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted collapse does nothing if panel is not collapsible"
     },
     {
       "id": "runtime:react-resizable-panels:0074",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted collapse resizes panel to collapsed size"
     },
     {
       "id": "runtime:react-resizable-panels:0075",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand allows disabled panel to be expanded"
     },
     {
       "id": "runtime:react-resizable-panels:0076",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand does nothing if panel is not collapsed"
     },
     {
       "id": "runtime:react-resizable-panels:0077",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand does nothing if panel is not collapsible"
     },
     {
       "id": "runtime:react-resizable-panels:0078",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand edge case: expands panel to a non-zero size if minSize is 0"
     },
     {
       "id": "runtime:react-resizable-panels:0079",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand expands panel to the minimum size as a fallback"
     },
     {
       "id": "runtime:react-resizable-panels:0080",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted expand expands the panel to the previous pre-collapse size"
     },
     {
       "id": "runtime:react-resizable-panels:0081",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted getSize returns the current panel size"
     },
     {
       "id": "runtime:react-resizable-panels:0082",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted isCollapsed returns false if collapsible and expanded"
     },
     {
       "id": "runtime:react-resizable-panels:0083",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted isCollapsed returns false if not collapsible"
     },
     {
       "id": "runtime:react-resizable-panels:0084",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted isCollapsed returns true if collapsible and collapsed"
     },
     {
       "id": "runtime:react-resizable-panels:0085",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize allows disabled panel to be resized"
     },
     {
       "id": "runtime:react-resizable-panels:0086",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize edge cases does not throw when resizing the only panel in the group"
     },
     {
       "id": "runtime:react-resizable-panels:0087",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize edge cases last panel can still be resized normally when preceding panels are not all collapsed"
     },
     {
       "id": "runtime:react-resizable-panels:0088",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize edge cases last panel keeps the remainder when all preceding panels are collapsed and it is resized smaller"
     },
     {
       "id": "runtime:react-resizable-panels:0089",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize ignores a no-op size update"
     },
     {
       "id": "runtime:react-resizable-panels:0090",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize ignores an invalid size update"
     },
     {
       "id": "runtime:react-resizable-panels:0091",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize units accepts percentage units"
     },
     {
       "id": "runtime:react-resizable-panels:0092",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize units accepts pixel units"
     },
     {
       "id": "runtime:react-resizable-panels:0093",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize units accepts rem units"
     },
     {
       "id": "runtime:react-resizable-panels:0094",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize units accepts viewport units"
     },
     {
       "id": "runtime:react-resizable-panels:0095",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/getImperativePanelMethods.test.ts",
+      "file": "packages/react-resizable-panels/tests/upstream/global/utils/getImperativePanelMethods.test.ts",
       "fullName": "getImperativePanelMethods mounted resize validates and updates the panel size"
     },
     {
       "id": "runtime:react-resizable-panels:0096",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel disabled prop changes to disabled prop should not cause the Panel to remount"
     },
     {
       "id": "runtime:react-resizable-panels:0097",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel disabled prop changes to this prop should update Panel behavior"
     },
     {
       "id": "runtime:react-resizable-panels:0098",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel HTML attributes ARIA attributes should assign an id prop to support the ARIA separator"
     },
     {
       "id": "runtime:react-resizable-panels:0099",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel HTML attributes ARIA attributes should pass through explicit id prop"
     },
     {
       "id": "runtime:react-resizable-panels:0100",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel HTML attributes problematic styles should be suppressed"
     },
     {
       "id": "runtime:react-resizable-panels:0101",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel HTML attributes should expose id as testid"
     },
     {
       "id": "runtime:react-resizable-panels:0102",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel HTML attributes should pass through ...rest attributes"
     },
     {
       "id": "runtime:react-resizable-panels:0103",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel memoization Panels contents should not re-render on Group layout change"
     },
     {
       "id": "runtime:react-resizable-panels:0104",
-      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/panel/Panel.test.tsx",
       "fullName": "Panel should throw if rendered outside of a Group"
     },
     {
       "id": "runtime:react-resizable-panels:0105",
-      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
       "fullName": "Separator disabled prop changes to disabled prop should not cause the Separator to remount"
     },
     {
       "id": "runtime:react-resizable-panels:0106",
-      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
       "fullName": "Separator disabled prop changes to this prop should update Separator behavior"
     },
     {
       "id": "runtime:react-resizable-panels:0107",
-      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
       "fullName": "Separator HTML attributes ARIA attributes should identify its primary panel if and only if it has an explicit id"
     },
     {
       "id": "runtime:react-resizable-panels:0108",
-      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
       "fullName": "Separator HTML attributes should expose id and data-testid"
     },
     {
       "id": "runtime:react-resizable-panels:0109",
-      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/components/separator/Separator.test.tsx",
       "fullName": "Separator HTML attributes should pass through ...rest attributes"
     },
     {
@@ -2118,22 +2118,22 @@
     },
     {
       "id": "runtime:react-resizable-panels:0417",
-      "file": "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsx",
       "fullName": "useMergedRefs should gracefully ignore undefined refs"
     },
     {
       "id": "runtime:react-resizable-panels:0418",
-      "file": "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/hooks/useMergedRefs.test.tsx",
       "fullName": "useMergedRefs should support ref objects and callback refs"
     },
     {
       "id": "runtime:react-resizable-panels:0419",
-      "file": "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsx",
       "fullName": "useStableCallback should call the callback when the event is triggered"
     },
     {
       "id": "runtime:react-resizable-panels:0420",
-      "file": "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsrx",
+      "file": "packages/react-resizable-panels/tests/upstream/hooks/useStableCallback.test.tsx",
       "fullName": "useStableCallback should not execute the callback"
     },
     {

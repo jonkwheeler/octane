@@ -12,11 +12,17 @@
 | npm tarball SHA-256 | `099742808fafbe3a0288d758271aaf1c35dc9b66ec85077e60f0861e58e89e61` |
 | License | MIT, copyright Brian Vaughn |
 
-`upstream/source/` contains the byte-exact canonical `lib/` source and tests plus
+`upstream/` contains the byte-exact canonical `lib/` source and tests plus
 the package, TypeScript, and Vitest metadata needed to execute them.
-`upstream/npm/` contains the complete unpacked npm publication artifact. Both
-boundaries are development evidence, excluded from the published `files`, and
-locked file-by-file by `upstream/SHA256SUMS`.
+`upstream-artifact/` contains the complete unpacked npm publication artifact. Both
+boundaries are development evidence and excluded from the published `files`.
+`audit/upstream.lock.json` pins every committed Git-sourced byte to the canonical
+commit's Git blob identity; registry-only artifact bytes remain separately
+hash-checked by the package verifier.
+
+The adapted suite under `tests/upstream/` is regenerated from the lock's
+mechanical rewrites plus minimal patches in `audit/upstream-patches/`; it is not
+committed.
 
 Run `pnpm --dir packages/react-resizable-panels upstream:verify` to reject a
 modified, missing, or extra vendored file and drift in the export, type, or test

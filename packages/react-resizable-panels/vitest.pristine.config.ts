@@ -9,8 +9,8 @@ export default defineConfig({
 	resolve: { dedupe: ['vitest'] },
 	test: {
 		environment: 'jsdom',
-		include: ['packages/react-resizable-panels/upstream/source/lib/**/*.test.{ts,tsx}'],
-		setupFiles: ['packages/react-resizable-panels/upstream/source/vitest.setup.ts'],
+		include: ['packages/react-resizable-panels/upstream/lib/**/*.test.{ts,tsx}'],
+		setupFiles: ['packages/react-resizable-panels/upstream/vitest.setup.ts'],
 		server: {
 			deps: { inline: ['@testing-library/jest-dom', 'vitest-fail-on-console'] },
 		},

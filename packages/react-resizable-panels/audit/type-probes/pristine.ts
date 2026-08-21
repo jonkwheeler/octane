@@ -6,7 +6,7 @@ import type {
 	PanelImperativeHandle,
 	PanelProps,
 	SeparatorProps,
-} from '../../upstream/npm/dist/react-resizable-panels.js';
+} from '../../upstream-artifact/dist/react-resizable-panels.js';
 
 const groupProps: GroupProps = {
 	orientation: 'horizontal',

@@ -13,6 +13,12 @@
  * Reconciliation: LIS-based keyed list inside forBlock (ported from Ripple's patchKeyedChildrenComplex).
  */
 
+// The consumer's bundler substitutes the whole Node environment expression below,
+// so the source guard must stay written out literally. Declared module-locally — never
+// `declare global`, which would ship in the tarball — so this file type-checks in
+// a browser app that has no `@types/node`.
+declare const process: { env: { NODE_ENV?: string } };
+
 import {
 	SUSPENSE_SCRIPT_ATTR,
 	HYDRATE_STATIC_ID_COUNT_PREFIX,
@@ -43,7 +49,29 @@ import {
 	// Read only on setAttribute's cold dangerouslySetInnerHTML arm.
 	VOID_ELEMENTS,
 } from './constants.js';
+import { hasOwnProp } from './has-own.js';
 import { headOwnershipKey } from './head-ownership.js';
+import { resourceHintWarning } from './resource-hint-diagnostics.js';
+import {
+	ariaAttributeWarning,
+	isAriaAttributeName,
+	isUnknownAriaAttribute,
+	unknownAriaAttributeWarning,
+} from './aria-diagnostics.js';
+import {
+	booleanAttributeStringWarning,
+	emptyResourceUrlWarning,
+	hostPropertyWarning,
+	invalidHostPropertiesWarning,
+	unsupportedAttributeCoercionWarning,
+} from './host-property-diagnostics.js';
+import {
+	applyElementDefaultProps,
+	childElementKey,
+	childrenIterator,
+	escapeMappedElementKey,
+	resolveLazyDefaultProps as lazyResolvedProps,
+} from './shared-value-helpers.js';
 import {
 	__profileBail,
 	__profileBeginRender,
@@ -83,6 +111,7 @@ import {
 	initializeHydrationEventCapture,
 	markDelegatedDynamicHydrationIntent,
 	registerHydrationIntentBoundary,
+	shouldPreventHydrationInteractionDefault,
 	takeDelegatedDynamicHydrationIntent,
 	takePendingHydrationIntents,
 	unregisterHydrationIntentBoundary,
@@ -93,11 +122,17 @@ import {
 } from './hydration/event-capture.js';
 import { sanitizeURL, sanitizeURLAttribute } from './sanitize-url.js';
 import {
+	invalidHtmlNestingWithAncestor,
+	invalidHtmlNestingWithParent,
+	invalidHtmlTextNesting,
+} from './html-tree-validation.js';
+import {
 	COMPONENT_FLAG_BOUNDARY,
 	hasComponentFlags,
 	markComponentFlags,
 } from './component-flags.js';
 import { formatClientError } from './error-codes.client.generated.js';
+import { formAuthoringDiagnostics } from './form-diagnostics.js';
 import {
 	HYDRATE_STREAM_TOKEN_ATTR,
 	isRendererStreamBoundaryTemplate,
@@ -476,7 +511,9 @@ function warnHydrationStructuralMismatch(
  * client + server from the same JSX, so a differing/absent one means a DIFFERENT branch —
  * e.g. `@switch` cases all `<span>` but with a different `class`). DYNAMIC attrs are NOT in
  * the template, so they aren't checked here — a value divergence on those is handled by
- * `setAttribute` (P2).
+ * `setAttribute` (P2). A compiler-specialized mixed style bakes only its static prefix;
+ * its exact template path is supplied separately so that one style attribute waits for
+ * the complete-value hydration check without weakening other static comparisons.
  *
  * DEV then recurses into the NESTED STATIC element structure, catching same-root branches that
  * differ only in nested static markup (`<div><span/></div>` vs `<div><p/></div>`). The recursion
@@ -486,7 +523,12 @@ function warnHydrationStructuralMismatch(
  * be compared positionally and is left to the per-site recovery. This makes the check safe
  * (never false-flags a hole-bearing template) while still catching pure-static divergences.
  */
-function hydrationNodeMatches(server: Node, template: Node): boolean {
+function hydrationNodeMatches(
+	server: Node,
+	template: Node,
+	partialStyles?: string,
+	path: string = '',
+): boolean {
 	if (server.nodeType !== template.nodeType) return false;
 	if (server.nodeType !== 1) return true;
 	const s = server as Element;
@@ -499,16 +541,41 @@ function hydrationNodeMatches(server: Node, template: Node): boolean {
 	const tAttrs = t.attributes;
 	for (let i = 0; i < tAttrs.length; i++) {
 		const a = tAttrs[i];
-		if (s.getAttribute(a.name) !== a.value) return false;
+		if (
+			s.getAttribute(a.name) !== a.value &&
+			!(
+				a.name === 'style' &&
+				partialStyles !== undefined &&
+				partialStyles.includes('|' + path + '|')
+			)
+		) {
+			return false;
+		}
 	}
 	let sc = s.firstChild;
 	let tc = t.firstChild;
+	let childIndex = 0;
 	while (sc !== null && tc !== null) {
 		if (sc.nodeType === 8 || tc.nodeType === 8) return true; // hole / marker — stop comparing
 		if (sc.nodeType !== tc.nodeType) return true; // text↔element shift — ambiguous, stop
-		if (tc.nodeType === 1 && !hydrationNodeMatches(sc, tc)) return false;
+		if (
+			tc.nodeType === 1 &&
+			!hydrationNodeMatches(
+				sc,
+				tc,
+				partialStyles,
+				partialStyles === undefined
+					? ''
+					: path === ''
+						? String(childIndex)
+						: path + '.' + childIndex,
+			)
+		) {
+			return false;
+		}
 		sc = sc.nextSibling;
 		tc = tc.nextSibling;
+		childIndex++;
 	}
 	return true; // any leftover could be holes — assume a match
 }
@@ -973,24 +1040,27 @@ function stagedTransitionValue<T>(slot: TransitionActionSlot<T>): T {
 function stageTransitionValue<T>(
 	slot: TransitionActionSlot<T>,
 	block: Block,
-	operation: (value: T) => T,
+	operation: T | ((value: T) => T),
 	value: T,
 	forceRender = false,
 ): boolean {
 	const batch = transitionActionBatchForUpdate();
 	if (batch === null) return false;
+	// Replacement values need a replay closure only when an Action actually
+	// stages the update. Ordinary useState setters stay allocation-free here.
+	const replay = typeof operation === 'function' ? (operation as (value: T) => T) : () => operation;
 	const current = batch.updates.get(slot) as TransitionActionUpdate<T> | undefined;
 	if (current === undefined) {
 		batch.updates.set(slot, {
 			slot,
 			block,
-			operations: [operation],
+			operations: [replay],
 			baseValue: slot.value,
 			value,
 			forceRender,
 		});
 	} else {
-		current.operations.push(operation);
+		current.operations.push(replay);
 		current.value = value;
 		current.forceRender ||= forceRender;
 	}
@@ -1096,7 +1166,7 @@ let deferringStagedRevealEffects = false;
 // same render patched on the way past. The attempt makes the render undoable:
 // journal window over the origin's whole render, live-queue checkpoints for the
 // work it enqueued, the flushed cells reverted to the recorded baseValues, and
-// the parallel-use entries it replaced swapped back.
+// the hook-map and inline memo entries it replaced swapped back.
 //
 // The pending cue needs no special treatment: `slotRef.isPending` was flipped
 // by the listener pass and survives the unwind. Re-rendering the origin at
@@ -1104,7 +1174,7 @@ let deferringStagedRevealEffects = false;
 // bindings — every other binding no-ops on its restored bag guard, and old
 // cells render previously committed (cached) content, so it cannot suspend.
 //
-// On settle the hold PROMOTES: parallel-use entries swap forward, cells write
+// On settle the hold PROMOTES: memo entries swap forward, cells write
 // forward, and an ordinary transition drain commits the whole screen in one
 // flush — or suspends on a later dependency and goes around again. Warm-walk
 // creations are carried on the hold as an episode-agnostic HARVEST, because
@@ -1117,6 +1187,10 @@ let deferringStagedRevealEffects = false;
 // store — falls back to today's per-boundary behavior untouched.
 // ─────────────────────────────────────────────────────────────────────────────
 
+type TransitionMemoSwap =
+	| [kind: 0, hooks: Map<HookSlot, unknown>, slot: HookSlot, previous: unknown, next: unknown]
+	| [kind: 1, cells: any[], base: number, previous: any[], next: any[]];
+
 interface TransitionAttempt {
 	origin: Block;
 	journalCheckpoint: number;
@@ -1128,8 +1202,8 @@ interface TransitionAttempt {
 	refDetach: number;
 	effectDeps: EffectDepsSnapshot;
 	heldSlots: Set<TrySlot> | null;
-	/** [hooksMap, slot, previousEntry, nextEntry] — undone on hold, redone on promotion. */
-	puSwaps: Array<[Map<HookSlot, unknown>, HookSlot, unknown, unknown]> | null;
+	/** Hook-map entries and inline memo-cell ranges: undone on hold, redone on promotion. */
+	memoSwaps: TransitionMemoSwap[] | null;
 }
 
 let ACTIVE_TRANSITION_ATTEMPT: TransitionAttempt | null = null;
@@ -1148,7 +1222,7 @@ interface WarmHarvestEntry {
 let HELD_SYNC_TRANSITION: {
 	origin: Block;
 	entries: Array<TransitionActionUpdate<any>>;
-	puSwaps: Array<[Map<HookSlot, unknown>, HookSlot, unknown, unknown]> | null;
+	memoSwaps: TransitionMemoSwap[] | null;
 	/** Values the attempt's warm walk created, adoptable in ANY later round's
 	 * episode. `taken` resets on each re-revert so every round can adopt. */
 	warmHarvest: WarmHarvestEntry[] | null;
@@ -1158,12 +1232,12 @@ let HELD_SYNC_TRANSITION: {
 /**
  * Swaps a promotion applied forward, pending the promoted round's outcome. A
  * held transition can take several rounds — each settle promotes, renders, and
- * may suspend on a LATER dependency. The next round's unwind must swap back
- * everything promoted so far, not just that round's own publishes, or the cue
- * re-render dep-misses the earlier slots and re-creates old-version requests.
+ * may suspend on a LATER dependency. Earlier publications remain available to
+ * the continuing rounds, which do not need another old-input cue render. This
+ * carrier both retains those values and identifies a continuing attempt.
  * Cleared when a promoted round commits or the transition is discarded.
  */
-let PROMOTED_PU_SWAPS: Array<[Map<HookSlot, unknown>, HookSlot, unknown, unknown]> | null = null;
+let PROMOTED_MEMO_SWAPS: TransitionMemoSwap[] | null = null;
 /** The harvest survives promotion the same way, for the round after next. */
 let PROMOTED_WARM_HARVEST: WarmHarvestEntry[] | null = null;
 
@@ -1187,7 +1261,7 @@ function beginTransitionAttempt(block: Block): TransitionAttempt | null {
 		refDetach: refDetachQueue.length,
 		effectDeps: snapshotSubtreeEffectDeps(block),
 		heldSlots: null,
-		puSwaps: null,
+		memoSwaps: null,
 	};
 	ACTIVE_TRANSITION_ATTEMPT = attempt;
 	return attempt;
@@ -1199,7 +1273,7 @@ function endTransitionAttempt(attempt: TransitionAttempt | null): void {
 	const held = attempt.heldSlots;
 	// A promoted round that ran to commit makes its forward state canon.
 	if (held === null || held.size === 0) {
-		PROMOTED_PU_SWAPS = null;
+		PROMOTED_MEMO_SWAPS = null;
 		PROMOTED_WARM_HARVEST = null;
 	}
 	// The unwind is only sound when the driving cells can be reverted with it:
@@ -1241,26 +1315,23 @@ function endTransitionAttempt(attempt: TransitionAttempt | null): void {
 		refAttachQueue.length = attempt.refAttach;
 		refDetachQueue.length = attempt.refDetach;
 		restoreSubtreeEffectDeps(attempt.origin, attempt.effectDeps);
-		// FIRST hold of a transition: swap the parallel-use entries back so the
+		// FIRST hold of a transition: swap the memo entries back so the
 		// cue re-render dep-hits the old creations instead of re-fetching them,
 		// and schedule that cue re-render below. A CONTINUING round (a promoted
 		// render suspending on a later dependency) needs neither: the old screen
 		// and the cue bindings were re-established in round one and the journal
-		// rollback above just restored them — so the parallel-use entries stay
+		// rollback above just restored them — so the memo entries stay
 		// monotonically FORWARD, and every later round dep-hits them outright.
-		const continuing = PROMOTED_PU_SWAPS !== null || PROMOTED_WARM_HARVEST !== null;
-		let puSwaps = attempt.puSwaps;
+		const continuing = PROMOTED_MEMO_SWAPS !== null || PROMOTED_WARM_HARVEST !== null;
+		let memoSwaps = attempt.memoSwaps;
 		if (continuing) {
-			if (PROMOTED_PU_SWAPS !== null) {
-				puSwaps = puSwaps === null ? PROMOTED_PU_SWAPS : PROMOTED_PU_SWAPS.concat(puSwaps);
-				PROMOTED_PU_SWAPS = null;
+			if (PROMOTED_MEMO_SWAPS !== null) {
+				memoSwaps =
+					memoSwaps === null ? PROMOTED_MEMO_SWAPS : PROMOTED_MEMO_SWAPS.concat(memoSwaps);
+				PROMOTED_MEMO_SWAPS = null;
 			}
-		} else if (puSwaps !== null) {
-			for (let i = puSwaps.length - 1; i >= 0; i--) {
-				const [hooks, slot, prev] = puSwaps[i];
-				if (prev === undefined) hooks.delete(slot);
-				else hooks.set(slot, prev);
-			}
+		} else if (memoSwaps !== null) {
+			for (let i = memoSwaps.length - 1; i >= 0; i--) applyTransitionMemoSwap(memoSwaps[i], false);
 		}
 		for (let i = 0; i < entries.length; i++) {
 			entries[i].slot.value = entries[i].baseValue;
@@ -1298,7 +1369,7 @@ function endTransitionAttempt(attempt: TransitionAttempt | null): void {
 		HELD_SYNC_TRANSITION = {
 			origin: attempt.origin,
 			entries,
-			puSwaps,
+			memoSwaps,
 			warmHarvest,
 			holders: new Set(held),
 		};
@@ -1316,7 +1387,7 @@ function endTransitionAttempt(attempt: TransitionAttempt | null): void {
 }
 
 /**
- * Record a parallel-use memo entry the attempt replaces, with both directions.
+ * Record a hook-map memo entry the attempt replaces, with both directions.
  * The cue re-render renders the OLD inputs and must dep-hit the old entries —
  * a miss would re-create old-version requests against data sources that have
  * moved on. The PROMOTED render renders the NEW inputs and must dep-hit the
@@ -1325,11 +1396,30 @@ function endTransitionAttempt(attempt: TransitionAttempt | null): void {
  * Attempt-owned: the per-boundary journal windows predate this and keep their
  * pinned replay behavior.
  */
-function journalPuEntry(scope: Scope, slot: HookSlot, next: unknown): void {
+function journalMemoEntry(scope: Scope, slot: HookSlot, next: unknown): void {
 	const attempt = ACTIVE_TRANSITION_ATTEMPT;
 	if (attempt === null) return;
 	const hooks = ensureHooks(scope);
-	(attempt.puSwaps ??= []).push([hooks, slot, hooks.get(slot), next]);
+	(attempt.memoSwaps ??= []).push([0, hooks, slot, hooks.get(slot), next]);
+}
+
+/** Inline memos publish immediately too, but hold/promotion must restore each
+ * complete entry rather than leaving its deps and value from different renders. */
+function journalHookMemoCells(cells: any[], base: number, next: any[]): void {
+	const attempt = ACTIVE_TRANSITION_ATTEMPT;
+	if (attempt === null) return;
+	(attempt.memoSwaps ??= []).push([1, cells, base, cells.slice(base, base + next.length), next]);
+}
+
+function applyTransitionMemoSwap(swap: TransitionMemoSwap, forward: boolean): void {
+	if (swap[0] === 0) {
+		const value = forward ? swap[4] : swap[3];
+		if (!forward && value === undefined) swap[1].delete(swap[2]);
+		else swap[1].set(swap[2], value);
+		return;
+	}
+	const values = forward ? swap[4] : swap[3];
+	for (let i = 0; i < values.length; i++) swap[1][swap[2] + i] = values[i];
 }
 
 /** True while the held cells are untouched — an in-place boundary success under
@@ -1349,15 +1439,13 @@ function promoteHeldSyncTransition(): boolean {
 	const held = HELD_SYNC_TRANSITION;
 	if (held === null) return false;
 	HELD_SYNC_TRANSITION = null;
-	// Swap the attempt's parallel-use creations forward BEFORE the renders run,
+	// Swap the attempt's memo entries forward BEFORE the renders run,
 	// so the promoted pass dep-hits everything the attempt already started.
-	const puSwaps = held.puSwaps;
-	if (puSwaps !== null) {
-		for (let i = 0; i < puSwaps.length; i++) {
-			const [hooks, slot, , next] = puSwaps[i];
-			hooks.set(slot, next);
-		}
-		PROMOTED_PU_SWAPS = PROMOTED_PU_SWAPS === null ? puSwaps : PROMOTED_PU_SWAPS.concat(puSwaps);
+	const memoSwaps = held.memoSwaps;
+	if (memoSwaps !== null) {
+		for (let i = 0; i < memoSwaps.length; i++) applyTransitionMemoSwap(memoSwaps[i], true);
+		PROMOTED_MEMO_SWAPS =
+			PROMOTED_MEMO_SWAPS === null ? memoSwaps : PROMOTED_MEMO_SWAPS.concat(memoSwaps);
 	}
 	// The harvest stays adoptable for this round's renders and, via the
 	// carrier, for the round after a re-suspend.
@@ -1392,7 +1480,7 @@ function discardHeldSyncTransition(state: TrySlot): void {
 	if (held === null || !held.holders.delete(state)) return;
 	if (held.holders.size === 0) {
 		HELD_SYNC_TRANSITION = null;
-		PROMOTED_PU_SWAPS = null;
+		PROMOTED_MEMO_SWAPS = null;
 		PROMOTED_WARM_HARVEST = null;
 	}
 }
@@ -2495,6 +2583,9 @@ const refAttachQueue: RefAttach[] = [];
 // trampoline. The common drain remains branch-free, and Fragment instances do not
 // allocate a getter closure.
 function attachLiveFragmentRef(instance: FragmentInstance): void {
+	// Portal slots mount after the fragment binding but before commit. Publish all
+	// logically owned child handles before handing the instance to its callback.
+	instance._reapply();
 	attachRef(instance._currentRef, instance);
 }
 
@@ -2550,12 +2641,10 @@ interface OffscreenWip {
 	refDetachCheckpoint: number;
 }
 
-// FragmentInstances that currently hold event listeners and/or observers. After
-// each commit we re-apply their stored bindings to their CURRENT children, so a
-// child that mounts into a fragment later picks up the listeners/observers added
-// earlier — React's `commitNewChildToFragmentInstance` future-children contract.
-// Empty for any app that doesn't use fragment-ref listeners (the common case),
-// so the per-commit cost is a single `size` check.
+// Live fragment refs need a commit-time child diff even before a listener or
+// observer is installed: each current first-level host child exposes its owning
+// FragmentInstances through `reactFragments`. Apps without fragment refs keep
+// the same single-size-check commit fast path.
 const activeFragments = new Set<FragmentInstance>();
 
 function reapplyFragmentBindings(): void {
@@ -2886,21 +2975,25 @@ function drainQueue(): { err: any } | null {
 				// No tryBlock claimed this error. Don't let it abandon the rest of
 				// the queue or skip commit — that would strand unrelated roots
 				// batched into the same flush and drop their already-rendered
-				// effects. Collect them all; a multi-root flush with several
-				// unhandled errors surfaces an AggregateError (React parity), a
-				// single one rethrows as-is.
-				if (pendingError === null) pendingError = { err: unhandled, all: [unhandled] };
-				else {
-					pendingError.all.push(unhandled);
-					pendingError.err =
-						typeof AggregateError === 'function'
-							? new AggregateError(pendingError.all, formatClientError(13))
-							: pendingError.all[0];
+				// effects. A root created with onUncaughtError consumes its own
+				// report; otherwise collect them all — a multi-root flush with
+				// several unhandled errors surfaces an AggregateError (React
+				// parity), a single one rethrows as-is.
+				if (!reportUncaughtError(block, unhandled)) {
+					if (pendingError === null) pendingError = { err: unhandled, all: [unhandled] };
+					else {
+						pendingError.all.push(unhandled);
+						pendingError.err =
+							typeof AggregateError === 'function'
+								? new AggregateError(pendingError.all, formatClientError(13))
+								: pendingError.all[0];
+					}
 				}
 				// React 19 contract: an error no boundary handles unmounts the
 				// ENTIRE tree of the failed root — known-broken UI never stays on
 				// screen (ReactIncrementalErrorHandling:1338/:712). Only the
 				// offending root is torn down; unrelated roots keep draining.
+				// onUncaughtError replaces the report, not the recovery.
 				let root: Block = block;
 				while (root.parentBlock !== null) root = root.parentBlock;
 				if (root.kind === 'root' && !root.disposed) unmountBlock(root);
@@ -2927,6 +3020,23 @@ function flush(): void {
 		}
 		return;
 	}
+	// A discrete event can synchronously drain work after its microtask was
+	// armed. An empty render queue alone is not enough: first mounts/hydration
+	// still need their commit, and refs/Fragment bindings are intentionally not
+	// included in hasPendingWork(). Retained Actions and ViewTransition also
+	// carry flush-finalization work outside those queues.
+	if (
+		!hasPendingWork() &&
+		refDetachQueue.length === 0 &&
+		refAttachQueue.length === 0 &&
+		activeFragments.size === 0 &&
+		FLUSHED_TRANSITION_UPDATES.length === 0 &&
+		VIEW_TRANSITION_DRIVER === null
+	) {
+		if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__)
+			__devtoolsNotifyFlush();
+		return;
+	}
 	// The optional driver owns all concrete ViewTransition state/implementation.
 	// A client that never retains the feature sees only this null check.
 	if (VIEW_TRANSITION_DRIVER?.routeFlush() === true) return;
@@ -2940,20 +3050,32 @@ interface FocusSelectionSnapshot {
 	contentEditable: boolean;
 }
 
-/** Resolve the focused element in the root's own document and same-origin frames. */
+/** Resolve focus through same-origin frames and any nested open shadow roots. */
 function activeElementForDocument(doc: Document): Element | null {
 	try {
 		let focused = doc.activeElement;
-		while (focused !== null && focused.localName === 'iframe') {
-			let nested: Document | null;
-			try {
-				nested = (focused as HTMLIFrameElement).contentDocument;
-			} catch {
-				break;
+		// Unfocused documents usually report body. It can itself host an open
+		// shadow tree, so only skip the descent when that tree has no focus.
+		if (focused === doc.body) {
+			focused = focused?.shadowRoot?.activeElement ?? null;
+			if (focused === null) return null;
+		}
+		while (focused !== null) {
+			if (focused.localName === 'iframe') {
+				let nested: Document | null;
+				try {
+					nested = (focused as HTMLIFrameElement).contentDocument;
+				} catch {
+					break;
+				}
+				if (nested === null) break;
+				const inner = nested.activeElement;
+				if (inner === null) break;
+				focused = inner;
+				continue;
 			}
-			if (nested === null) break;
-			const inner = nested.activeElement;
-			if (inner === null) break;
+			const inner = focused.shadowRoot?.activeElement;
+			if (inner === null || inner === undefined) break;
 			focused = inner;
 		}
 		return focused;
@@ -3107,7 +3229,7 @@ function restoreFocusSelection(snapshot: FocusSelectionSnapshot | null): void {
 	if (snapshot === null) return;
 	const { focused } = snapshot;
 	const doc = focused.ownerDocument;
-	if (activeElementForDocument(doc) === focused || !doc.documentElement.contains(focused)) return;
+	if (activeElementForDocument(doc) === focused || !focused.isConnected) return;
 	if (snapshot.start !== -1) {
 		if (snapshot.contentEditable) {
 			const selection = doc.getSelection();
@@ -3144,6 +3266,15 @@ function restoreFocusSelection(snapshot: FocusSelectionSnapshot | null): void {
 
 type FocusSelectionBatch = FocusSelectionSnapshot | FocusSelectionSnapshot[] | null;
 
+// The scheduler already captures document focus once per render pass. Reuse
+// that snapshot while moving keyed nodes so ordinary unfocused reconciliation
+// never performs an extra activeElement read.
+let renderingFocus: FocusSelectionBatch = null;
+let renderingFocusMoves: Array<{
+	snapshot: FocusSelectionSnapshot;
+	ancestors: Array<{ element: HTMLElement; left: number; top: number }>;
+}> | null = null;
+
 /** A global scheduler drain may contain independently focused documents. */
 function captureQueuedFocusSelection(): FocusSelectionBatch {
 	if (QUEUE.length === 0) return null;
@@ -3172,6 +3303,90 @@ function restoreQueuedFocusSelection(snapshots: FocusSelectionBatch): void {
 	}
 }
 
+function drainQueueWithFocus(snapshots: FocusSelectionBatch): { err: any } | null {
+	if (snapshots === null && renderingFocus === null) return drainQueue();
+	const previous = renderingFocus;
+	const previousMoves = renderingFocusMoves;
+	renderingFocus = snapshots;
+	renderingFocusMoves = null;
+	try {
+		return drainQueue();
+	} finally {
+		try {
+			restoreFocusedMovements();
+		} finally {
+			renderingFocusMoves = previousMoves;
+			renderingFocus = previous;
+		}
+	}
+}
+
+function restoreFocusedMovements(): void {
+	if (renderingFocusMoves === null) return;
+	for (let i = 0; i < renderingFocusMoves.length; i++) {
+		const movement = renderingFocusMoves[i];
+		const snapshot = movement.snapshot;
+		if (snapshot.contentEditable) {
+			const doc = snapshot.focused.ownerDocument;
+			const selection = doc.getSelection();
+			if (selection !== null && activeElementForDocument(doc) === snapshot.focused) {
+				const [anchorNode, anchorOffset] = contentEditablePosition(
+					snapshot.focused,
+					snapshot.start,
+				);
+				const [focusNode, focusOffset] = contentEditablePosition(snapshot.focused, snapshot.end);
+				if (
+					selection.anchorNode !== anchorNode ||
+					selection.anchorOffset !== anchorOffset ||
+					selection.focusNode !== focusNode ||
+					selection.focusOffset !== focusOffset
+				) {
+					const range = doc.createRange();
+					range.setStart(anchorNode, anchorOffset);
+					range.collapse(true);
+					selection.removeAllRanges();
+					selection.addRange(range);
+					selection.extend(focusNode, focusOffset);
+				}
+			}
+		}
+		for (let j = 0; j < movement.ancestors.length; j++) {
+			const ancestor = movement.ancestors[j];
+			ancestor.element.scrollLeft = ancestor.left;
+			ancestor.element.scrollTop = ancestor.top;
+		}
+	}
+}
+
+function captureFocusedMovement(parent: Node, snapshots: Exclude<FocusSelectionBatch, null>): void {
+	let snapshot: FocusSelectionSnapshot | null = null;
+	if (Array.isArray(snapshots)) {
+		for (let i = 0; i < snapshots.length; i++) {
+			if (snapshots[i].focused.ownerDocument === parent.ownerDocument) {
+				snapshot = snapshots[i];
+				break;
+			}
+		}
+	} else if (snapshots.focused.ownerDocument === parent.ownerDocument) {
+		snapshot = snapshots;
+	}
+	if (snapshot === null || !parent.contains(snapshot.focused)) return;
+	if (renderingFocusMoves !== null) {
+		for (let i = 0; i < renderingFocusMoves.length; i++) {
+			if (renderingFocusMoves[i].snapshot === snapshot) return;
+		}
+	}
+	const ancestors: Array<{ element: HTMLElement; left: number; top: number }> = [];
+	for (
+		let ancestor = snapshot.focused.parentElement;
+		ancestor !== null;
+		ancestor = ancestor.parentElement
+	) {
+		ancestors.push({ element: ancestor, left: ancestor.scrollLeft, top: ancestor.scrollTop });
+	}
+	(renderingFocusMoves ??= []).push({ snapshot, ancestors });
+}
+
 /**
  * The flush body proper — render+mutate drain plus the effect commit. Shared
  * verbatim by the plain flush() path and the view-transition update callback
@@ -3198,7 +3413,7 @@ function flushWork(): void {
 		// and letting a child observe an event announcing its own mount.
 		if (QUEUE.length > 0) drainPassivesBeforeRender();
 		const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
-		const pendingError = drainQueue();
+		const pendingError = drainQueueWithFocus(focused);
 		if (focused !== null) restoreQueuedFocusSelection(focused);
 		commitEffects();
 		if (pendingError !== null) throw pendingError.err;
@@ -3495,7 +3710,7 @@ export function flushSync<T>(fn: () => T): T {
 			// exactly what commitEffects already does.
 			if (QUEUE.length > 0) drainPassivesBeforeRender();
 			const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
-			pendingError = drainQueue();
+			pendingError = drainQueueWithFocus(focused);
 			if (focused !== null) restoreQueuedFocusSelection(focused);
 			commitEffects();
 			// A sync-committed effect (a LAYOUT effect calling setState) can schedule MORE
@@ -3521,7 +3736,7 @@ export function flushSync<T>(fn: () => T): T {
 					// first (React's rule; see flush()).
 					drainPassivesBeforeRender();
 					const focused = QUEUE.length === 0 ? null : captureQueuedFocusSelection();
-					const err = drainQueue();
+					const err = drainQueueWithFocus(focused);
 					if (focused !== null) restoreQueuedFocusSelection(focused);
 					if (err !== null && pendingError === null) pendingError = err;
 					commitEffects();
@@ -3605,7 +3820,30 @@ export function queueRefDetach(ref: any, el: Element | FragmentInstance | null):
 	// Capture the active teardown boundary (if we're inside an unmount walk) so a
 	// throwing detach at drain time routes there — React's safelyDetachRef →
 	// captureCommitPhaseError (ReactErrorBoundaries:2782).
-	refDetachQueue.push(ref, el, TEARDOWN_HANDLER);
+	refDetachQueue.push(ref, el, TEARDOWN_HANDLER, TEARDOWN_BLOCK);
+}
+
+/** Replace a changed element/fragment ref without disturbing commit-phase ordering. */
+export function replaceRef(
+	scope: Scope,
+	previous: any,
+	next: any,
+	target: Element | FragmentInstance,
+): any {
+	if (previous != null) queueRefDetach(previous, target);
+	if (next != null) queueRefAttach(scope, next, target);
+	return next;
+}
+
+/** Detach only an own enumerable ref from the latest committed host/spread props. */
+export function queueOwnRefDetach(value: any, target: Element): void {
+	if (
+		value != null &&
+		Object.prototype.propertyIsEnumerable.call(Object(value), 'ref') &&
+		value.ref != null
+	) {
+		queueRefDetach(value.ref, target);
+	}
 }
 
 interface RefDetachSuppression {
@@ -3646,7 +3884,7 @@ function withRefDetachSuppression<T>(entries: SuspenseRefEntry[] | null, fn: () 
 function drainRefDetaches(): void {
 	if (refDetachQueue.length === 0) return;
 	const q = refDetachQueue.splice(0);
-	for (let i = 0; i < q.length; i += 3) {
+	for (let i = 0; i < q.length; i += 4) {
 		try {
 			REF_CALLBACK_DEPTH++;
 			try {
@@ -3657,10 +3895,14 @@ function drainRefDetaches(): void {
 		} catch (err) {
 			if (err instanceof MaximumUpdateDepthError) throw err;
 			// A throwing ref detach must not abort the commit (the remaining detaches
-			// + attaches still run) — route to the deletion's boundary like React.
+			// + attaches still run) — route to the deletion's boundary like React,
+			// reporting through the owning root's callbacks either way.
 			const handler = q[i + 2] as ((e: any) => void) | null;
-			if (handler !== null) handler(err);
-			else console.error(err);
+			const owner = q[i + 3] as Block | null;
+			if (handler !== null) {
+				handler(err);
+				reportCaughtError(owner, err);
+			} else if (!reportUncaughtError(owner, err)) console.error(err);
 		}
 	}
 }
@@ -3689,8 +3931,10 @@ function drainRefAttaches(): void {
 		} catch (err) {
 			if (err instanceof MaximumUpdateDepthError) throw err;
 			const handler = findTryHandler(r.block);
-			if (handler) handler(err);
-			else console.error(err);
+			if (handler) {
+				handler(err);
+				reportCaughtError(r.block, err);
+			} else if (!reportUncaughtError(r.block, err)) console.error(err);
 		}
 	}
 }
@@ -3844,6 +4088,7 @@ export function drainPassiveEffects(): void {
 	// Cancel any scheduler-side passive drain that hadn't fired yet — we're
 	// about to drain inline.
 	passiveScheduled = false;
+	cancelPostPaint();
 	drainPassivePhase();
 }
 
@@ -4039,8 +4284,10 @@ function fireEffectCleanup(e: PendingEffect): void {
 		} catch (err) {
 			if (err instanceof MaximumUpdateDepthError) throw err;
 			const handler = findTryHandler(e.scope.block);
-			if (handler) handler(err);
-			else console.error(err);
+			if (handler) {
+				handler(err);
+				reportCaughtError(e.scope.block, err);
+			} else if (!reportUncaughtError(e.scope.block, err)) console.error(err);
 		}
 	}
 }
@@ -4068,8 +4315,10 @@ function runEffectBody(e: PendingEffect): void {
 		if (err instanceof MaximumUpdateDepthError) throw err;
 		// Route effect errors to the nearest enclosing tryBlock, if any.
 		const handler = findTryHandler(e.scope.block);
-		if (handler) handler(err);
-		else console.error(err);
+		if (handler) {
+			handler(err);
+			reportCaughtError(e.scope.block, err);
+		} else if (!reportUncaughtError(e.scope.block, err)) console.error(err);
 		return;
 	}
 	if (typeof cleanup === 'function') {
@@ -4209,23 +4458,26 @@ function drainEffectEventCommitActions(): void {
 
 // Passive destroys of DELETED scopes, deferred past the sync phase (React
 // defers them to flushPassiveEffects — commitPassiveUnmountEffects). Flat
-// [cleanup, boundary-handler] pairs, pushed by unmountScope's effect-slot walk
+// [cleanup, boundary-handler, owner-block] triples, pushed by unmountScope's effect-slot walk
 // in deletion-walk order (parent→child, declaration order within a scope);
 // the captured handler routes a late throw to the try boundary that enclosed
 // the deletion — the same routing reportTeardownError gave the sync destroys.
-const pendingPassiveUnmounts: Array<Cleanup | ((err: any) => void) | null> = [];
+const pendingPassiveUnmounts: Array<Cleanup | ((err: any) => void) | Block | null> = [];
 
 function drainDeferredPassiveUnmounts(): void {
 	if (pendingPassiveUnmounts.length === 0) return;
 	const q = pendingPassiveUnmounts.splice(0);
-	for (let i = 0; i < q.length; i += 2) {
+	for (let i = 0; i < q.length; i += 3) {
 		try {
 			runEffectCleanupCallback(q[i] as Cleanup);
 		} catch (err) {
 			if (err instanceof MaximumUpdateDepthError) throw err;
 			const handler = q[i + 1] as ((err: any) => void) | null;
-			if (handler !== null) handler(err);
-			else console.error(err);
+			const owner = q[i + 2] as Block | null;
+			if (handler !== null) {
+				handler(err);
+				reportCaughtError(owner, err);
+			} else if (!reportUncaughtError(owner, err)) console.error(err);
 		}
 	}
 }
@@ -4273,29 +4525,61 @@ function drainStoreSyncs(): void {
 
 // `schedulePostPaint` — fires after the next paint (React's scheduler trick).
 let _postPaintCbs: Array<() => void> = [];
-/** Swap out the pending post-paint callbacks and run them (both delivery paths). */
-function drainPostPaint(): void {
-	const cbs = _postPaintCbs;
+let _postPaintTimeout: ReturnType<typeof setTimeout> | null = null;
+let _postPaintGeneration = 0;
+
+function cancelPostPaint(): void {
+	if (_postPaintCbs.length === 0) return;
 	_postPaintCbs = [];
+	_postPaintGeneration++;
+	if (_postPaintTimeout !== null) {
+		clearTimeout(_postPaintTimeout);
+		_postPaintTimeout = null;
+	}
+	// Preserve the already-requested frame: sibling imperative focus callbacks
+	// may join it after an inline passive drain. Generation checks discard ours.
+}
+
+/** Swap out the pending post-paint callbacks and run them (both delivery paths). */
+function drainPostPaint(generation?: number): void {
+	if (generation !== undefined && generation !== _postPaintGeneration) return;
+	const cbs = _postPaintCbs;
+	if (cbs.length === 0) return;
+	cancelPostPaint();
 	for (let i = 0; i < cbs.length; i++) cbs[i]();
 }
-let _postAfterPaint: (() => void) | undefined;
-function initPostAfterPaint(): () => void {
+let _postAfterPaint: ((generation: number) => void) | undefined;
+function initPostAfterPaint(): (generation: number) => void {
 	if (_postAfterPaint === undefined) {
 		if (typeof MessageChannel === 'undefined') {
-			_postAfterPaint = () => setTimeout(drainPostPaint, 0);
+			_postAfterPaint = (generation) => setTimeout(() => drainPostPaint(generation), 0);
 		} else {
 			const channel = new MessageChannel();
-			channel.port1.onmessage = drainPostPaint;
-			_postAfterPaint = () => channel.port2.postMessage(0);
+			channel.port1.onmessage = (event) => drainPostPaint(event?.data);
+			_postAfterPaint = (generation) => channel.port2.postMessage(generation);
 		}
 	}
 	return _postAfterPaint;
 }
 function schedulePostPaint(cb: () => void): void {
 	_postPaintCbs.push(cb);
-	// rAF lands before paint; the shared callback posts a macrotask after paint.
-	requestAnimationFrame(initPostAfterPaint());
+	if (_postPaintCbs.length !== 1) return;
+	const postAfterPaint = initPostAfterPaint();
+	const generation = ++_postPaintGeneration;
+	const hidden = typeof document !== 'undefined' && document.visibilityState === 'hidden';
+	const hasAnimationFrame = typeof requestAnimationFrame === 'function';
+	// Background tabs and occluded WebViews may never receive an animation
+	// frame. One bounded timer per batch prevents passive effects starving while
+	// the ordinary visible-page path still waits for rAF and its post-paint task.
+	_postPaintTimeout = setTimeout(
+		() => drainPostPaint(generation),
+		hidden || !hasAnimationFrame ? 0 : 250,
+	);
+	if (!hidden && hasAnimationFrame) {
+		requestAnimationFrame(() => {
+			postAfterPaint(generation);
+		});
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -5049,20 +5333,27 @@ export function componentSlotLite<P>(
 // detach throw (drainRefDetaches) routes to the same boundary.
 let TEARDOWN_DEPTH = 0;
 let TEARDOWN_HANDLER: ((err: any) => void) | null = null;
+/** The outermost deleted block — root-callback routing for teardown errors. */
+let TEARDOWN_BLOCK: Block | null = null;
 let TEARDOWN_ERRORS: any[] | null = null;
 
 function reportTeardownError(err: any): void {
 	if (TEARDOWN_HANDLER !== null) (TEARDOWN_ERRORS ??= []).push(err);
-	else console.error(err);
+	else if (!reportUncaughtError(TEARDOWN_BLOCK, err)) console.error(err);
 }
 
 function dispatchTeardownErrors(): void {
 	const errs = TEARDOWN_ERRORS;
 	const h = TEARDOWN_HANDLER;
+	const blk = TEARDOWN_BLOCK;
 	TEARDOWN_ERRORS = null;
 	TEARDOWN_HANDLER = null;
+	TEARDOWN_BLOCK = null;
 	if (errs !== null && h !== null) {
-		for (let i = 0; i < errs.length; i++) h(errs[i]);
+		for (let i = 0; i < errs.length; i++) {
+			h(errs[i]);
+			reportCaughtError(blk, errs[i]);
+		}
 	}
 }
 
@@ -5070,6 +5361,7 @@ function unmountBlock(block: Block, detachDom: boolean = true): void {
 	if (block.disposed) return;
 	if (TEARDOWN_DEPTH === 0) {
 		TEARDOWN_HANDLER = findTryHandler(block.parentBlock) ?? rendererRegionTryHandler(block);
+		TEARDOWN_BLOCK = block;
 	}
 	TEARDOWN_DEPTH++;
 	try {
@@ -5187,7 +5479,7 @@ function unmountScope(scope: Scope, detachDom: boolean = true): void {
 			if (cleanup === undefined) continue;
 			slot.cleanup = undefined;
 			if (slot.phase === PASSIVE) {
-				pendingPassiveUnmounts.push(cleanup, TEARDOWN_HANDLER);
+				pendingPassiveUnmounts.push(cleanup, TEARDOWN_HANDLER, TEARDOWN_BLOCK);
 				// Arm the post-paint drain for unmounts OUTSIDE a commit
 				// (root.unmount()); a commit-driven unmount would re-arm in
 				// commitEffects anyway, deduped by the flag.
@@ -5413,10 +5705,9 @@ export function useState<T>(initial?: T | (() => T), slot?: HookSlot): StateTupl
 			value: initVal,
 			setter: (next) => {
 				const previous = stagedTransitionValue(s!);
-				const operation = typeof next === 'function' ? (next as (p: T) => T) : () => next;
-				const computed = operation(previous);
+				const computed = typeof next === 'function' ? (next as (p: T) => T)(previous) : next;
 				if (Object.is(computed, previous)) return;
-				if (stageTransitionValue(s!, block, operation, computed)) {
+				if (stageTransitionValue(s!, block, next, computed)) {
 					if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
 						const update = s!.pendingActionBatch?.updates.get(s!) as
 							TransitionActionUpdate<T> | undefined;
@@ -6052,8 +6343,7 @@ function enqueueEffect(slot: HookSlot, fn: EffectFn, deps: any[] | undefined, ph
 // normally supplies an inferred or explicit deps array before it. Keep the
 // trailing-symbol reinterpret for direct/uncompiled calls and normalize the
 // public `null` escape hatch to undefined; internally undefined means "run or
-// recompute on every commit/render". Shared by the effect hooks AND useMemo;
-// useCallback keeps its own reinterpret fork (it must forward the RAW slot).
+// recompute on every commit/render". Shared by the effect and memo hooks.
 function resolveHookArgs(
 	name: string,
 	deps: any[] | null | symbol | undefined,
@@ -6085,6 +6375,66 @@ export function useInsertionEffect(fn: EffectFn, deps?: any[] | null, slot?: Hoo
 	enqueueEffect(s, fn, d, INSERTION);
 }
 
+interface MemoHookEntry<T = any> {
+	deps: any[] | undefined;
+	value: T;
+	warmEpisode?: number;
+}
+
+function memoEntryHit<T>(slot: HookSlot, entry: MemoHookEntry<T>): MemoHookEntry<T> {
+	if (
+		entry.warmEpisode !== CURRENT_WARM_EPISODE &&
+		recordRealWarmMemo(slot, entry.deps as any[], entry)
+	) {
+		entry.warmEpisode = CURRENT_WARM_EPISODE;
+	}
+	return entry;
+}
+
+function adoptMemoEntry<T>(scope: Scope, slot: HookSlot, deps: any[]): MemoHookEntry<T> | null {
+	const adopted = adoptWarmValue(slot, deps);
+	if (adopted === WARM_MISS) return null;
+	const entry: MemoHookEntry<T> = {
+		deps,
+		value: adopted as T,
+		warmEpisode: CURRENT_WARM_EPISODE,
+	};
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalMemoEntry(scope, slot, entry);
+	ensureHooks(scope).set(slot, entry);
+	return entry;
+}
+
+function readMemoEntry<T>(
+	scope: Scope,
+	slot: HookSlot,
+	deps: any[] | undefined,
+): MemoHookEntry<T> | null {
+	const prev = scope.hooks?.get(slot) as MemoHookEntry<T> | undefined;
+	// deps === undefined → recompute every render (`null` at the public API;
+	// direct/uncompiled omitted calls also retain this runtime fallback).
+	if (prev && deps !== undefined && !depsChanged(prev.deps, deps)) {
+		return memoEntryHit(slot, prev);
+	}
+	// Parallel-use warming: before recomputing, adopt a prefetched creation for
+	// this slot (started by warmMemo during a suspended ancestor's warm walk) —
+	// the fetch is already in flight. Only compiler-warmed slots can hit;
+	// WARM_EVER keeps the ancestor walk off apps that never warm.
+	return WARM_EVER && deps !== undefined ? adoptMemoEntry(scope, slot, deps) : null;
+}
+
+function publishMemoEntry<T>(scope: Scope, slot: HookSlot, deps: any[] | undefined, value: T): T {
+	const entry: MemoHookEntry<T> = { deps, value };
+	// The attempt records the replacement both ways: the cue re-render must
+	// dep-hit the old entry (never re-create old-version requests), and the
+	// promoted render must dep-hit this one (never create twice).
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalMemoEntry(scope, slot, entry);
+	ensureHooks(scope).set(slot, entry);
+	if (deps !== undefined && recordRealWarmMemo(slot, deps, entry)) {
+		entry.warmEpisode = CURRENT_WARM_EPISODE;
+	}
+	return value;
+}
+
 export function useMemo<T>(compute: (...deps: any[]) => T, deps?: any[] | null, slot?: symbol): T;
 export function useMemo<T>(
 	compute: (...deps: any[]) => T,
@@ -6093,48 +6443,14 @@ export function useMemo<T>(
 ): T {
 	const [d, s] = resolveHookArgs('useMemo', deps, slot);
 	const scope = CURRENT_SCOPE!;
-	const prev = scope.hooks?.get(s) as
-		{ deps: any[] | undefined; value: T; warmEpisode?: number } | undefined;
-	// deps === undefined → recompute every render (`null` at the public API;
-	// direct/uncompiled omitted calls also retain this runtime fallback).
-	if (prev && d !== undefined && !depsChanged(prev.deps, d)) {
-		if (prev.warmEpisode !== CURRENT_WARM_EPISODE && recordRealWarmMemo(s, d, prev)) {
-			prev.warmEpisode = CURRENT_WARM_EPISODE;
-		}
-		return prev.value;
-	}
-	// Parallel-use warming: before recomputing, adopt a prefetched creation for
-	// this slot (started by warmMemo during a suspended ancestor's warm walk) —
-	// the fetch is already in flight. Only compiler-warmed slots can hit;
-	// WARM_EVER keeps the ancestor walk off apps that never warm.
-	if (WARM_EVER && d !== undefined) {
-		const adopted = adoptWarmValue(s, d);
-		if (adopted !== WARM_MISS) {
-			const adoptedEntry = {
-				deps: d,
-				value: adopted as T,
-				warmEpisode: CURRENT_WARM_EPISODE,
-			};
-			if (ACTIVE_TRANSITION_ATTEMPT !== null) journalPuEntry(scope, s, adoptedEntry);
-			ensureHooks(scope).set(s, adoptedEntry);
-			return adopted as T;
-		}
-	}
+	const entry = readMemoEntry<T>(scope, s, d);
+	if (entry !== null) return entry.value;
 	// Spread deps as positional args (superset of React — see PendingEffect.args):
 	// a factory written as a pure function of its deps is hoistable. Zero-arg
 	// React-style factories ignore the extra args.
 	// eslint-disable-next-line prefer-spread
 	const value = compute.apply(null, (d ?? []) as []);
-	const entry: { deps: any[] | undefined; value: T; warmEpisode?: number } = { deps: d, value };
-	// The attempt records the replacement both ways: the cue re-render must
-	// dep-hit the old entry (never re-create old-version requests), and the
-	// promoted render must dep-hit this one (never create twice).
-	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalPuEntry(scope, s, entry);
-	ensureHooks(scope).set(s, entry);
-	if (d !== undefined && recordRealWarmMemo(s, d, entry)) {
-		entry.warmEpisode = CURRENT_WARM_EPISODE;
-	}
-	return value;
+	return publishMemoEntry(scope, s, d, value);
 }
 
 export function useCallback<F extends (...args: any[]) => any>(
@@ -6147,21 +6463,106 @@ export function useCallback<F extends (...args: any[]) => any>(
 	deps?: any[] | null,
 	slot?: HookSlot,
 ): F {
-	// Trailing-symbol ABI (see resolveHookArgs): `useCallback(fn)` arrives as
-	// `useCallback(fn, slot)`. Reinterpret the omitted-deps case HERE so the slot Symbol
-	// can't leak into useMemo's `deps` array (it would in a custom-hook context, where
-	// resolveSlot turns the otherwise-undefined slot into the path prefix, defeating
-	// useMemo's own reinterpret guard). Forward the RAW slot — useMemo does the single
-	// resolveSlot; resolving here too and passing the result would double-combine the
-	// custom-hook path prefix into the wrong slot.
-	if (slot === undefined && typeof deps === 'symbol') {
-		slot = deps as unknown as symbol;
-		deps = undefined;
+	// Resolve the raw slot exactly once, including the omitted-deps Symbol ABI
+	// and a custom hook's path. The callback is a value: never invoke it or
+	// allocate another closure merely to return it on a cache miss.
+	const [d, s] = resolveHookArgs('useCallback', deps, slot);
+	const scope = CURRENT_SCOPE!;
+	const entry = readMemoEntry<F>(scope, s, d);
+	return entry === null ? publishMemoEntry(scope, s, d, fn) : entry.value;
+}
+
+/** Compiler-owned intrinsics cannot be shadowed by bindings in an authored body. */
+export const hookMemoEqual = Object.is;
+
+export function hookMemoCreate(size: number): any[] {
+	return new Array(size).fill(undefined);
+}
+
+/** Compiler ABI: publish a successful inline memo computation immediately.
+ * History is needed only while an attempt can hold the prior screen; ordinary
+ * suspend/replay continues to see the just-published cells. Fixed arities keep
+ * ordinary cache misses free of a rest-parameter dependency array. */
+export function hookMemoPublish0<T>(cells: any[], base: number, value: T): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalHookMemoCells(cells, base, [true, value]);
+	cells[base + 1] = value;
+	cells[base] = true;
+	return value;
+}
+
+export function hookMemoPublish1<T>(cells: any[], base: number, value: T, d0: any): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalHookMemoCells(cells, base, [true, d0, value]);
+	cells[base + 2] = value;
+	cells[base + 1] = d0;
+	cells[base] = true;
+	return value;
+}
+
+export function hookMemoPublish2<T>(cells: any[], base: number, value: T, d0: any, d1: any): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalHookMemoCells(cells, base, [true, d0, d1, value]);
+	cells[base + 3] = value;
+	cells[base + 1] = d0;
+	cells[base + 2] = d1;
+	cells[base] = true;
+	return value;
+}
+
+export function hookMemoPublish3<T>(
+	cells: any[],
+	base: number,
+	value: T,
+	d0: any,
+	d1: any,
+	d2: any,
+): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) {
+		journalHookMemoCells(cells, base, [true, d0, d1, d2, value]);
 	}
-	// Guard here (rather than letting useMemo throw) so the diagnostic names useCallback.
-	// resolveSlot is a read-only peek at the path stack, so this doesn't disturb useMemo's.
-	if (resolveSlot(slot) === undefined) missingSlot('useCallback');
-	return (useMemo as any)(() => fn, deps, slot) as F;
+	cells[base + 4] = value;
+	cells[base + 1] = d0;
+	cells[base + 2] = d1;
+	cells[base + 3] = d2;
+	cells[base] = true;
+	return value;
+}
+
+export function hookMemoPublish4<T>(
+	cells: any[],
+	base: number,
+	value: T,
+	d0: any,
+	d1: any,
+	d2: any,
+	d3: any,
+): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) {
+		journalHookMemoCells(cells, base, [true, d0, d1, d2, d3, value]);
+	}
+	cells[base + 5] = value;
+	cells[base + 1] = d0;
+	cells[base + 2] = d1;
+	cells[base + 3] = d2;
+	cells[base + 4] = d3;
+	cells[base] = true;
+	return value;
+}
+
+/** Larger dependency lists retain the compact variadic publication fallback. */
+export function hookMemoPublish<T>(cells: any[], base: number, value: T, ...deps: any[]): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) {
+		journalHookMemoCells(cells, base, [true, ...deps, value]);
+	}
+	cells[base + deps.length + 1] = value;
+	for (let i = 0; i < deps.length; i++) cells[base + i + 1] = deps[i];
+	cells[base] = true;
+	return value;
+}
+
+/** One-cell form for compiler-owned lifetime-invariant callback values. */
+export function hookMemoPublishInvariant<T>(cells: any[], base: number, value: T): T {
+	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalHookMemoCells(cells, base, [value]);
+	cells[base] = value;
+	return value;
 }
 
 export function useRef<T>(initial: T, slot?: symbol): { current: T };
@@ -6395,6 +6796,27 @@ export function useSyncExternalStore<T>(
 						}
 					: () => scheduleRender(block),
 			onStoreChange: () => {
+				if (block.disposed) return;
+				// An urgent, non-deferred render already queued for this owner will
+				// read every reached store again. Repeated notifications in the same
+				// task need not run selectors merely to rediscover that pending work.
+				// Do not skip transition/deferred upgrades or render-phase diagnostics;
+				// renderBlock also clears pending before the body, so a notification
+				// after its snapshot read can still request a replay. Profiling and
+				// unwrapped-act diagnostics retain the ordinary scheduling path.
+				if (
+					CURRENT_BLOCK === null &&
+					block.pending &&
+					block.pendingMode === 'urgent' &&
+					!block.pendingDeferred &&
+					!(typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) &&
+					(process.env.NODE_ENV === 'production' ||
+						!IS_OCTANE_ACT_ENVIRONMENT ||
+						actScopeDepth !== 0 ||
+						syncFlush)
+				) {
+					return;
+				}
 				if (checkStoreChanged(created)) created.forceUpdate();
 			},
 			block,
@@ -6509,7 +6931,38 @@ export function createContext<T>(defaultValue: T): Context<T> {
 	ctx.defaultValue = defaultValue;
 	ctx.$$version = 0;
 	ctx.Provider = ctx;
+	if (process.env.NODE_ENV !== 'production') {
+		// Octane deliberately has no render-prop Consumer (slot-keyed hooks make
+		// use()/useContext legal behind any condition — the pattern Consumer
+		// existed to work around). Accessing it warns once per context and still
+		// returns undefined, so behavior matches production and feature probes
+		// (`Ctx.Consumer || fallback`) keep working.
+		let consumerWarned = false;
+		Object.defineProperty(ctx, 'Consumer', {
+			configurable: true,
+			get() {
+				if (!consumerWarned) {
+					consumerWarned = true;
+					console.error(
+						'Octane has no Context.Consumer. Read the context directly with use(Context) or ' +
+							'useContext(Context) in the child component — Octane hooks are call-site keyed, ' +
+							'so the read is legal behind any condition the render-prop form was working around.',
+					);
+				}
+				return undefined;
+			},
+		});
+	}
 	return ctx;
+}
+
+/**
+ * Identify the Context already provided by this deferred child's own scope
+ * without observing userland Provider accessors or Proxy traps.
+ * @internal
+ */
+export function compilerOwnsContextProvider(value: unknown): boolean {
+	return CURRENT_SCOPE?.$$ctxValues?.has(value as Context<any>) === true;
 }
 
 /** Renderer-boundary adapter; ordinary DOM roots never retain this by themselves. */
@@ -6625,6 +7078,14 @@ export function markChildrenBlock<T>(fn: T): T {
 }
 
 /**
+ * Marks a component binding whose authored JSX children must remain inspectable
+ * element descriptors. The compiler consumes the call; runtime identity is unchanged.
+ */
+export function descriptorChildren<T>(component: T): T {
+	return component;
+}
+
+/**
  * True when `value` is a compiler-generated children-block — a component's element/text children
  * that `.tsrx` lowered to a render function — as opposed to a user render-prop function or any other
  * value. Lets a binding with a function-as-child API tell `<C>{(x) => …}</C>` (call it) apart from
@@ -6721,6 +7182,7 @@ function promoteHmrBlockRange(block: Block): void {
 function resetHmrBlock(block: Block): void {
 	if (TEARDOWN_DEPTH === 0) {
 		TEARDOWN_HANDLER = findTryHandler(block.parentBlock) ?? rendererRegionTryHandler(block);
+		TEARDOWN_BLOCK = block;
 	}
 	TEARDOWN_DEPTH++;
 	let abortedRefs: SuspenseRefEntry[] | null = null;
@@ -6766,11 +7228,7 @@ function resetHmrBlock(block: Block): void {
 		const hooks = block.hooks;
 		if (hooks !== null) {
 			for (const value of hooks.values()) {
-				if (
-					value !== null &&
-					typeof value === 'object' &&
-					Object.prototype.hasOwnProperty.call(value, 'deps')
-				) {
+				if (value !== null && typeof value === 'object' && hasOwnProp.call(value, 'deps')) {
 					value.deps = undefined;
 				}
 			}
@@ -6796,6 +7254,7 @@ function resetScopeChildren(scope: Scope): void {
 	const block = scope.block;
 	if (TEARDOWN_DEPTH === 0) {
 		TEARDOWN_HANDLER = findTryHandler(block.parentBlock) ?? rendererRegionTryHandler(block);
+		TEARDOWN_BLOCK = block;
 	}
 	TEARDOWN_DEPTH++;
 	// The bracket spans the WHOLE reset, not just the teardown call: a queued error is dispatched
@@ -6877,8 +7336,6 @@ interface HydrateSlot {
 	intentBoundary: HydrationIntentBoundary;
 	delegatedDynamicIntent: boolean;
 	serverPreserved: boolean;
-	/** Snapshot used instead of authored fallback for an initial SSR boundary. */
-	preservedFallbackNodes: Node[] | null;
 	seedRaw: string | null;
 	idState: RootIdState;
 	/** One-shot result of the client-only function form of `when`. */
@@ -6910,6 +7367,62 @@ interface HydrateSlot {
 // Created only for the rare activation that races a renderer stream. Keep the
 // ordinary Hydrate state shape unchanged and retain no completed boundaries.
 let hydrateStreamWaitCleanups: WeakMap<HydrateSlot, () => void> | null = null;
+
+interface PreservedHydrateActivation {
+	hydration: HydrationCapability;
+	thenable: TrackedThenable<unknown>;
+	generation: number;
+	capture: OffscreenCapture;
+	source: Block | null;
+	cursor: Node | null;
+}
+
+// Allocate bookkeeping only when an already-visible SSR arm really suspends.
+// Keeping its actual DOM attached preserves focus, selection, draft values and
+// native IME sessions; cloning that arm cannot preserve browser-owned state.
+let preservedHydrateActivations: WeakMap<HydrateSlot, PreservedHydrateActivation> | null = null;
+
+function findSuspendedHydrateBlock(scope: Scope, thenable: TrackedThenable<unknown>): Block | null {
+	const own = (scope.block as Block & { __thenables?: TrackedThenable<unknown>[] }).__thenables;
+	if (own !== undefined && own.includes(thenable)) return scope.block;
+	// Compiler-emitted useBatch can suspend before use() registers a thenable on
+	// its block. The deepest unfinished registered child is that same source.
+	let suspended: Block | null = scope.block.mounted ? null : scope.block;
+	forEachSubtreeChild(scope, (child) => {
+		const candidate = findSuspendedHydrateBlock(child, thenable);
+		if (candidate !== null) suspended = candidate;
+	});
+	return suspended;
+}
+
+function preserveSuspendedHydrateActivation(
+	state: HydrateSlot,
+	hydration: HydrationCapability,
+	thenable: TrackedThenable<unknown>,
+): void {
+	const suspendedBlock = findSuspendedHydrateBlock(state.block, thenable);
+	const activation: PreservedHydrateActivation = {
+		hydration,
+		thenable,
+		generation: state.activationGeneration,
+		capture: WIP_CAPTURE!,
+		source: suspendedBlock === state.block ? null : suspendedBlock,
+		cursor: hydration.node,
+	};
+	(preservedHydrateActivations ??= new WeakMap()).set(state, activation);
+	const resume = () => {
+		if (
+			state.block.disposed ||
+			!state.activationRequested ||
+			state.activationGeneration !== activation.generation ||
+			preservedHydrateActivations?.get(state) !== activation
+		)
+			return;
+		state.serverActivationStarted = false;
+		scheduleRender(state.parentBlock);
+	};
+	thenable.then(resume, resume);
+}
 
 function hydrateStrategyType(when: InternalHydrateProps['when']): HydrationWhen {
 	return typeof when === 'function' ? 'dynamic' : (when?._t ?? 'dynamic');
@@ -7029,40 +7542,40 @@ function renderHydrateChild(state: HydrateSlot, scope: Scope, extra: unknown): v
 
 function hydrateBoundaryBody(state: HydrateSlot): ComponentBody {
 	const contentBody: ComponentBody = (_props, scope, extra) => {
-		if (state.loadedBody === null) {
-			const preload = beginHydratePreload(state);
-			if (preload !== null) {
-				// This internal code-chunk thenable is not application `use()` data and
-				// must never consume a server seed. Track/throw it directly through the
-				// enclosing tryBlock; the stable cached promise makes retries safe.
-				const thenable = preload as TrackedThenable<void>;
-				trackThenable(thenable);
-				if (thenable.status === 'rejected') throw thenable.reason;
-				if (thenable.status !== 'fulfilled') throw new SuspenseException(thenable);
+		try {
+			if (state.loadedBody === null) {
+				const preload = beginHydratePreload(state);
+				if (preload !== null) {
+					// This internal code-chunk thenable is not application `use()` data and
+					// must never consume a server seed. Track/throw it directly through the
+					// enclosing tryBlock; the stable cached promise makes retries safe.
+					const thenable = preload as TrackedThenable<void>;
+					trackThenable(thenable);
+					if (thenable.status === 'rejected') throw thenable.reason;
+					if (thenable.status !== 'fulfilled') throw new SuspenseException(thenable);
+				}
 			}
+			renderHydrateChild(state, scope, extra);
+		} catch (error) {
+			const hydration = activeHydration();
+			if (
+				!state.serverPreserved ||
+				state.hydrated ||
+				hydration === null ||
+				!isSuspenseException(error)
+			) {
+				throw error;
+			}
+			// The SSR arm is already the visible content. Let its adopted try block
+			// remain connected and retry adoption in the same hydration capability
+			// once application data settles, without ever mounting a cloned fallback.
+			preserveSuspendedHydrateActivation(state, hydration, error.thenable);
+			return;
 		}
-		renderHydrateChild(state, scope, extra);
 		state.hydrated = true;
 		useEffect(() => notifyHydrateBoundary(state), [state], HYDRATE_NOTIFY_SLOT);
 	};
 	const pendingBody: ComponentBody = (_props, scope) => {
-		if (state.serverPreserved && state.preservedFallbackNodes !== null) {
-			// Initial-document boundaries keep showing their server result if their
-			// first client attempt suspends. The authored fallback is exclusively for
-			// a later/client-only mount. A slot sentinel prevents a pending-body
-			// refresh from appending the snapshot twice; the pending Block's own range
-			// removes these raw cloned nodes when the child is ready.
-			if (scope.slots[0] === undefined) {
-				for (let i = 0; i < state.preservedFallbackNodes.length; i++) {
-					scope.block.parentNode.insertBefore(
-						state.preservedFallbackNodes[i].cloneNode(true),
-						scope.block.endMarker,
-					);
-				}
-				scope.slots[0] = { __kind: 'hydratePreservedFallback' };
-			}
-			return;
-		}
 		childSlot(scope, 0, scope.block.parentNode, state.props.fallback, scope.block.endMarker);
 	};
 	return (_props, scope) => {
@@ -7209,6 +7722,15 @@ function invalidateHydrateActivation(state: HydrateSlot): void {
 function teardownHydrateBoundary(state: HydrateSlot): void {
 	cleanupHydrateInstallers(state);
 	cleanupHydrateStreamWait(state);
+	const preserved = preservedHydrateActivations?.get(state);
+	if (preserved !== undefined) {
+		preservedHydrateActivations!.delete(state);
+		discardOffscreenCapture(preserved.capture);
+		// The connected server arm never committed its captured refs/effects.
+		// Let the existing exact-host aborted-mount suppression cover descendants
+		// that individually finished before a later sibling suspended.
+		state.block.mounted = false;
+	}
 	state.prefetchAbort?.abort();
 	resolveHydrateWaiters(state, 'abort');
 	unregisterHydrationIntentBoundary(state.wrapper, state.intentBoundary);
@@ -7322,7 +7844,7 @@ function installHydrateInteraction(state: HydrateSlot, strategy: HydrationStrate
 		if (path === null) return;
 		state.replays.push({ event, path });
 		if (event.bubbles) {
-			event.preventDefault();
+			if (shouldPreventHydrationInteractionDefault(event)) event.preventDefault();
 			event.stopPropagation();
 			event.stopImmediatePropagation();
 		}
@@ -7619,7 +8141,6 @@ function createHydrateSlot(
 		intentBoundary,
 		delegatedDynamicIntent: takeDelegatedDynamicHydrationIntent(wrapper),
 		serverPreserved,
-		preservedFallbackNodes: null,
 		seedRaw,
 		idState,
 		dynamicStrategy: null,
@@ -7662,46 +8183,75 @@ function createHydrateSlot(
 function activateHydrateBoundary(state: HydrateSlot): void {
 	const block = state.block;
 	const activationSlot = block.slots[0] as TrySlot | undefined;
-	if (!state.serverPreserved || activationSlot?.__kind === 'trySlotSlot') {
-		// The original server arm can be adopted only once. A cancelled suspended
-		// attempt leaves its internal try slot and preserved snapshot mounted; a
-		// later strategy resumes that slot as client work instead of treating its
-		// synthetic pending markers as untouched server HTML.
+	const preserved = preservedHydrateActivations?.get(state);
+	if (
+		!state.serverPreserved ||
+		(activationSlot?.__kind === 'trySlotSlot' && preserved === undefined)
+	) {
 		renderBlock(block);
 		return;
 	}
-	if (state.preservedFallbackNodes === null) {
-		const snapshot: Node[] = [];
-		for (let node = state.start.nextSibling; node !== null && node !== state.end;) {
-			snapshot.push(node.cloneNode(true));
-			node = node.nextSibling;
-		}
-		state.preservedFallbackNodes = snapshot;
+	const hydration =
+		preserved?.hydration ?? new HydrationCapability(block, state.start.nextSibling, null);
+	if (preserved === undefined) {
+		if (state.seedRaw !== null) hydration.seeds = hydration.parseSeeds(state.seedRaw);
+		hydration.protectRootAnchor(state.end);
 	}
-
-	const hydration = new HydrationCapability(block, state.start.nextSibling, null);
-	if (state.seedRaw !== null) hydration.seeds = hydration.parseSeeds(state.seedRaw);
-	hydration.protectRootAnchor(state.end);
 	const previousHydration = currentHydration;
+	const previousCapture = WIP_CAPTURE;
+	const capture = preserved?.capture ?? createOffscreenCapture();
 	currentHydration = hydration;
+	WIP_CAPTURE = capture;
 	let completed = false;
 	try {
+		if (preserved?.source !== null && preserved?.source !== undefined) {
+			// Existing component slots do not re-enter their own adopted server
+			// ranges on an ordinary parent replay. Complete the actually suspended
+			// leaf at its saved cursor first, then let its ancestors reconcile the
+			// already-adopted siblings without treating their range as fresh DOM.
+			hydration.node = preserved.cursor;
+			try {
+				renderBlock(preserved.source);
+			} catch (error) {
+				if (!isSuspenseException(error)) throw error;
+				preserveSuspendedHydrateActivation(state, hydration, error.thenable);
+				return;
+			}
+		}
 		renderBlock(block);
 		drainHydrationRenderPhaseUpdates(block);
-		hydration.flushClassWrites();
-		hydration.flushTextWarnings();
-		// A first-attempt suspension deliberately leaves the internal try slot's
-		// pending block live until its thenable resumes. Its cursor is parked on
-		// that slot's close marker, so a normal root-remainder sweep would mistake
-		// the still-owned close marker for stale server DOM and detach the anchor
-		// the async retry needs. The pending path has already removed the abandoned
-		// adopted arm; finish/coalesce only after this boundary actually commits.
+		// Suspended initial adoption intentionally leaves its real server arm and
+		// cursor untouched. Sweep only after that same arm eventually commits.
 		if (state.hydrated) {
+			// A descriptor-only child need not clone a compiled root template, and a
+			// resumed cursor can still be inside the internal try slot's owned range.
+			// Wait until adoption completes before claiming that range's remainder:
+			// a later template clone must get the first claim, and DOM added while
+			// suspended must not be skipped by an earlier fallback snapshot.
+			const adoptedSlot = block.slots[0] as TrySlot | undefined;
+			if (adoptedSlot?.__kind === 'trySlotSlot') {
+				hydration.claimRootRemainder(adoptedSlot.end.nextSibling);
+			}
+			hydration.flushClassWrites();
+			hydration.flushTextWarnings();
 			hydration.finishRoot();
 			completed = true;
 		}
+	} catch (error) {
+		// A rejected parked promise can throw while its unfinished source retries.
+		// Discard the same uncommitted work as an explicit boundary unmount before
+		// the enclosing error boundary tears down its partially mounted children.
+		preservedHydrateActivations?.delete(state);
+		discardOffscreenCapture(capture);
+		state.block.mounted = false;
+		throw error;
 	} finally {
+		WIP_CAPTURE = previousCapture;
 		currentHydration = previousHydration;
+	}
+	if (completed) {
+		preservedHydrateActivations?.delete(state);
+		spliceOffscreenCapture(capture);
 	}
 	if (completed && hydration.hasAdjacentRangePair) hydration.coalesce();
 }
@@ -7728,6 +8278,15 @@ function cloneHydrationReplayEvent(event: Event, target: Element): Event {
 	if (realm.FocusEvent !== undefined && event instanceof realm.FocusEvent) {
 		return new realm.FocusEvent(event.type, event);
 	}
+	if (realm.InputEvent !== undefined && event instanceof realm.InputEvent) {
+		return new realm.InputEvent(event.type, event);
+	}
+	if (realm.CompositionEvent !== undefined && event instanceof realm.CompositionEvent) {
+		return new realm.CompositionEvent(event.type, event);
+	}
+	if (realm.TouchEvent !== undefined && event instanceof realm.TouchEvent) {
+		return cloneHydrationTouchEvent(event, realm.TouchEvent);
+	}
 	// Cold: a programmatic dispatch may cross realms, where the original event
 	// came from a parent Window while its target belongs to an iframe Window (or
 	// the reverse). No local constructor claims it, but Web IDL's toStringTag
@@ -7745,7 +8304,35 @@ function cloneHydrationReplayEvent(event: Event, target: Element): Event {
 	if (realm.FocusEvent !== undefined && brand === '[object FocusEvent]') {
 		return new realm.FocusEvent(event.type, event);
 	}
+	if (realm.InputEvent !== undefined && brand === '[object InputEvent]') {
+		return new realm.InputEvent(event.type, event);
+	}
+	if (realm.CompositionEvent !== undefined && brand === '[object CompositionEvent]') {
+		return new realm.CompositionEvent(event.type, event);
+	}
+	if (realm.TouchEvent !== undefined && brand === '[object TouchEvent]') {
+		return cloneHydrationTouchEvent(event as TouchEvent, realm.TouchEvent);
+	}
 	return new realm.Event(event.type, event);
+}
+
+function cloneHydrationTouchEvent(
+	event: TouchEvent,
+	TouchEventImpl: typeof TouchEvent,
+): TouchEvent {
+	return new TouchEventImpl(event.type, {
+		bubbles: event.bubbles,
+		cancelable: event.cancelable,
+		composed: event.composed,
+		detail: event.detail,
+		ctrlKey: event.ctrlKey,
+		shiftKey: event.shiftKey,
+		altKey: event.altKey,
+		metaKey: event.metaKey,
+		touches: Array.from(event.touches),
+		targetTouches: Array.from(event.targetTouches),
+		changedTouches: Array.from(event.changedTouches),
+	});
 }
 
 function notifyHydrateBoundary(state: HydrateSlot): void {
@@ -7828,11 +8415,9 @@ function initializeHydrateComponent(): InternalHydrateComponent {
 				state.activationReady &&
 				(!state.serverPreserved || !state.serverActivationStarted)
 			) {
-				// A first attempt can suspend after replacing the adopted arm with its
-				// preserved-server pending block. From that point the internal try slot owns
-				// the thenable and resume path; re-entering here on a parent update would
-				// remount that pending block and abandon the in-flight attempt. Client-only
-				// boundaries keep re-entering so new props can supersede suspended data.
+				// A suspended first attempt keeps its adopted server arm connected until
+				// its own gated resume requests another pass. Client-only boundaries keep
+				// re-entering so new props can supersede suspended data.
 				if (state.serverPreserved) state.serverActivationStarted = true;
 				try {
 					activateHydrateBoundary(state);
@@ -8381,9 +8966,32 @@ function isSuspenseException(x: any): x is SuspenseException {
 
 const HYDRATION_REJECTION_SEED = Symbol('octane.hydration.rejection-seed');
 const HYDRATION_REJECTION_EXCEPTION = Symbol('octane.hydration.rejection-exception');
+const HYDRATION_SITE_EVENTS = Symbol('octane.hydration.site-events');
+const HYDRATION_SEED_FACTORY = Symbol('octane.hydration.seed-factory');
 
 interface HydrationRejectionSeed {
 	[HYDRATION_REJECTION_SEED]: unknown;
+}
+
+interface HydrationSiteEvents {
+	queues: Map<string, number[]>;
+	offsets: Map<string, number>;
+}
+
+interface HydrationSeedArray extends Array<unknown> {
+	[HYDRATION_SITE_EVENTS]?: HydrationSiteEvents;
+}
+
+interface HydrationSeedFactory {
+	index: number;
+	factory: (() => unknown) | null;
+	value?: unknown;
+	error?: unknown;
+	failed?: boolean;
+}
+
+interface HydrationSeedThenable extends TrackedThenable {
+	[HYDRATION_SEED_FACTORY]: HydrationSeedFactory;
 }
 
 class HydrationRejectionException {
@@ -8445,11 +9053,7 @@ function decodeHydrationRejectionPayload(payload: any): unknown {
 }
 
 function hydrationRejectionFromSeed(seed: unknown): HydrationRejectionException | null {
-	if (
-		seed === null ||
-		typeof seed !== 'object' ||
-		!Object.prototype.hasOwnProperty.call(seed, HYDRATION_REJECTION_SEED)
-	)
+	if (seed === null || typeof seed !== 'object' || !hasOwnProp.call(seed, HYDRATION_REJECTION_SEED))
 		return null;
 	return new HydrationRejectionException(
 		(seed as HydrationRejectionSeed)[HYDRATION_REJECTION_SEED],
@@ -8466,10 +9070,11 @@ function isHydrationRejection(error: unknown): error is HydrationRejectionExcept
 
 /**
  * Hydration uses the server's settled value/reason as the canonical first-render
- * result, but evaluating the client component has already created its matching
- * thenable. Observe that thenable without letting its eventual result replace
- * the seed. Otherwise a later client-side rejection is reported as unhandled
- * even though the authored use() is visibly handled by its hydrated @catch arm.
+ * result. An externally supplied or otherwise unoptimized client thenable may
+ * already exist, so observe it without letting its eventual result replace the
+ * seed. Otherwise a later client-side rejection is reported as unhandled even
+ * though the authored use() is visibly handled by its hydrated @catch arm.
+ * Compiler-owned seeded factories never create a client thenable to observe.
  */
 function observeHydrationSeedThenable(thenable: TrackedThenable<unknown>): void {
 	thenable.then(
@@ -8484,6 +9089,36 @@ function hasExternalHydrationOwner(thenable: PromiseLike<unknown>): boolean {
 	} catch {
 		return false;
 	}
+}
+
+function materializeHydrationSeedFactory(record: HydrationSeedFactory): unknown {
+	if (record.failed === true) throw record.error;
+	if (record.factory !== null) {
+		const factory = record.factory;
+		record.factory = null;
+		try {
+			record.value = factory();
+		} catch (error) {
+			record.failed = true;
+			record.error = error;
+			throw error;
+		}
+	}
+	return record.value;
+}
+
+function getHydrationSeedFactory(thenable: TrackedThenable): HydrationSeedFactory | undefined {
+	try {
+		return (thenable as HydrationSeedThenable)[HYDRATION_SEED_FACTORY];
+	} catch {
+		return undefined;
+	}
+}
+
+/** Compiler-owned direct use() creations consult their server-proven site outcome first. */
+export function seedOrCreate<T>(site: string, factory: () => T): T {
+	const hydration = activeHydration();
+	return hydration === null ? factory() : hydration.seedOrCreate(site, factory);
 }
 
 function useThenable<T>(thenable: TrackedThenable<T>, replaceOnResume = false): T {
@@ -8504,20 +9139,7 @@ function useThenable<T>(thenable: TrackedThenable<T>, replaceOnResume = false): 
 		hydration.seeds !== null &&
 		hydration.seedCursor < hydration.seeds.length
 	) {
-		const seed = hydration.seeds[hydration.seedCursor++];
-		observeHydrationSeedThenable(thenable);
-		const rejection = hydration.rejectionFromSeed(seed);
-		if (rejection !== null) {
-			thenable.status = 'rejected';
-			thenable.reason = rejection.reason;
-			state[idx] = thenable;
-			throw rejection;
-		}
-		const value = seed as T;
-		thenable.status = 'fulfilled';
-		thenable.value = value;
-		state[idx] = thenable;
-		return value;
+		return hydration.useSeed(thenable, state, idx, replaceOnResume);
 	}
 
 	const stored = state[idx];
@@ -8876,6 +9498,29 @@ export function warmMemo(compute: () => any, deps: any[], slot: HookSlot): void 
 		CURRENT_WARM_CLAIMS?.add(entry);
 		return;
 	}
+	// A promoted transition starts a fresh warm episode, but its earlier
+	// speculative values remain in the episode-agnostic harvest. Claim the
+	// matching occurrence for this plan without consuming it: the real memo
+	// still owns adoption, and an already-adopted entry remains a tombstone for
+	// that occurrence when a later sibling suspends in the same round.
+	const held = HELD_SYNC_TRANSITION;
+	const harvest = held?.warmHarvest ?? PROMOTED_WARM_HARVEST;
+	const owner = held?.origin ?? ACTIVE_TRANSITION_ATTEMPT?.origin;
+	if (
+		harvest !== null &&
+		harvest !== undefined &&
+		owner !== undefined &&
+		blockIsAncestor(owner, CURRENT_BLOCK!)
+	) {
+		for (let i = 0; i < harvest.length; i++) {
+			const entry = harvest[i];
+			if (entry.slot !== slot || depsChanged(entry.deps, deps) || CURRENT_WARM_CLAIMS?.has(entry)) {
+				continue;
+			}
+			CURRENT_WARM_CLAIMS?.add(entry);
+			return;
+		}
+	}
 	let value: any;
 	try {
 		value = compute();
@@ -8982,35 +9627,17 @@ function adoptWarmValue(slot: HookSlot, deps: any[]): any {
 
 export const puMiss: unique symbol = Symbol('octane.pu.miss');
 
-type PuMemoEntry = { deps: any[] | undefined; value: any; warmEpisode?: number };
-
-function puHit(slot: HookSlot, entry: PuMemoEntry): any {
-	if (
-		entry.warmEpisode !== CURRENT_WARM_EPISODE &&
-		recordRealWarmMemo(slot, entry.deps as any[], entry)
-	) {
-		entry.warmEpisode = CURRENT_WARM_EPISODE;
-	}
-	return entry.value;
-}
+type PuMemoEntry = MemoHookEntry;
 
 function puAdopt(slot: HookSlot, deps: any[]): any {
-	const adopted = adoptWarmValue(slot, deps);
-	if (adopted === WARM_MISS) return puMiss;
-	const adoptedEntry: PuMemoEntry = {
-		deps,
-		value: adopted,
-		warmEpisode: CURRENT_WARM_EPISODE,
-	};
-	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalPuEntry(CURRENT_SCOPE!, slot, adoptedEntry);
-	ensureHooks(CURRENT_SCOPE!).set(slot, adoptedEntry);
-	return adopted;
+	const entry = adoptMemoEntry(CURRENT_SCOPE!, slot, deps);
+	return entry === null ? puMiss : entry.value;
 }
 
 export function puTake0(slot: HookSlot): any {
 	const prev = CURRENT_SCOPE!.hooks?.get(slot) as PuMemoEntry | undefined;
 	if (prev !== undefined && prev.deps !== undefined && prev.deps.length === 0) {
-		return puHit(slot, prev);
+		return memoEntryHit(slot, prev).value;
 	}
 	if (WARM_EVER) return puAdopt(slot, []);
 	return puMiss;
@@ -9020,7 +9647,9 @@ export function puTake1(slot: HookSlot, d0: any): any {
 	const prev = CURRENT_SCOPE!.hooks?.get(slot) as PuMemoEntry | undefined;
 	if (prev !== undefined) {
 		const pd = prev.deps;
-		if (pd !== undefined && pd.length === 1 && Object.is(pd[0], d0)) return puHit(slot, prev);
+		if (pd !== undefined && pd.length === 1 && Object.is(pd[0], d0)) {
+			return memoEntryHit(slot, prev).value;
+		}
 	}
 	if (WARM_EVER) return puAdopt(slot, [d0]);
 	return puMiss;
@@ -9031,7 +9660,7 @@ export function puTake2(slot: HookSlot, d0: any, d1: any): any {
 	if (prev !== undefined) {
 		const pd = prev.deps;
 		if (pd !== undefined && pd.length === 2 && Object.is(pd[0], d0) && Object.is(pd[1], d1)) {
-			return puHit(slot, prev);
+			return memoEntryHit(slot, prev).value;
 		}
 	}
 	if (WARM_EVER) return puAdopt(slot, [d0, d1]);
@@ -9049,7 +9678,7 @@ export function puTake3(slot: HookSlot, d0: any, d1: any, d2: any): any {
 			Object.is(pd[1], d1) &&
 			Object.is(pd[2], d2)
 		) {
-			return puHit(slot, prev);
+			return memoEntryHit(slot, prev).value;
 		}
 	}
 	if (WARM_EVER) return puAdopt(slot, [d0, d1, d2]);
@@ -9068,7 +9697,7 @@ export function puTake4(slot: HookSlot, d0: any, d1: any, d2: any, d3: any): any
 			Object.is(pd[2], d2) &&
 			Object.is(pd[3], d3)
 		) {
-			return puHit(slot, prev);
+			return memoEntryHit(slot, prev).value;
 		}
 	}
 	if (WARM_EVER) return puAdopt(slot, [d0, d1, d2, d3]);
@@ -9076,11 +9705,102 @@ export function puTake4(slot: HookSlot, d0: any, d1: any, d2: any, d3: any): any
 }
 
 export function puPub(slot: HookSlot, value: any, ...deps: any[]): any {
-	const entry: PuMemoEntry = { deps, value };
-	if (ACTIVE_TRANSITION_ATTEMPT !== null) journalPuEntry(CURRENT_SCOPE!, slot, entry);
-	ensureHooks(CURRENT_SCOPE!).set(slot, entry);
-	if (recordRealWarmMemo(slot, deps, entry)) entry.warmEpisode = CURRENT_WARM_EPISODE;
-	return value;
+	return publishMemoEntry(CURRENT_SCOPE!, slot, deps, value);
+}
+
+// General closure-free memo ABI for authored helpers/custom hooks. Resolve the
+// custom-hook path once, then retain the resolved slot through take + publish.
+// Unlike parallel-use's value sentinel, a nullable ENTRY handles every authored
+// memo value, including undefined, null, and puMiss itself. Dependency hits do
+// not construct a callback or dependency array.
+export function memoSlot(slot: HookSlot | undefined, name: 'useMemo' | 'useCallback'): HookSlot {
+	const resolved = resolveSlot(slot);
+	if (resolved === undefined) missingSlot(name);
+	return resolved;
+}
+
+export function memoTake0(slot: HookSlot): MemoHookEntry | null {
+	const scope = CURRENT_SCOPE!;
+	const prev = scope.hooks?.get(slot) as MemoHookEntry | undefined;
+	if (prev !== undefined && prev.deps !== undefined && prev.deps.length === 0) {
+		return memoEntryHit(slot, prev);
+	}
+	return WARM_EVER ? adoptMemoEntry(scope, slot, []) : null;
+}
+
+export function memoTake1(slot: HookSlot, d0: any): MemoHookEntry | null {
+	const scope = CURRENT_SCOPE!;
+	const prev = scope.hooks?.get(slot) as MemoHookEntry | undefined;
+	if (prev !== undefined) {
+		const pd = prev.deps;
+		if (pd !== undefined && pd.length === 1 && Object.is(pd[0], d0)) {
+			return memoEntryHit(slot, prev);
+		}
+	}
+	return WARM_EVER ? adoptMemoEntry(scope, slot, [d0]) : null;
+}
+
+export function memoTake2(slot: HookSlot, d0: any, d1: any): MemoHookEntry | null {
+	const scope = CURRENT_SCOPE!;
+	const prev = scope.hooks?.get(slot) as MemoHookEntry | undefined;
+	if (prev !== undefined) {
+		const pd = prev.deps;
+		if (pd !== undefined && pd.length === 2 && Object.is(pd[0], d0) && Object.is(pd[1], d1)) {
+			return memoEntryHit(slot, prev);
+		}
+	}
+	return WARM_EVER ? adoptMemoEntry(scope, slot, [d0, d1]) : null;
+}
+
+export function memoTake3(slot: HookSlot, d0: any, d1: any, d2: any): MemoHookEntry | null {
+	const scope = CURRENT_SCOPE!;
+	const prev = scope.hooks?.get(slot) as MemoHookEntry | undefined;
+	if (prev !== undefined) {
+		const pd = prev.deps;
+		if (
+			pd !== undefined &&
+			pd.length === 3 &&
+			Object.is(pd[0], d0) &&
+			Object.is(pd[1], d1) &&
+			Object.is(pd[2], d2)
+		) {
+			return memoEntryHit(slot, prev);
+		}
+	}
+	return WARM_EVER ? adoptMemoEntry(scope, slot, [d0, d1, d2]) : null;
+}
+
+export function memoTake4(
+	slot: HookSlot,
+	d0: any,
+	d1: any,
+	d2: any,
+	d3: any,
+): MemoHookEntry | null {
+	const scope = CURRENT_SCOPE!;
+	const prev = scope.hooks?.get(slot) as MemoHookEntry | undefined;
+	if (prev !== undefined) {
+		const pd = prev.deps;
+		if (
+			pd !== undefined &&
+			pd.length === 4 &&
+			Object.is(pd[0], d0) &&
+			Object.is(pd[1], d1) &&
+			Object.is(pd[2], d2) &&
+			Object.is(pd[3], d3)
+		) {
+			return memoEntryHit(slot, prev);
+		}
+	}
+	return WARM_EVER ? adoptMemoEntry(scope, slot, [d0, d1, d2, d3]) : null;
+}
+
+export function memoPublish<T>(slot: HookSlot, value: T, ...deps: any[]): T {
+	return publishMemoEntry(CURRENT_SCOPE!, slot, deps, value);
+}
+
+export function memoPublishAlways<T>(slot: HookSlot, value: T): T {
+	return publishMemoEntry(CURRENT_SCOPE!, slot, undefined, value);
 }
 
 // ---------------------------------------------------------------------------
@@ -9088,19 +9808,6 @@ export function puPub(slot: HookSlot, value: any, ...deps: any[]): any {
 // ---------------------------------------------------------------------------
 
 const LAZY_COMPONENT = Symbol.for('octane.lazy');
-
-function lazyResolvedProps(comp: ComponentBody<any>, props: any): any {
-	const defaults = (comp as any).defaultProps;
-	if (defaults == null || typeof defaults !== 'object') return props;
-	let resolved = props;
-	for (const key of Object.keys(defaults)) {
-		if (props == null || props[key] === undefined) {
-			if (resolved === props) resolved = props == null ? {} : { ...props };
-			resolved[key] = defaults[key];
-		}
-	}
-	return resolved;
-}
 
 /**
  * Resolve a lazy module payload to its component. Accepts React's canonical
@@ -9144,12 +9851,54 @@ function resolveLazyModule(mod: any): ComponentBody<any> {
  */
 /* @__NO_SIDE_EFFECTS__ */
 export function lazy<C extends ComponentBody<any>>(load: () => PromiseLike<{ default: C } | C>): C {
-	let status: 'uninitialized' | 'pending' | 'fulfilled' | 'rejected' = 'uninitialized';
+	let status:
+		'uninitialized' | 'pending' | 'fulfilled' | 'rejected' | 'fulfilled-error' | 'rejected-error' =
+		'uninitialized';
 	let result: any = null; // fulfilled → module value; rejected → the reason
+	let initializationError: any;
 	let thenable: TrackedThenable<any> | null = null;
 	let profiledComponent: ComponentBody<any> | null = null;
 	let memoMetadataInstalled = false;
 	let lazyWrapper!: ComponentBody<any>;
+
+	const initializeLazy = (): void => {
+		if (status !== 'uninitialized') return;
+		try {
+			const p = load();
+			thenable = p as TrackedThenable<any>;
+			p.then(
+				(mod: any) => {
+					// This handler was attached FIRST, so by the time the boundary's retry
+					// listener fires the payload is already fulfilled/rejected and the
+					// re-render takes the synchronous branch above.
+					if (status === 'uninitialized' || status === 'pending') {
+						result = mod;
+						status = 'fulfilled';
+					}
+				},
+				(err: any) => {
+					if (status === 'uninitialized' || status === 'pending') {
+						result = err;
+						status = 'rejected';
+					}
+				},
+			);
+		} catch (error) {
+			// React does not publish Pending until both load() and `.then(...)`
+			// registration return. A synchronous throw is therefore retryable on the
+			// next render instead of poisoning the wrapper with a null thenable.
+			if (status === 'uninitialized') thenable = null;
+			else if (CURRENT_WARM !== null) {
+				// A thenable may settle synchronously and then throw. Speculative
+				// warming catches that throw, so replay it on the first real render
+				// before exposing the already-settled payload on a later retry.
+				initializationError = error;
+				status = status === 'fulfilled' ? 'fulfilled-error' : 'rejected-error';
+			}
+			throw error;
+		}
+		if (status === 'uninitialized') status = 'pending';
+	};
 
 	const callResolvedComponent = (props: any, scope: Scope, extra: any): unknown => {
 		// Keep the module object, rather than only its current `.default` value. A
@@ -9195,35 +9944,14 @@ export function lazy<C extends ComponentBody<any>>(load: () => PromiseLike<{ def
 			return callResolvedComponent(props, scope, extra);
 		}
 		if (status === 'rejected') throw result;
+		if (status === 'fulfilled-error' || status === 'rejected-error') {
+			status = status === 'fulfilled-error' ? 'fulfilled' : 'rejected';
+			const error = initializationError;
+			initializationError = undefined;
+			throw error;
+		}
 		if (status === 'uninitialized') {
-			try {
-				const p = load();
-				thenable = p as TrackedThenable<any>;
-				p.then(
-					(mod: any) => {
-						// This handler was attached FIRST, so by the time the boundary's retry
-						// listener fires the payload is already fulfilled/rejected and the
-						// re-render takes the synchronous branch above.
-						if (status === 'uninitialized' || status === 'pending') {
-							result = mod;
-							status = 'fulfilled';
-						}
-					},
-					(err: any) => {
-						if (status === 'uninitialized' || status === 'pending') {
-							result = err;
-							status = 'rejected';
-						}
-					},
-				);
-			} catch (error) {
-				// React does not publish Pending until both load() and `.then(...)`
-				// registration return. A synchronous throw is therefore retryable on the
-				// next render instead of poisoning the wrapper with a null thenable.
-				if (status === 'uninitialized') thenable = null;
-				throw error;
-			}
-			if (status === 'uninitialized') status = 'pending';
+			initializeLazy();
 			// PromiseLike is permitted to settle while `then` is registering. Match
 			// React's synchronous-thenable contract: render or throw immediately rather
 			// than briefly committing a fallback (or leaving partial sibling work).
@@ -9235,6 +9963,9 @@ export function lazy<C extends ComponentBody<any>>(load: () => PromiseLike<{ def
 		}
 		throw new SuspenseException(thenable!);
 	};
+	// Existing ancestor warm plans can start an independently reachable module,
+	// but resolution, component execution, and deferred hydration remain lazy.
+	(lazyWrapper as any).__warm = initializeLazy;
 	Object.defineProperty(lazyWrapper, LAZY_COMPONENT, { value: true });
 	return lazyWrapper as unknown as C;
 }
@@ -9686,6 +10417,74 @@ class HydrationCapability {
 		return hydrationRejectionFromSeed(seed);
 	}
 
+	seedOrCreate<T>(site: string, factory: () => T): T {
+		if (this.seeds === null) return factory();
+		const events = (this.seeds as HydrationSeedArray)[HYDRATION_SITE_EVENTS];
+		if (events === undefined) return factory();
+		const queue = events.queues.get(site);
+		if (queue === undefined) return factory();
+		const offset = events.offsets.get(site) ?? 0;
+		events.offsets.set(site, offset + 1);
+		const index = queue[offset];
+		if (index === undefined || index < this.seedCursor) return factory();
+
+		const record: HydrationSeedFactory = { index, factory };
+		const thenable: HydrationSeedThenable = {
+			[HYDRATION_SEED_FACTORY]: record,
+			then(onFulfilled, onRejected) {
+				if (thenable.status === 'fulfilled') {
+					return Promise.resolve(thenable.value).then(onFulfilled, onRejected);
+				}
+				if (thenable.status === 'rejected') {
+					return Promise.reject(thenable.reason).then(onFulfilled, onRejected);
+				}
+				return Promise.resolve(materializeHydrationSeedFactory(record)).then(
+					onFulfilled,
+					onRejected,
+				);
+			},
+		};
+		return thenable as T;
+	}
+
+	useSeed<T>(
+		thenable: TrackedThenable<T>,
+		state: TrackedThenable<any>[],
+		index: number,
+		replaceOnResume: boolean,
+	): T {
+		const factory = getHydrationSeedFactory(thenable);
+		if (factory !== undefined && factory.index !== this.seedCursor) {
+			CURRENT_BLOCK!.__thenableIdx = index;
+			const usable = materializeHydrationSeedFactory(factory);
+			if (
+				replaceOnResume &&
+				usable !== null &&
+				usable !== undefined &&
+				typeof (usable as PromiseLike<T>).then === 'function'
+			) {
+				return useThenable(usable as TrackedThenable<T>, true);
+			}
+			return use(usable as PromiseLike<T>) as T;
+		}
+
+		const seed = this.seeds![this.seedCursor++];
+		if (factory === undefined) observeHydrationSeedThenable(thenable);
+		else factory.factory = null;
+		const rejection = this.rejectionFromSeed(seed);
+		if (rejection !== null) {
+			thenable.status = 'rejected';
+			thenable.reason = rejection.reason;
+			state[index] = thenable;
+			throw rejection;
+		}
+		const value = seed as T;
+		thenable.status = 'fulfilled';
+		thenable.value = value;
+		state[index] = thenable;
+		return value;
+	}
+
 	/** Mark a client-built hydration replacement (and its descendants) as fresh DOM. */
 	markFresh(node: Node): void {
 		this.freshNodes.add(node);
@@ -9734,16 +10533,27 @@ class HydrationCapability {
 		return cloned;
 	}
 
-	private fragmentRemainder(template: Node, cursor: Node | null): Node | null | undefined {
+	private fragmentRemainder(
+		template: Node,
+		cursor: Node | null,
+		partialStyles?: string,
+	): Node | null | undefined {
 		let expected = template.firstChild;
 		let actual = cursor;
+		let childIndex = 0;
 		while (expected !== null) {
 			if (actual === null) return undefined;
 			// A template comment is a dynamic logical hole. Its server form may be
 			// text or a marker range, so only static text/element roots compare shape.
-			if (expected.nodeType !== 8 && !hydrationNodeMatches(actual, expected)) return undefined;
+			if (
+				expected.nodeType !== 8 &&
+				!hydrationNodeMatches(actual, expected, partialStyles, String(childIndex))
+			) {
+				return undefined;
+			}
 			actual = this.sibling(actual, 1);
 			expected = expected.nextSibling;
+			childIndex++;
 		}
 		return actual;
 	}
@@ -9776,6 +10586,7 @@ class HydrationCapability {
 
 	/** Give up root adoption after an unframed return/fragment mismatch. */
 	abandonRoot(expected: string, actual: string, loc?: string): void {
+		noteRecoverableHydrationError(() => new Error(formatClientError(52)));
 		if (loc) warnHydrationStructuralMismatch(loc, expected, actual);
 		let node = this.node;
 		while (node !== null) {
@@ -9787,8 +10598,8 @@ class HydrationCapability {
 		this.abandoned = true;
 	}
 
-	clone<T extends Node>(template: T, loc?: string): T {
-		return this.adopt(template, null, loc) as T;
+	clone<T extends Node>(template: T, loc?: string, partialStyles?: string): T {
+		return this.adopt(template, null, loc, partialStyles) as T;
 	}
 
 	/**
@@ -9803,7 +10614,12 @@ class HydrationCapability {
 	}
 
 	/** `template` is null only in prod lazy mode (then `lazy` is set) — every cold path resolves it. */
-	private adopt(template: Node | null, lazy: LazyTemplateRecord | null, loc?: string): Node {
+	private adopt(
+		template: Node | null,
+		lazy: LazyTemplateRecord | null,
+		loc?: string,
+		partialStyles?: string,
+	): Node {
 		const cursor = this.node;
 		const isFragment =
 			template !== null ? (template as any).__oct_frag === true : isLazyFragment(lazy!);
@@ -9825,7 +10641,7 @@ class HydrationCapability {
 		// (Root claims happen once per hydrateRoot, so parsing here is cold.)
 		if (isFragment && claimsRoot) {
 			if (template === null) template = resolveLazyTemplate(lazy!);
-			const remainder = this.fragmentRemainder(template, cursor);
+			const remainder = this.fragmentRemainder(template, cursor, partialStyles);
 			if (remainder === undefined) {
 				this.abandonRoot(
 					`a fragment starting with ${describeHydrationNode(template.firstChild)}`,
@@ -9844,9 +10660,10 @@ class HydrationCapability {
 		if (
 			!isFragment &&
 			(template !== null
-				? !hydrationNodeMatches(cursor, template)
+				? !hydrationNodeMatches(cursor, template, partialStyles)
 				: !lazyRootMatches(cursor, lazy!))
 		) {
+			noteRecoverableHydrationError(() => new Error(formatClientError(51)));
 			if (template === null) template = resolveLazyTemplate(lazy!);
 			if (process.env.NODE_ENV !== 'production' && loc)
 				warnHydrationStructuralMismatch(
@@ -9895,6 +10712,7 @@ class HydrationCapability {
 		)
 			remainder = remainder.nextSibling;
 		if (remainder === null) return;
+		noteRecoverableHydrationError(() => new Error(formatClientError(53)), this.rootBlock);
 		warnHydrationStructuralMismatch(
 			componentSourceLoc(this.rootBlock.body),
 			'the end of the root',
@@ -9950,12 +10768,15 @@ class HydrationCapability {
 		// text so recovery succeeds, but publish the normal dev diagnostic. A
 		// suppressed host keeps the absent server value by installing only an empty
 		// tracking node; later real commits can update that node normally.
-		if (text !== '' && !suppressed && process.env.NODE_ENV !== 'production') {
-			warnHydrationStructuralMismatch(
-				host && (host as any).__oct_loc,
-				`text ${JSON.stringify(text)}`,
-				describeHydrationNode(posNode),
-			);
+		if (text !== '' && !suppressed) {
+			noteRecoverableHydrationError(() => new Error(formatClientError(54)));
+			if (process.env.NODE_ENV !== 'production') {
+				warnHydrationStructuralMismatch(
+					host && (host as any).__oct_loc,
+					`text ${JSON.stringify(text)}`,
+					describeHydrationNode(posNode),
+				);
+			}
 		}
 		const created = document.createTextNode(suppressed ? '' : text);
 		if (posNode !== null && posNode.parentNode !== null) {
@@ -10044,7 +10865,7 @@ class HydrationCapability {
 		}
 	}
 
-	applyStyle(el: HTMLElement | SVGElement, value: any, _prev: any): boolean {
+	applyStyle(el: HTMLElement | SVGElement, value: any, _prev: any, staticCss?: string): boolean {
 		const mode = hydrationMismatchMode(el);
 		if (mode === 1) return true;
 		const style = (el as HTMLElement).style;
@@ -10059,7 +10880,8 @@ class HydrationCapability {
 		// semantically and order-equivalent (`#fff` vs rgb(), compact whitespace),
 		// while still detecting reordered, missing, added, and empty styles.
 		const expectedStyle = document.createElement('div').style;
-		applyStyleValue(expectedStyle, value, undefined);
+		if (staticCss !== undefined) expectedStyle.cssText = staticCss;
+		applyStyleValue(el, expectedStyle, value, undefined);
 		const expected = expectedStyle.cssText;
 		const expectsStyleAttribute = expected !== '';
 		if (before === expected && hadStyleAttribute === expectsStyleAttribute) return true;
@@ -10141,6 +10963,38 @@ function parseSeedJson(raw: string): unknown[] | null {
 				[HYDRATION_REJECTION_SEED]: decodeHydrationRejectionPayload(entry[1]),
 			} satisfies HydrationRejectionSeed;
 		}
+		if (envelope.sites !== undefined) {
+			if (!Array.isArray(envelope.sites)) return null;
+			const queues = new Map<string, number[]>();
+			const seededSites = new Set<number>();
+			let previousSeedIndex = -1;
+			for (const entry of envelope.sites) {
+				if (
+					!Array.isArray(entry) ||
+					entry.length !== 2 ||
+					typeof entry[0] !== 'string' ||
+					entry[0] === '' ||
+					!Number.isInteger(entry[1]) ||
+					entry[1] < -1 ||
+					entry[1] >= values.length
+				)
+					return null;
+				const index = entry[1] as number;
+				if (index >= 0) {
+					if (index <= previousSeedIndex || seededSites.has(index)) return null;
+					previousSeedIndex = index;
+					seededSites.add(index);
+				}
+				const queue = queues.get(entry[0]);
+				if (queue === undefined) queues.set(entry[0], [index]);
+				else queue.push(index);
+			}
+			if (seededSites.size === 0) return null;
+			(values as HydrationSeedArray)[HYDRATION_SITE_EVENTS] = {
+				queues,
+				offsets: new Map(),
+			};
+		}
 		return values;
 	} catch {
 		return null;
@@ -10153,7 +11007,7 @@ function parseSeedJson(raw: string): unknown[] | null {
 // Armed only around that one mapped survivor render; all other clones see null.
 let MAPPED_ITEM_ADOPTION: { node: Node | null } | null = null;
 
-export function clone<T extends Node>(node: T, loc?: string): T {
+export function clone<T extends Node>(node: T, loc?: string, partialStyles?: string): T {
 	if (MAPPED_ITEM_ADOPTION !== null && MAPPED_ITEM_ADOPTION.node !== null) {
 		const adopted = MAPPED_ITEM_ADOPTION.node;
 		MAPPED_ITEM_ADOPTION.node = null;
@@ -10202,10 +11056,14 @@ export function clone<T extends Node>(node: T, loc?: string): T {
 			return hydration.cloneLazy(lazy, loc) as unknown as T;
 		}
 		const parsed = resolveLazyTemplate(lazy);
-		return (hydration === null ? parsed.cloneNode(true) : hydration.clone(parsed, loc)) as T;
+		return (
+			hydration === null ? parsed.cloneNode(true) : hydration.clone(parsed, loc, partialStyles)
+		) as T;
 	}
 	const hydration = activeHydration();
-	return hydration === null ? (node.cloneNode(true) as T) : hydration.clone(node, loc);
+	return hydration === null
+		? (node.cloneNode(true) as T)
+		: hydration.clone(node, loc, partialStyles);
 }
 
 /**
@@ -10686,7 +11544,7 @@ export function setDangerouslySetInnerHTMLSources(
 	if (resolved !== null && resolvedChild != null) throw dangerHtmlChildrenError();
 	validateDangerouslySetInnerHTMLValue(resolved);
 	if (
-		Object.prototype.hasOwnProperty.call(el, DANGER_HTML_RESOLVED_VALUE) &&
+		hasOwnProp.call(el, DANGER_HTML_RESOLVED_VALUE) &&
 		Object.is((el as any)[DANGER_HTML_RESOLVED_VALUE], resolved) &&
 		Object.is((el as any)[DANGER_HTML_RESOLVED_CHILD], resolvedChild)
 	) {
@@ -10800,8 +11658,8 @@ export function attachRef(
 
 /** Fragment ref forms (fragment-refs parity): callback, object, or arrays. */
 type FragmentRefValue =
-	| ((instance: unknown) => void | (() => void))
-	| { current: unknown }
+	| ((instance: FragmentInstance | null) => void | (() => void))
+	| { current: FragmentInstance | null }
 	| readonly FragmentRefValue[]
 	| null;
 
@@ -10835,13 +11693,19 @@ export class FragmentInstance {
 	_endMarker: Comment;
 	_destroyed: boolean;
 	/**
+	 * Committed direct hosts and a reusable scratch set. Swapping the sets at
+	 * each commit avoids allocating per render while ensuring registrations are
+	 * applied only to genuinely new children.
+	 */
+	_children: Set<Element | Text>;
+	_pendingChildren: Set<Element | Text>;
+	/** Following DOM anchor -> logically owned portal ranges; allocated on demand. */
+	_portalAnchors: Map<Node, Set<PortalSlot>> | null;
+	/**
 	 * Registry of listeners added via addEventListener, deduped by
 	 * (type, listener, capture). `null` until the first addEventListener — zero
-	 * per-instance cost for fragments that never use the listener API. Stored
-	 * (not snapshotted onto specific elements) so they can be RE-APPLIED to
-	 * children that mount later: `_reapply` (run after every commit) attaches
-	 * each stored listener to the current children, matching React's
-	 * future-children contract.
+	 * listener-registry cost for fragments that never use the listener API.
+	 * Stored bindings apply only when a new direct child joins the fragment.
 	 */
 	_listeners: Array<{
 		type: string;
@@ -10849,8 +11713,8 @@ export class FragmentInstance {
 		options: AddEventListenerOptions | boolean | undefined;
 	}> | null;
 	/**
-	 * Observers registered via observeUsing, re-applied to future children the
-	 * same way as `_listeners`. `null` until the first observeUsing.
+	 * Observers registered via observeUsing. New direct children inherit each
+	 * observer; retained children are never redundantly observed on commit.
 	 */
 	_observers: Set<{ observe(target: Element): void; unobserve(target: Element): void }> | null;
 	/**
@@ -10865,113 +11729,157 @@ export class FragmentInstance {
 		this._startMarker = startMarker;
 		this._endMarker = endMarker;
 		this._destroyed = false;
+		this._children = new Set();
+		this._pendingChildren = new Set();
+		this._portalAnchors = null;
 		this._listeners = null;
 		this._observers = null;
 		this._currentRef = null;
+		for (const child of fragmentDirectNodes(this)) {
+			this._children.add(child);
+			this._attachChild(child);
+		}
+		activeFragments.add(this);
 	}
 
 	_destroy(): void {
 		this._destroyed = true;
 		activeFragments.delete(this);
-		// Detach any still-registered listeners from the current children (cleanups
-		// run before the DOM range is removed, so the children are still attached)
-		// so stale closures don't keep nodes/scopes alive after unmount. Observers
-		// are NOT explicitly unobserved — like React, we rely on the browser
-		// dropping disconnected nodes; the observer's owner manages its lifecycle.
-		if (this._listeners) {
-			for (const el of fragmentDirectChildren(this)) {
-				for (const e of this._listeners) {
-					el.removeEventListener(e.type, e.listener, e.options as any);
-				}
-			}
-			this._listeners = null;
-		}
+		// React removes listeners and fragment handles from disappearing children,
+		// but does not call observer.unobserve during deletion or fragment teardown.
+		for (const child of this._children) this._detachChild(child);
+		this._children.clear();
+		this._pendingChildren.clear();
+		this._portalAnchors?.clear();
+		this._portalAnchors = null;
+		this._listeners = null;
 		this._observers = null;
 	}
 
-	/** Deregister from the commit re-apply set once no bindings remain. */
-	_maybeDeactivate(): void {
-		if (
-			(this._listeners === null || this._listeners.length === 0) &&
-			(this._observers === null || this._observers.size === 0)
-		) {
-			activeFragments.delete(this);
+	/** Associate a foreign portal range with its authored following sibling. */
+	_registerPortal(portal: PortalSlot, anchor: Node): void {
+		if (this._destroyed) return;
+		const anchors = (this._portalAnchors ??= new Map());
+		let portals = anchors.get(anchor);
+		if (portals === undefined) anchors.set(anchor, (portals = new Set()));
+		portals.add(portal);
+	}
+
+	/** Forget a removed portal before its foreign DOM range is torn down. */
+	_unregisterPortal(portal: PortalSlot, anchor: Node): void {
+		const anchors = this._portalAnchors;
+		const portals = anchors?.get(anchor);
+		if (portals === undefined || !portals.delete(portal)) return;
+		if (portals.size === 0) anchors!.delete(anchor);
+		if (anchors!.size === 0) this._portalAnchors = null;
+		let child: ChildNode | null = portal.start?.nextSibling ?? null;
+		while (child !== null && child !== portal.end) {
+			const next = child.nextSibling;
+			if (
+				(child.nodeType === 1 || child.nodeType === 3) &&
+				this._children.delete(child as Element | Text)
+			) {
+				this._detachChild(child as Element | Text);
+			}
+			child = next;
 		}
 	}
 
+	/** Attach inherited bindings and publish this fragment's public DOM handle. */
+	_attachChild(child: Element | Text): void {
+		if (this._listeners !== null) {
+			for (const entry of this._listeners) {
+				child.addEventListener(entry.type, entry.listener, entry.options as any);
+			}
+		}
+		if (child.nodeType === 1 && this._observers !== null) {
+			for (const observer of this._observers) observer.observe(child as Element);
+		}
+		const host = child as (Element | Text) & { reactFragments?: Set<FragmentInstance> };
+		(host.reactFragments ??= new Set()).add(this);
+	}
+
+	/** Remove only this fragment's registrations; nested fragment handles stay. */
+	_detachChild(child: Element | Text): void {
+		if (this._listeners !== null) {
+			for (const entry of this._listeners) {
+				child.removeEventListener(entry.type, entry.listener, entry.options as any);
+			}
+		}
+		(child as (Element | Text) & { reactFragments?: Set<FragmentInstance> }).reactFragments?.delete(
+			this,
+		);
+	}
+
 	/**
-	 * Re-apply every stored listener + observer to the CURRENT direct children.
-	 * Run after each commit (reapplyFragmentBindings) so children that mounted
-	 * since the last pass pick up the fragment's bindings. addEventListener and
-	 * observer.observe are idempotent for an already-wired (element, binding)
-	 * pair, so re-applying is safe.
+	 * Diff current hosts after each commit. Reattaching a retained listener would
+	 * revive an exhausted `{ once: true }` registration; calling observe again is
+	 * also observable, so only newly inserted children inherit those bindings.
 	 */
 	_reapply(): void {
 		if (this._destroyed) return;
-		for (const el of fragmentDirectChildren(this)) {
-			if (this._listeners) {
-				for (const e of this._listeners) el.addEventListener(e.type, e.listener, e.options as any);
-			}
-			if (this._observers) {
-				for (const ob of this._observers) ob.observe(el);
-			}
+		const previous = this._children;
+		const current = this._pendingChildren;
+		for (const child of fragmentDirectNodes(this)) {
+			current.add(child);
+			if (!previous.has(child)) this._attachChild(child);
 		}
+		for (const child of previous) {
+			if (!current.has(child)) this._detachChild(child);
+		}
+		previous.clear();
+		this._children = current;
+		this._pendingChildren = previous;
 	}
 
 	// ─── focus / focusLast / blur (Stage 2) ─────────────────────────────
 	/**
-	 * Focus the first focusable element inside the fragment, in tree order.
-	 * Mirrors React FragmentInstance.focus: matches `<input>`, `<button>`,
-	 * `<select>`, `<textarea>`, `<a href>`, `[contenteditable="true"]`, and
-	 * anything with an explicit tabIndex >= 0. Skips disabled/hidden and
-	 * tabIndex=-1 elements. No-op if the fragment has no focusable descendants.
+	 * Focus the first element for which the browser actually accepts focus.
+	 * Listening for the focus event handles labels, shadow delegation, disabled
+	 * controls, and programmatically focusable tabIndex=-1 elements correctly.
 	 */
 	focus(options?: FocusOptions): void {
 		if (this._destroyed) return;
 		for (const el of fragmentDescendants(this)) {
-			if (isFocusable(el)) {
-				(el as HTMLElement).focus(options);
-				return;
-			}
+			if (focusFragmentElement(el, options)) return;
 		}
 	}
 
 	/**
-	 * Focus the LAST focusable element inside the fragment, in tree order.
-	 * Same focusability rules as `focus()`.
+	 * Focus the last programmatically focusable element, trying descendants in
+	 * reverse tree order until the browser accepts one.
 	 */
 	focusLast(options?: FocusOptions): void {
 		if (this._destroyed) return;
-		let last: Element | null = null;
-		for (const el of fragmentDescendants(this)) {
-			if (isFocusable(el)) last = el;
+		const descendants = Array.from(fragmentDescendants(this));
+		for (let i = descendants.length - 1; i >= 0; i--) {
+			if (focusFragmentElement(descendants[i], options)) return;
 		}
-		if (last) (last as HTMLElement).focus(options);
 	}
 
 	/**
-	 * Blur the currently-focused element if it's inside the fragment range.
-	 * No-op if focus is outside the fragment (matches React's "owned" scope —
-	 * we don't blur arbitrary other elements just because they happen to be
-	 * active when blur() is called).
+	 * Blur the focused element only when a logical fragment child owns it,
+	 * including children rendered into foreign portal containers.
 	 */
 	blur(): void {
 		if (this._destroyed) return;
 		const doc = this._startMarker.ownerDocument || document;
 		const active = doc.activeElement;
 		if (!active || active === doc.body) return;
-		if (isInsideFragment(this, active)) {
-			(active as HTMLElement).blur();
+		for (const child of fragmentDirectChildren(this)) {
+			if (child === active || child.contains(active)) {
+				(active as HTMLElement).blur();
+				return;
+			}
 		}
 	}
 
 	// ─── addEventListener / removeEventListener (Stage 3) ───────────────
 	/**
-	 * Attaches a listener to every DIRECT (host-Element) child of the fragment.
-	 * The (type, listener, capture) tuple is stored and RE-APPLIED after each
-	 * commit, so children inserted into the fragment LATER also get the listener
-	 * — React's future-children contract. Deduped by (type, listener, capture)
-	 * like the DOM, so repeat calls are no-ops.
+	 * Attaches a listener to every first-level Element or Text child.
+	 * The (type, listener, capture) tuple is stored so children inserted into
+	 * the fragment later inherit the listener. Deduped by that same tuple,
+	 * matching the DOM's listener identity rules.
 	 */
 	addEventListener(
 		type: string,
@@ -10991,10 +11899,9 @@ export class FragmentInstance {
 			}
 		}
 		this._listeners.push({ type, listener, options });
-		for (const el of fragmentDirectChildren(this)) {
-			el.addEventListener(type, listener, options as any);
+		for (const child of fragmentDirectNodes(this)) {
+			child.addEventListener(type, listener, options as any);
 		}
-		activeFragments.add(this);
 	}
 
 	/**
@@ -11016,11 +11923,10 @@ export class FragmentInstance {
 			if (entry.type !== type) continue;
 			if (entry.listener !== listener) continue;
 			if (listenerCapturePhase(entry.options) !== wantCapture) continue;
-			for (const el of fragmentDirectChildren(this)) {
-				el.removeEventListener(type, listener, entry.options as any);
+			for (const child of fragmentDirectNodes(this)) {
+				child.removeEventListener(type, listener, entry.options as any);
 			}
 			this._listeners.splice(i, 1);
-			this._maybeDeactivate();
 			return;
 		}
 	}
@@ -11038,131 +11944,235 @@ export class FragmentInstance {
 		unobserve(target: Element): void;
 	}): void {
 		if (this._destroyed) return;
+		if (process.env.NODE_ENV !== 'production') {
+			let hasText = false;
+			let hasElement = false;
+			for (const child of this._children) {
+				if (child.nodeType === 1) {
+					hasElement = true;
+					break;
+				}
+				if (child.nodeType === 3) hasText = true;
+			}
+			if (hasText && !hasElement) {
+				console.error(
+					'observeUsing() was called on a FragmentInstance with only text children. ' +
+						'Observers do not work on text nodes.',
+				);
+			}
+		}
 		if (!this._observers) this._observers = new Set();
 		this._observers.add(observer);
 		for (const el of fragmentDirectChildren(this)) observer.observe(el);
-		activeFragments.add(this);
 	}
 
 	/**
 	 * Stops observing with the given observer: unobserves the current children
-	 * and stops re-applying it to future ones. (The walk runs even without a
-	 * preceding observeUsing, matching the DOM's tolerant unobserve.)
+	 * and stops applying it to future ones. An unregistered observer is not
+	 * touched and produces React's diagnostic in development.
 	 */
 	unobserveUsing(observer: {
 		observe(target: Element): void;
 		unobserve(target: Element): void;
 	}): void {
 		if (this._destroyed) return;
-		if (this._observers) this._observers.delete(observer);
+		if (this._observers === null || !this._observers.has(observer)) {
+			if (process.env.NODE_ENV !== 'production') {
+				console.error(
+					'You are calling unobserveUsing() with an observer that is not being observed with this fragment ' +
+						'instance. First attach the observer with observeUsing()',
+				);
+			}
+			return;
+		}
+		this._observers.delete(observer);
 		for (const el of fragmentDirectChildren(this)) observer.unobserve(el);
-		this._maybeDeactivate();
 	}
 
 	/**
-	 * Concatenates the client rects of every direct fragment child. The
-	 * returned array is a flat list of DOMRects in tree order — useful for
-	 * tooltip positioning that needs to span multiple sibling elements.
-	 * After unmount returns [].
+	 * Concatenates direct host-element and text-node rectangles in logical tree
+	 * order. Text uses Range because Text does not expose getClientRects itself.
 	 */
 	getClientRects(): DOMRect[] {
 		const out: DOMRect[] = [];
 		if (this._destroyed) return out;
-		let node: ChildNode | null = this._startMarker.nextSibling;
-		while (node && node !== this._endMarker) {
-			if (node.nodeType === 1) {
+		for (const node of fragmentDirectNodes(this)) {
+			if (node.nodeType === 3) {
+				const range = node.ownerDocument.createRange();
+				range.selectNodeContents(node);
+				// Lightweight DOM environments do not implement Range geometry.
+				if (typeof range.getClientRects !== 'function') continue;
+				const rects = range.getClientRects();
+				for (let i = 0; i < rects.length; i++) out.push(rects[i]);
+			} else {
 				const rects = (node as Element).getClientRects();
 				for (let i = 0; i < rects.length; i++) out.push(rects[i]);
 			}
-			node = node.nextSibling;
 		}
 		return out;
 	}
 
 	/**
-	 * Returns the rootNode of the fragment (its document or shadow root).
-	 * Falls back to the start-marker's owner document if the fragment has
-	 * no direct children yet — keeps the contract "always returns a Node"
-	 * so callers don't need null-checks.
+	 * Resolve the owning host parent's root, forwarding composed shadow-root
+	 * options. A detached FragmentInstance is its own root, matching React.
 	 */
-	getRootNode(): Node {
-		if (this._destroyed) return this._startMarker.getRootNode();
-		let node: ChildNode | null = this._startMarker.nextSibling;
-		while (node && node !== this._endMarker) {
-			if (node.nodeType === 1) return (node as Element).getRootNode();
-			node = node.nextSibling;
-		}
-		return this._startMarker.getRootNode();
+	getRootNode(options?: GetRootNodeOptions): Node | FragmentInstance {
+		if (this._destroyed) return this;
+		const parent = this._startMarker.parentNode;
+		return parent === null ? this : parent.getRootNode(options);
 	}
 
 	// ─── compareDocumentPosition / dispatchEvent (Stage 5) ──────────────
 	/**
-	 * Compares `other` against the fragment's span. The returned bitmask
-	 * uses the same Node constants the platform's compareDocumentPosition
-	 * uses, with `CONTAINED_BY` indicating that `other` lives strictly
-	 * between the fragment's start and end markers (in document order).
-	 *
-	 *   - other before the start marker     → DOCUMENT_POSITION_PRECEDING
-	 *   - other after the end marker        → DOCUMENT_POSITION_FOLLOWING
-	 *   - other between start & end markers → DOCUMENT_POSITION_CONTAINED_BY |
-	 *                                          DOCUMENT_POSITION_FOLLOWING
-	 *   - other not in the same tree        → DOCUMENT_POSITION_DISCONNECTED
+	 * Preserve the platform's directional/ancestor bits while returning exact
+	 * CONTAINED_BY for logical children. Empty ranges have no DOM position of
+	 * their own, so their derived result is IMPLEMENTATION_SPECIFIC.
 	 */
 	compareDocumentPosition(other: Node): number {
 		if (this._destroyed) return Node.DOCUMENT_POSITION_DISCONNECTED;
-		const startRel = this._startMarker.compareDocumentPosition(other);
-		if (startRel & Node.DOCUMENT_POSITION_DISCONNECTED) return startRel;
-		const endRel = this._endMarker.compareDocumentPosition(other);
-		const followsStart = (startRel & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
-		const precedesEnd = (endRel & Node.DOCUMENT_POSITION_PRECEDING) !== 0;
-		if (followsStart && precedesEnd) {
-			return Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING;
+		const parent = this._startMarker.parentNode;
+		if (parent === null) return Node.DOCUMENT_POSITION_DISCONNECTED;
+
+		let first: Element | Text | null = null;
+		let last: Element | Text | null = null;
+		for (const child of fragmentDirectNodes(this)) {
+			first ??= child;
+			last = child;
+			if (child === other || (child.nodeType === 1 && (child as Element).contains(other))) {
+				return parent.contains(child)
+					? Node.DOCUMENT_POSITION_CONTAINED_BY
+					: Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+			}
 		}
-		if (startRel & Node.DOCUMENT_POSITION_PRECEDING) {
-			return Node.DOCUMENT_POSITION_PRECEDING;
+
+		if (first === null || last === null) {
+			// A Fragment rendered directly inside a portal has a physical parent
+			// in the foreign container, but its ordering is relative to the portal's
+			// authored host. Portal mounting stamps that logical host on its direct
+			// children, including this Fragment's boundary comment.
+			const logicalParent =
+				(this._startMarker as Comment & { $$portalParent?: Node }).$$portalParent ?? parent;
+			let result = logicalParent.compareDocumentPosition(other);
+			if (logicalParent === other) {
+				result = Node.DOCUMENT_POSITION_CONTAINS;
+			} else if ((result & Node.DOCUMENT_POSITION_CONTAINED_BY) !== 0) {
+				const next = fragmentNearestSibling(this._endMarker, true);
+				result =
+					next !== null &&
+					(next === other ||
+						(next.compareDocumentPosition(other) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0)
+						? Node.DOCUMENT_POSITION_FOLLOWING
+						: Node.DOCUMENT_POSITION_PRECEDING;
+			}
+			return result | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
 		}
-		return Node.DOCUMENT_POSITION_FOLLOWING;
+
+		const firstResult = first.compareDocumentPosition(other);
+		if ((firstResult & Node.DOCUMENT_POSITION_DISCONNECTED) !== 0) return firstResult;
+		const lastResult = last.compareDocumentPosition(other);
+		if (
+			parent.contains(first) &&
+			parent.contains(last) &&
+			(firstResult & Node.DOCUMENT_POSITION_FOLLOWING) !== 0 &&
+			(lastResult & Node.DOCUMENT_POSITION_PRECEDING) !== 0
+		) {
+			return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+		}
+		// A portal moves its entire Fragment outside the authored host. A node
+		// still inside that host cannot have a trustworthy DOM position relative
+		// to the Fragment's foreign range, so React reports a logical-tree/DOM
+		// mismatch instead of leaking the foreign container's document order.
+		const portalMarker = this._startMarker as Comment & {
+			$$portalParent?: Node;
+			$$portalSourceAnchor?: Node;
+		};
+		const logicalParent = portalMarker.$$portalParent;
+		if (logicalParent !== undefined && logicalParent !== parent && logicalParent.contains(other)) {
+			const sourceAnchor = portalMarker.$$portalSourceAnchor;
+			if (sourceAnchor === undefined) return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+			const directionMask = Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_FOLLOWING;
+			const logicalDirection = sourceAnchor.compareDocumentPosition(other) & directionMask;
+			if ((firstResult & directionMask) !== logicalDirection) {
+				return Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+			}
+		}
+		return firstResult;
 	}
 
 	/**
-	 * Dispatches `event` on the fragment's parent host element so the
-	 * event bubbles into the surrounding handler tree the way native
-	 * EventTarget.dispatchEvent does. Mirrors React's FragmentInstance:
-	 * because the fragment itself has no DOM node, the dispatch target is
-	 * the parent (`return.stateNode` in React's fiber model).
-	 *
-	 * Returns false if the event's default action was cancelled — matches
-	 * EventTarget.dispatchEvent's return contract so callers can branch
-	 * on preventDefault() like they would on any other DOM dispatch.
+	 * Dispatch bubbling events directly on the parent unless fragment listeners
+	 * or a non-bubbling event require React's temporary fragment-local target.
 	 */
 	dispatchEvent(event: Event): boolean {
 		if (this._destroyed) return true;
 		const parent = this._startMarker.parentNode;
 		if (!parent) return true;
-		return (parent as unknown as EventTarget).dispatchEvent(event);
+		const listeners = this._listeners;
+		if (event.bubbles && (listeners === null || listeners.length === 0)) {
+			return parent.dispatchEvent(event);
+		}
+
+		const target = (parent.ownerDocument || document).createTextNode('');
+		if (listeners !== null) {
+			for (const entry of listeners) {
+				target.addEventListener(entry.type, entry.listener, entry.options);
+			}
+		}
+		parent.appendChild(target);
+		try {
+			return target.dispatchEvent(event);
+		} finally {
+			if (listeners !== null) {
+				for (const entry of listeners) {
+					target.removeEventListener(entry.type, entry.listener, entry.options);
+				}
+			}
+			if (target.parentNode === parent) parent.removeChild(target);
+		}
 	}
 
 	// ─── scrollIntoView (Stage 6) ───────────────────────────────────────
 	/**
-	 * Scrolls the fragment into view. Picks the first focusable descendant
-	 * if one exists (matches what tab-focus would land on), falling back to
-	 * the first element child otherwise. Mirrors React's FragmentInstance
-	 * choice — for tooltip / anchor-scroll use cases the "natural target"
-	 * is usually a focusable element, not an arbitrary wrapper div.
+	 * Scroll every logical first-level host child so the final scroll position
+	 * settles on the first child by default, or the last child for `false`.
+	 * Empty fragments use their nearest sibling, then their host parent.
 	 */
-	scrollIntoView(arg?: boolean | ScrollIntoViewOptions): void {
-		if (this._destroyed) return;
-		let firstFocusable: Element | null = null;
-		let firstAny: Element | null = null;
-		for (const el of fragmentDescendants(this)) {
-			if (!firstAny) firstAny = el;
-			if (isFocusable(el)) {
-				firstFocusable = el;
-				break;
-			}
+	scrollIntoView(alignToTop?: boolean): void {
+		if (typeof alignToTop === 'object') {
+			throw new Error(formatClientError(49));
 		}
-		const target = firstFocusable || firstAny;
-		if (target) (target as HTMLElement).scrollIntoView(arg as any);
+		if (this._destroyed) return;
+		const alignStart = alignToTop !== false;
+		const children = Array.from(fragmentDirectNodes(this));
+		if (children.length === 0) {
+			const following = fragmentNearestSibling(this._endMarker, true);
+			const preceding = fragmentNearestSibling(this._startMarker, false);
+			const target = alignStart
+				? following || preceding || this._startMarker.parentNode
+				: preceding || following;
+			if (target === null || target === undefined || target.nodeType === 9) return;
+			if (target.nodeType === 11) {
+				const host = (target as ShadowRoot).host;
+				if (host) host.scrollIntoView(alignToTop);
+				return;
+			}
+			if (target.nodeType === 3) {
+				scrollFragmentTextNode(target as Text, alignStart);
+			} else {
+				(target as Element).scrollIntoView(alignToTop);
+			}
+			return;
+		}
+
+		for (
+			let index = alignStart ? children.length - 1 : 0;
+			alignStart ? index >= 0 : index < children.length;
+			index += alignStart ? -1 : 1
+		) {
+			const child = children[index];
+			if (child.nodeType === 3) scrollFragmentTextNode(child as Text, alignStart);
+			else (child as Element).scrollIntoView(alignToTop);
+		}
 	}
 }
 
@@ -11178,83 +12188,108 @@ function listenerCapturePhase(o: AddEventListenerOptions | boolean | undefined):
 }
 
 /**
- * Walk every Element strictly between the start and end markers of the
- * fragment, in document (tree) order. Uses a TreeWalker rooted at each
- * top-level child between the markers so the iteration is O(n) over the
- * fragment's subtree (not the whole document). Comment / Text nodes are
- * skipped — fragment ref methods only care about Elements.
+ * Yield first-level authored host nodes in logical order. Comment boundaries
+ * are implementation details; text remains observable to fragment geometry.
  */
-function* fragmentDescendants(fi: FragmentInstance): Generator<Element> {
+function* fragmentDirectNodes(fi: FragmentInstance): Generator<Element | Text> {
+	const portalAnchors = fi._portalAnchors;
 	let node: ChildNode | null = fi._startMarker.nextSibling;
-	while (node && node !== fi._endMarker) {
+	while (node !== null) {
 		const next = node.nextSibling;
-		if (node.nodeType === 1) {
-			const top = node as Element;
-			yield top;
-			// SHOW_ELEMENT (filter 1) keeps us off Text/Comment.
-			const walker = (top.ownerDocument || document).createTreeWalker(top, 1);
-			let descendant = walker.nextNode() as Element | null;
-			while (descendant) {
-				yield descendant;
-				descendant = walker.nextNode() as Element | null;
+		const portals = portalAnchors === null ? undefined : portalAnchors.get(node);
+		if (portals !== undefined) {
+			// A portal containing a Fragment ref may grow around a later independent
+			// portal targeting the same container. Empty entries identify those
+			// foreign ranges without changing the ordinary direct-child fast path.
+			if (portals.size === 0) {
+				const foreignEnd = (node as any).$$portalEnd as Node | undefined;
+				if (foreignEnd !== undefined) {
+					node = nodeAfterPortalRange(node, foreignEnd) as ChildNode | null;
+					continue;
+				}
 			}
+			for (const portal of portals) {
+				// Portals are physically outside Activity's hidden host range. Their
+				// logical Block ancestry, not their target DOM, determines visibility.
+				if (portal.block === null || findHiddenActivity(portal.block) !== null) continue;
+				let child: ChildNode | null = portal.start?.nextSibling ?? null;
+				while (child !== null && child !== portal.end) {
+					const nextChild = child.nextSibling;
+					if ((child.nodeType === 1 || child.nodeType === 3) && fragmentHostVisible(child)) {
+						yield child as Element | Text;
+					}
+					child = nextChild;
+				}
+			}
+		}
+		if (node === fi._endMarker) return;
+		if ((node.nodeType === 1 || node.nodeType === 3) && fragmentHostVisible(node)) {
+			yield node as Element | Text;
 		}
 		node = next;
 	}
 }
 
 /**
- * Yield the DIRECT (first-level) Element children between the fragment markers,
- * in document order. This is the membership set for the per-child operations
- * (event listeners, observers) — matching React's first-level traverse — as
- * opposed to fragmentDescendants which deep-walks (used by focus/scrollIntoView).
+ * First-level host elements are the membership set for fragment listeners,
+ * observers, and public `reactFragments` handles.
  */
 function* fragmentDirectChildren(fi: FragmentInstance): Generator<Element> {
-	let node: ChildNode | null = fi._startMarker.nextSibling;
-	while (node && node !== fi._endMarker) {
-		const next = node.nextSibling;
+	for (const node of fragmentDirectNodes(fi)) {
 		if (node.nodeType === 1) yield node as Element;
-		node = next;
 	}
 }
 
-/**
- * Is `node` strictly between the fragment's start and end markers in
- * document order? Uses compareDocumentPosition so the check works for
- * arbitrary descendants — not just immediate children — and returns false
- * for detached / unrelated nodes (which is what blur containment expects).
- */
-function isInsideFragment(fi: FragmentInstance, node: Node): boolean {
-	const startRel = fi._startMarker.compareDocumentPosition(node);
-	const endRel = fi._endMarker.compareDocumentPosition(node);
-	const followsStart = (startRel & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
-	const precedesEnd = (endRel & Node.DOCUMENT_POSITION_PRECEDING) !== 0;
-	return followsStart && precedesEnd;
+/** Deep-walk each first-level host subtree without scanning the entire document. */
+function* fragmentDescendants(fi: FragmentInstance): Generator<Element> {
+	for (const top of fragmentDirectChildren(fi)) {
+		yield top;
+		const walker = (top.ownerDocument || document).createTreeWalker(top, 1);
+		let descendant = walker.nextNode() as Element | null;
+		while (descendant) {
+			yield descendant;
+			descendant = walker.nextNode() as Element | null;
+		}
+	}
 }
 
-/**
- * Mirrors the focusability check React's FragmentInstance uses:
- *  - inherently-focusable tags: <input>, <select>, <textarea>, <button>
- *    (not disabled), <a> (with href).
- *  - explicit tabIndex >= 0 OR contenteditable="true" on any tag.
- *  - tabIndex === -1 → not in sequential order, NOT picked by focus() /
- *    focusLast(). (Still focusable via .focus() directly — we just skip
- *    them when walking, matching React's behavior.)
- *  - hidden / disabled → never focusable.
- */
-function isFocusable(el: Element): boolean {
-	if ((el as HTMLElement).hidden === true) return false;
-	const tabAttr = el.getAttribute('tabindex');
-	const explicitTab = tabAttr === null ? null : parseInt(tabAttr, 10);
-	if (explicitTab !== null && explicitTab < 0) return false;
-	const tag = el.tagName;
-	if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') {
-		return !(el as HTMLInputElement).disabled;
+/** Ask the DOM whether focusing succeeded, including delegated/redirected focus. */
+function focusFragmentElement(node: Element, options?: FocusOptions): boolean {
+	const element = node as HTMLElement;
+	const owner = element.ownerDocument;
+	if (owner.activeElement === element) return true;
+	let focused = false;
+	const onFocus = () => {
+		focused = true;
+	};
+	owner.addEventListener('focus', onFocus, true);
+	try {
+		(element.focus || HTMLElement.prototype.focus).call(element, options);
+	} finally {
+		owner.removeEventListener('focus', onFocus, true);
 	}
-	if (tag === 'A' && el.hasAttribute('href')) return true;
-	if (explicitTab !== null && explicitTab >= 0) return true;
-	if (el.getAttribute('contenteditable') === 'true') return true;
-	return false;
+	return focused;
+}
+
+/** Skip implementation-only markers when locating an empty fragment's host sibling. */
+function fragmentNearestSibling(marker: Node, forward: boolean): Element | Text | null {
+	let sibling = forward ? marker.nextSibling : marker.previousSibling;
+	while (sibling !== null) {
+		if (sibling.nodeType === 1 || sibling.nodeType === 3) return sibling as Element | Text;
+		sibling = forward ? sibling.nextSibling : sibling.previousSibling;
+	}
+	return null;
+}
+
+/** Text nodes expose geometry through Range rather than Element.scrollIntoView. */
+function scrollFragmentTextNode(node: Text, alignToTop: boolean): void {
+	const range = node.ownerDocument.createRange();
+	range.selectNodeContents(node);
+	if (typeof range.getBoundingClientRect !== 'function') return;
+	const rect = range.getBoundingClientRect();
+	const view = node.ownerDocument.defaultView || window;
+	const y = alignToTop ? view.scrollY + rect.top : view.scrollY + rect.bottom - view.innerHeight;
+	view.scrollTo(view.scrollX + rect.left, y);
 }
 
 /**
@@ -11351,6 +12386,17 @@ function attrNamespace(name: string): string | null {
 }
 
 export function setAttribute(el: Element, name: string, value: any): void {
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		(el as any).__oct_loc !== undefined &&
+		!isHtmlCustomElement(el) &&
+		typeof (el as any).__oct_custom_is !== 'string'
+	) {
+		const warning = isAriaAttributeName(name)
+			? ariaAttributeWarning(name, el.localName)
+			: hostPropertyWarning(name, value, el.localName, el.namespaceURI === SVG_NS);
+		if (warning !== null) devWarnAttributeOnce(el, name, warning);
+	}
 	// React-style `dangerouslySetInnerHTML={{__html}}` is a PROPERTY write, not an
 	// attribute. The compiler's fast path sets `el.innerHTML` directly, but when the
 	// element also carries a spread (`<div {...props} dangerouslySetInnerHTML={x}/>`,
@@ -11478,12 +12524,17 @@ export function setAttribute(el: Element, name: string, value: any): void {
 		isHtmlCustomElement(el) &&
 		(typeof value === 'function' || (el as any).$$ceListeners?.[name] !== undefined)
 	) {
-		const type = name.slice(2);
+		// React 19 treats a trailing Capture on a custom-element listener as
+		// native capture registration, while preserving the authored event case
+		// and punctuation. The full prop name remains the identity so capture and
+		// bubble listeners can coexist and be replaced or removed independently.
+		const capture = name.endsWith('Capture');
+		const type = capture ? name.slice(2, -7) : name.slice(2);
 		const map: Record<string, EventListener> = ((el as any).$$ceListeners ??= {});
 		const prev = map[name];
-		if (prev !== undefined && prev !== value) el.removeEventListener(type, prev);
+		if (prev !== undefined && prev !== value) el.removeEventListener(type, prev, capture);
 		if (typeof value === 'function') {
-			if (prev !== value) el.addEventListener(type, value as EventListener);
+			if (prev !== value) el.addEventListener(type, value as EventListener, capture);
 			map[name] = value as EventListener;
 			el.removeAttribute(name); // a listener prop never lands in the markup
 			return;
@@ -11560,6 +12611,69 @@ function devWarnAttributeOnce(_el: Element, name: string, message: string): void
 	console.error(message);
 }
 
+function devValidateAriaProps(el: Element, props: Record<string, unknown>): void {
+	if ((el as any).__oct_loc === undefined || isHtmlCustomElement(el)) return;
+	let unknown: string[] | undefined;
+	for (const name of Object.keys(props)) {
+		if (!isAriaAttributeName(name)) continue;
+		const warning = ariaAttributeWarning(name, el.localName);
+		if (warning === null) continue;
+		if (!isUnknownAriaAttribute(name)) {
+			devWarnAttributeOnce(el, name, warning);
+			continue;
+		}
+		if (DEV_ATTRIBUTE_WARNINGS?.has(name)) continue;
+		(DEV_ATTRIBUTE_WARNINGS ??= new Set()).add(name);
+		(unknown ??= []).push(name);
+	}
+	if (unknown !== undefined) {
+		console.error(unknownAriaAttributeWarning(unknown, el.localName));
+	}
+}
+
+function devValidateHostProps(el: Element, props: Record<string, unknown>): void {
+	if ((el as any).__oct_loc === undefined || isHtmlCustomElement(el)) return;
+	const customized = typeof props.is === 'string';
+	(el as any).__oct_custom_is = customized ? props.is : undefined;
+	if (customized) return;
+	let invalid: string[] | undefined;
+	for (const name of Object.keys(props)) {
+		if (
+			name === 'key' ||
+			name === 'ref' ||
+			name === 'children' ||
+			name === 'class' ||
+			name === 'className' ||
+			name === 'style' ||
+			name === 'dangerouslySetInnerHTML' ||
+			isAriaAttributeName(name)
+		) {
+			continue;
+		}
+		const value = props[name];
+		if (name.length > 2 && name[0] === 'o' && name[1] === 'n') {
+			if (typeof value === 'string') {
+				const warning = hostPropertyWarning(name, value);
+				if (warning !== null) devWarnAttributeOnce(el, name, warning);
+			}
+			continue;
+		}
+		const warning = hostPropertyWarning(name, value, el.localName, el.namespaceURI === SVG_NS);
+		if (warning !== null) {
+			devWarnAttributeOnce(el, name, warning);
+			continue;
+		}
+		if (typeof value === 'function' && formActionAttributeName(el, name) !== null) continue;
+		if (typeof value !== 'function' && typeof value !== 'symbol') continue;
+		if (DEV_ATTRIBUTE_WARNINGS?.has(name)) continue;
+		(DEV_ATTRIBUTE_WARNINGS ??= new Set()).add(name);
+		(invalid ??= []).push(name);
+	}
+	if (invalid !== undefined) {
+		console.error(invalidHostPropertiesWarning(invalid, el.localName));
+	}
+}
+
 /**
  * Compiler-only fast path for a statically named `data-*` attribute whose
  * expression is proven to be a string at authoring time. Runtime values still
@@ -11610,6 +12724,10 @@ export function setStringData(el: Element, name: string, value: unknown): void {
  * canonical empty-string presence form.
  */
 export function setBooleanAttribute(el: Element, name: string, value: unknown): void {
+	if (process.env.NODE_ENV !== 'production' && (el as any).__oct_loc !== undefined) {
+		const warning = booleanAttributeStringWarning(name, value);
+		if (warning !== null) devWarnAttributeOnce(el, name, warning);
+	}
 	const type = typeof value;
 	const next = !value || type === 'function' || type === 'symbol' ? null : '';
 	const hydration = activeHydration();
@@ -11626,6 +12744,14 @@ export function setBooleanAttribute(el: Element, name: string, value: unknown): 
  * attribute path.
  */
 export function setAriaAttribute(el: Element, name: string, value: unknown): void {
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		(el as any).__oct_loc !== undefined &&
+		!isHtmlCustomElement(el)
+	) {
+		const warning = ariaAttributeWarning(name, el.localName);
+		if (warning !== null) devWarnAttributeOnce(el, name, warning);
+	}
 	const next = value == null ? null : String(value);
 	const hydration = activeHydration();
 	if (hydration !== null && !hydration.allowAttribute(el, name, next)) return;
@@ -11698,6 +12824,10 @@ function coerceAttrValue(el: Element, name: string, value: any): string | null {
 		// `attr=""` presence form (`disabled="disabled"` → `disabled=""`),
 		// falsy removes (`hidden={0}`, `inert=""` → absent).
 		if (BOOLEAN_ATTR_PROPS.has(lower)) {
+			if (process.env.NODE_ENV !== 'production' && (el as any).__oct_loc !== undefined) {
+				const warning = booleanAttributeStringWarning(name, value);
+				if (warning !== null) devWarnAttributeOnce(el, name, warning);
+			}
 			return value ? '' : null;
 		}
 		// The OVERLOADED booleans (download/capture): boolean values get
@@ -11764,7 +12894,21 @@ function coerceAttrValue(el: Element, name: string, value: any): string | null {
 			`Received NaN for the \`${name}\` attribute. If this is expected, cast the value to a string.`,
 		);
 	}
-	const v = value === true ? '' : String(value);
+	let v: string;
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		(el as any).__oct_loc !== undefined &&
+		!isHtmlCustomElement(el)
+	) {
+		try {
+			v = value === true ? '' : String(value);
+		} catch (error) {
+			devWarnAttributeOnce(el, name, unsupportedAttributeCoercionWarning(name, value));
+			throw error;
+		}
+	} else {
+		v = value === true ? '' : String(value);
+	}
 	// An empty `src`/`href`/`<object data>` resolves to the CURRENT PAGE's URL — browsers will
 	// re-fetch the whole document as an image/script/stylesheet. React strips
 	// these (dev AND prod); so do we. `<a href="">` (and `<area>`) stays — an
@@ -11775,6 +12919,13 @@ function coerceAttrValue(el: Element, name: string, value: any): string | null {
 			(name === 'href' && el.nodeName !== 'A' && el.nodeName !== 'AREA') ||
 			(name === 'data' && el.nodeName === 'OBJECT'))
 	) {
+		if (
+			process.env.NODE_ENV !== 'production' &&
+			(el as any).__oct_loc !== undefined &&
+			!isHtmlCustomElement(el)
+		) {
+			devWarnAttributeOnce(el, 'empty:' + name, emptyResourceUrlWarning(name));
+		}
 		return null;
 	}
 	return v;
@@ -11783,7 +12934,7 @@ function coerceAttrValue(el: Element, name: string, value: any): string | null {
 // clsx-style `class`/`className` composition — shared with the SSR serializer
 // via css.ts so client and server compose byte-equal class strings (hydration
 // parity). Re-exported here because it is part of the semi-public surface.
-import { normalizeClass, styleName } from './css.js';
+import { devWarnStyleCoercion, devWarnStyleProperty, normalizeClass, styleName } from './css.js';
 export { normalizeClass };
 
 export function setClassName(el: Element, value: unknown): void {
@@ -11859,10 +13010,43 @@ export function setStyle(el: HTMLElement | SVGElement, value: any, prev: any): v
 	// The whole style attribute, not the individual declarations applyStyleValue
 	// is about to touch: restoring the attribute text restores every one of them.
 	if (TRANSITION_JOURNAL !== null) journalAttr(el, 'style');
-	applyStyleValue(style, value, prev);
+	applyStyleValue(el, style, value, prev);
 }
 
-function applyStyleValue(style: CSSStyleDeclaration, value: any, prev: any): void {
+/**
+ * Update one dynamic declaration after a compiler-baked static style prefix.
+ * Hydration still compares the complete style, while aborted transitions
+ * restore the entire attribute rather than only this declaration.
+ * @internal
+ */
+export function setStyleProperty(
+	el: HTMLElement | SVGElement,
+	name: string,
+	value: any,
+	staticCss: string,
+	previous: any,
+): void {
+	const hydration = activeHydration();
+	if (hydration !== null) {
+		hydration.applyStyle(el, { [name]: value }, undefined, staticCss);
+		return;
+	}
+	const remove = value == null || typeof value === 'boolean';
+	// The compiler seeds each binding with its private scope, distinguishing a
+	// genuinely absent initial longhand from a preserved suspended-mount retry.
+	if (remove && previous === CURRENT_SCOPE) return;
+	if (TRANSITION_JOURNAL !== null) journalAttr(el, 'style');
+	const style = (el as HTMLElement).style;
+	if (remove) style.removeProperty(styleName(name));
+	else applyStyleProperty(el, style, name, value);
+}
+
+function applyStyleValue(
+	el: HTMLElement | SVGElement,
+	style: CSSStyleDeclaration,
+	value: any,
+	prev: any,
+): void {
 	if (value == null || value === false || value === '') {
 		if (prev != null && prev !== false && prev !== '') style.cssText = '';
 		return;
@@ -11886,21 +13070,37 @@ function applyStyleValue(style: CSSStyleDeclaration, value: any, prev: any): voi
 			// Booleans clear the property (React parity): `fontFamily: true` must not
 			// set the literal string "true" (a valid font name!).
 			if (v == null || typeof v === 'boolean') style.removeProperty(styleName(k));
-			else applyStyleProperty(style, k, v);
+			else applyStyleProperty(el, style, k, v);
 		}
 	} else {
 		if (typeof prev === 'string') style.cssText = '';
 		for (const k in value) {
 			const v = value[k];
-			if (v != null && typeof v !== 'boolean') applyStyleProperty(style, k, v);
+			if (v != null && typeof v !== 'boolean') applyStyleProperty(el, style, k, v);
 		}
 	}
 }
 
-function applyStyleProperty(style: CSSStyleDeclaration, name: string, value: any): void {
+function applyStyleProperty(
+	el: HTMLElement | SVGElement,
+	style: CSSStyleDeclaration,
+	name: string,
+	value: any,
+): void {
 	const prop = styleName(name);
 	// React parity: a bare number gets `px` unless it's 0, a custom prop, or unitless.
-	const s = cssStyleValue(name, value);
+	let s: string;
+	if (process.env.NODE_ENV !== 'production' && (el as any).__oct_loc !== undefined) {
+		devWarnStyleProperty(name, value, false);
+		try {
+			s = cssStyleValue(name, value);
+		} catch (error) {
+			devWarnStyleCoercion(name, value);
+			throw error;
+		}
+	} else {
+		s = cssStyleValue(name, value);
+	}
 	// CodeQL flagged the prior `/\s*!important\s*$/` test+replace combo as
 	// polynomial-regex-on-uncontrolled-input. Same job in linear time using
 	// built-in trimEnd() + endsWith() — no regex, no backtracking risk.
@@ -12138,7 +13338,15 @@ export function setHostPropSources(
 		const [identity, name] = normalizedHostProp(el, writer.rawName);
 		const previous = values.get(identity);
 		if (previous === undefined || previous[3] < writer.lastOrder) {
-			values.set(identity, [name, writer.value, writer.firstOrder, writer.lastOrder]);
+			values.set(identity, [
+				process.env.NODE_ENV !== 'production' &&
+				(writer.rawName === 'tabIndex' || writer.rawName === 'htmlFor')
+					? writer.rawName
+					: name,
+				writer.value,
+				writer.firstOrder,
+				writer.lastOrder,
+			]);
 		}
 	}
 	const resolved: Record<string, unknown> = Object.create(null);
@@ -12177,6 +13385,10 @@ export function setSpread(
 	skipDangerouslySetInnerHTML = false,
 	skipFormControls = false,
 ): void {
+	if (process.env.NODE_ENV !== 'production' && value != null) {
+		devValidateAriaProps(el, Object(value) as Record<string, unknown>);
+		devValidateHostProps(el, Object(value) as Record<string, unknown>);
+	}
 	// `mountScope` is passed only on the mount call (not on updates). When present
 	// a spread-supplied ref attach is DEFERRED to commit so a callback ref sees a
 	// connected node — same React-19 timing as element/fragment refs. Updates
@@ -12779,6 +13991,19 @@ const CAPTURE_DELEGATED = /* @__PURE__ */ new Set([
 	...EMULATED_BUBBLING_EVENTS,
 ]);
 const delegatedCapture = (name: string): boolean => CAPTURE_DELEGATED.has(name);
+const ACTIVE_TOUCH_BUBBLE: AddEventListenerOptions = { passive: false };
+const ACTIVE_TOUCH_CAPTURE: AddEventListenerOptions = { capture: true, passive: false };
+
+function delegatedListenerOptions(
+	name: string,
+	capture: boolean,
+): boolean | AddEventListenerOptions {
+	return name === 'touchstart' || name === 'touchmove'
+		? capture
+			? ACTIVE_TOUCH_CAPTURE
+			: ACTIVE_TOUCH_BUBBLE
+		: capture;
+}
 
 // The enter/leave family is dispatched PER ELEMENT by the browser — each
 // entered/left element receives its OWN non-bubbling event — so the delegated
@@ -12812,7 +14037,11 @@ export function delegateEvents(eventNames: string[]): void {
 		// back-attach the listener to every active target so handlers stamped on
 		// their DOM via `el.$$click = …` still receive events.
 		for (const target of _delegationTargets.keys()) {
-			target.addEventListener(name, dispatchDelegated, delegatedCapture(name));
+			target.addEventListener(
+				name,
+				dispatchDelegated,
+				delegatedListenerOptions(name, delegatedCapture(name)),
+			);
 		}
 	}
 }
@@ -12832,7 +14061,7 @@ export function delegateCaptureEvents(eventNames: string[]): void {
 		// `$$capture:<type>` along the built path).
 		if (canSeed) seedExpando(Element.prototype, CAPTURE_PREFIX + name);
 		for (const target of _delegationTargets.keys()) {
-			target.addEventListener(name, dispatchDelegatedCapture, true);
+			target.addEventListener(name, dispatchDelegatedCapture, delegatedListenerOptions(name, true));
 		}
 	}
 }
@@ -12856,10 +14085,14 @@ function registerDelegationTarget(target: Node): void {
 			(target as any).onclick = noop;
 		}
 		for (const name of _delegated) {
-			target.addEventListener(name, dispatchDelegated, delegatedCapture(name));
+			target.addEventListener(
+				name,
+				dispatchDelegated,
+				delegatedListenerOptions(name, delegatedCapture(name)),
+			);
 		}
 		for (const name of _delegatedCapture) {
-			target.addEventListener(name, dispatchDelegatedCapture, true);
+			target.addEventListener(name, dispatchDelegatedCapture, delegatedListenerOptions(name, true));
 		}
 	}
 }
@@ -12974,6 +14207,16 @@ const CAPTURE_FLUSH_FALLBACK = /* @__PURE__ */ Symbol('octane.capture.flushFallb
 // independent phases, so each carries its own stamp.
 const DELEGATED_DISPATCHED = /* @__PURE__ */ Symbol('octane.dispatched');
 const CAPTURE_DISPATCHED = /* @__PURE__ */ Symbol('octane.dispatched.capture');
+// A receiver-specific target lets one accessor survive nested native dispatch.
+const CURRENT_TARGET_NODE = /* @__PURE__ */ Symbol('octane.currentTarget');
+const CURRENT_TARGET_DESCRIPTOR: PropertyDescriptor = {
+	configurable: true,
+	get(this: Event): EventTarget | null {
+		return (this as any)[CURRENT_TARGET_NODE] as EventTarget | null;
+	},
+};
+// Synchronous nested capture walks borrow disjoint frames from this one stack.
+const CAPTURE_PATH: any[] = [];
 
 // Invoke one event slot — a bare handler `fn(event)` or a nominal `{ fn, args }` bundle
 // (the compiler's zero-argument-arrow optimisation) as `fn(...args)`. A bundled
@@ -13203,25 +14446,27 @@ function dispatchDelegatedCapture(event: Event): void {
 	// its native onChange handler can observe the activated value.
 	if (!event.bubbles || !_delegated.has(event.type)) maybeEnqueueRestore(event);
 	const key = CAPTURE_PREFIX + event.type;
-	const path: any[] = [];
+	const pathBase = CAPTURE_PATH.length;
 	for (let node = event.target as any; node !== null && node !== undefined;) {
-		path.push(node);
+		CAPTURE_PATH.push(node);
 		node = node.$$portalParent ? node.$$portalParent : node.parentNode;
 	}
 	_dispatchDepth++;
 	const discrete = DISCRETE_EVENTS.has(event.type);
 	if (discrete) ACTIVE_DISCRETE_EVENT_DEPTH++;
 	try {
-		for (let i = path.length - 1; i >= 0; i--) {
-			const slot = path[i][key] as EventSlot;
+		for (let i = CAPTURE_PATH.length - 1; i >= pathBase; i--) {
+			const slot = CAPTURE_PATH[i][key] as EventSlot;
 			if (slot != null) {
 				// React parity: the handler's element is the currentTarget.
-				setCurrentTarget(event, path[i]);
+				setCurrentTarget(event, CAPTURE_PATH[i]);
 				fireEventSlot(slot, event);
 				if (event.cancelBubble) return;
 			}
 		}
 	} finally {
+		// Nested dispatch appends its own frame and restores the outer traversal.
+		CAPTURE_PATH.length = pathBase;
 		clearCurrentTarget(event);
 		if (discrete) ACTIVE_DISCRETE_EVENT_DEPTH--;
 		_dispatchDepth--;
@@ -13238,14 +14483,13 @@ function noop(): void {}
 // delegation ROOT), so shadow it with a configurable own property during each handler and
 // remove the shadow after the walk (restoring native semantics).
 function setCurrentTarget(event: Event, node: EventTarget | null): void {
-	Object.defineProperty(event, 'currentTarget', {
-		configurable: true,
-		get: () => node,
-	});
+	(event as any)[CURRENT_TARGET_NODE] = node;
+	Object.defineProperty(event, 'currentTarget', CURRENT_TARGET_DESCRIPTOR);
 }
 function clearCurrentTarget(event: Event): void {
 	// Deleting the own property re-exposes Event.prototype's native getter.
 	delete (event as any).currentTarget;
+	delete (event as any)[CURRENT_TARGET_NODE];
 }
 
 // ---------------------------------------------------------------------------
@@ -13403,6 +14647,7 @@ export function setFormAction(
 ): void {
 	if (typeof value === 'function') {
 		(el as any).$$formAction = value;
+		if (process.env.NODE_ENV !== 'production') queueFormActionAuthoringDiagnostic(el);
 		if (el.nodeName === 'FORM') {
 			if (!(el as any).$$formSubmitWired) {
 				(el as any).$$formSubmitWired = true;
@@ -13565,9 +14810,10 @@ interface ControlledState {
 	 *  it CHANGES (an unchanged default on an unrelated re-render must not
 	 *  clobber the user's selection; uncontrolled selects stay user-owned). */
 	dvv: unknown;
-	/** True between compositionstart and compositionend (IME) — reassert and
-	 *  restore both hold off so they can't cancel an active composition. */
+	/** True during IME composition and while its final committed input can arrive. */
 	composing: boolean;
+	/** undefined until text composition is armed; null or the pending completion task. */
+	compositionEndTask: ReturnType<typeof setTimeout> | null | undefined;
 	/** Select re-projection already queued for the pending commit. */
 	queued: boolean;
 	/** Whether the compiler's spread-aware form aggregation path has committed. */
@@ -13601,7 +14847,6 @@ const RESTORE_EVENTS = /* @__PURE__ */ new Set(RESTORE_EVENT_LIST);
 // DOM against the values the handlers just committed. Tiny array + linear
 // dedupe: one event targets one element; nesting stays single-digit.
 let pendingRestores: Element[] = [];
-let restoreMicrotaskScheduled = false;
 
 // The checkable input whose click ACTIVATION is currently in flight: the
 // platform has toggled `checked` but the activation's `input`/`change`
@@ -13687,28 +14932,43 @@ function isTextEntry(el: Element): boolean {
 
 // IME guard — DIRECT per-element listeners (not delegation), attached once at
 // arm time: a user handler's stopPropagation can never starve the composing
-// flag, and compositionend re-enters the restore path via a microtask even
-// when the delegated dispatch was stopped. Two shared module-level handlers —
-// no per-element closures.
+// flag. A cancellable task after compositionend leaves the browser's final
+// committed input observable; blur gets a temporary listener only while an
+// actual composition is active, so interrupted sessions cannot stay stuck.
 function onCtrlCompositionStart(e: Event): void {
-	const ctrl = (e.currentTarget as any).$$ctrl as ControlledState | undefined;
-	if (ctrl !== undefined) ctrl.composing = true;
+	const el = e.currentTarget as Element;
+	const ctrl = (el as any).$$ctrl as ControlledState | undefined;
+	if (ctrl === undefined) return;
+	if (ctrl.compositionEndTask !== undefined && ctrl.compositionEndTask !== null) {
+		clearTimeout(ctrl.compositionEndTask);
+		ctrl.compositionEndTask = null;
+	}
+	ctrl.composing = true;
+	el.addEventListener('blur', onCtrlCompositionEnd);
 }
 function onCtrlCompositionEnd(e: Event): void {
 	const el = e.currentTarget as Element;
 	const ctrl = (el as any).$$ctrl as ControlledState | undefined;
 	if (ctrl === undefined) return;
-	ctrl.composing = false;
-	if (pendingRestores.indexOf(el) === -1) pendingRestores.push(el);
-	// The delegated compositionend dispatch normally drains this in
-	// maybeFlushDiscrete; the microtask is the un-starvable fallback.
-	if (!restoreMicrotaskScheduled) {
-		restoreMicrotaskScheduled = true;
-		queueMicrotask(() => {
-			restoreMicrotaskScheduled = false;
-			if (pendingRestores.length > 0) restoreControlledStates();
-		});
+	el.removeEventListener('blur', onCtrlCompositionEnd);
+	if (ctrl.compositionEndTask !== undefined && ctrl.compositionEndTask !== null) {
+		clearTimeout(ctrl.compositionEndTask);
 	}
+	// Android keyboards can dispatch the committed input after compositionend,
+	// a microtask checkpoint, and the next task. Give that input a full turn;
+	// blur needs no extra turn because it has already interrupted the session.
+	ctrl.composing = true;
+	const settleComposition = () => {
+		ctrl.compositionEndTask = null;
+		ctrl.composing = false;
+		restoreControlledElement(el);
+	};
+	ctrl.compositionEndTask =
+		e.type === 'blur'
+			? setTimeout(settleComposition, 0)
+			: setTimeout(() => {
+					ctrl.compositionEndTask = setTimeout(settleComposition, 0);
+				}, 0);
 }
 
 /** Get-or-create the shared controlled-state record and restoration listeners. */
@@ -13723,6 +14983,7 @@ function armControlledBase(el: Element): ControlledState {
 			sawC: false,
 			dvv: UNCONTROLLED,
 			composing: false,
+			compositionEndTask: undefined,
 			queued: false,
 			formSeen: false,
 			formDefaultValue: UNCONTROLLED,
@@ -13740,12 +15001,13 @@ function armControlledBase(el: Element): ControlledState {
 
 /** Full arming for controls that may accept IME text composition. */
 function armControlled(el: Element): ControlledState {
-	const existing = (el as any).$$ctrl as ControlledState | undefined;
-	if (existing !== undefined) return existing;
-	const ctrl = armControlledBase(el);
+	let ctrl = (el as any).$$ctrl as ControlledState | undefined;
+	if (ctrl === undefined) ctrl = armControlledBase(el);
 	// Direct checked-only compiler sites use armControlledBase instead. Their
 	// statically-known checkbox/radio type proves these text listeners are dead.
-	if (isTextEntry(el)) {
+	// Recheck existing records so a dynamic date-to-text type change can arm IME.
+	if (ctrl.compositionEndTask === undefined && isTextEntry(el)) {
+		ctrl.compositionEndTask = null;
 		el.addEventListener('compositionstart', onCtrlCompositionStart);
 		el.addEventListener('compositionend', onCtrlCompositionEnd);
 	}
@@ -13793,6 +15055,14 @@ interface DevFormDiagnosticState {
 	last: string | null;
 	/** The compiler already published the onChange-specific warning. */
 	staticNativeChange: boolean;
+	/** Final authoring props observed on this development-compiled host. */
+	authoringProps?: Record<string, unknown>;
+	/** Deferred selected binding, evaluated once only after its mount update. */
+	authoringSelected?: () => unknown;
+	/** Structural children markers published by DEV-only compiler bindings. */
+	authoringChildren?: 'textarea' | 'option';
+	/** Each contradictory authoring warning is emitted once per host. */
+	authoringWarnings?: Set<string>;
 }
 
 function getDevFormDiagnosticState(el: Element): DevFormDiagnosticState | undefined {
@@ -13855,8 +15125,32 @@ function queueDevFormDiagnostic(el: Element, scope?: Scope, force = false): void
 	if (process.env.NODE_ENV === 'production') return; // build-time stripped
 	const q = DEV_FORM_CHECKS;
 	if (q === null || (!force && !hasDevFormDiagnosticContext(el, scope))) return;
-	if (!hasPotentialFormDiagnostic(el)) return;
+	if (!force && !hasPotentialFormDiagnostic(el)) return;
 	if (q.indexOf(el) === -1) q.push(el);
+}
+
+/** Compiler-only DEV marker for form hosts whose authoring is otherwise baked. */
+export function queueFormAuthoringDiagnostic(
+	el: Element,
+	kind: string,
+	selected?: boolean | (() => unknown),
+): void {
+	if (process.env.NODE_ENV === 'production') return;
+	const state = ensureDevFormDiagnosticState(el);
+	if (kind === 'textarea-children') state.authoringChildren = 'textarea';
+	else if (kind === 'option-children') state.authoringChildren = 'option';
+	else if (kind === 'option-selected') {
+		if (typeof selected === 'function') state.authoringSelected = selected;
+		else (state.authoringProps ??= Object.create(null)).selected = selected ?? true;
+	}
+	queueDevFormDiagnostic(el, CURRENT_SCOPE ?? undefined, true);
+}
+
+function queueFormActionAuthoringDiagnostic(el: Element): void {
+	if (process.env.NODE_ENV === 'production') return;
+	if (!hasDevFormDiagnosticContext(el, CURRENT_SCOPE ?? undefined)) return;
+	ensureDevFormDiagnosticState(el);
+	queueDevFormDiagnostic(el, CURRENT_SCOPE ?? undefined, true);
 }
 
 /** @internal Compiler helper for a final-props runtime-check host. */
@@ -14246,6 +15540,19 @@ export function setFormControlSources(
 	ctrl.formSeen = true;
 	ctrl.formDefaultValue = defaultValue;
 	ctrl.formDefaultChecked = defaultChecked;
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		hasDevFormDiagnosticContext(el, CURRENT_SCOPE ?? undefined)
+	) {
+		const diagnostic = ensureDevFormDiagnosticState(el);
+		diagnostic.authoringProps = { value, defaultValue, checked, defaultChecked, multiple };
+		if (
+			(value !== undefined && defaultValue !== undefined) ||
+			(tag === 'input' && checked !== undefined && defaultChecked !== undefined)
+		) {
+			queueDevFormDiagnostic(el, CURRENT_SCOPE ?? undefined, true);
+		}
+	}
 
 	if (tag === 'input') {
 		const input = el as HTMLInputElement;
@@ -14411,6 +15718,47 @@ function drainDevFormDiagnostics(): void {
 	DEV_FORM_CHECKS = [];
 	for (let i = 0; i < q.length; i++) {
 		const el = q[i];
+		const authoring = getDevFormDiagnosticState(el);
+		if (authoring !== undefined) {
+			let props = authoring.authoringProps;
+			if (authoring.authoringSelected !== undefined) {
+				(props ??= Object.create(null)).selected = authoring.authoringSelected();
+			}
+			const action = (el as any).$$formAction;
+			if (typeof action === 'function') {
+				const submitter = el.localName !== 'form';
+				props = {
+					...props,
+					...(submitter
+						? {
+								formAction: action,
+								type: el.getAttribute('type') ?? undefined,
+								name: el.getAttribute('name') ?? undefined,
+								formMethod: el.getAttribute('formmethod') ?? undefined,
+								formEncType: el.getAttribute('formenctype') ?? undefined,
+								formTarget: el.getAttribute('formtarget') ?? undefined,
+							}
+						: {
+								action,
+								method: el.getAttribute('method') ?? undefined,
+								encType: el.getAttribute('enctype') ?? undefined,
+								target: el.getAttribute('target') ?? undefined,
+							}),
+				};
+			}
+			const children =
+				authoring.authoringChildren === 'textarea'
+					? el.textContent
+					: authoring.authoringChildren === 'option'
+						? {}
+						: undefined;
+			for (const warning of formAuthoringDiagnostics(el.localName, props ?? {}, children)) {
+				const reported = (authoring.authoringWarnings ??= new Set<string>());
+				if (reported.has(warning.kind)) continue;
+				reported.add(warning.kind);
+				console.error(warning.message);
+			}
+		}
 		const outcome = formDiagnosticOutcome(el);
 		const previous = getDevFormDiagnosticState(el);
 		if (outcome === null) {
@@ -14472,8 +15820,8 @@ function drainControlledSyncs(): void {
 /**
  * Restore one armed element's DOM to its last RENDERED state (value/checked/
  * selection) — React's restoreControlledState. Composition holds the restore
- * off (compositionend re-enqueues); a disconnected element has nothing to
- * restore.
+ * off until its committed input or completion fallback; a disconnected
+ * element has nothing to restore.
  */
 function restoreControlledElement(el: Element): void {
 	const ctrl = (el as any).$$ctrl as ControlledState | undefined;
@@ -14564,6 +15912,30 @@ function isControlledHostProp(el: Element, name: string): boolean {
 function maybeEnqueueRestore(event: Event): void {
 	const t = event.target as any;
 	if (t === null || t.$$ctrl === undefined || !RESTORE_EVENTS.has(event.type)) return;
+	const ctrl = t.$$ctrl as ControlledState;
+	if (event.type === 'input' && ctrl.compositionEndTask !== undefined) {
+		const inputEvent = event as InputEvent;
+		const inputType = inputEvent.inputType;
+		const composingInput =
+			inputEvent.isComposing === true ||
+			inputType === 'insertCompositionText' ||
+			inputType === 'deleteCompositionText';
+		if (composingInput) {
+			if (ctrl.compositionEndTask !== null) {
+				clearTimeout(ctrl.compositionEndTask);
+				ctrl.compositionEndTask = null;
+			}
+			if (!ctrl.composing) t.addEventListener('blur', onCtrlCompositionEnd);
+			ctrl.composing = true;
+		} else if (ctrl.composing && typeof inputEvent.isComposing === 'boolean') {
+			if (ctrl.compositionEndTask !== null) {
+				clearTimeout(ctrl.compositionEndTask);
+				ctrl.compositionEndTask = null;
+			}
+			t.removeEventListener('blur', onCtrlCompositionEnd);
+			ctrl.composing = false;
+		}
+	}
 	// A checkable's click never arms — its `input`/`change` follow-ups do
 	// (see the RESTORE_EVENT_LIST comment: restoring after the click flush
 	// would revert the toggle before the native handlers run).
@@ -14576,7 +15948,6 @@ function maybeEnqueueRestore(event: Event): void {
 			// press-state machinery does this) must not reassert the still-uncommitted
 			// prop over the user's toggle: the checked binding switches to React's
 			// prop-diff semantics for the marked element (see setCheckedState).
-			const ctrl = t.$$ctrl as ControlledState;
 			if (ctrl.c !== -1) activationCheckable = t as Element;
 			// The platform dispatches click after pre-activation, then input/change.
 			// Remember that sequence so input does not restore before native change.
@@ -14650,6 +16021,10 @@ interface PortalSlot {
 	target: Element | null;
 	start: Comment | null;
 	end: Comment | null;
+	fragmentOwners?: FragmentInstance | readonly FragmentInstance[];
+	fragmentAnchor?: Node;
+	sourceAnchor?: Node;
+	interleavedFragment?: FragmentInstance;
 }
 
 /**
@@ -14668,8 +16043,19 @@ export function portal(
 	// Hoisted-helper env tuple (compiled-output Phase 2): the `__portal$N`
 	// body's captured parent locals — stamped as block.extra below.
 	env?: any[],
+	// Present only when this portal is a direct logical child of Fragment refs.
+	fragmentOwners?: FragmentInstance | readonly FragmentInstance[],
+	fragmentAnchor?: Node,
 ): void {
 	const prev = parentScope.slots[slotKey] as PortalSlot | undefined;
+	if (
+		fragmentAnchor !== undefined &&
+		fragmentOwners === undefined &&
+		prev !== undefined &&
+		prev.target === target
+	) {
+		prepareFragmentPortalInterleaving(prev);
+	}
 	const state = renderPortalState(
 		prev ?? null,
 		parentScope.block,
@@ -14687,6 +16073,198 @@ export function portal(
 	if (prev !== state) {
 		parentScope.slots[slotKey] = state;
 		registerSlot(parentScope, state);
+	}
+	if (fragmentOwners !== undefined && fragmentAnchor !== undefined) {
+		registerFragmentPortalOwners(state, fragmentOwners, fragmentAnchor);
+	} else if (fragmentAnchor !== undefined) {
+		// A Fragment ref rendered inside this portal belongs to its source-tree
+		// position, not the foreign target's physical position. Only the rare
+		// compiler-normalized root portal passes this ownerless source anchor.
+		state.sourceAnchor = fragmentAnchor;
+		let child: ChildNode | null = state.start!.nextSibling;
+		while (child !== null && child !== state.end) {
+			if (child.nodeType === 8) {
+				const foreignEnd = (child as any).$$portalEnd as Node | undefined;
+				if (foreignEnd !== undefined) {
+					child = nodeAfterPortalRange(child, foreignEnd) as ChildNode | null;
+					continue;
+				}
+				(child as any).$$portalSourceAnchor = fragmentAnchor;
+			}
+			child = child.nextSibling;
+		}
+	}
+}
+
+/**
+ * Match React's append-to-container semantics for the narrow case where a
+ * portal-root Fragment gains a trailing child after another portal mounted in
+ * the same target. Keep foreign ranges inside the owner's markers temporarily;
+ * a cold cleanup evacuates them before its ordinary contiguous-range teardown.
+ */
+function prepareFragmentPortalInterleaving(portal: PortalSlot): void {
+	const start = portal.start;
+	const end = portal.end;
+	const target = portal.target;
+	const block = portal.block;
+	if (start === null || end === null || target === null || block === null) return;
+	const firstForeign = end.nextSibling;
+	if (firstForeign === null || (firstForeign as any).$$portalEnd === undefined) return;
+
+	let fragment = portal.interleavedFragment;
+	if (fragment === undefined) {
+		for (const candidate of activeFragments) {
+			if (
+				candidate._ownerBlock === block &&
+				candidate._startMarker.previousSibling === start &&
+				candidate._endMarker.nextSibling === end
+			) {
+				fragment = candidate;
+				break;
+			}
+		}
+		if (fragment === undefined) return;
+	}
+
+	let lastChild: Element | Text | null = null;
+	for (const child of fragmentDirectNodes(fragment)) lastChild = child;
+	const tail = lastChild === null ? fragment._startMarker.nextSibling : lastChild.nextSibling;
+	if (tail === null || tail === end) return;
+	for (let node: ChildNode | null = tail; node !== end; node = node.nextSibling) {
+		if (node === null || node.nodeType !== 8) return;
+	}
+
+	const foreignStarts: Node[] = [];
+	let after: ChildNode | null = firstForeign;
+	while (after !== null) {
+		const foreignEnd = (after as any).$$portalEnd as Node | undefined;
+		if (foreignEnd === undefined || foreignEnd.parentNode !== target) break;
+		foreignStarts.push(after);
+		after = foreignEnd.nextSibling;
+	}
+	if (foreignStarts.length === 0) return;
+
+	let cursor: ChildNode | null = tail;
+	while (cursor !== null) {
+		const next: ChildNode | null = cursor.nextSibling;
+		target.insertBefore(cursor, after);
+		if (cursor === end) break;
+		cursor = next;
+	}
+
+	const anchors = (fragment._portalAnchors ??= new Map());
+	for (const foreignStart of foreignStarts) anchors.set(foreignStart, new Set());
+	if (portal.interleavedFragment === undefined) {
+		portal.interleavedFragment = fragment;
+		(block.cleanups ??= []).push(() => evacuateInterleavedPortalRanges(portal));
+	}
+}
+
+/** Move independent nested portal ranges outside their temporary owner. */
+function evacuateInterleavedPortalRanges(portal: PortalSlot): void {
+	const start = portal.start;
+	const end = portal.end;
+	const target = portal.target;
+	if (start === null || end === null || target === null || end.parentNode !== target) return;
+	const destination = end.nextSibling;
+	let node: ChildNode | null = start.nextSibling;
+	while (node !== null && node !== end) {
+		const foreignEnd = (node as any).$$portalEnd as Node | undefined;
+		if (foreignEnd === undefined || foreignEnd.parentNode !== target) {
+			node = node.nextSibling;
+			continue;
+		}
+		const following = foreignEnd.nextSibling;
+		let cursor: Node | null = node;
+		while (cursor !== null) {
+			const next: Node | null = cursor.nextSibling;
+			target.insertBefore(cursor, destination);
+			if (cursor === foreignEnd) break;
+			cursor = next;
+		}
+		node = following;
+	}
+}
+
+function registerFragmentPortalOwners(
+	portal: PortalSlot,
+	owners: FragmentInstance | readonly FragmentInstance[],
+	anchor: Node,
+): void {
+	const previous = portal.fragmentOwners;
+	if (previous !== undefined) {
+		if (portal.fragmentAnchor === anchor) {
+			if (!Array.isArray(previous) && !Array.isArray(owners) && previous === owners) return;
+			if (Array.isArray(previous) && Array.isArray(owners) && previous.length === owners.length) {
+				let sameOwners = true;
+				for (let index = 0; index < previous.length; index++) {
+					if (previous[index] !== owners[index]) {
+						sameOwners = false;
+						break;
+					}
+				}
+				if (sameOwners) return;
+			}
+		}
+		unregisterFragmentPortalOwners(portal);
+	}
+	portal.fragmentOwners = owners;
+	portal.fragmentAnchor = anchor;
+	if (Array.isArray(owners)) {
+		for (const owner of owners) owner._registerPortal(portal, anchor);
+	} else {
+		(owners as FragmentInstance)._registerPortal(portal, anchor);
+	}
+	if (previous === undefined) {
+		(portal.block!.cleanups ??= []).push(() => unregisterFragmentPortalOwners(portal));
+	}
+}
+
+function unregisterFragmentPortalOwners(portal: PortalSlot): void {
+	const owners = portal.fragmentOwners;
+	const anchor = portal.fragmentAnchor;
+	if (owners === undefined || anchor === undefined) return;
+	portal.fragmentOwners = undefined;
+	portal.fragmentAnchor = undefined;
+	if (Array.isArray(owners)) {
+		for (const owner of owners) owner._unregisterPortal(portal, anchor);
+	} else {
+		(owners as FragmentInstance)._unregisterPortal(portal, anchor);
+	}
+}
+
+/** Infer owner refs for a value-position portal from its stable source anchor. */
+function registerValuePortalFragmentOwners(
+	portal: PortalSlot,
+	parentBlock: Block,
+	anchor: Node,
+): void {
+	let firstOwner: FragmentInstance | null = null;
+	let nestedOwners: FragmentInstance[] | null = null;
+	for (const fragment of activeFragments) {
+		const owner = fragment._ownerBlock;
+		if (owner !== parentBlock && !blockIsAncestorOf(owner, parentBlock)) continue;
+		if (fragment._startMarker.parentNode !== anchor.parentNode) continue;
+		if (
+			(fragment._startMarker.compareDocumentPosition(anchor) & Node.DOCUMENT_POSITION_FOLLOWING) ===
+			0
+		) {
+			continue;
+		}
+		if (
+			(fragment._endMarker.compareDocumentPosition(anchor) & Node.DOCUMENT_POSITION_PRECEDING) ===
+			0
+		) {
+			continue;
+		}
+		if (firstOwner === null) {
+			firstOwner = fragment;
+		} else {
+			(nestedOwners ??= [firstOwner]).push(fragment);
+		}
+	}
+	if (firstOwner !== null) {
+		registerFragmentPortalOwners(portal, nestedOwners ?? firstOwner, anchor);
 	}
 }
 
@@ -14767,9 +16345,21 @@ function renderPortalState(
 	// continuing into the portal target's natural ancestors — mirroring React's
 	// per-fiber portal walk so a click inside a modal bubbles up the logical tree.
 	let n: ChildNode | null = state.start!.nextSibling;
-	while (n !== null && n !== state.end) {
-		(n as any).$$portalParent = host;
-		n = n.nextSibling;
+	if (state.interleavedFragment === undefined) {
+		while (n !== null && n !== state.end) {
+			(n as any).$$portalParent = host;
+			n = n.nextSibling;
+		}
+	} else {
+		while (n !== null && n !== state.end) {
+			const foreignEnd = (n as any).$$portalEnd as Node | undefined;
+			if (foreignEnd !== undefined) {
+				n = nodeAfterPortalRange(n, foreignEnd) as ChildNode | null;
+				continue;
+			}
+			(n as any).$$portalParent = host;
+			n = n.nextSibling;
+		}
 	}
 	return state;
 }
@@ -14924,14 +16514,6 @@ function copyElementConfig(config: any): any {
 		if (name !== 'key' && hasOwnProp.call(config, name)) props[name] = config[name];
 	}
 	return props;
-}
-
-function applyElementDefaultProps(type: any, props: any): void {
-	const defaults = type?.defaultProps;
-	if (defaults == null) return;
-	for (const name in defaults) {
-		if (props[name] === undefined) props[name] = defaults[name];
-	}
 }
 
 function finalizeElementDescriptor<P>(descriptor: ElementDescriptor<P>): ElementDescriptor<P> {
@@ -15199,8 +16781,7 @@ export function cloneElement<P>(
 	// Only a nullish result key needs the out-of-band record (see createElement).
 	if (
 		key === null &&
-		(elementKeyWasProvided(element) ||
-			(config != null && Object.prototype.hasOwnProperty.call(config, 'key')))
+		(elementKeyWasProvided(element) || (config != null && hasOwnProp.call(config, 'key')))
 	) {
 		KEYED_ELEMENT_DESCRIPTORS.add(descriptor);
 	}
@@ -15233,30 +16814,6 @@ function cloneAndReplaceElementKey(element: ElementDescriptor, key: string): Ele
 	// `key` is a real (non-null) string here, so presence is already implied.
 	if (ELEMENTS_MISSING_LIST_KEY.has(element)) ELEMENTS_MISSING_LIST_KEY.add(descriptor);
 	return finalizeElementDescriptor(descriptor);
-}
-
-function escapeElementKey(key: string): string {
-	return '$' + key.replace(/[=:]/g, (match) => (match === '=' ? '=0' : '=2'));
-}
-
-function escapeMappedElementKey(key: string): string {
-	return key.replace(/\/+/g, '$&/');
-}
-
-function childElementKey(child: any, index: number): string {
-	return child != null && typeof child === 'object' && child.key != null
-		? escapeElementKey('' + child.key)
-		: index.toString(36);
-}
-
-function childrenIterator(children: any): (() => Iterator<any>) | null {
-	// React's getIteratorFn deliberately accepts objects only. Functions are
-	// ignored children even when userland attaches Symbol.iterator to one.
-	if (children == null || typeof children !== 'object') return null;
-	const iterator =
-		(typeof Symbol === 'function' && (children as any)[Symbol.iterator]) ||
-		(children as any)['@@iterator'];
-	return typeof iterator === 'function' ? iterator : null;
 }
 
 function resolveChildrenThenable(thenable: TrackedThenable): any {
@@ -15741,6 +17298,7 @@ function componentSlotImpl(
 				// rather than adopting an unrelated sibling.
 				const stale = hydrationCursor;
 				const loc = siteLoc(parentScope, slotKey);
+				noteRecoverableHydrationError(() => new Error(formatClientError(55)));
 				if (process.env.NODE_ENV !== 'production' && loc) {
 					warnHydrationStructuralMismatch(loc, 'a component range', describeHydrationNode(stale));
 				}
@@ -16758,6 +18316,62 @@ function fragmentDescriptorChildren(value: ElementDescriptor): any[] {
 	return Array.isArray(children) ? children : [children];
 }
 
+/** Preserve a ref-bearing public Fragment descriptor as a real lifecycle boundary. */
+function fragmentRefDescriptor(value: ElementDescriptor): ElementDescriptor<ElementDescriptor> {
+	return {
+		$$kind: ELEMENT_TAG,
+		type: renderFragmentRefDescriptor,
+		props: value,
+		key: value.key,
+		ref: null,
+		children: null,
+	};
+}
+
+/** Cold component body used only by `createElement(Fragment, { ref }, ...)`. */
+function renderFragmentRefDescriptor(descriptor: ElementDescriptor, scope: Scope): void {
+	const block = scope.block;
+	let instance = block.slots[1] as FragmentInstance | undefined;
+	if (instance === undefined) {
+		const hydration = activeHydration();
+		let start: Comment;
+		let end: Comment;
+		const opening = hydration?.node;
+		if (opening?.nodeType === 8 && (opening as Comment).data === 'frag') {
+			start = opening as Comment;
+			let depth = 1;
+			let cursor: Node | null = start.nextSibling;
+			while (cursor !== null) {
+				if (cursor.nodeType === 8) {
+					if ((cursor as Comment).data === 'frag') depth++;
+					else if ((cursor as Comment).data === '/frag' && --depth === 0) break;
+				}
+				cursor = cursor.nextSibling;
+			}
+			if (cursor === null) throw new Error(formatClientError(50));
+			end = cursor as Comment;
+			hydration!.node = start.nextSibling;
+		} else {
+			start = document.createComment('frag');
+			end = document.createComment('/frag');
+			block.parentNode.insertBefore(start, block.endMarker);
+			block.parentNode.insertBefore(end, block.endMarker);
+		}
+		instance = mountFragmentRef(scope, start, end, descriptor.ref);
+		block.slots[0] = { a: instance };
+		block.slots[1] = instance;
+		block.refFields = ['f', 'a', ''];
+	} else if (instance._currentRef !== descriptor.ref) {
+		if (instance._currentRef != null) queueRefDetach(instance._currentRef, instance);
+		if (descriptor.ref != null) queueRefAttach(scope, descriptor.ref, instance);
+		instance._currentRef = descriptor.ref;
+	}
+
+	childSlot(scope, 2, block.parentNode, descriptor.children, instance._endMarker);
+	const hydration = activeHydration();
+	if (hydration !== null) hydration.node = instance._endMarker.nextSibling;
+}
+
 function deoptWrapperKind(value: any[]): DeoptWrapperKind {
 	return POSITIONAL_CHILDREN.has(value as object) ? 'fragment' : 'array';
 }
@@ -16804,6 +18418,11 @@ function flattenReactChildContainer(
 	for (let i = 0; i < count; i++) {
 		const item = children[i];
 		if (isFragmentDescriptor(item)) {
+			if (item.ref != null || hasOwnProp.call(item.props, 'ref')) {
+				outItems.push(fragmentRefDescriptor(item));
+				outKeys.push(scopedDeoptKey(path, item, i, keyFn(item, i)));
+				continue;
+			}
 			const nested = fragmentDescriptorChildren(item);
 			if (item.key != null) {
 				flattenReactChildContainer(outItems, outKeys, nested, 'fragment', [
@@ -16847,6 +18466,12 @@ function prepareDeoptList(
 	// non-list answer (a lone component descriptor, text, null) is the common one
 	// — build the two output arrays only once a list regime is established.
 	if (isFragmentDescriptor(value)) {
+		if (value.ref != null || hasOwnProp.call(value.props, 'ref')) {
+			return {
+				items: [fragmentRefDescriptor(value)],
+				keys: [scopedDeoptKey([], value, 0, value.key ?? 0)],
+			};
+		}
 		const items: any[] = [];
 		const keys: any[] = [];
 		const path = value.key == null ? [] : ['keyed-fragment', value.key];
@@ -17105,7 +18730,13 @@ function reconcileDeoptChildren(el: Element, children: any, ownerBlock: Block): 
 		const at = hasForeign
 			? liveOwnedChildAt(el, i, hydrationOwnsUnstamped === true)
 			: (existing[i] ?? null);
-		if (at !== want) el.insertBefore(want, at);
+		if (at !== want) {
+			if (renderingFocus === null) el.insertBefore(want, at);
+			else {
+				captureFocusedMovement(el, renderingFocus);
+				moveFocusedNodeBefore(el, want, at, renderingFocus);
+			}
+		}
 	}
 }
 
@@ -17605,6 +19236,7 @@ function hostStringTagBody(d: ElementDescriptor, block: Block): void {
 			// STRUCTURAL mismatch — mirror hostElementBody's recovery: warn, discard
 			// the divergent server node/range, then build fresh with hydration
 			// SUSPENDED for the subtree (children client-mount, not mis-adopt).
+			noteRecoverableHydrationError(() => new Error(formatClientError(51)));
 			if (process.env.NODE_ENV !== 'production') {
 				const mmLoc = (hydration.node.parentNode as any)?.__oct_loc;
 				if (mmLoc) hydration.warnStructural(mmLoc, `<${tag}>`, hydration.describe(hydration.node));
@@ -17756,6 +19388,7 @@ function isPortalTarget(block: Block, domParent: Node): boolean {
 }
 
 const NATIVE_ARRAY_MAP = Array.prototype.map;
+const NATIVE_ARRAY_FILTER = /* @__PURE__ */ (() => Array.prototype.filter)();
 const NATIVE_REFLECT_APPLY = Reflect.apply;
 const NATIVE_ARRAY_SPECIES_GETTER = Object.getOwnPropertyDescriptor(Array, Symbol.species)?.get;
 // Components hand the reconciler immutable array snapshots. Memoizing indexed
@@ -17767,6 +19400,7 @@ const NATIVE_ARRAY_ACCESSORS = new WeakMap<
 	object,
 	{ length: number; accessor: boolean; renderable?: boolean }
 >();
+let IMMUTABLE_FILTER_ARRAYS: WeakMap<object, Map<string, number>> | undefined;
 
 /**
  * Compiler ABI for a safely reusable value-position array. A plain dense array
@@ -17832,6 +19466,92 @@ export function compilerCacheArray(value: unknown, previous: unknown): boolean {
 	return renderable;
 }
 
+/**
+ * Reuse a native filter projection from a compiler-proven state snapshot.
+ *
+ * Generated code calls this only after its ordinary dependency comparisons
+ * prove a possible cache hit, so fresh snapshots never pay a classification
+ * scan. Intrinsics are rechecked on every hit without invoking user getters;
+ * dense array entries and the predicate's own data property are inspected
+ * once per immutable snapshot and property.
+ * @internal
+ */
+export function compilerCacheImmutableArrayFilter(value: unknown, property: string): boolean {
+	if (
+		Object.getOwnPropertyDescriptor(Array.prototype, 'filter')?.value !== NATIVE_ARRAY_FILTER ||
+		Object.getOwnPropertyDescriptor(Array.prototype, 'map')?.value !== NATIVE_ARRAY_MAP ||
+		Object.getOwnPropertyDescriptor(Array.prototype, 'constructor')?.value !== Array ||
+		Object.getOwnPropertyDescriptor(Array, Symbol.species)?.get !== NATIVE_ARRAY_SPECIES_GETTER ||
+		!Array.isArray(value) ||
+		Object.getPrototypeOf(value) !== Array.prototype ||
+		hasOwnProp.call(value, 'filter') ||
+		hasOwnProp.call(value, 'map') ||
+		hasOwnProp.call(value, 'constructor')
+	) {
+		return false;
+	}
+
+	const length = value.length;
+	let properties = IMMUTABLE_FILTER_ARRAYS?.get(value);
+	if (properties?.get(property) === length) return true;
+
+	for (let index = 0; index < length; index++) {
+		const entry = Object.getOwnPropertyDescriptor(value, index);
+		if (entry === undefined || entry.get !== undefined || entry.set !== undefined) return false;
+		const item = entry.value;
+		if (
+			item === null ||
+			typeof item !== 'object' ||
+			Object.getPrototypeOf(item) !== Object.prototype
+		) {
+			return false;
+		}
+		const member = Object.getOwnPropertyDescriptor(item, property);
+		if (member === undefined || member.get !== undefined || member.set !== undefined) return false;
+	}
+
+	if (properties === undefined) {
+		properties = new Map();
+		(IMMUTABLE_FILTER_ARRAYS ??= new WeakMap()).set(value, properties);
+	}
+	properties.set(property, length);
+	return true;
+}
+
+/**
+ * Reuse only an immutable array snapshot already proven safe by native mapSlot.
+ *
+ * Probe the private WeakMap first: a custom receiver or observable map getter
+ * that never passed the native path must not acquire new proxy traps or getter
+ * reads merely because its parent region is eligible. Recheck the constant-size
+ * intrinsic/override surface without invoking those getters. Decline own or
+ * inherited default props so their public descriptor read stays observable;
+ * indexed stability follows the existing immutable-snapshot contract.
+ * @internal
+ */
+export function compilerCacheMappedArray(value: unknown, component: unknown): boolean {
+	const cached = NATIVE_ARRAY_ACCESSORS.get(value as object);
+	if (
+		cached === undefined ||
+		typeof component !== 'function' ||
+		'defaultProps' in component ||
+		cached.accessor ||
+		cached.renderable !== undefined ||
+		cached.length !== (value as any[]).length
+	) {
+		return false;
+	}
+
+	return (
+		Object.getPrototypeOf(value) === Array.prototype &&
+		!hasOwnProp.call(value, 'map') &&
+		!hasOwnProp.call(value, 'constructor') &&
+		Object.getOwnPropertyDescriptor(Array.prototype, 'map')?.value === NATIVE_ARRAY_MAP &&
+		Object.getOwnPropertyDescriptor(Array.prototype, 'constructor')?.value === Array &&
+		Object.getOwnPropertyDescriptor(Array, Symbol.species)?.get === NATIVE_ARRAY_SPECIES_GETTER
+	);
+}
+
 /** Shared compiler ABI: native-array eligibility query plus stable keyed map dispatch. */
 export function mapSlot(
 	scopeOrItems: any,
@@ -17854,7 +19574,7 @@ export function mapSlot(
 			!Array.isArray(receiver) ||
 			Object.getPrototypeOf(receiver) !== Array.prototype ||
 			slotOrMethod !== NATIVE_ARRAY_MAP ||
-			Object.prototype.hasOwnProperty.call(receiver, 'constructor') ||
+			hasOwnProp.call(receiver, 'constructor') ||
 			Object.getOwnPropertyDescriptor(Array.prototype, 'constructor')?.value !== Array ||
 			Object.getOwnPropertyDescriptor(Array, Symbol.species)?.get !== NATIVE_ARRAY_SPECIES_GETTER
 		) {
@@ -18294,6 +20014,12 @@ export function childSlot(
 			// The DOM element containing this hole is the portal's logical parent.
 			domParent,
 		);
+		// Conditional portals and portals inside directive helpers use childSlot
+		// rather than the compiler's direct portal helper. Their retained end anchor
+		// still locates the authored position inside any enclosing Fragment refs.
+		if (activeFragments.size !== 0 && state.end !== null) {
+			registerValuePortalFragmentOwners(state.portal, parentBlock, state.end);
+		}
 		return;
 	}
 
@@ -18344,6 +20070,7 @@ export function childSlot(
 				emptyBlock: null,
 				env: undefined,
 				adopt: null,
+				plainDeopt: false,
 			};
 			if (upgradeArmed) {
 				state.forSlot.adopt = buildDeoptAdoptQueue(upgradeChildren, state.start, state.end!);
@@ -18437,9 +20164,17 @@ export function childSlot(
 				descriptorBody(item, scope);
 			};
 		}
+		// `body` is `deoptItemBody` exactly when the compiler supplied no map body
+		// and this is not the mapped fallback — both wrapper assignments above are
+		// guarded by those two conditions. Record it on the slot rather than
+		// re-deriving it by identity in mountItem (see ForSlot.plainDeopt).
+		const plainDeopt = compiledMapBody === undefined && mappedFallback !== true;
+		state.forSlot.plainDeopt = plainDeopt;
 		const fastFlags = compiledMapFlags || 0;
 		const ssrMarkerless =
-			compiledMapBody === undefined ? markerlessMappedFallback : (fastFlags & 16) !== 0;
+			compiledMapBody === undefined
+				? markerlessMappedFallback || plainDeopt
+				: (fastFlags & 16) !== 0;
 		let pure = (fastFlags & 1) !== 0;
 		let lite = false;
 		if (compiledMapBody !== undefined) {
@@ -18927,8 +20662,8 @@ export function textSlot(
 
 // Slow path for the compiler's INLINE text-hole codegen. The compiled `.tsx`
 // `{expr}` value hole caches its text node on the binding bag and, on update,
-// does `setText(node, _v)` directly when `_v` is a primitive and a node already
-// exists — matching the `.tsrx` `{… as string}` text-binding hot path exactly.
+// calls `setText` directly when the value is a primitive and a node already
+// exists, normalizing `true` to empty to preserve renderable-child semantics.
 // It only calls here when that inline fast path doesn't apply: `_v` is an
 // object/function (component / element / array), or there's no cached node yet
 // (first render, hydration, or a prior non-text render). We hand off to the full
@@ -19301,7 +21036,6 @@ export function compilerCacheContext(
 	return current;
 }
 
-const hasOwnProp = Object.prototype.hasOwnProperty;
 const OBJ_PROTO = Object.prototype;
 
 // Runs on every re-render for every memo child (both tryMemoBail call sites),
@@ -19545,6 +21279,33 @@ interface SuspenseHiddenDom {
 // restore it only after the last owner reveals, independent of hide/reveal order.
 const HIDDEN_DISPLAYS = new WeakMap<HTMLElement, HiddenDisplay>();
 const HIDDEN_TEXTS = new WeakMap<Text, HiddenText>();
+let HIDDEN_ACTIVITY_NODES: WeakMap<Node, number> | null = null;
+let hiddenActivityNodeOwners = 0;
+
+function retainHiddenActivityNode(node: Node): void {
+	const hidden = (HIDDEN_ACTIVITY_NODES ??= new WeakMap<Node, number>());
+	hidden.set(node, (hidden.get(node) ?? 0) + 1);
+	hiddenActivityNodeOwners++;
+}
+
+function releaseHiddenActivityNode(node: Node): void {
+	const hidden = HIDDEN_ACTIVITY_NODES;
+	const owners = hidden?.get(node);
+	if (owners === undefined) return;
+	if (owners === 1) hidden!.delete(node);
+	else hidden!.set(node, owners - 1);
+	hiddenActivityNodeOwners--;
+}
+
+/** Activity hides exclude their preserved hosts from every Fragment-ref API. */
+function fragmentHostVisible(node: Node): boolean {
+	if (hiddenActivityNodeOwners === 0) return true;
+	const hidden = HIDDEN_ACTIVITY_NODES!;
+	for (let current: Node | null = node; current !== null; current = current.parentNode) {
+		if (hidden.has(current)) return false;
+	}
+	return true;
+}
 
 function enforceHiddenDisplay(el: HTMLElement): void {
 	const hidden = HIDDEN_DISPLAYS.get(el);
@@ -22345,8 +24106,10 @@ function handleRenderError(block: Block, err: any): void {
 		throw err;
 	}
 	const h = findTryHandler(block);
-	if (h) h(err);
-	else throw err;
+	if (h) {
+		h(err);
+		reportCaughtError(block, err);
+	} else throw err;
 }
 
 // ---------------------------------------------------------------------------
@@ -22902,6 +24665,8 @@ interface ActivitySlot {
 	__kind: 'activityBlockSlot';
 	block: Block | null;
 	hidden: boolean;
+	/** Hidden-host ownership is released even when a hidden Activity unmounts. */
+	fragmentVisibilityCleanupRegistered: boolean;
 	/** Invalidates a queued visible→hidden commit when a newer render wins. */
 	commitVersion: number;
 	/** The visible effects still need their commit-phase deactivation. */
@@ -22925,18 +24690,27 @@ interface ActivitySlot {
 function hideActivityRange(state: ActivitySlot): void {
 	const b = state.block;
 	if (!b) return;
+	if (!state.fragmentVisibilityCleanupRegistered) {
+		state.fragmentVisibilityCleanupRegistered = true;
+		(b.cleanups ??= []).push(() => {
+			for (const el of state.hiddenDisplays) releaseHiddenActivityNode(el);
+			for (const text of state.hiddenTexts) releaseHiddenActivityNode(text);
+		});
+	}
 	// Branch switches and HMR can replace direct roots while the Activity stays
 	// hidden. Drop detached entries now so a long-hidden, frequently updated
 	// boundary does not retain every outgoing host node until it reveals.
 	for (const el of state.hiddenDisplays) {
 		if (el.parentNode !== b.parentNode) {
 			state.hiddenDisplays.delete(el);
+			releaseHiddenActivityNode(el);
 			releaseHiddenDisplay(el, false);
 		}
 	}
 	for (const text of state.hiddenTexts) {
 		if (text.parentNode !== b.parentNode) {
 			state.hiddenTexts.delete(text);
+			releaseHiddenActivityNode(text);
 			releaseHiddenText(text);
 		}
 	}
@@ -22946,6 +24720,7 @@ function hideActivityRange(state: ActivitySlot): void {
 			const el = node as HTMLElement;
 			if (!state.hiddenDisplays.has(el)) {
 				state.hiddenDisplays.add(el);
+				retainHiddenActivityNode(el);
 				retainHiddenDisplay(el, false);
 			} else {
 				enforceHiddenDisplay(el);
@@ -22954,6 +24729,7 @@ function hideActivityRange(state: ActivitySlot): void {
 			const t = node as Text;
 			if (!state.hiddenTexts.has(t)) {
 				state.hiddenTexts.add(t);
+				retainHiddenActivityNode(t);
 				retainHiddenText(t);
 			}
 			enforceHiddenText(t);
@@ -22972,9 +24748,15 @@ function rehideActivityAfterDescendantRender(state: ActivitySlot): void {
 
 /** Release this Activity's hide ownership, restoring nodes with no other owner. */
 function showActivityRange(state: ActivitySlot): void {
-	for (const el of state.hiddenDisplays) releaseHiddenDisplay(el, false);
+	for (const el of state.hiddenDisplays) {
+		releaseHiddenActivityNode(el);
+		releaseHiddenDisplay(el, false);
+	}
 	state.hiddenDisplays.clear();
-	for (const text of state.hiddenTexts) releaseHiddenText(text);
+	for (const text of state.hiddenTexts) {
+		releaseHiddenActivityNode(text);
+		releaseHiddenText(text);
+	}
 	state.hiddenTexts.clear();
 }
 
@@ -23048,6 +24830,7 @@ export function activityBlock(
 			__kind: 'activityBlockSlot',
 			block: b,
 			hidden: false,
+			fragmentVisibilityCleanupRegistered: false,
 			commitVersion: 0,
 			deactivationPending: false,
 			hiddenDisplays: new Set(),
@@ -23498,6 +25281,18 @@ interface ForSlot {
 	// Present only on a childSlot owned by the compiler's guarded map ABI.
 	// Keeps descriptor↔compiled adoption off every ordinary descriptor list.
 	mappedNative?: boolean;
+	// True when this de-opt list's items render through the plain `deoptItemBody`
+	// — no compiled map body, no mapped fallback wrapper. `mountItem` needs the
+	// fact but must NOT name `deoptItemBody` to get it: a live identity
+	// comparison there is a reference from the compiled `@for` path that every
+	// application reaches, and it makes the entire descriptor renderer
+	// (childSlot, fragment refs, portals, transitions, the attribute tables)
+	// reachable from apps that only ever render compiled templates. Recorded on
+	// the slot instead, so the reference stays inside childSlot, which already
+	// retains that graph. Both ForSlot literals declare it so every slot shares
+	// one hidden class; only childSlot ever stamps or reads it, because only
+	// childSlot passes mountItem the de-opt sentinel.
+	plainDeopt: boolean;
 	// Present only when the compiler proved a keyed equality selection. Identity
 	// gates the two-row update without retaining extra state on ordinary lists.
 	selectionItems?: ArrayLike<any>;
@@ -23578,6 +25373,10 @@ export function forBlock<T>(
 			emptyBlock: null,
 			env: undefined,
 			adopt: null,
+			// Compiled `@for` slots never read this — they never pass the de-opt
+			// sentinel — but both ForSlot literals declare it so every slot shares
+			// one hidden class and the stamp in childSlot transitions nothing.
+			plainDeopt: false,
 		};
 		parentScope.slots[slotKey] = state;
 		registerSlot(parentScope, state);
@@ -23771,6 +25570,7 @@ export function keyedForBlock<T>(
 	emptyBody?: ComponentBody | null,
 	anchor?: Node | null,
 	ownEnd?: boolean,
+	selectionBody?: ComponentBody<T, any[]>,
 ): void {
 	const state = parentScope.slots[slotKey] as ForSlot | undefined;
 	if (TRANSITION_JOURNAL !== null) {
@@ -23787,7 +25587,15 @@ export function keyedForBlock<T>(
 		state !== undefined &&
 		activeHydration() === null &&
 		state.cachedDeps !== null &&
-		tryUpdateKeyedSelection(state, items, itemBody, state.cachedDeps, deps, flags >>> 6)
+		tryUpdateKeyedSelection(
+			state,
+			items,
+			itemBody,
+			state.cachedDeps,
+			deps,
+			flags >>> 6,
+			selectionBody,
+		)
 	) {
 		return;
 	}
@@ -23977,6 +25785,7 @@ export function fastKeyedForBlock<T>(
 	emptyBody?: ComponentBody | null,
 	anchor?: Node | null,
 	ownEnd?: boolean,
+	selectionBody?: ComponentBody<T, any[]>,
 ): void {
 	const state = parentScope.slots[slotKey] as ForSlot | undefined;
 	const parent = fastHostListParent(state, items, flags);
@@ -23993,6 +25802,7 @@ export function fastKeyedForBlock<T>(
 			emptyBody,
 			anchor,
 			ownEnd,
+			selectionBody,
 		);
 		return;
 	}
@@ -24071,6 +25881,7 @@ export function fastMapSlot(
 function discardLeftoverHydrationItems(end: Node, hydration: HydrationCapability): void {
 	const n = hydration.node;
 	if (n === null || n === end || n.parentNode !== end.parentNode) return;
+	noteRecoverableHydrationError(() => new Error(formatClientError(56)));
 	removeRange(n, end);
 }
 
@@ -24117,6 +25928,7 @@ function tryUpdateKeyedSelection<T>(
 	previousDeps: any[],
 	deps: any[],
 	selectionIndex: number,
+	selectionBody: ComponentBody<T, any[]> | undefined,
 ): boolean {
 	if (
 		state.selectionItems !== items ||
@@ -24149,12 +25961,24 @@ function tryUpdateKeyedSelection<T>(
 	if (first !== undefined) {
 		first.body = itemBody as ComponentBody;
 		first.extra = deps;
-		(itemBody as any)(first.props, first, deps);
+		// A separately certified host row can update just its class binding. Raw
+		// object/function children register child slots, however, and must still
+		// reconcile on the ordinary body path even when their identity is stable.
+		// Primitive-only child holes retain no slots, so they pay no extra cache.
+		if (selectionBody !== undefined && first._slots === null) {
+			selectionBody(first.props, first, deps);
+		} else {
+			(itemBody as any)(first.props, first, deps);
+		}
 	}
 	if (second !== undefined) {
 		second.body = itemBody as ComponentBody;
 		second.extra = deps;
-		(itemBody as any)(second.props, second, deps);
+		if (selectionBody !== undefined && second._slots === null) {
+			selectionBody(second.props, second, deps);
+		} else {
+			(itemBody as any)(second.props, second, deps);
+		}
 	}
 	return true;
 }
@@ -24916,8 +26740,9 @@ function mountItem<T>(
 	// component-bearing) keeps the `it` pair. A later shape flip promotes the
 	// self-marked block to a minted pair in place (see deoptItemBody).
 	singleRoot: boolean | 2,
-	// True only for compiled direct-host items whose SSR output omitted the item
-	// pair. Hydration can therefore adopt the existing host as start === end.
+	// True for compiled direct-host items and generic descriptor lists. A pure
+	// descriptor host self-delimits; component/text/empty descriptor items retain
+	// their explicit pair and continue through the marked hydration branch.
 	ssrMarkerless: boolean,
 	// Pure-host → blocks upgrade adoption: an existing raw child node this item
 	// should take over IN PLACE (self-marked directly, or markers minted around
@@ -24927,12 +26752,24 @@ function mountItem<T>(
 ): Block {
 	const hydration = activeHydration();
 	if (hydration !== null) {
-		if (ssrMarkerless && !hydration.isOpen(hydration.node)) {
+		if (
+			ssrMarkerless &&
+			!hydration.isOpen(hydration.node) &&
+			(singleRoot !== 2 ||
+				forSlot.plainDeopt !== true ||
+				(isHostDescriptor(item) && !descNeedsBlocks(item)))
+		) {
 			// The outer @for pair is the only list framing on the wire. Each proven
 			// direct-host item self-delimits, exactly like the existing client-mount
 			// singleRoot path. If the client has more items than the server, the
 			// cursor has reached the outer close; fall through to a fresh mount.
-			if (hydration.node !== null && hydration.node !== forSlot.end) {
+			if (
+				hydration.node !== null &&
+				hydration.node !== forSlot.end &&
+				(singleRoot !== 2 ||
+					forSlot.plainDeopt !== true ||
+					(hydration.node.nodeType === 1 && hydration.node.parentNode === parentNode))
+			) {
 				const root = hydration.node;
 				const block = createBlock(
 					'control-flow',
@@ -24946,6 +26783,7 @@ function mountItem<T>(
 				);
 				block.forSlot = forSlot;
 				block.itemIndex = index;
+				if (singleRoot === 2 && forSlot.plainDeopt === true) block.deoptNode = root;
 				renderBlock(block);
 				hydration.node = block.endMarker?.nextSibling ?? root.nextSibling;
 				return block;
@@ -25115,6 +26953,11 @@ function moveBlockBefore(block: Block, anchor: Node): void {
 	const parent = block.startMarker!.parentNode!;
 	const end = block.endMarker!;
 	let n: Node | null = block.startMarker!;
+	if (renderingFocus !== null) {
+		captureFocusedMovement(parent, renderingFocus);
+		moveFocusedBlockBefore(parent, n, end, anchor, renderingFocus);
+		return;
+	}
 	// Walk by checking `n === end` BEFORE moving. The previous design captured
 	// `stop = endMarker.nextSibling` at function entry, then iterated until
 	// `n === stop`. That breaks when the block range has multi-root content
@@ -25130,6 +26973,84 @@ function moveBlockBefore(block: Block, anchor: Node): void {
 		parent.insertBefore(n, anchor);
 		if (isEnd) break;
 		n = next;
+	}
+}
+
+function moveFocusedBlockBefore(
+	parent: Node,
+	node: Node,
+	end: Node,
+	anchor: Node,
+	snapshots: Exclude<FocusSelectionBatch, null>,
+): void {
+	let current: Node | null = node;
+	while (current !== null) {
+		const isEnd = current === end;
+		const next: Node | null = current.nextSibling;
+		moveFocusedNodeBefore(parent, current, anchor, snapshots);
+		if (isEnd) break;
+		current = next;
+	}
+}
+
+function moveFocusedNodeBefore(
+	parent: Node,
+	node: Node,
+	anchor: Node | null,
+	snapshots: Exclude<FocusSelectionBatch, null>,
+): void {
+	let snapshot: FocusSelectionSnapshot | null = null;
+	if (Array.isArray(snapshots)) {
+		for (let i = 0; i < snapshots.length; i++) {
+			if (snapshots[i].focused.ownerDocument === node.ownerDocument) {
+				snapshot = snapshots[i];
+				break;
+			}
+		}
+	} else if (snapshots.focused.ownerDocument === node.ownerDocument) {
+		snapshot = snapshots;
+	}
+	const focused = snapshot?.focused ?? null;
+	if (
+		focused === null ||
+		(node !== focused && (node.nodeType !== 1 || !(node as Element).contains(focused)))
+	) {
+		parent.insertBefore(node, anchor);
+		return;
+	}
+
+	const moveBefore = (parent as Node & { moveBefore?: (node: Node, anchor: Node | null) => void })
+		.moveBefore;
+	// Chromium's state-preserving move keeps input composition alive but still
+	// collapses live Range selections inside a moved content-editable subtree.
+	if (!snapshot!.contentEditable && typeof moveBefore === 'function') {
+		moveBefore.call(parent, node, anchor);
+		return;
+	}
+
+	// insertBefore detaches an existing node, which ends a trusted keyboard
+	// composition even when the commit later restores focus. Older Chromium,
+	// Samsung Internet, and editable Range selections instead keep the focused
+	// node attached and rotate only its intervening siblings around it.
+	if (node === anchor || node.nextSibling === anchor) return;
+	if (
+		anchor === null ||
+		(node.compareDocumentPosition(anchor) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+	) {
+		let cursor = node.nextSibling;
+		while (cursor !== anchor) {
+			const next = cursor!.nextSibling;
+			parent.insertBefore(cursor!, node);
+			cursor = next;
+		}
+	} else {
+		const end = node.nextSibling;
+		let cursor: Node | null = anchor;
+		while (cursor !== node) {
+			const next: Node | null = cursor!.nextSibling;
+			parent.insertBefore(cursor!, end);
+			cursor = next;
+		}
 	}
 }
 
@@ -25548,6 +27469,123 @@ export interface RootOptions {
 	 * client-root namespace; hydrateRoot uses it verbatim to match server output.
 	 */
 	identifierPrefix?: string;
+	/**
+	 * React 19 parity, reporting only: called after an error boundary
+	 * (`@try`/`@catch` or `<ErrorBoundary>`) claims an error from this root's
+	 * render, passive-effect, or ref-attach channel. Octane passes only the
+	 * error — there is no `errorInfo`/`componentStack` second argument (owner
+	 * stacks are not part of Octane's API, matching the SSR `onError` shape).
+	 * Deletion-phase teardown errors report here too once their enclosing
+	 * boundary claims them (the routing itself is unchanged).
+	 */
+	onCaughtError?: (error: unknown) => void;
+	/**
+	 * React 19 parity: called for an error no boundary claims. When provided it
+	 * REPLACES the default report for this root (render errors stop rethrowing
+	 * out of the flush; effect-channel errors stop reaching console.error).
+	 * Recovery semantics are unchanged either way — an uncaught render error
+	 * still unmounts the failed root's entire tree.
+	 */
+	onUncaughtError?: (error: unknown) => void;
+	/**
+	 * React 19 parity, hydration only: called (dev AND prod) after hydration
+	 * recovered from a structural server/client mismatch — a rebuilt subtree or
+	 * a discarded stale server range — coalesced to one report per root per
+	 * microtask burst. Attribute-level value patches do not report: production
+	 * React hydration does not detect those at all, so Octane's finer-grained
+	 * recovery stays quiet to keep the report channel comparable.
+	 */
+	onRecoverableError?: (error: unknown) => void;
+}
+
+/**
+ * Handlers live OFF the Block shape: registered only for roots created with at
+ * least one callback, so every other root pays a single null check on the
+ * (already cold) error paths and Block's monomorphic layout is untouched.
+ */
+interface RootErrorHandlers {
+	onCaughtError: ((error: unknown) => void) | undefined;
+	onUncaughtError: ((error: unknown) => void) | undefined;
+	onRecoverableError: ((error: unknown) => void) | undefined;
+}
+
+let ROOT_ERROR_HANDLERS: WeakMap<Block, RootErrorHandlers> | null = null;
+
+function registerRootErrorHandlers(root: Block, options: RootOptions | undefined): void {
+	if (options === undefined) return;
+	const { onCaughtError, onUncaughtError, onRecoverableError } = options;
+	if (
+		onCaughtError === undefined &&
+		onUncaughtError === undefined &&
+		onRecoverableError === undefined
+	) {
+		return;
+	}
+	(ROOT_ERROR_HANDLERS ??= new WeakMap()).set(root, {
+		onCaughtError,
+		onUncaughtError,
+		onRecoverableError,
+	});
+}
+
+function rootErrorHandlersFor(block: Block | null): RootErrorHandlers | null {
+	if (ROOT_ERROR_HANDLERS === null || block === null) return null;
+	let b: Block = block;
+	while (b.parentBlock !== null) b = b.parentBlock;
+	return ROOT_ERROR_HANDLERS.get(b) ?? null;
+}
+
+/** A throwing report callback must not corrupt recovery — report it and move on. */
+function invokeRootErrorHandler(handler: (error: unknown) => void, err: unknown): void {
+	try {
+		handler(err);
+	} catch (handlerErr) {
+		console.error(handlerErr);
+	}
+}
+
+/** Report a boundary-claimed error to the owning root's onCaughtError, if any. */
+function reportCaughtError(block: Block | null, err: unknown): void {
+	const h = rootErrorHandlersFor(block)?.onCaughtError;
+	if (h !== undefined) invokeRootErrorHandler(h, err);
+}
+
+/** True when the owning root's onUncaughtError consumed the report (callers skip their default). */
+function reportUncaughtError(block: Block | null, err: unknown): boolean {
+	const h = rootErrorHandlersFor(block)?.onUncaughtError;
+	if (h === undefined) return false;
+	invokeRootErrorHandler(h, err);
+	return true;
+}
+
+/** Roots with a recoverable-error report already queued for this microtask burst. */
+let RECOVERABLE_REPORTED: WeakSet<Block> | null = null;
+
+/**
+ * Note a structural hydration recovery for onRecoverableError. Runs at the
+ * recovery sites themselves (dev AND prod), so it must stay near-free when no
+ * root registered the callback: one module-null check. Call sites pass a thunk
+ * constructing `new Error(formatClientError(<literal>))` so the production
+ * error-code audit holds and no Error is allocated unless a report actually
+ * fires. `block` defaults to the currently rendering block — hydration
+ * recovery always runs under the mount that discovered the mismatch — and the
+ * report is delivered on a microtask so a user callback can never re-enter the
+ * in-progress hydration walk.
+ */
+function noteRecoverableHydrationError(makeError: () => Error, block: Block | null = null): void {
+	if (ROOT_ERROR_HANDLERS === null) return;
+	const from = block ?? CURRENT_BLOCK;
+	const h = rootErrorHandlersFor(from)?.onRecoverableError;
+	if (h === undefined) return;
+	let root = from!;
+	while (root.parentBlock !== null) root = root.parentBlock;
+	const reported = (RECOVERABLE_REPORTED ??= new WeakSet());
+	if (reported.has(root)) return;
+	reported.add(root);
+	queueMicrotask(() => {
+		reported.delete(root);
+		invokeRootErrorHandler(h, makeError());
+	});
 }
 
 // One live public root owns a container at a time. React still returns a second
@@ -25641,6 +27679,110 @@ function warnRootLifecycleUnmount(): void {
 	}
 }
 
+let HTML_NESTING_WARNINGS: WeakMap<Block, Set<string>> | null = null;
+
+/** Compiler ABI: validate an authored candidate and publish only from a DEV render. */
+export function devHtmlNesting(
+	childTag: string,
+	ancestors: string[],
+	childLocation?: string,
+	ancestorLocation?: string,
+): void {
+	if (process.env.NODE_ENV !== 'production') {
+		const activeBlock = CURRENT_SCOPE?.block ?? CURRENT_BLOCK;
+		let message: string | null = null;
+		if (ancestors.length === 0) {
+			let parent = activeBlock?.parentNode ?? null;
+			// Dependency-only keyed survivors intentionally skip renderBlock, so
+			// CURRENT_SCOPE still belongs to their parent component. Recover the
+			// actual list parent from the already-mounted row's authored location;
+			// otherwise an intervening <ul> disappears from parser-scope checks.
+			const ownedSlots = CURRENT_SCOPE?._slots;
+			if (childLocation !== undefined && ownedSlots !== null && ownedSlots !== undefined) {
+				for (const slot of ownedSlots) {
+					if (
+						slot?.__kind === 'forBlockSlot' &&
+						(slot.head?.startMarker as Element & { __oct_loc?: string })?.__oct_loc ===
+							childLocation
+					) {
+						parent = slot.start.parentNode;
+						break;
+					}
+				}
+			}
+			const actualAncestors: string[] = [];
+			while (parent !== null && parent.nodeType === 1) {
+				const element = parent as Element;
+				if (element.namespaceURI !== 'http://www.w3.org/1999/xhtml') break;
+				actualAncestors.push(element.localName);
+				const location = (element as Element & { __oct_loc?: string }).__oct_loc;
+				message =
+					actualAncestors.length === 1
+						? invalidHtmlNestingWithParent(childTag, element.localName, childLocation, location)
+						: invalidHtmlNestingWithAncestor(childTag, actualAncestors, childLocation, location);
+				if (message !== null) break;
+				parent = element.parentNode;
+			}
+		} else {
+			message =
+				childTag === '#text'
+					? invalidHtmlTextNesting(childLocation ?? '', ancestors[0], ancestorLocation)
+					: ancestors.length === 1
+						? invalidHtmlNestingWithParent(childTag, ancestors[0], childLocation, ancestorLocation)
+						: invalidHtmlNestingWithAncestor(childTag, ancestors, childLocation, ancestorLocation);
+		}
+		if (message === null) return;
+		if (activeBlock !== null) {
+			const warningSets = (HTML_NESTING_WARNINGS ??= new WeakMap());
+			let warnings = warningSets.get(activeBlock);
+			if (warnings === undefined) {
+				warnings = new Set();
+				warningSets.set(activeBlock, warnings);
+			} else if (warnings.has(message)) {
+				return;
+			}
+			warnings.add(message);
+		}
+		console.error(
+			'Octane invalid HTML nesting: ' +
+				message +
+				'\n\nThe browser will repair this HTML before hydration. This can cause a hydration mismatch.',
+		);
+	}
+}
+
+/** Validate the supported Element root as the authored tree's outer HTML ancestor. */
+function validateRootHtmlNesting(container: Element, body: ComponentBody): void {
+	if (process.env.NODE_ENV !== 'production') {
+		if (
+			componentSourceLoc(body) === undefined ||
+			container.namespaceURI !== 'http://www.w3.org/1999/xhtml' ||
+			container.localName === 'div' ||
+			container.localName === 'body' ||
+			container.localName === 'html' ||
+			container.localName.includes('-')
+		) {
+			return;
+		}
+		const root = container.firstElementChild;
+		if (root === null) return;
+		if (invalidHtmlNestingWithParent(root.localName, container.localName) !== null) {
+			devHtmlNesting(root.localName, [container.localName]);
+			return;
+		}
+		let child = root.firstElementChild;
+		const ancestors = [root.localName, container.localName];
+		while (child !== null && child.namespaceURI === 'http://www.w3.org/1999/xhtml') {
+			if (invalidHtmlNestingWithAncestor(child.localName, ancestors) !== null) {
+				devHtmlNesting(child.localName, ancestors);
+				return;
+			}
+			ancestors.splice(ancestors.length - 1, 0, child.localName);
+			child = child.firstElementChild;
+		}
+	}
+}
+
 // Shared Root factory behind both `createRoot` and `hydrateRoot`. The
 // `rootBlock`/`currentBody` parameters are the live state captured by the
 // returned closures: `createRoot` starts them `null` (the block is created
@@ -25658,6 +27800,7 @@ function makeRoot(
 	idState: RootIdState,
 	outputHandler: OutputHandler | null,
 	ownerToken: object | null,
+	errorOptions?: RootOptions,
 ): Root {
 	let root!: Root;
 	let unmounted = false;
@@ -25768,6 +27911,7 @@ function makeRoot(
 			if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__)
 				__profileTrackComponent(rootBlock, body);
 			rootBlock.idState = idState;
+			registerRootErrorHandlers(rootBlock, errorOptions);
 			registerRootDisposer(rootBlock);
 			if (typeof __OCTANE_PROFILE_ENABLED__ !== 'undefined' && __OCTANE_PROFILE_ENABLED__) {
 				__devtoolsSetNameResolver(componentName);
@@ -25794,6 +27938,9 @@ function makeRoot(
 			const mountedRoot = rootBlock;
 			try {
 				renderBlock(mountedRoot);
+				if (process.env.NODE_ENV !== 'production') {
+					validateRootHtmlNesting(container, body);
+				}
 			} catch (error) {
 				try {
 					handleRenderError(mountedRoot, error);
@@ -25802,8 +27949,13 @@ function makeRoot(
 					// before surfacing the error, but keep the public root reusable for a
 					// later recovery render. In particular, effects registered before the
 					// throw belong to an aborted render and must never reach a later flush.
+					// A root created with onUncaughtError consumes its own report here
+					// too — the synchronous first mount is still "the flush" for this
+					// render, so the option must not behave differently from a scheduled
+					// render's unhandled error.
 					if (!mountedRoot.disposed) unmountBlock(mountedRoot);
-					throw unhandled;
+					if (!reportUncaughtError(mountedRoot, unhandled)) throw unhandled;
+					return;
 				}
 				root.unmount();
 				return;
@@ -25896,6 +28048,7 @@ function createRootWithOutputHandler(
 		},
 		outputHandler,
 		ownerToken,
+		options,
 	);
 }
 
@@ -25994,6 +28147,7 @@ export function hydrateRoot(
 		next: 0,
 	};
 	rootBlock.idState = idState;
+	registerRootErrorHandlers(rootBlock, rootOptions);
 	let hydrationCompleted = false;
 	let seeds: unknown[] | null = null;
 	// The root-local counter starts at zero, matching the server render carrying
@@ -26065,8 +28219,28 @@ export function hydrateRoot(
 		// to the owner, unmount the failed root, and release the container so a
 		// host retry binds a FRESH root (§5 rule 9 — adoption is abandoned, the
 		// retry client-remounts). Unowned hydration failures keep their existing
-		// behavior and rethrow untouched.
-		if (rendererRegionOwnerForBlock(rootBlock) === null) throw error;
+		// behavior and rethrow untouched — unless this root's onUncaughtError
+		// consumes the report. Consumption changes only the reporting: the failed
+		// adoption is discarded like createRoot's sync-mount failure, and the
+		// returned root KEEPS this pass's container claim and delegation
+		// registration because the caller renders into it directly — there is no
+		// host retry to re-register them.
+		if (rendererRegionOwnerForBlock(rootBlock) === null) {
+			if (!reportUncaughtError(rootBlock, error)) throw error;
+			unmountBlock(rootBlock, false);
+			drainRefDetaches();
+			container.textContent = '';
+			return makeRoot(
+				container,
+				null,
+				null,
+				null,
+				idState,
+				renderReturnedValue,
+				ownerToken,
+				rootOptions,
+			);
+		}
 		try {
 			handleRenderError(rootBlock, error);
 		} finally {
@@ -26083,7 +28257,7 @@ export function hydrateRoot(
 		}
 		// Routed: hand back an empty lazy root owning NO claim or delegation
 		// registration (both released above); the owner's retry recreates.
-		return makeRoot(container, null, null, null, idState, renderReturnedValue, null);
+		return makeRoot(container, null, null, null, idState, renderReturnedValue, null, rootOptions);
 	} finally {
 		currentHydration = previousHydration;
 	}
@@ -26097,7 +28271,16 @@ export function hydrateRoot(
 	// the root behaves exactly like a `createRoot` root — a `.render()` with the
 	// same component updates props on the adopted DOM (same-body fast path), a
 	// different component tears down and remounts.
-	return makeRoot(container, rootBlock, body, rootKey, idState, renderReturnedValue, ownerToken);
+	return makeRoot(
+		container,
+		rootBlock,
+		body,
+		rootKey,
+		idState,
+		renderReturnedValue,
+		ownerToken,
+		rootOptions,
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -26108,8 +28291,10 @@ export function hydrateRoot(
 
 const _resourceHints = new Set<string>();
 
-function insertHeadHint(key: string, build: () => Element): void {
-	if (typeof document === 'undefined' || _resourceHints.has(key)) return;
+/** Known-hint check shared by insertHeadHint and cross-family suppression. */
+function hasHeadHint(key: string): boolean {
+	if (_resourceHints.has(key)) return true;
+	if (typeof document === 'undefined') return false;
 	// SSR dedupe: compare exact attribute VALUES rather than interpolating an
 	// href-derived key into a CSS selector. Quotes/brackets are valid URL text;
 	// treating them as selector syntax could throw before the hint is inserted.
@@ -26117,9 +28302,14 @@ function insertHeadHint(key: string, build: () => Element): void {
 	for (let i = 0; i < existing.length; i++) {
 		if (existing[i].getAttribute('data-oct-hint') === key) {
 			_resourceHints.add(key);
-			return;
+			return true;
 		}
 	}
+	return false;
+}
+
+function insertHeadHint(key: string, build: () => Element): void {
+	if (typeof document === 'undefined' || hasHeadHint(key)) return;
 	const el = build();
 	el.setAttribute('data-oct-hint', key);
 	document.head.appendChild(el);
@@ -26128,9 +28318,62 @@ function insertHeadHint(key: string, build: () => Element): void {
 	_resourceHints.add(key);
 }
 
+/**
+ * Connection/integrity options seeded by preload for the matching preinit —
+ * React carries these onto the initialized resource. Keyed `as:href`; the
+ * preinit's own options win on collision. Test-only reset rides
+ * resetFloatResourceState.
+ */
+let _preloadTransfer: Map<string, Record<string, unknown>> | null = null;
+
+const TRANSFER_OPTION_KEYS = [
+	'crossOrigin',
+	'integrity',
+	'nonce',
+	'fetchPriority',
+	'referrerPolicy',
+] as const;
+
+function stashPreloadTransfer(kind: string, href: string, options: Record<string, unknown>): void {
+	let subset: Record<string, unknown> | null = null;
+	for (const k of TRANSFER_OPTION_KEYS) {
+		const v = options[k];
+		if (v != null) (subset ??= {})[k] = v;
+	}
+	if (subset !== null) (_preloadTransfer ??= new Map()).set(kind + ':' + href, subset);
+}
+
+function takePreloadTransfer(kind: string, href: string): Record<string, unknown> | null {
+	if (_preloadTransfer === null) return null;
+	const key = kind + ':' + href;
+	const found = _preloadTransfer.get(key);
+	if (found === undefined) return null;
+	_preloadTransfer.delete(key);
+	return found;
+}
+
+function guardHintHref(href: unknown): string | null {
+	return typeof href === 'string' && href !== '' ? href : null;
+}
+
+/** The option keys React recognizes on resource hints; everything else drops. */
+const KNOWN_HINT_OPTIONS = new Set([
+	'as',
+	'crossOrigin',
+	'integrity',
+	'nonce',
+	'type',
+	'fetchPriority',
+	'referrerPolicy',
+	'imageSrcSet',
+	'imageSizes',
+	'media',
+]);
+
 function applyHintAttrs(el: Element, opts: Record<string, unknown> | undefined): void {
 	if (opts == null) return;
 	for (const k in opts) {
+		if (!KNOWN_HINT_OPTIONS.has(k)) continue;
 		const v = (opts as any)[k];
 		if (v == null || v === false) continue;
 		const name = k === 'crossOrigin' ? 'crossorigin' : k.toLowerCase();
@@ -26141,46 +28384,114 @@ function applyHintAttrs(el: Element, opts: Record<string, unknown> | undefined):
 
 /** React DOM `preload(href, {as, …})` — `<link rel="preload">`. */
 export function preload(href: string, options: { as: string } & Record<string, unknown>): void {
-	if (!href || !options?.as) return;
-	const rawHref = typeof href === 'string' ? href : String(href);
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('preload', href, options);
+		if (warning !== null) console.error(warning);
+	}
+	const guarded = guardHintHref(href);
+	if (guarded === null) return;
+	if (
+		options === null ||
+		typeof options !== 'object' ||
+		!options.as ||
+		typeof options.as !== 'string'
+	)
+		return;
+	const as = options.as;
+	const rawHref = guarded;
+	// Fonts must be fetched anonymously to be reusable by CSS — React enforces
+	// crossorigin="" regardless of the caller's value; so does Octane.
+	if (as === 'font') options = { ...options, crossOrigin: '' };
+	// Connection/integrity options seed the matching future preinit (React's
+	// resource map carries them onto the initialized resource).
+	if (as === 'style' || as === 'script') stashPreloadTransfer(as, rawHref, options);
+	// After the matching external resource is already live (a Float resource or
+	// preinit), a preload adds nothing. Inline style resources share the sheet
+	// identity namespace but cannot consume an external stylesheet preload, so
+	// both entries must survive regardless of discovery order. Inspect DOM only
+	// on this uncommon identity collision and compare attribute values directly:
+	// href text may contain quotes or other CSS-selector metacharacters.
+	if (as === 'style' && resourceState().sheets.has(rawHref)) {
+		const styles = document.head.querySelectorAll('style[data-precedence]');
+		let hasInlineStyle = false;
+		for (let i = 0; i < styles.length; i++) {
+			if (styles[i].getAttribute('data-href') === rawHref) {
+				hasInlineStyle = true;
+				break;
+			}
+		}
+		if (!hasInlineStyle) return;
+	}
+	if (as === 'script' && resourceState().scripts.has(rawHref)) return;
+	// Image preloads with a srcset are keyed by the srcset+sizes pair, not the
+	// fallback href — two responsive preloads for one href stay distinct.
+	const imageSrcSet = as === 'image' ? options.imageSrcSet : undefined;
+	const key =
+		typeof imageSrcSet === 'string' && imageSrcSet !== ''
+			? 'preload:image:' + imageSrcSet + '::' + String(options.imageSizes ?? '')
+			: 'preload:' + as + ':' + rawHref;
 	const safeHref = sanitizeURL(rawHref);
-	insertHeadHint('preload:' + options.as + ':' + rawHref, () => {
+	const omitHref = typeof imageSrcSet === 'string' && imageSrcSet !== '';
+	insertHeadHint(key, () => {
 		const l = document.createElement('link');
 		l.rel = 'preload';
-		l.href = safeHref;
+		// A responsive image preload matches on imagesrcset/imagesizes; the
+		// fallback href would double-fetch, so React (and Octane) omit it.
+		if (!omitHref) l.href = safeHref;
 		applyHintAttrs(l, options);
 		return l;
 	});
 }
 
-/** React DOM `preinit(href, {as: 'style'|'script', …})` — executes/applies the resource. */
+/**
+ * React DOM `preinit(href, {as: 'style'|'script', …})` — executes/applies the
+ * resource. Routes through the Float resource inserts so preinit and the
+ * rendered resource forms share ONE identity: a preinit'd stylesheet joins the
+ * precedence groups (`precedence` option honored, default `'default'`) and
+ * dedupes against `<link rel="stylesheet" precedence>`; a preinit'd script
+ * dedupes against `<script async src>`.
+ */
 export function preinit(href: string, options: { as: string } & Record<string, unknown>): void {
-	if (!href || !options?.as) return;
-	const as = options.as;
-	const rawHref = typeof href === 'string' ? href : String(href);
-	const safeHref = sanitizeURL(rawHref);
-	insertHeadHint('preinit:' + as + ':' + rawHref, () => {
-		if (as === 'style') {
-			const l = document.createElement('link');
-			l.rel = 'stylesheet';
-			l.href = safeHref;
-			applyHintAttrs(l, { ...options, as: undefined });
-			return l;
-		}
-		const s = document.createElement('script');
-		(s as HTMLScriptElement).src = safeHref;
-		(s as HTMLScriptElement).async = true;
-		applyHintAttrs(s, { ...options, as: undefined });
-		return s;
-	});
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('preinit', href, options);
+		if (warning !== null) console.error(warning);
+	}
+	const guarded = guardHintHref(href);
+	if (guarded === null) return;
+	if (options === null || typeof options !== 'object') return;
+	const as = options?.as;
+	if (as !== 'style' && as !== 'script') return;
+	const rawHref = guarded;
+	const seeded = takePreloadTransfer(as, rawHref);
+	if (as === 'style') {
+		stylesheetResource({
+			...seeded,
+			...options,
+			as: undefined,
+			href: rawHref,
+			precedence: (options as any).precedence ?? 'default',
+		});
+	} else {
+		scriptResource({ ...seeded, ...options, as: undefined, href: undefined, src: rawHref });
+	}
 }
 
 /** React DOM `preconnect(href, {crossOrigin?})` — `<link rel="preconnect">`. */
 export function preconnect(href: string, options?: { crossOrigin?: string }): void {
-	if (!href) return;
-	const rawHref = typeof href === 'string' ? href : String(href);
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('preconnect', href, options);
+		if (warning !== null) console.error(warning);
+	}
+	const rawHref = guardHintHref(href);
+	if (rawHref === null) return;
+	if (options !== null && typeof options !== 'object') options = undefined;
+	else if (options?.crossOrigin !== undefined && typeof options.crossOrigin !== 'string') {
+		options = undefined;
+	}
 	const safeHref = sanitizeURL(rawHref);
-	insertHeadHint('preconnect:' + rawHref, () => {
+	const corsMode =
+		(options as any)?.crossOrigin == null ? '<none>' : String((options as any).crossOrigin);
+	insertHeadHint('preconnect:' + corsMode + ':' + rawHref, () => {
 		const l = document.createElement('link');
 		l.rel = 'preconnect';
 		l.href = safeHref;
@@ -26191,8 +28502,12 @@ export function preconnect(href: string, options?: { crossOrigin?: string }): vo
 
 /** React DOM `prefetchDNS(href)` — `<link rel="dns-prefetch">`. */
 export function prefetchDNS(href: string): void {
-	if (!href) return;
-	const rawHref = typeof href === 'string' ? href : String(href);
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('prefetchDNS', href, arguments[1], arguments.length > 1);
+		if (warning !== null) console.error(warning);
+	}
+	const rawHref = guardHintHref(href);
+	if (rawHref === null) return;
 	const safeHref = sanitizeURL(rawHref);
 	insertHeadHint('dns-prefetch:' + rawHref, () => {
 		const l = document.createElement('link');
@@ -26200,4 +28515,288 @@ export function prefetchDNS(href: string): void {
 		l.href = safeHref;
 		return l;
 	});
+}
+
+/**
+ * React DOM `preloadModule(href, options?)` — `<link rel="modulepreload">`.
+ * Module preloads dedupe by href alone (React's resource identity for modules);
+ * options apply as attributes through the shared lenient pass-through.
+ */
+export function preloadModule(href: string, options?: Record<string, unknown>): void {
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('preloadModule', href, options);
+		if (warning !== null) console.error(warning);
+	}
+	const rawHref = guardHintHref(href);
+	if (rawHref === null) return;
+	if (options === null || typeof options !== 'object') options = undefined;
+	else if ('as' in options && typeof options.as !== 'string') {
+		options = { ...options, as: undefined };
+	}
+	// A module that preinitModule or a Float script already executes needs no preload.
+	if (hasHeadHint('module:' + rawHref) || resourceState().scripts.has(rawHref)) return;
+	const safeHref = sanitizeURL(rawHref);
+	insertHeadHint('modulepreload:' + rawHref, () => {
+		const l = document.createElement('link');
+		l.rel = 'modulepreload';
+		l.href = safeHref;
+		applyHintAttrs(l, options);
+		return l;
+	});
+}
+
+/**
+ * React DOM `preinitModule(href, options?)` — `<script type="module" async src>`.
+ * Only the `script` destination exists for module preinit (React's contract);
+ * any other `as` fails closed as a no-op rather than executing the module.
+ */
+export function preinitModule(
+	href: string,
+	options?: { as?: string } & Record<string, unknown>,
+): void {
+	if (process.env.NODE_ENV !== 'production') {
+		const warning = resourceHintWarning('preinitModule', href, options);
+		if (warning !== null) console.error(warning);
+	}
+	const rawHref = guardHintHref(href);
+	if (rawHref === null) return;
+	if (options != null && typeof options !== 'object') return;
+	if ((options?.as ?? 'script') !== 'script') return;
+	// One executable per src: a live Float script (SSR-seeded or client-
+	// discovered) already satisfies this init.
+	const state = resourceState();
+	if (state.scripts.has(rawHref)) return;
+	const safeHref = sanitizeURL(rawHref);
+	insertHeadHint('module:' + rawHref, () => {
+		const s = document.createElement('script');
+		s.type = 'module';
+		(s as HTMLScriptElement).src = safeHref;
+		(s as HTMLScriptElement).async = true;
+		applyHintAttrs(s, options ? { ...options, as: undefined } : undefined);
+		return s;
+	});
+	state.scripts.add(rawHref);
+}
+
+// ---------------------------------------------------------------------------
+// React Float resources — `<link rel="stylesheet" href precedence>` and
+// `<script async src>` rendered at a component's body root. Unlike per-site
+// hoisted head elements (headBlock), a resource is GLOBAL: keyed by href/src,
+// deduped across the whole page, stylesheet groups ordered by precedence
+// (first-encounter group order, appended within a group), and RETAINED after
+// unmount — unloading a stylesheet or re-running a script is never safe, so
+// React never removes resources and neither does Octane. Suspend-until-loaded
+// ("suspensey" commit) is deliberately out of scope. The first client call
+// seeds dedupe state from SSR-emitted tags (data-precedence / data-oct-res),
+// so hydration never duplicates.
+// ---------------------------------------------------------------------------
+
+interface ResourceState {
+	sheets: Set<string>;
+	scripts: Set<string>;
+	/** Last live element of each stylesheet precedence group. */
+	tails: Map<string, Element>;
+	/** Tail of the LAST group in document order — where a new group starts. */
+	lastTail: Element | null;
+}
+
+let _resourceState: ResourceState | null = null;
+
+function resourceState(): ResourceState {
+	if (_resourceState !== null) return _resourceState;
+	const state: ResourceState = {
+		sheets: new Set(),
+		scripts: new Set(),
+		tails: new Map(),
+		lastTail: null,
+	};
+	if (typeof document !== 'undefined') {
+		// Stylesheet links and style resources share one identity namespace and
+		// one precedence-group ordering; querySelectorAll returns document order,
+		// so tails/lastTail land on each group's last member.
+		const sheets = document.querySelectorAll(
+			'link[rel="stylesheet"][data-precedence], style[data-precedence]',
+		);
+		for (let i = 0; i < sheets.length; i++) {
+			const el = sheets[i];
+			const href = el.getAttribute('href') ?? el.getAttribute('data-href');
+			if (href !== null) state.sheets.add(href);
+			state.tails.set(el.getAttribute('data-precedence') as string, el);
+			state.lastTail = el;
+		}
+		// One executable identity per src: classic Float scripts (data-oct-res)
+		// AND preinitModule scripts (data-oct-hint "module:…") share the set.
+		const scripts = document.querySelectorAll('script[data-oct-res], script[data-oct-hint]');
+		for (let i = 0; i < scripts.length; i++) {
+			const el = scripts[i];
+			const hint = el.getAttribute('data-oct-hint');
+			if (hint !== null && !hint.startsWith('module:')) continue;
+			const src = el.getAttribute('src');
+			if (src !== null) state.scripts.add(src);
+		}
+		// Streaming SSR can deliver Float sheets AFTER this state seeded (a late
+		// boundary's wave carrier arriving mid-hydration). The stream's inline
+		// $OCTRH hands each tag to this registrar once it exists, so one live
+		// authority keeps deduping and precedence ordering in both directions;
+		// before any client Float call the inline path inserts directly and the
+		// DOM seeding above adopts what it placed.
+		if (typeof window !== 'undefined') {
+			(window as any).$OCTFR = (el: Element): void => {
+				const href = el.getAttribute('href') ?? el.getAttribute('data-href');
+				if (href === null || state.sheets.has(href)) return;
+				insertPrecedenced(state, el, el.getAttribute('data-precedence') ?? '');
+				state.sheets.add(href);
+			};
+		}
+	}
+	return (_resourceState = state);
+}
+
+/** Insert a sheet-family resource into its precedence group (shared ordering). */
+function insertPrecedenced(state: ResourceState, el: Element, precedence: string): void {
+	const tail = state.tails.get(precedence);
+	if (tail !== undefined && tail.isConnected) {
+		// Existing group: append after its current tail.
+		tail.after(el);
+		if (state.lastTail === tail) state.lastTail = el;
+	} else if (state.lastTail !== null && state.lastTail.isConnected) {
+		// New group: starts after the last existing group, keeping groups
+		// contiguous in first-encounter order.
+		state.lastTail.after(el);
+		state.lastTail = el;
+	} else {
+		document.head.appendChild(el);
+		state.lastTail = el;
+	}
+	state.tails.set(precedence, el);
+}
+
+/** Handled by the resource insert itself; everything else applies as an attribute. */
+const RESOURCE_OWN_ATTRS = new Set(['precedence', 'href', 'src', 'rel', 'async']);
+
+function applyResourceAttrs(el: Element, attrs: Record<string, unknown>): void {
+	for (const k in attrs) {
+		if (RESOURCE_OWN_ATTRS.has(k)) continue;
+		const v = (attrs as any)[k];
+		if (v == null || v === false || typeof v === 'function') continue;
+		const name = k === 'crossOrigin' ? 'crossorigin' : k.toLowerCase();
+		el.setAttribute(name, sanitizeURLAttribute(el.localName, name, v === true ? '' : String(v)));
+	}
+}
+
+function warnInvalidStylesheetResource(reason: string): void {
+	let conflict: string;
+	if (reason === 'missing-href') {
+		conflict = 'requires a non-empty string `href`';
+	} else if (reason === 'empty-href') {
+		conflict = 'has an empty `href`; a stylesheet resource requires a non-empty string `href`';
+	} else {
+		const props = reason === 'onLoad+onError' ? '`onLoad` and `onError`' : '`' + reason + '`';
+		conflict = 'also has ' + props + ', which requires an independently managed stylesheet';
+	}
+	console.error(
+		'A <link rel="stylesheet"> with `precedence` ' +
+			conflict +
+			'. It will not be hoisted or deduplicated; remove the conflicting prop or `precedence`.',
+	);
+}
+
+/** Compiler target for `<link rel="stylesheet" href precedence>` (React Float). */
+export function stylesheetResource(
+	attrs: Record<string, unknown> | null,
+	invalidReason?: string,
+): void {
+	if (process.env.NODE_ENV !== 'production' && invalidReason !== undefined) {
+		warnInvalidStylesheetResource(invalidReason);
+		return;
+	}
+	if (typeof document === 'undefined' || attrs == null) return;
+	const href = attrs.href;
+	if (typeof href !== 'string' || href === '') return;
+	const state = resourceState();
+	// First instance wins, including its non-key props — matching React's
+	// resource identity (later differing props do not retarget a live sheet).
+	if (state.sheets.has(href)) return;
+	const precedence = attrs.precedence == null ? '' : String(attrs.precedence);
+	const l = document.createElement('link');
+	l.rel = 'stylesheet';
+	l.href = sanitizeURL(href);
+	l.setAttribute('data-precedence', precedence);
+	applyResourceAttrs(l, attrs);
+	insertPrecedenced(state, l, precedence);
+	state.sheets.add(href);
+}
+
+/**
+ * Compiler target for `<style href precedence>` (React Float style resource).
+ * Plain CSS keyed by href identity — shares the stylesheet dedupe namespace and
+ * precedence-group ordering with link resources; the CSS ships as the tag's
+ * text content and is NOT scoped (scoped CSS owns every other `<style>`).
+ */
+export function styleResource(
+	attrs: Record<string, unknown> | null,
+	css: string,
+	development?: boolean,
+): void {
+	if (typeof document === 'undefined' || attrs == null) return;
+	const href = attrs.href;
+	if (typeof href !== 'string' || href === '') return;
+	const state = resourceState();
+	if (state.sheets.has(href)) return;
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		development === true &&
+		hasHeadHint('preload:style:' + href)
+	) {
+		console.error(
+			'A <style> resource with href "' +
+				href +
+				'" follows a stylesheet preload for the same href. ' +
+				'Inline styles cannot consume a stylesheet preload; remove the preload or use a stylesheet link.',
+		);
+	}
+	const precedence = attrs.precedence == null ? '' : String(attrs.precedence);
+	// textContent makes any CSS safe to insert client-side, but the SSR twin
+	// must fail closed on "</style" (raw-text serialization) — surface the same
+	// authoring diagnostic here so SPA-only development still sees it.
+	if (process.env.NODE_ENV !== 'production' && /<\/style/i.test(css)) {
+		console.error(
+			'A <style href precedence> resource contains "</style"; server rendering will skip it. ' +
+				'Load it as a stylesheet link instead.',
+		);
+	}
+	const s = document.createElement('style');
+	s.setAttribute('data-precedence', precedence);
+	s.setAttribute('data-href', href);
+	applyResourceAttrs(s, attrs);
+	s.textContent = css;
+	insertPrecedenced(state, s, precedence);
+	state.sheets.add(href);
+}
+
+/**
+ * TEST-ONLY: forget all Float resource identity (this repo's test isolation).
+ * Resources are page-global by contract — a real page never resets them.
+ */
+export function resetFloatResourceState(): void {
+	_resourceState = null;
+	_preloadTransfer = null;
+	// The streamed-resource registrar closes over the discarded state.
+	if (typeof window !== 'undefined') delete (window as any).$OCTFR;
+}
+
+/** Compiler target for `<script async src>` resources (React Float). */
+export function scriptResource(attrs: Record<string, unknown> | null): void {
+	if (typeof document === 'undefined' || attrs == null) return;
+	const src = attrs.src;
+	if (typeof src !== 'string' || src === '') return;
+	const state = resourceState();
+	if (state.scripts.has(src)) return;
+	const s = document.createElement('script');
+	(s as HTMLScriptElement).src = sanitizeURL(src);
+	(s as HTMLScriptElement).async = true;
+	s.setAttribute('data-oct-res', '');
+	applyResourceAttrs(s, attrs);
+	document.head.appendChild(s);
+	state.scripts.add(src);
 }
