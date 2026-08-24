@@ -64,7 +64,7 @@ export const FileCaptionButton = () => {
 	}, [block, editor]);
 
 	const handleKeyDown = useCallback((event: KeyboardEvent) => {
-		if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+		if (event.key === 'Enter' && !event.isComposing) {
 			event.preventDefault();
 			setPopoverOpen(false);
 		}

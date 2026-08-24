@@ -33,7 +33,7 @@ export const EmbedTab = <
 	}, []);
 
 	const handleURLEnter = useCallback((event: KeyboardEvent) => {
-		if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+		if (event.key === 'Enter' && !event.isComposing) {
 			event.preventDefault();
 			if (!editor.getBlock(props.blockId)) {
 				return;
