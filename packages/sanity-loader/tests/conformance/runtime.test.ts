@@ -6,6 +6,7 @@ import { createQueryStore as createClientQueryStore } from '../../src/createQuer
 import { createQueryStore as createServerQueryStore } from '../../src/createQueryStore/server-only';
 import { defineStudioUrlStore } from '../../src/defineStudioUrlStore';
 import { InitialQuery } from '../_fixtures/initial-query.tsrx';
+import { OptionalQueryArguments } from '../_fixtures/optional-query-arguments.tsrx';
 
 describe('@octanejs/sanity-loader — runtime', () => {
 	it('matches the upstream root runtime export names', () => {
@@ -16,6 +17,14 @@ describe('@octanejs/sanity-loader — runtime', () => {
 		const mounted = mount(InitialQuery);
 		expect(mounted.find('output').textContent).toBe('Octane and Sanity');
 		expect(mounted.find('output').getAttribute('data-loading')).toBe('false');
+		mounted.unmount();
+	});
+
+	it('accepts omitted options from compiled components', () => {
+		const mounted = mount(OptionalQueryArguments);
+		const expected = 'The `initial` option is required when `ssr: true`';
+		expect(mounted.find('[data-call="query-only"]').textContent).toBe(expected);
+		expect(mounted.find('[data-call="query-with-params"]').textContent).toBe(expected);
 		mounted.unmount();
 	});
 

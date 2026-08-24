@@ -21,12 +21,18 @@ export function defineUseQuery({
 	encodeDataAttribute: EncodeDataAttributeFunction;
 } {
 	const DEFAULT_PARAMS = {};
+	type UseQueryArguments<QueryResponseResult> = [
+		params?: QueryParams,
+		options?: UseQueryOptions<QueryResponseResult>,
+	];
 
 	return <QueryResponseResult, QueryResponseError>(
 		query: string,
-		params: QueryParams = DEFAULT_PARAMS,
-		options: UseQueryOptions<QueryResponseResult> = {},
+		...args: [...UseQueryArguments<QueryResponseResult>, slot?: symbol]
 	) => {
+		const userArgs = typeof args[args.length - 1] === 'symbol' ? args.slice(0, -1) : args;
+		const [params = DEFAULT_PARAMS, options = {}] =
+			userArgs as UseQueryArguments<QueryResponseResult>;
 		const initial = useMemo(
 			() =>
 				options.initial
