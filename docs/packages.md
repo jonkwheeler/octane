@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**116 publishable package(s), including 102 framework binding(s) and 3 framework integration(s).**
+**113 publishable package(s), including 99 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -22,7 +22,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/astro` | [`packages/astro`](../packages/astro) | framework integration | `0.0.25` | 5 |
 | `@octanejs/auto-animate` | [`packages/auto-animate`](../packages/auto-animate) | framework binding | `0.0.2` | 3 |
 | `@octanejs/base-ui` | [`packages/base-ui`](../packages/base-ui) | framework binding | `0.1.44` | 2 |
-| `@octanejs/blocknote` | [`packages/blocknote`](../packages/blocknote) | framework binding | `0.1.0` | 1 |
 | `@octanejs/calendar` | [`packages/calendar`](../packages/calendar) | framework binding | `0.0.2` | 4 |
 | `@octanejs/cli` | [`packages/cli`](../packages/cli) | developer tooling | `0.0.8` | 2 |
 | `@octanejs/cmdk` | [`packages/cmdk`](../packages/cmdk) | framework binding | `0.1.29` | 1 |
@@ -64,7 +63,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/phosphor-icons` | [`packages/phosphor-icons`](../packages/phosphor-icons) | framework binding | `0.0.26` | 2 |
 | `@octanejs/popper` | [`packages/popper`](../packages/popper) | framework binding | `0.0.12` | 2 |
 | `@octanejs/portabletext` | [`packages/portabletext`](../packages/portabletext) | framework binding | `0.1.0` | 2 |
-| `@octanejs/puck` | [`packages/puck`](../packages/puck) | framework binding | `0.1.0` | 3 |
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.45` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.26` | 2 |
 | `@octanejs/react-error-boundary` | [`packages/react-error-boundary`](../packages/react-error-boundary) | framework binding | `0.1.27` | 2 |
@@ -123,7 +121,6 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/wouter` | [`packages/wouter`](../packages/wouter) | framework binding | `0.0.2` | 5 |
 | `@octanejs/xstate` | [`packages/xstate`](../packages/xstate) | framework binding | `0.0.4` | 2 |
 | `@octanejs/xstate-store` | [`packages/xstate-store`](../packages/xstate-store) | framework binding | `0.0.4` | 2 |
-| `@octanejs/xyflow` | [`packages/xyflow`](../packages/xyflow) | framework binding | `0.1.0` | 3 |
 | `@octanejs/zag` | [`packages/zag`](../packages/zag) | framework binding | `0.0.12` | 1 |
 | `@octanejs/zustand` | [`packages/zustand`](../packages/zustand) | framework binding | `0.1.45` | 6 |
 | `create-octane` | [`packages/create-octane`](../packages/create-octane) | project scaffolder | `0.0.8` | 1 |
@@ -131,6 +128,9 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
 ## Private packages
 
+- `@octanejs/blocknote` ([`packages/blocknote`](../packages/blocknote))
 - `@octanejs/evals` ([`packages/octane-evals`](../packages/octane-evals))
 - `@octanejs/lynx` ([`packages/lynx`](../packages/lynx))
+- `@octanejs/puck` ([`packages/puck`](../packages/puck))
 - `@octanejs/rspeedy-plugin` ([`packages/rspeedy-plugin-octane`](../packages/rspeedy-plugin-octane))
+- `@octanejs/xyflow` ([`packages/xyflow`](../packages/xyflow))

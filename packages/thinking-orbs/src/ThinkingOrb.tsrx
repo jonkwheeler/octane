@@ -40,15 +40,16 @@ export function ThinkingOrb({
 		canvas.height = Math.round(size * dpr);
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
+		const context = ctx;
 
 		const { mode, speed: baseSpeed, opts } = resolvePreset(state, size);
 		const draw = MODE_DRAWS[mode];
 		const effSpeed = baseSpeed * speed;
 
 		function frame(tSec: number): void {
-			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-			ctx.clearRect(0, 0, size, size);
-			draw(ctx, size, tSec, dark, opts);
+			context.setTransform(dpr, 0, 0, dpr, 0, 0);
+			context.clearRect(0, 0, size, size);
+			draw(context, size, tSec, dark, opts);
 		}
 
 		if (reduced) {

@@ -9,6 +9,8 @@ describe('@octanejs/blocknote — exports', () => {
 		expect(BlockNote.BlockNoteContext).toBeTruthy();
 	});
 
-	it.todo('exports BlockNoteViewRaw once upstream .js import paths are normalized');
-	it.todo('matches the full @blocknote/react 0.53 public surface');
+	it('keeps the unfinished editor view outside the milestone-1 surface', () => {
+		expect('BlockNoteViewRaw' in BlockNote).toBe(false);
+		expect('BlockNoteView' in BlockNote).toBe(false);
+	});
 });
