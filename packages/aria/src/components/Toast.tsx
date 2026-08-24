@@ -32,7 +32,7 @@ import {
 	useContextProps,
 	useRenderProps,
 } from './utils';
-import { createPortal } from 'octane';
+import { createPortal, isChildrenBlock } from 'octane';
 import { filterDOMProps } from '../upstream-exports/react-aria/filterDOMProps';
 import { forwardRefType, GlobalDOMAttributes } from '@react-types/shared';
 import { mergeProps } from '../upstream-exports/react-aria/mergeProps';
@@ -151,7 +151,7 @@ const ToastRegion = /*#__PURE__*/ (forwardRef as any)(function ToastRegion<T>(
 				data-focused={isFocused || undefined}
 				data-focus-visible={isFocusVisible || undefined}
 			>
-				{typeof props.children === 'function' ? (
+				{typeof props.children === 'function' && !isChildrenBlock(props.children) ? (
 					<ToastList
 						{...props}
 						render={undefined}

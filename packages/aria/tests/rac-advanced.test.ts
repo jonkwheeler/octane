@@ -5,6 +5,7 @@ import {
 	CalendarScenario,
 	ColorFieldScenario,
 	DateFieldScenario,
+	DateSegmentPropsScenario,
 	DropZoneScenario,
 	FileTriggerScenario,
 	ListDataScenario,
@@ -60,6 +61,18 @@ describe('@octanejs/aria/components — advanced React Aria Components families'
 
 		expect(field.textContent).toContain('9/22/2027');
 		expect(input.value).toBe('2027-09-22');
+		r.unmount();
+	});
+
+	it('returns the modern enterKeyHint prop for editable date segments', () => {
+		const r = mount(DateSegmentPropsScenario);
+		const editable = r.container.querySelectorAll(
+			'[data-segment-type="month"], [data-segment-type="day"], [data-segment-type="year"]',
+		);
+		expect(editable).toHaveLength(3);
+		for (const segment of editable) {
+			expect(segment.getAttribute('data-enter-key-hint-prop')).toBe('true');
+		}
 		r.unmount();
 	});
 

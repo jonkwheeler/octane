@@ -404,10 +404,8 @@ export function useDateSegment(
 			suppressContentEditableWarning: isEditable,
 			spellCheck: isEditable ? 'false' : undefined,
 			autoCorrect: isEditable ? 'off' : undefined,
-			// Capitalization was changed in React 17...
-			[parseInt(React.version, 10) >= 17 ? 'enterKeyHint' : 'enterkeyhint']: isEditable
-				? 'next'
-				: undefined,
+			// Octane uses the modern DOM property name regardless of its package version.
+			enterKeyHint: isEditable ? 'next' : undefined,
 			inputMode:
 				state.isDisabled || segment.type === 'dayPeriod' || segment.type === 'era' || !isEditable
 					? undefined

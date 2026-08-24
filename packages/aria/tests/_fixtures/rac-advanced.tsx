@@ -1,4 +1,5 @@
-import { parseDate } from '@internationalized/date';
+import { createCalendar, parseDate } from '@internationalized/date';
+import { useRef } from 'octane';
 
 import {
 	Button,
@@ -16,6 +17,13 @@ import {
 	Label,
 	useListData,
 } from '../../src/components';
+import { useDateField } from '../../src/datepicker/useDateField';
+import { useDateSegment } from '../../src/datepicker/useDateSegment';
+import type {
+	DateFieldState,
+	DateSegment as DateSegmentValue,
+} from '../../src/stately/datepicker/useDateFieldState';
+import { useDateFieldState } from '../../src/stately/datepicker/useDateFieldState';
 
 export function CalendarScenario(props: { onChange?: (value: unknown) => void }) {
 	return (
@@ -40,6 +48,39 @@ export function DateFieldScenario() {
 			<Label>Birth date</Label>
 			<DateInput>{(segment) => <DateSegment segment={segment} />}</DateInput>
 		</DateField>
+	);
+}
+
+function DateSegmentPropsScenarioItem(props: { segment: DateSegmentValue; state: DateFieldState }) {
+	const ref = useRef<HTMLSpanElement | null>(null);
+	const { segmentProps } = useDateSegment(props.segment, props.state, ref);
+	return (
+		<span
+			ref={ref}
+			data-segment-type={props.segment.type}
+			data-enter-key-hint-prop={
+				Object.prototype.hasOwnProperty.call(segmentProps, 'enterKeyHint') ? 'true' : 'false'
+			}
+		>
+			{props.segment.text}
+		</span>
+	);
+}
+
+export function DateSegmentPropsScenario() {
+	const ref = useRef<HTMLDivElement | null>(null);
+	const state = useDateFieldState({
+		locale: 'en-US',
+		createCalendar,
+		defaultValue: parseDate('2026-08-18'),
+	});
+	const { fieldProps } = useDateField({ 'aria-label': 'Birth date' }, state, ref);
+	return (
+		<div {...fieldProps} ref={ref}>
+			{state.segments.map((segment, index) => (
+				<DateSegmentPropsScenarioItem key={index} segment={segment} state={state} />
+			))}
+		</div>
 	);
 }
 

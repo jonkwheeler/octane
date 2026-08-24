@@ -1,18 +1,31 @@
 /** @jsxImportSource octane */
-import { useRef } from 'octane';
+import { Activity, useRef } from 'octane';
 
 import { useDrag, useDrop } from '../../src/components';
 
-export function NativeDraggable(props: { onDragStart: () => void }) {
+export function NativeDraggable(props: { onDragStart: () => void; onDragEnd?: () => void }) {
 	const { dragProps, isDragging } = useDrag({
 		getItems: () => [{ 'text/plain': 'item' }],
 		onDragStart: props.onDragStart,
+		onDragEnd: props.onDragEnd,
 	});
 
 	return (
 		<button {...dragProps} data-dragging={String(isDragging)}>
 			drag me
 		</button>
+	);
+}
+
+export function ActivityDraggable(props: {
+	mode: 'visible' | 'hidden';
+	onDragStart: () => void;
+	onDragEnd: () => void;
+}) {
+	return (
+		<Activity mode={props.mode}>
+			<NativeDraggable onDragStart={props.onDragStart} onDragEnd={props.onDragEnd} />
+		</Activity>
 	);
 }
 

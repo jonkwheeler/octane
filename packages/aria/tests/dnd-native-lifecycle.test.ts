@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { act, mount } from '../../octane/tests/_helpers';
-import { ActivatingDropTarget, NativeDraggable } from './_fixtures/dnd-native-lifecycle.tsx';
+import { act, mount, nextPaint } from '../../octane/tests/_helpers';
+import {
+	ActivatingDropTarget,
+	ActivityDraggable,
+	NativeDraggable,
+} from './_fixtures/dnd-native-lifecycle.tsx';
 
 function pointerEvent(type: string, init: PointerEventInit = {}): PointerEvent {
 	return new PointerEvent(type, {
@@ -83,5 +87,42 @@ describe('@octanejs/aria — native drag and drop lifecycle', () => {
 
 		await act(() => vi.advanceTimersByTime(800));
 		expect(onDropActivate).not.toHaveBeenCalled();
+	});
+
+	it('does not end a drag when Activity hides a still-connected draggable', async () => {
+		const onDragStart = vi.fn();
+		const onDragEnd = vi.fn();
+		const r = mount(ActivityDraggable, { mode: 'visible', onDragStart, onDragEnd });
+		await act(() => nextPaint());
+		const draggable = r.find('button') as HTMLElement;
+
+		await act(() => {
+			draggable.dispatchEvent(
+				pointerEvent('pointerdown', { width: 0, height: 0, pressure: 0, detail: 0 }),
+			);
+			draggable.dispatchEvent(
+				new MouseEvent('click', { bubbles: true, cancelable: true, detail: 1 }),
+			);
+		});
+		expect(onDragStart).toHaveBeenCalledTimes(1);
+		expect(draggable.getAttribute('data-dragging')).toBe('true');
+		await act(async () => {
+			await nextFrame();
+		});
+
+		r.update(ActivityDraggable, { mode: 'hidden', onDragStart, onDragEnd });
+		await act(() => nextPaint());
+		expect(draggable.isConnected).toBe(true);
+		expect(onDragEnd).not.toHaveBeenCalled();
+
+		r.update(ActivityDraggable, { mode: 'visible', onDragStart, onDragEnd });
+		await act(async () => {
+			await nextPaint();
+			document.dispatchEvent(
+				new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
+			);
+		});
+		expect(onDragEnd).toHaveBeenCalledTimes(1);
+		r.unmount();
 	});
 });

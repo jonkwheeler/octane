@@ -29,7 +29,6 @@ import {
 	KeyboardEvent,
 	MouseEvent,
 	PointerEvent,
-	version as ReactVersion,
 	useEffect,
 	useRef,
 	useState,
@@ -288,13 +287,9 @@ export function useDrag(options: DragOptions): DragResult {
 
 	useEffect(() => {
 		return () => {
-			// Check that the dragged element has actually unmounted from the DOM and not a React Strict Mode false positive.
-			// https://github.com/facebook/react/issues/29585
-			// React 16 ran effect cleanups before removing elements from the DOM but did not have this issue.
-			if (
-				isDraggingRef.current &&
-				(!isDraggingRef.current.isConnected || parseInt(ReactVersion, 10) < 17)
-			) {
+			// Octane deletion cleanups run after DOM removal, while Activity hides disconnect
+			// effects with their DOM still connected. Only the former represents a removed drag target.
+			if (isDraggingRef.current && !isDraggingRef.current.isConnected) {
 				if (typeof state.options.onDragEnd === 'function') {
 					let event: DragEndEvent = {
 						type: 'dragend',
