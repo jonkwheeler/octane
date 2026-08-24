@@ -4,21 +4,18 @@ import { SmoothStepEdge } from './SmoothStepEdge';
 import type { StepEdgeProps } from '../../types';
 
 function createStepEdge(params: { isInternal: boolean }) {
-  // eslint-disable-next-line react/display-name
-  return memo(({ id, ...props }: StepEdgeProps) => {
-    const _id = params.isInternal ? undefined : id;
+	// eslint-disable-next-line react/display-name
+	return memo(({ id, ...props }: StepEdgeProps) => {
+		const _id = params.isInternal ? undefined : id;
 
-    return (
-      <SmoothStepEdge
-        {...props}
-        id={_id}
-        pathOptions={useMemo(
-          () => ({ borderRadius: 0, offset: props.pathOptions?.offset }),
-          [props.pathOptions?.offset]
-        )}
-      />
-    );
-  });
+		return <SmoothStepEdge
+			{...props}
+			id={_id}
+			pathOptions={useMemo(() => ({ borderRadius: 0, offset: props.pathOptions?.offset }), [
+				props.pathOptions?.offset,
+			])}
+		/>;
+	});
 }
 
 /**

@@ -18,15 +18,15 @@ const config: Config<{ HeadingBlock: Props }> = {
 };
 
 export function PuckRenderProbe() {
-	return (
-		<div id="root">
-			<Render
-				config={config}
-				data={{
-					content: [{ type: 'HeadingBlock', props: { title: 'Hello Puck' } }],
-					root: { props: {} },
-				}}
-			/>
-		</div>
-	);
+	return <div id="root">
+		<Render
+			config={config}
+			data={{
+				content: [
+					{ type: 'HeadingBlock', props: { title: 'Hello Puck' } },
+				],
+				root: { props: {} },
+			}}
+		/>
+	</div>;
 }

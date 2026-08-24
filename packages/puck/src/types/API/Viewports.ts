@@ -1,12 +1,12 @@
-import { OctaneNode } from "../../react-shim.js";
+import { OctaneNode } from '../../react-shim.js';
 
-type iconTypes = "Smartphone" | "Monitor" | "Tablet";
+type iconTypes = 'Smartphone' | 'Monitor' | 'Tablet';
 
 export type Viewport = {
-  width: number;
-  height?: number | "auto";
-  label?: string;
-  icon?: iconTypes | OctaneNode;
+	width: number;
+	height?: number | 'auto';
+	label?: string;
+	icon?: iconTypes | OctaneNode;
 };
 
 export type Viewports = Viewport[];

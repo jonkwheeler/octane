@@ -21,7 +21,13 @@ describe('@octanejs/puck — exports', () => {
 		] as const) {
 			const bindingType = typeof binding[name];
 			const upstreamType = typeof upstream[name];
-			if (name === 'Puck' || name === 'Render' || name === 'DropZone' || name === 'Drawer' || name === 'AutoField') {
+			if (
+				name === 'Puck' ||
+				name === 'Render' ||
+				name === 'DropZone' ||
+				name === 'Drawer' ||
+				name === 'AutoField'
+			) {
 				expect(bindingType).toBe('function');
 				continue;
 			}

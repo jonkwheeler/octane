@@ -1,8 +1,8 @@
-import { createStore } from "@octanejs/zustand/vanilla";
-import { Direction } from "../../../../types";
+import { createStore } from '@octanejs/zustand/vanilla';
+import { Direction } from '../../../../types';
 
 export const collisionStore = createStore<{
-  fallbackEnabled: boolean;
+	fallbackEnabled: boolean;
 }>(() => ({
-  fallbackEnabled: false,
+	fallbackEnabled: false,
 }));

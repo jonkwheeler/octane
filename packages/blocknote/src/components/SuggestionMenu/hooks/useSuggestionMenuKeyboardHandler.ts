@@ -1,78 +1,74 @@
-import React, { useState } from "octane";
+import React, { useState } from 'octane';
 
 // Hook which returns a handler for keyboard navigation of a suggestion menu. Up
 // & down arrow keys are used to select an item, enter is used to execute it.
 export function useSuggestionMenuKeyboardHandler<Item>(
-  items: Item[],
-  onItemClick?: (item: Item) => void,
+	items: Item[],
+	onItemClick?: (item: Item) => void,
 ) {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
-  return {
-    selectedIndex,
-    setSelectedIndex,
-    handler: (event: KeyboardEvent | React.KeyboardEvent) => {
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
+	return {
+		selectedIndex,
+		setSelectedIndex,
+		handler: (event: KeyboardEvent | React.KeyboardEvent) => {
+			if (event.key === 'ArrowUp') {
+				event.preventDefault();
 
-        if (items.length) {
-          setSelectedIndex((selectedIndex - 1 + items!.length) % items!.length);
-        }
+				if (items.length) {
+					setSelectedIndex((selectedIndex - 1 + items!.length) % items!.length);
+				}
 
-        return true;
-      }
+				return true;
+			}
 
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
+			if (event.key === 'ArrowDown') {
+				event.preventDefault();
 
-        if (items.length) {
-          setSelectedIndex((selectedIndex + 1) % items!.length);
-        }
+				if (items.length) {
+					setSelectedIndex((selectedIndex + 1) % items!.length);
+				}
 
-        return true;
-      }
+				return true;
+			}
 
-      if (event.key === "PageUp") {
-        event.preventDefault();
+			if (event.key === 'PageUp') {
+				event.preventDefault();
 
-        if (items.length) {
-          setSelectedIndex(0);
-        }
+				if (items.length) {
+					setSelectedIndex(0);
+				}
 
-        return true;
-      }
+				return true;
+			}
 
-      if (event.key === "PageDown") {
-        event.preventDefault();
+			if (event.key === 'PageDown') {
+				event.preventDefault();
 
-        if (items.length) {
-          setSelectedIndex(items.length - 1);
-        }
+				if (items.length) {
+					setSelectedIndex(items.length - 1);
+				}
 
-        return true;
-      }
+				return true;
+			}
 
-      const isComposing = isReactEvent(event)
-        ? event.nativeEvent.isComposing
-        : event.isComposing;
-      if (event.key === "Enter" && !isComposing) {
-        event.preventDefault();
-        event.stopPropagation();
+			const isComposing = isReactEvent(event) ? event.nativeEvent.isComposing : event.isComposing;
+			if (event.key === 'Enter' && !isComposing) {
+				event.preventDefault();
+				event.stopPropagation();
 
-        if (items.length) {
-          onItemClick?.(items[selectedIndex]);
-        }
+				if (items.length) {
+					onItemClick?.(items[selectedIndex]);
+				}
 
-        return true;
-      }
+				return true;
+			}
 
-      return false;
-    },
-  };
+			return false;
+		},
+	};
 }
 
-function isReactEvent(
-  event: KeyboardEvent | React.KeyboardEvent,
-): event is React.KeyboardEvent {
-  return (event as React.KeyboardEvent).nativeEvent !== undefined;
+function isReactEvent(event: KeyboardEvent | React.KeyboardEvent): event is React.KeyboardEvent {
+	return (event as React.KeyboardEvent).nativeEvent !== undefined;
 }

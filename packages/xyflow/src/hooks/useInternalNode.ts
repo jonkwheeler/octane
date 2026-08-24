@@ -32,10 +32,16 @@ import type { InternalNode, Node } from '../types';
  *}
  *```
  */
-export function useInternalNode<NodeType extends Node = Node>(id: string, ...rest: [slot?: symbol]): InternalNode<NodeType> | undefined  {
-  const slot = resolveHookSlot(rest);
-  const node = useStore(useCallback((s) => s.nodeLookup.get(id) as InternalNode<NodeType> | undefined, [id]),
-    shallow, slot);
+export function useInternalNode<NodeType extends Node = Node>(
+	id: string,
+	...rest: [slot?: symbol]
+): InternalNode<NodeType> | undefined {
+	const slot = resolveHookSlot(rest);
+	const node = useStore(
+		useCallback((s) => s.nodeLookup.get(id) as InternalNode<NodeType> | undefined, [id]),
+		shallow,
+		slot,
+	);
 
-  return node;
+	return node;
 }

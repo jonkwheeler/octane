@@ -1,26 +1,26 @@
-import { ComponentData, Config, UserGenerics } from "../../types";
-import { PrivateAppState } from "../../types/Internal";
-import { walkAppState } from "./walk-app-state";
+import { ComponentData, Config, UserGenerics } from '../../types';
+import { PrivateAppState } from '../../types/Internal';
+import { walkAppState } from './walk-app-state';
 
 export const flattenData = <
-  UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+	UserConfig extends Config = Config,
+	G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>,
 >(
-  state: PrivateAppState,
-  config: UserConfig
+	state: PrivateAppState,
+	config: UserConfig,
 ) => {
-  const data: ComponentData[] = [];
+	const data: ComponentData[] = [];
 
-  walkAppState(
-    state,
-    config,
-    (content) => content,
-    (item) => {
-      data.push(item);
+	walkAppState(
+		state,
+		config,
+		(content) => content,
+		(item) => {
+			data.push(item);
 
-      return null;
-    }
-  );
+			return null;
+		},
+	);
 
-  return data;
+	return data;
 };

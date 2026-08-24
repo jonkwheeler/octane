@@ -17,42 +17,38 @@ export type PortalTarget = HTMLElement | string | null;
  * `bn-container` element is used.
  */
 export type PortalElementsMap = {
-  default?: PortalTarget;
-  formattingToolbar?: PortalTarget;
-  linkToolbar?: PortalTarget;
-  slashMenu?: PortalTarget;
-  emojiPicker?: PortalTarget;
-  sideMenu?: PortalTarget;
-  filePanel?: PortalTarget;
-  tableHandles?: PortalTarget;
-  comments?: PortalTarget;
-  attributionTooltip?: PortalTarget;
+	default?: PortalTarget;
+	formattingToolbar?: PortalTarget;
+	linkToolbar?: PortalTarget;
+	slashMenu?: PortalTarget;
+	emojiPicker?: PortalTarget;
+	sideMenu?: PortalTarget;
+	filePanel?: PortalTarget;
+	tableHandles?: PortalTarget;
+	comments?: PortalTarget;
+	attributionTooltip?: PortalTarget;
 };
 
-export type PortalElementKey = Exclude<keyof PortalElementsMap, "default">;
+export type PortalElementKey = Exclude<keyof PortalElementsMap, 'default'>;
 
-export function resolvePortalTarget(
-  target: PortalTarget | undefined,
-): HTMLElement | undefined {
-  if (target === undefined) {
-    return undefined;
-  }
-  if (target === null) {
-    return typeof document !== "undefined" ? document.body : undefined;
-  }
-  if (typeof target === "string") {
-    if (typeof document === "undefined") {
-      return undefined;
-    }
-    const el = document.querySelector(target);
-    if (!el) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[BlockNote] portalElements selector "${target}" did not match any element`,
-      );
-      return undefined;
-    }
-    return el as HTMLElement;
-  }
-  return target;
+export function resolvePortalTarget(target: PortalTarget | undefined): HTMLElement | undefined {
+	if (target === undefined) {
+		return undefined;
+	}
+	if (target === null) {
+		return typeof document !== 'undefined' ? document.body : undefined;
+	}
+	if (typeof target === 'string') {
+		if (typeof document === 'undefined') {
+			return undefined;
+		}
+		const el = document.querySelector(target);
+		if (!el) {
+			// eslint-disable-next-line no-console
+			console.warn(`[BlockNote] portalElements selector "${target}" did not match any element`);
+			return undefined;
+		}
+		return el as HTMLElement;
+	}
+	return target;
 }

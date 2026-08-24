@@ -1,5 +1,5 @@
-import { useDragDropManager } from "@octanejs/dnd-kit";
-import { DependencyList, useCallback } from "../../react-shim.js";
+import { useDragDropManager } from '@octanejs/dnd-kit';
+import { DependencyList, useCallback } from '../../react-shim.js';
 
 /**
  * Returns a callback that only triggers when dnd-kit has finished
@@ -13,18 +13,15 @@ import { DependencyList, useCallback } from "../../react-shim.js";
  * @param deps
  * @returns
  */
-export function useRenderedCallback<T extends Function>(
-  callback: T,
-  deps: DependencyList
-) {
-  const manager = useDragDropManager();
+export function useRenderedCallback<T extends Function>(callback: T, deps: DependencyList) {
+	const manager = useDragDropManager();
 
-  return useCallback(
-    async (...args: any) => {
-      await manager?.renderer.rendering;
+	return useCallback(
+		async (...args: any) => {
+			await manager?.renderer.rendering;
 
-      return callback(...args);
-    },
-    [...deps, manager]
-  );
+			return callback(...args);
+		},
+		[...deps, manager],
+	);
 }

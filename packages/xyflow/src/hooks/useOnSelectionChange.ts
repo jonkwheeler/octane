@@ -4,9 +4,12 @@ import { resolveHookSlot } from './slot';
 import { useStoreApi } from './useStore';
 import type { OnSelectionChangeFunc, Node, Edge } from '../types';
 
-export type UseOnSelectionChangeOptions<NodeType extends Node = Node, EdgeType extends Edge = Edge> = {
-  /** The handler to register. */
-  onChange: OnSelectionChangeFunc<NodeType, EdgeType>;
+export type UseOnSelectionChangeOptions<
+	NodeType extends Node = Node,
+	EdgeType extends Edge = Edge,
+> = {
+	/** The handler to register. */
+	onChange: OnSelectionChangeFunc<NodeType, EdgeType>;
 };
 
 /**
@@ -46,23 +49,30 @@ export type UseOnSelectionChangeOptions<NodeType extends Node = Node, EdgeType e
  * @remarks You need to memoize the passed `onChange` handler, otherwise the hook will not work correctly.
  */
 export function useOnSelectionChange<NodeType extends Node = Node, EdgeType extends Edge = Edge>(
-  {
-    onChange,
-  }: UseOnSelectionChangeOptions<NodeType, EdgeType>,
-  ...rest: [slot?: symbol]
+	{ onChange }: UseOnSelectionChangeOptions<NodeType, EdgeType>,
+	...rest: [slot?: symbol]
 ) {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi<NodeType, EdgeType>(slot);
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi<NodeType, EdgeType>(slot);
 
-  useEffect(function registerSelectionChange() {
-    const nextOnSelectionChangeHandlers = [...store.getState().onSelectionChangeHandlers, onChange];
-    store.setState({ onSelectionChangeHandlers: nextOnSelectionChangeHandlers });
+	useEffect(
+		function registerSelectionChange() {
+			const nextOnSelectionChangeHandlers = [
+				...store.getState().onSelectionChangeHandlers,
+				onChange,
+			];
+			store.setState({ onSelectionChangeHandlers: nextOnSelectionChangeHandlers });
 
-    return function unregisterSelectionChange() {
-      const nextHandlers = store.getState().onSelectionChangeHandlers.filter(function isNotChange(fn) {
-        return fn !== onChange;
-      });
-      store.setState({ onSelectionChangeHandlers: nextHandlers });
-    };
-  }, [onChange], slot);
+			return function unregisterSelectionChange() {
+				const nextHandlers = store
+					.getState()
+					.onSelectionChangeHandlers.filter(function isNotChange(fn) {
+						return fn !== onChange;
+					});
+				store.setState({ onSelectionChangeHandlers: nextHandlers });
+			};
+		},
+		[onChange],
+		slot,
+	);
 }

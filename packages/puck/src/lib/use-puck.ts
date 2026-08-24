@@ -1,119 +1,107 @@
-import { Config, UserGenerics, AppState, ComponentData } from "../types";
-import { createContext, useContext, useEffect, useState } from "../react-shim.js";
-import { AppStore, useAppStoreApi } from "../store";
-import {
-  GetPermissions,
-  RefreshPermissions,
-} from "../store/slices/permissions";
-import { HistorySlice } from "../store/slices/history";
-import { createStore, StoreApi, useStore } from "@octanejs/zustand";
-import { makeStatePublic } from "./data/make-state-public";
-import { getItem, ItemSelector } from "./data/get-item";
-import { getSelectorForId } from "./get-selector-for-id";
+import { Config, UserGenerics, AppState, ComponentData } from '../types';
+import { createContext, useContext, useEffect, useState } from '../react-shim.js';
+import { AppStore, useAppStoreApi } from '../store';
+import { GetPermissions, RefreshPermissions } from '../store/slices/permissions';
+import { HistorySlice } from '../store/slices/history';
+import { createStore, StoreApi, useStore } from '@octanejs/zustand';
+import { makeStatePublic } from './data/make-state-public';
+import { getItem, ItemSelector } from './data/get-item';
+import { getSelectorForId } from './get-selector-for-id';
 
 export type UsePuckData<
-  UserConfig extends Config = Config,
-  G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>
+	UserConfig extends Config = Config,
+	G extends UserGenerics<UserConfig> = UserGenerics<UserConfig>,
 > = {
-  appState: G["UserPublicAppState"];
-  config: UserConfig;
-  dispatch: AppStore["dispatch"];
-  getPermissions: GetPermissions<UserConfig>;
-  refreshPermissions: RefreshPermissions<UserConfig>;
-  selectedItem: G["UserComponentData"] | null;
-  getItemBySelector: (
-    selector: ItemSelector
-  ) => G["UserComponentData"] | undefined;
-  getItemById: (id: string) => G["UserComponentData"] | undefined;
-  getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
-  history: {
-    back: HistorySlice["back"];
-    forward: HistorySlice["forward"];
-    setHistories: HistorySlice["setHistories"];
-    setHistoryIndex: HistorySlice["setHistoryIndex"];
-    histories: HistorySlice["histories"];
-    index: HistorySlice["index"];
-    hasPast: boolean;
-    hasFuture: boolean;
-  };
+	appState: G['UserPublicAppState'];
+	config: UserConfig;
+	dispatch: AppStore['dispatch'];
+	getPermissions: GetPermissions<UserConfig>;
+	refreshPermissions: RefreshPermissions<UserConfig>;
+	selectedItem: G['UserComponentData'] | null;
+	getItemBySelector: (selector: ItemSelector) => G['UserComponentData'] | undefined;
+	getItemById: (id: string) => G['UserComponentData'] | undefined;
+	getSelectorForId: (id: string) => Required<ItemSelector> | undefined;
+	history: {
+		back: HistorySlice['back'];
+		forward: HistorySlice['forward'];
+		setHistories: HistorySlice['setHistories'];
+		setHistoryIndex: HistorySlice['setHistoryIndex'];
+		histories: HistorySlice['histories'];
+		index: HistorySlice['index'];
+		hasPast: boolean;
+		hasFuture: boolean;
+	};
 };
 
-export type PuckApi<UserConfig extends Config = Config> =
-  UsePuckData<UserConfig>;
+export type PuckApi<UserConfig extends Config = Config> = UsePuckData<UserConfig>;
 
 type UsePuckStore<UserConfig extends Config = Config> = PuckApi<UserConfig>;
 
 type PickedStore = Pick<
-  AppStore,
-  "config" | "dispatch" | "selectedItem" | "permissions" | "history" | "state"
+	AppStore,
+	'config' | 'dispatch' | 'selectedItem' | 'permissions' | 'history' | 'state'
 >;
 
 export const generateUsePuck = (store: PickedStore): UsePuckStore => {
-  const history: UsePuckStore["history"] = {
-    back: store.history.back,
-    forward: store.history.forward,
-    setHistories: store.history.setHistories,
-    setHistoryIndex: store.history.setHistoryIndex,
-    hasPast: store.history.hasPast(),
-    hasFuture: store.history.hasFuture(),
-    histories: store.history.histories,
-    index: store.history.index,
-  };
+	const history: UsePuckStore['history'] = {
+		back: store.history.back,
+		forward: store.history.forward,
+		setHistories: store.history.setHistories,
+		setHistoryIndex: store.history.setHistoryIndex,
+		hasPast: store.history.hasPast(),
+		hasFuture: store.history.hasFuture(),
+		histories: store.history.histories,
+		index: store.history.index,
+	};
 
-  const storeData: PuckApi = {
-    appState: makeStatePublic(store.state),
-    config: store.config,
-    dispatch: store.dispatch,
-    getPermissions: store.permissions.getPermissions,
-    refreshPermissions: store.permissions.refreshPermissions,
-    history,
-    selectedItem: store.selectedItem || null,
-    getItemBySelector: (selector) => getItem(selector, store.state),
-    getItemById: (id) => store.state.indexes.nodes[id].data,
-    getSelectorForId: (id) => getSelectorForId(store.state, id),
-  };
+	const storeData: PuckApi = {
+		appState: makeStatePublic(store.state),
+		config: store.config,
+		dispatch: store.dispatch,
+		getPermissions: store.permissions.getPermissions,
+		refreshPermissions: store.permissions.refreshPermissions,
+		history,
+		selectedItem: store.selectedItem || null,
+		getItemBySelector: (selector) => getItem(selector, store.state),
+		getItemById: (id) => store.state.indexes.nodes[id].data,
+		getSelectorForId: (id) => getSelectorForId(store.state, id),
+	};
 
-  return storeData;
+	return storeData;
 };
 
-export const UsePuckStoreContext = createContext<StoreApi<UsePuckStore> | null>(
-  null
-);
+export const UsePuckStoreContext = createContext<StoreApi<UsePuckStore> | null>(null);
 
 const convertToPickedStore = (store: AppStore): PickedStore => {
-  return {
-    state: store.state,
-    config: store.config,
-    dispatch: store.dispatch,
-    permissions: store.permissions,
-    history: store.history,
-    selectedItem: store.selectedItem,
-  };
+	return {
+		state: store.state,
+		config: store.config,
+		dispatch: store.dispatch,
+		permissions: store.permissions,
+		history: store.history,
+		selectedItem: store.selectedItem,
+	};
 };
 
 /**
  * Mirror changes in appStore to usePuckStore
  */
-export const useRegisterUsePuckStore = (
-  appStore: ReturnType<typeof useAppStoreApi>
-) => {
-  const [usePuckStore] = useState(() =>
-    createStore(() =>
-      generateUsePuck(convertToPickedStore(appStore.getState()))
-    )
-  );
+export const useRegisterUsePuckStore = (appStore: ReturnType<typeof useAppStoreApi>) => {
+	const [usePuckStore] = useState(() =>
+		createStore(() => generateUsePuck(convertToPickedStore(appStore.getState()))),
+	);
 
-  useEffect(() => {
-    // Subscribe here isn't doing anything as selection isn't shallow
-    return appStore.subscribe(
-      (store) => convertToPickedStore(store),
-      (pickedStore) => {
-        usePuckStore.setState(generateUsePuck(pickedStore));
-      }
-    );
-  }, []);
+	useEffect(() => {
+		// Subscribe here isn't doing anything as selection isn't shallow
+		return appStore.subscribe(
+			(store) => convertToPickedStore(store),
+			(pickedStore) => {
+				usePuckStore.setState(generateUsePuck(pickedStore));
+			},
+		);
+	}, []);
 
-  return usePuckStore;
+	return usePuckStore;
 };
 
 /**
@@ -126,32 +114,32 @@ export const useRegisterUsePuckStore = (
  * @returns a typed usePuck function
  */
 export function createUsePuck<UserConfig extends Config = Config>() {
-  return function usePuck<T = PuckApi<UserConfig>>(
-    selector: (state: UsePuckStore<UserConfig>) => T
-  ): T {
-    const usePuckApi = useContext(UsePuckStoreContext);
+	return function usePuck<T = PuckApi<UserConfig>>(
+		selector: (state: UsePuckStore<UserConfig>) => T,
+	): T {
+		const usePuckApi = useContext(UsePuckStoreContext);
 
-    if (!usePuckApi) {
-      throw new Error("usePuck must be used inside <Puck>.");
-    }
+		if (!usePuckApi) {
+			throw new Error('usePuck must be used inside <Puck>.');
+		}
 
-    const result = useStore(
-      usePuckApi as unknown as StoreApi<UsePuckStore<UserConfig>>,
-      selector ?? ((s) => s as T)
-    );
+		const result = useStore(
+			usePuckApi as unknown as StoreApi<UsePuckStore<UserConfig>>,
+			selector ?? ((s) => s as T),
+		);
 
-    return result;
-  };
+		return result;
+	};
 }
 
 export function usePuck<UserConfig extends Config = Config>() {
-  useEffect(() => {
-    console.warn(
-      "You're using the `usePuck` method without a selector, which may cause unnecessary re-renders. Replace with `createUsePuck` and provide a selector for improved performance."
-    );
-  }, []);
+	useEffect(() => {
+		console.warn(
+			"You're using the `usePuck` method without a selector, which may cause unnecessary re-renders. Replace with `createUsePuck` and provide a selector for improved performance.",
+		);
+	}, []);
 
-  return createUsePuck<UserConfig>()((s) => s);
+	return createUsePuck<UserConfig>()((s) => s);
 }
 
 /**
@@ -160,11 +148,11 @@ export function usePuck<UserConfig extends Config = Config>() {
  * @returns PuckApi
  */
 export function useGetPuck() {
-  const usePuckApi = useContext(UsePuckStoreContext);
+	const usePuckApi = useContext(UsePuckStoreContext);
 
-  if (!usePuckApi) {
-    throw new Error("usePuckGet must be used inside <Puck>.");
-  }
+	if (!usePuckApi) {
+		throw new Error('usePuckGet must be used inside <Puck>.');
+	}
 
-  return usePuckApi.getState;
+	return usePuckApi.getState;
 }

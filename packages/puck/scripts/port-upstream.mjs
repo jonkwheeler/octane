@@ -20,9 +20,7 @@ const CORE_INDEX = join(upstreamRoot, 'bundle', 'core.ts');
 const LEGACY_INDEX = join(upstreamRoot, 'src', 'index.ts');
 
 if (!upstreamRoot || (!existsSync(CORE_INDEX) && !existsSync(LEGACY_INDEX))) {
-	console.error(
-		'Usage: node port-upstream.mjs <path-to-puck/packages/core>',
-	);
+	console.error('Usage: node port-upstream.mjs <path-to-puck/packages/core>');
 	process.exit(1);
 }
 
@@ -63,16 +61,28 @@ function transformSource(text, destRel) {
 		/import type \{([^}]+)\} from "react";/g,
 		`import type {$1} from "${shimPath}";`,
 	);
-	out = out.replace(/import React, \{([^}]+)\} from 'react';/g, `import React, {$1} from '${shimPath}';`);
-	out = out.replace(/import React, \{([^}]+)\} from "react";/g, `import React, {$1} from "${shimPath}";`);
+	out = out.replace(
+		/import React, \{([^}]+)\} from 'react';/g,
+		`import React, {$1} from '${shimPath}';`,
+	);
+	out = out.replace(
+		/import React, \{([^}]+)\} from "react";/g,
+		`import React, {$1} from "${shimPath}";`,
+	);
 	out = out.replace(/import React from 'react';/g, `import React from '${shimPath}';`);
 	out = out.replace(/import React from "react";/g, `import React from "${shimPath}";`);
-	out = out.replace(/import \{([^}]+)\} from 'react';/g, function replaceReactImport(_match, imports) {
-		return `import {${imports}} from '${shimPath}';`;
-	});
-	out = out.replace(/import \{([^}]+)\} from "react";/g, function replaceReactImport(_match, imports) {
-		return `import {${imports}} from "${shimPath}";`;
-	});
+	out = out.replace(
+		/import \{([^}]+)\} from 'react';/g,
+		function replaceReactImport(_match, imports) {
+			return `import {${imports}} from '${shimPath}';`;
+		},
+	);
+	out = out.replace(
+		/import \{([^}]+)\} from "react";/g,
+		function replaceReactImport(_match, imports) {
+			return `import {${imports}} from "${shimPath}";`;
+		},
+	);
 	out = out.replace(/from 'react'/g, `from '${shimPath}'`);
 	out = out.replace(/from "react"/g, `from "${shimPath}"`);
 	out = out.replace(/from 'zustand\/react\/shallow'/g, "from '@octanejs/zustand/shallow'");

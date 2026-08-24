@@ -1,9 +1,9 @@
-import { OctaneNode } from "octane";
+import { OctaneNode } from 'octane';
 
-import { useComponentsContext } from "../../editor/ComponentsContext.js";
-import { AddBlockButton } from "./DefaultButtons/AddBlockButton.js";
-import { DragHandleButton } from "./DefaultButtons/DragHandleButton.js";
-import { SideMenuProps } from "./SideMenuProps.js";
+import { useComponentsContext } from '../../editor/ComponentsContext.js';
+import { AddBlockButton } from './DefaultButtons/AddBlockButton.js';
+import { DragHandleButton } from './DefaultButtons/DragHandleButton.js';
+import { SideMenuProps } from './SideMenuProps.js';
 
 // TODO: props.dragHandleMenu should only be available if no children are passed
 /**
@@ -15,16 +15,13 @@ import { SideMenuProps } from "./SideMenuProps.js";
  * - Custom buttons: The `SideMenuButton` component.
  */
 export const SideMenu = (props: SideMenuProps & { children?: OctaneNode }) => {
-  const Components = useComponentsContext()!;
+	const Components = useComponentsContext()!;
 
-  return (
-    <Components.SideMenu.Root className={"bn-side-menu"}>
-      {props.children || (
-        <>
-          <AddBlockButton />
-          <DragHandleButton dragHandleMenu={props.dragHandleMenu} />
-        </>
-      )}
-    </Components.SideMenu.Root>
-  );
+	return <Components.SideMenu.Root className="bn-side-menu">
+		{props.children ||
+			<>
+				<AddBlockButton />
+				<DragHandleButton dragHandleMenu={props.dragHandleMenu} />
+			</>}
+	</Components.SideMenu.Root>;
 };

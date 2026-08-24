@@ -1,5 +1,5 @@
-import { useEffect } from "octane";
-import { useBlockNoteEditor } from "./useBlockNoteEditor.js";
+import { useEffect } from 'octane';
+import { useBlockNoteEditor } from './useBlockNoteEditor.js';
 
 /**
  * Subscribes to file upload completion events. The callback is invoked whenever
@@ -10,9 +10,9 @@ import { useBlockNoteEditor } from "./useBlockNoteEditor.js";
  * `blockId` of the block whose upload finished, if available.
  */
 export function useOnUploadEnd(callback: (blockId?: string) => void) {
-  const editor = useBlockNoteEditor();
+	const editor = useBlockNoteEditor();
 
-  useEffect(() => {
-    return editor.onUploadEnd(callback);
-  }, [callback, editor]);
+	useEffect(() => {
+		return editor.onUploadEnd(callback);
+	}, [callback, editor]);
 }

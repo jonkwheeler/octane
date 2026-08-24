@@ -16,29 +16,40 @@ const win = typeof window !== 'undefined' ? window : undefined;
  *
  * @internal
  */
-export function useGlobalKeyHandler({
-  deleteKeyCode,
-  multiSelectionKeyCode,
-}: {
-  deleteKeyCode: KeyCode | null;
-  multiSelectionKeyCode: KeyCode | null;
-}, ...rest: [slot?: symbol]): void  {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
-  const { deleteElements } = useReactFlow(slot);
+export function useGlobalKeyHandler(
+	{
+		deleteKeyCode,
+		multiSelectionKeyCode,
+	}: {
+		deleteKeyCode: KeyCode | null;
+		multiSelectionKeyCode: KeyCode | null;
+	},
+	...rest: [slot?: symbol]
+): void {
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
+	const { deleteElements } = useReactFlow(slot);
 
-  const deleteKeyPressed = useKeyPress(deleteKeyCode, { actInsideInputWithModifier: false }, slot);
-  const multiSelectionKeyPressed = useKeyPress(multiSelectionKeyCode, { target: win }, slot);
+	const deleteKeyPressed = useKeyPress(deleteKeyCode, { actInsideInputWithModifier: false }, slot);
+	const multiSelectionKeyPressed = useKeyPress(multiSelectionKeyCode, { target: win }, slot);
 
-  useEffect(function handleDeleteKey() {
-    if (deleteKeyPressed) {
-      const { edges, nodes } = store.getState();
-      deleteElements({ nodes: nodes.filter(selected), edges: edges.filter(selected) });
-      store.setState({ nodesSelectionActive: false });
-    }
-  }, [deleteKeyPressed], slot);
+	useEffect(
+		function handleDeleteKey() {
+			if (deleteKeyPressed) {
+				const { edges, nodes } = store.getState();
+				deleteElements({ nodes: nodes.filter(selected), edges: edges.filter(selected) });
+				store.setState({ nodesSelectionActive: false });
+			}
+		},
+		[deleteKeyPressed],
+		slot,
+	);
 
-  useEffect(function handleMultiSelectionKey() {
-    store.setState({ multiSelectionActive: multiSelectionKeyPressed });
-  }, [multiSelectionKeyPressed], slot);
+	useEffect(
+		function handleMultiSelectionKey() {
+			store.setState({ multiSelectionActive: multiSelectionKeyPressed });
+		},
+		[multiSelectionKeyPressed],
+		slot,
+	);
 }

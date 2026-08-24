@@ -9,38 +9,45 @@ import { useStoreApi } from '../hooks/useStore';
  *
  * @internal
  */
-export function useResizeHandler(domNode: RefObject<HTMLDivElement | null>, ...rest: [slot?: symbol]): void  {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
+export function useResizeHandler(
+	domNode: RefObject<HTMLDivElement | null>,
+	...rest: [slot?: symbol]
+): void {
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
 
-  useEffect(function observeResize() {
-    const updateDimensions = () => {
-      if (!domNode.current || !(domNode.current.checkVisibility?.() ?? true)) {
-        return false;
-      }
-      const size = getDimensions(domNode.current);
+	useEffect(
+		function observeResize() {
+			const updateDimensions = () => {
+				if (!domNode.current || !(domNode.current.checkVisibility?.() ?? true)) {
+					return false;
+				}
+				const size = getDimensions(domNode.current);
 
-      if (size.height === 0 || size.width === 0) {
-        store.getState().onError?.('004', errorMessages['error004']());
-      }
+				if (size.height === 0 || size.width === 0) {
+					store.getState().onError?.('004', errorMessages['error004']());
+				}
 
-      store.setState({ width: size.width || 500, height: size.height || 500 });
-    };
+				store.setState({ width: size.width || 500, height: size.height || 500 });
+			};
 
-    if (domNode.current) {
-      updateDimensions();
-      window.addEventListener('resize', updateDimensions);
+			if (domNode.current) {
+				updateDimensions();
+				window.addEventListener('resize', updateDimensions);
 
-      const resizeObserver = new ResizeObserver(() => updateDimensions());
-      resizeObserver.observe(domNode.current);
+				const resizeObserver = new ResizeObserver(() => updateDimensions());
+				resizeObserver.observe(domNode.current);
 
-      return () => {
-        window.removeEventListener('resize', updateDimensions);
+				return () => {
+					window.removeEventListener('resize', updateDimensions);
 
-        if (resizeObserver && domNode.current) {
-          resizeObserver.unobserve(domNode.current);
-        }
-      };
-    }
-  }, [], slot);
+					if (resizeObserver && domNode.current) {
+						resizeObserver.unobserve(domNode.current);
+					}
+				};
+			}
+		},
+		[],
+		slot,
+	);
 }

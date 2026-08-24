@@ -1,20 +1,20 @@
-import { useCallback } from "../react-shim.js";
-import { useHotkey } from "./use-hotkey";
-import { useAppStoreApi } from "../store";
+import { useCallback } from '../react-shim.js';
+import { useHotkey } from './use-hotkey';
+import { useAppStoreApi } from '../store';
 
 export const usePreviewModeHotkeys = () => {
-  const appStore = useAppStoreApi();
-  const toggleInteractive = useCallback(() => {
-    const dispatch = appStore.getState().dispatch;
+	const appStore = useAppStoreApi();
+	const toggleInteractive = useCallback(() => {
+		const dispatch = appStore.getState().dispatch;
 
-    dispatch({
-      type: "setUi",
-      ui: (ui) => ({
-        previewMode: ui.previewMode === "edit" ? "interactive" : "edit",
-      }),
-    });
-  }, [appStore]);
+		dispatch({
+			type: 'setUi',
+			ui: (ui) => ({
+				previewMode: ui.previewMode === 'edit' ? 'interactive' : 'edit',
+			}),
+		});
+	}, [appStore]);
 
-  useHotkey({ meta: true, i: true }, toggleInteractive);
-  useHotkey({ ctrl: true, i: true }, toggleInteractive); // Windows
+	useHotkey({ meta: true, i: true }, toggleInteractive);
+	useHotkey({ ctrl: true, i: true }, toggleInteractive); // Windows
 };

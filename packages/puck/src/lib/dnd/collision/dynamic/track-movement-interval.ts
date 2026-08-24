@@ -1,21 +1,21 @@
-import { Point } from "@dnd-kit/geometry";
-import { getDirection } from "./get-direction";
-import { Direction, DragAxis } from "../../../../types";
+import { Point } from '@dnd-kit/geometry';
+import { getDirection } from './get-direction';
+import { Direction, DragAxis } from '../../../../types';
 
 type Interval = {
-  current: Point;
-  delta: Point;
-  previous: Point;
-  direction: Direction;
+	current: Point;
+	delta: Point;
+	previous: Point;
+	direction: Direction;
 };
 
 const INTERVAL_SENSITIVITY = 10;
 
 const intervalCache: Interval = {
-  current: { x: 0, y: 0 },
-  delta: { x: 0, y: 0 },
-  previous: { x: 0, y: 0 },
-  direction: null,
+	current: { x: 0, y: 0 },
+	delta: { x: 0, y: 0 },
+	previous: { x: 0, y: 0 },
+	direction: null,
 };
 
 /**
@@ -31,26 +31,22 @@ const intervalCache: Interval = {
  *
  * @returns Current movement interval
  */
-export const trackMovementInterval = (
-  point: Point,
-  dragAxis: DragAxis = "dynamic"
-) => {
-  intervalCache.current = point;
+export const trackMovementInterval = (point: Point, dragAxis: DragAxis = 'dynamic') => {
+	intervalCache.current = point;
 
-  intervalCache.delta = {
-    x: point.x - intervalCache.previous.x,
-    y: point.y - intervalCache.previous.y,
-  };
+	intervalCache.delta = {
+		x: point.x - intervalCache.previous.x,
+		y: point.y - intervalCache.previous.y,
+	};
 
-  intervalCache.direction =
-    getDirection(dragAxis, intervalCache.delta) || intervalCache.direction;
+	intervalCache.direction = getDirection(dragAxis, intervalCache.delta) || intervalCache.direction;
 
-  if (
-    Math.abs(intervalCache.delta.x) > INTERVAL_SENSITIVITY ||
-    Math.abs(intervalCache.delta.y) > INTERVAL_SENSITIVITY
-  ) {
-    intervalCache.previous = Point.from(point);
-  }
+	if (
+		Math.abs(intervalCache.delta.x) > INTERVAL_SENSITIVITY ||
+		Math.abs(intervalCache.delta.y) > INTERVAL_SENSITIVITY
+	) {
+		intervalCache.previous = Point.from(point);
+	}
 
-  return intervalCache;
+	return intervalCache;
 };

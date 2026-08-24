@@ -1,7 +1,7 @@
 // CHECKPOINT: manual review required — TipTap/react-dom integration boundary
-import { Block, getBlockFromPos } from "@blocknote/core";
-import type { NodeViewProps } from "@octanejs/tiptap";
-import { useRef } from "octane";
+import { Block, getBlockFromPos } from '@blocknote/core';
+import type { NodeViewProps } from '@octanejs/tiptap';
+import { useRef } from 'octane';
 
 /**
  * Resolves the `Block` that a React node view should render.
@@ -32,27 +32,27 @@ import { useRef } from "octane";
  * See BlockNote issues #2937, #2682 and #2621.
  */
 export function useNodeViewBlock(
-  props: NodeViewProps,
-  /**
-   * The block core's `addNodeView` resolved when the node view was constructed
-   * — via `getBlockFromNodeView`, so it is already guarded against the same
-   * problem. Seeds the fallback so there is always a block to render.
-   */
-  initialBlock: Block<any, any, any>,
+	props: NodeViewProps,
+	/**
+	 * The block core's `addNodeView` resolved when the node view was constructed
+	 * — via `getBlockFromNodeView`, so it is already guarded against the same
+	 * problem. Seeds the fallback so there is always a block to render.
+	 */
+	initialBlock: Block<any, any, any>,
 ): Block<any, any, any> {
-  const lastBlockRef = useRef(initialBlock);
-  const doc = props.view.state.doc;
+	const lastBlockRef = useRef(initialBlock);
+	const doc = props.view.state.doc;
 
-  try {
-    // Deliberate render-phase write: a monotonic "last good value" cache, so a
-    // repeated render (e.g. StrictMode's double invoke) recomputes the same
-    // thing.
-    lastBlockRef.current = getBlockFromPos(props.getPos, doc);
-  } catch {
-    // Expected and self-correcting, so deliberately silent: ProseMirror
-    // re-renders the node view with a usable position immediately after, and
-    // there is nothing a consumer could do about it in the meantime.
-  }
+	try {
+		// Deliberate render-phase write: a monotonic "last good value" cache, so a
+		// repeated render (e.g. StrictMode's double invoke) recomputes the same
+		// thing.
+		lastBlockRef.current = getBlockFromPos(props.getPos, doc);
+	} catch {
+		// Expected and self-correcting, so deliberately silent: ProseMirror
+		// re-renders the node view with a usable position immediately after, and
+		// there is nothing a consumer could do about it in the meantime.
+	}
 
-  return lastBlockRef.current;
+	return lastBlockRef.current;
 }

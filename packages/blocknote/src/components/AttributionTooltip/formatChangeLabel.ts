@@ -1,4 +1,4 @@
-import { Dictionary } from "@blocknote/core";
+import { Dictionary } from '@blocknote/core';
 
 /**
  * The change context a {@link FormatChangeLabel} receives: the changed format
@@ -9,10 +9,10 @@ import { Dictionary } from "@blocknote/core";
  * its styling.
  */
 export type FormatChangeInfo = {
-  /** The changed format keys, e.g. `["bold", "italic"]`. May be empty. */
-  format: string[];
-  /** The active editor dictionary, for localizing the label. */
-  dictionary: Dictionary;
+	/** The changed format keys, e.g. `["bold", "italic"]`. May be empty. */
+	format: string[];
+	/** The active editor dictionary, for localizing the label. */
+	dictionary: Dictionary;
 };
 
 /**
@@ -30,26 +30,23 @@ export type FormatChangeLabel = (info: FormatChangeInfo) => string;
  * `", "`. Falls back to the generic `"Formatting Change"` string when there are
  * no keys or any key is missing a toolbar translation.
  */
-export const defaultFormatChangeLabel: FormatChangeLabel = ({
-  format,
-  dictionary,
-}) => {
-  const fallback = dictionary.suggestion_changes.formatting_change;
-  if (format.length === 0) {
-    return fallback;
-  }
-  const toolbar = dictionary.formatting_toolbar as Record<string, unknown>;
-  const names: string[] = [];
-  for (const key of format) {
-    const entry = toolbar[key];
-    const tooltip =
-      entry && typeof entry === "object" && "tooltip" in entry
-        ? (entry as { tooltip: unknown }).tooltip
-        : undefined;
-    if (typeof tooltip !== "string") {
-      return fallback;
-    }
-    names.push(tooltip);
-  }
-  return names.join(", ");
+export const defaultFormatChangeLabel: FormatChangeLabel = ({ format, dictionary }) => {
+	const fallback = dictionary.suggestion_changes.formatting_change;
+	if (format.length === 0) {
+		return fallback;
+	}
+	const toolbar = dictionary.formatting_toolbar as Record<string, unknown>;
+	const names: string[] = [];
+	for (const key of format) {
+		const entry = toolbar[key];
+		const tooltip =
+			entry && typeof entry === 'object' && 'tooltip' in entry
+				? (entry as { tooltip: unknown }).tooltip
+				: undefined;
+		if (typeof tooltip !== 'string') {
+			return fallback;
+		}
+		names.push(tooltip);
+	}
+	return names.join(', ');
 };

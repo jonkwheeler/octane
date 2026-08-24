@@ -1,64 +1,64 @@
-import { useState } from "../../react-shim.js";
-import { PointerSensor } from "@octanejs/dnd-kit";
-import { isElement } from "@dnd-kit/dom/utilities";
-import { type Distance } from "@dnd-kit/geometry";
+import { useState } from '../../react-shim.js';
+import { PointerSensor } from '@octanejs/dnd-kit';
+import { isElement } from '@dnd-kit/dom/utilities';
+import { type Distance } from '@dnd-kit/geometry';
 
 export interface DelayConstraint {
-  value: number;
-  tolerance: Distance;
+	value: number;
+	tolerance: Distance;
 }
 
 export interface DistanceConstraint {
-  value: Distance;
-  tolerance?: Distance;
+	value: Distance;
+	tolerance?: Distance;
 }
 
 export interface ActivationConstraints {
-  distance?: DistanceConstraint;
-  delay?: DelayConstraint;
+	distance?: DistanceConstraint;
+	delay?: DelayConstraint;
 }
 
 const touchDefault = { delay: { value: 200, tolerance: 10 } };
 const otherDefault = {
-  delay: { value: 200, tolerance: 10 },
-  distance: { value: 5 },
+	delay: { value: 200, tolerance: 10 },
+	distance: { value: 5 },
 };
 
 export const useSensors = (
-  {
-    other = otherDefault,
-    mouse,
-    touch = touchDefault,
-  }: {
-    mouse?: ActivationConstraints;
-    touch?: ActivationConstraints;
-    other?: ActivationConstraints;
-  } = {
-    touch: touchDefault,
-    other: otherDefault,
-  }
+	{
+		other = otherDefault,
+		mouse,
+		touch = touchDefault,
+	}: {
+		mouse?: ActivationConstraints;
+		touch?: ActivationConstraints;
+		other?: ActivationConstraints;
+	} = {
+		touch: touchDefault,
+		other: otherDefault,
+	},
 ) => {
-  const [sensors] = useState(() => [
-    PointerSensor.configure({
-      activationConstraints(event, source) {
-        const { pointerType, target } = event;
+	const [sensors] = useState(() => [
+		PointerSensor.configure({
+			activationConstraints(event, source) {
+				const { pointerType, target } = event;
 
-        if (
-          pointerType === "mouse" &&
-          isElement(target) &&
-          (source.handle === target || source.handle?.contains(target))
-        ) {
-          return mouse;
-        }
+				if (
+					pointerType === 'mouse' &&
+					isElement(target) &&
+					(source.handle === target || source.handle?.contains(target))
+				) {
+					return mouse;
+				}
 
-        if (pointerType === "touch") {
-          return touch;
-        }
+				if (pointerType === 'touch') {
+					return touch;
+				}
 
-        return other;
-      },
-    }),
-  ]);
+				return other;
+			},
+		}),
+	]);
 
-  return sensors;
+	return sensors;
 };

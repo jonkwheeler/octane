@@ -1,15 +1,15 @@
-import { useMemo } from "../react-shim.js";
-import { loadOverrides } from "./load-overrides";
-import { Overrides, Plugin } from "../types";
+import { useMemo } from '../react-shim.js';
+import { loadOverrides } from './load-overrides';
+import { Overrides, Plugin } from '../types';
 
 export const useLoadedOverrides = ({
-  overrides,
-  plugins,
+	overrides,
+	plugins,
 }: {
-  overrides?: Partial<Overrides>;
-  plugins?: Plugin[];
+	overrides?: Partial<Overrides>;
+	plugins?: Plugin[];
 }) => {
-  return useMemo(() => {
-    return loadOverrides({ overrides, plugins });
-  }, [plugins, overrides]);
+	return useMemo(() => {
+		return loadOverrides({ overrides, plugins });
+	}, [plugins, overrides]);
 };

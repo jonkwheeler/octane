@@ -1,6 +1,6 @@
-import type { BlockNoteEditor } from "@blocknote/core";
-import { useEffect } from "octane";
-import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
+import type { BlockNoteEditor } from '@blocknote/core';
+import { useEffect } from 'octane';
+import { useBlockNoteContext } from '../editor/BlockNoteContext.js';
 
 /**
  * Subscribes to editor selection changes. The callback is invoked whenever the
@@ -14,21 +14,21 @@ import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
  * when the selection is changed by a remote collaborator. Defaults to `false`.
  */
 export function useEditorSelectionChange(
-  callback: () => void,
-  editor?: BlockNoteEditor<any, any, any>,
-  includeSelectionChangedByRemote?: boolean,
+	callback: () => void,
+	editor?: BlockNoteEditor<any, any, any>,
+	includeSelectionChangedByRemote?: boolean,
 ) {
-  const editorContext = useBlockNoteContext();
-  if (!editor) {
-    editor = editorContext?.editor;
-  }
+	const editorContext = useBlockNoteContext();
+	if (!editor) {
+		editor = editorContext?.editor;
+	}
 
-  useEffect(() => {
-    if (!editor) {
-      throw new Error(
-        "'editor' is required, either from BlockNoteContext or as a function argument",
-      );
-    }
-    return editor.onSelectionChange(callback, includeSelectionChangedByRemote);
-  }, [callback, editor, includeSelectionChangedByRemote]);
+	useEffect(() => {
+		if (!editor) {
+			throw new Error(
+				"'editor' is required, either from BlockNoteContext or as a function argument",
+			);
+		}
+		return editor.onSelectionChange(callback, includeSelectionChangedByRemote);
+	}, [callback, editor, includeSelectionChangedByRemote]);
 }

@@ -1,5 +1,5 @@
-import { Shape } from "@dnd-kit/geometry";
-import { Direction } from "../../../../types";
+import { Shape } from '@dnd-kit/geometry';
+import { Direction } from '../../../../types';
 
 /**
  * Determine whether or not the leading edge of the dragShape (the edge that is on
@@ -13,26 +13,26 @@ import { Direction } from "../../../../types";
  * @returns A boolean describingw hether or not the leadingEdge of the dragShape is over the mid-point of the dropShape
  */
 export const getMidpointImpact = (
-  dragShape: Shape,
-  dropShape: Shape,
-  direction: Direction,
-  offsetMultiplier: number = 0
+	dragShape: Shape,
+	dropShape: Shape,
+	direction: Direction,
+	offsetMultiplier: number = 0,
 ): Boolean => {
-  const dragRect = dragShape.boundingRectangle;
-  const dropCenter = dropShape.center;
+	const dragRect = dragShape.boundingRectangle;
+	const dropCenter = dropShape.center;
 
-  if (direction === "down") {
-    const offset = offsetMultiplier * dropShape.boundingRectangle.height;
-    return dragRect.bottom >= dropCenter.y + offset;
-  } else if (direction === "up") {
-    const offset = offsetMultiplier * dropShape.boundingRectangle.height;
-    return dragRect.top < dropCenter.y - offset;
-  } else if (direction === "left") {
-    const offset = offsetMultiplier * dropShape.boundingRectangle.width;
-    return dropCenter.x - offset >= dragRect.left;
-  }
+	if (direction === 'down') {
+		const offset = offsetMultiplier * dropShape.boundingRectangle.height;
+		return dragRect.bottom >= dropCenter.y + offset;
+	} else if (direction === 'up') {
+		const offset = offsetMultiplier * dropShape.boundingRectangle.height;
+		return dragRect.top < dropCenter.y - offset;
+	} else if (direction === 'left') {
+		const offset = offsetMultiplier * dropShape.boundingRectangle.width;
+		return dropCenter.x - offset >= dragRect.left;
+	}
 
-  // direction === "right"
-  const offset = offsetMultiplier * dropShape.boundingRectangle.width;
-  return dragRect.right - offset >= dropCenter.x;
+	// direction === "right"
+	const offset = offsetMultiplier * dropShape.boundingRectangle.width;
+	return dragRect.right - offset >= dropCenter.x;
 };

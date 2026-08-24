@@ -32,7 +32,10 @@ function patchHookFile(path) {
 		/export function (\w+)(<[^>]*>)?\(([^)]*)\)(\s*:\s*[^{]+)?\{/g,
 		function replaceExport(match, name, generics, params, ret) {
 			if (params.includes('...rest') || params.includes('_slot')) return match;
-			const nextParams = params.trim().length > 0 ? `${params}, ...rest: [slot?: symbol]` : '...rest: [slot?: symbol]';
+			const nextParams =
+				params.trim().length > 0
+					? `${params}, ...rest: [slot?: symbol]`
+					: '...rest: [slot?: symbol]';
 			return `export function ${name}${generics ?? ''}(${nextParams})${ret ?? ''} {\n  const slot = resolveHookSlot(rest);`;
 		},
 	);

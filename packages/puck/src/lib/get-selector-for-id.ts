@@ -1,13 +1,13 @@
-import { PrivateAppState } from "../types/Internal";
+import { PrivateAppState } from '../types/Internal';
 
 export const getSelectorForId = (state: PrivateAppState, id: string) => {
-  const node = state.indexes.nodes[id];
+	const node = state.indexes.nodes[id];
 
-  if (!node) return;
+	if (!node) return;
 
-  const zoneCompound = `${node.parentId}:${node.zone}`;
+	const zoneCompound = `${node.parentId}:${node.zone}`;
 
-  const index = state.indexes.zones[zoneCompound].contentIds.indexOf(id);
+	const index = state.indexes.zones[zoneCompound].contentIds.indexOf(id);
 
-  return { zone: zoneCompound, index };
+	return { zone: zoneCompound, index };
 };

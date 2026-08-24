@@ -1,24 +1,21 @@
 import {
-  BlockSchema,
-  DefaultBlockSchema,
-  DefaultInlineContentSchema,
-  DefaultStyleSchema,
-  InlineContentSchema,
-  StyleSchema,
-} from "@blocknote/core";
-import { useState } from "octane";
+	BlockSchema,
+	DefaultBlockSchema,
+	DefaultInlineContentSchema,
+	DefaultStyleSchema,
+	InlineContentSchema,
+	StyleSchema,
+} from '@blocknote/core';
+import { useState } from 'octane';
 
-import {
-  ComponentProps,
-  useComponentsContext,
-} from "../../editor/ComponentsContext.js";
-import { useBlockNoteEditor } from "../../hooks/useBlockNoteEditor.js";
-import { useDictionary } from "../../i18n/dictionary.js";
-import { EmbedTab } from "./DefaultTabs/EmbedTab.js";
-import { UploadTab } from "./DefaultTabs/UploadTab.js";
-import { FilePanelProps } from "./FilePanelProps.js";
+import { ComponentProps, useComponentsContext } from '../../editor/ComponentsContext.js';
+import { useBlockNoteEditor } from '../../hooks/useBlockNoteEditor.js';
+import { useDictionary } from '../../i18n/dictionary.js';
+import { EmbedTab } from './DefaultTabs/EmbedTab.js';
+import { UploadTab } from './DefaultTabs/UploadTab.js';
+import { FilePanelProps } from './FilePanelProps.js';
 
-type PanelProps = ComponentProps["FilePanel"]["Root"];
+type PanelProps = ComponentProps['FilePanel']['Root'];
 
 /**
  * By default, the FilePanel component will render with default tabs. However,
@@ -27,48 +24,42 @@ type PanelProps = ComponentProps["FilePanel"]["Root"];
  * using the `FilePanelPanel` component.
  */
 export const FilePanel = <
-  B extends BlockSchema = DefaultBlockSchema,
-  I extends InlineContentSchema = DefaultInlineContentSchema,
-  S extends StyleSchema = DefaultStyleSchema,
->(
-  props: FilePanelProps & Partial<Pick<PanelProps, "defaultOpenTab" | "tabs">>,
-) => {
-  const Components = useComponentsContext()!;
-  const dict = useDictionary();
+	B extends BlockSchema = DefaultBlockSchema,
+	I extends InlineContentSchema = DefaultInlineContentSchema,
+	S extends StyleSchema = DefaultStyleSchema,
+>(props: FilePanelProps & Partial<Pick<PanelProps, 'defaultOpenTab' | 'tabs'>>) => {
+	const Components = useComponentsContext()!;
+	const dict = useDictionary();
 
-  const editor = useBlockNoteEditor<B, I, S>();
+	const editor = useBlockNoteEditor<B, I, S>();
 
-  const [loading, setLoading] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
-  const tabs: PanelProps["tabs"] = props.tabs ?? [
-    ...(editor.uploadFile !== undefined
-      ? [
-          {
-            name: dict.file_panel.upload.title,
-            tabPanel: (
-              <UploadTab blockId={props.blockId} setLoading={setLoading} />
-            ),
-          },
-        ]
-      : []),
-    {
-      name: dict.file_panel.embed.title,
-      tabPanel: <EmbedTab blockId={props.blockId} />,
-    },
-  ];
+	const tabs: PanelProps['tabs'] =
+		props.tabs ??
+			[
+				...(editor.uploadFile !== undefined
+					? [
+							{
+								name: dict.file_panel.upload.title,
+								tabPanel: <UploadTab blockId={props.blockId} setLoading={setLoading} />,
+							},
+						]
+					: []),
+				{
+					name: dict.file_panel.embed.title,
+					tabPanel: <EmbedTab blockId={props.blockId} />,
+				},
+			];
 
-  const [openTab, setOpenTab] = useState<string>(
-    props.defaultOpenTab || tabs[0].name,
-  );
+	const [openTab, setOpenTab] = useState<string>(props.defaultOpenTab || tabs[0].name);
 
-  return (
-    <Components.FilePanel.Root
-      className={"bn-panel"}
-      defaultOpenTab={openTab}
-      openTab={openTab}
-      setOpenTab={setOpenTab}
-      tabs={tabs}
-      loading={loading}
-    />
-  );
+	return <Components.FilePanel.Root
+		className="bn-panel"
+		defaultOpenTab={openTab}
+		openTab={openTab}
+		setOpenTab={setOpenTab}
+		tabs={tabs}
+		loading={loading}
+	/>;
 };

@@ -33,8 +33,8 @@ export const Consumer = NodeIdContext.Consumer;
  *```
  */
 export const useNodeId = (): string | null => {
-  const nodeId = useContext(NodeIdContext);
-  return nodeId;
+	const nodeId = useContext(NodeIdContext);
+	return nodeId;
 };
 
 export default NodeIdContext;

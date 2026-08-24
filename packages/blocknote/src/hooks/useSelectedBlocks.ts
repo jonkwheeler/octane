@@ -1,10 +1,5 @@
-import {
-  BlockNoteEditor,
-  BlockSchema,
-  InlineContentSchema,
-  StyleSchema,
-} from "@blocknote/core";
-import { useEditorState } from "./useEditorState.js";
+import { BlockNoteEditor, BlockSchema, InlineContentSchema, StyleSchema } from '@blocknote/core';
+import { useEditorState } from './useEditorState.js';
 
 /**
  * Returns the blocks that are currently selected in the editor. If no
@@ -17,13 +12,13 @@ import { useEditorState } from "./useEditorState.js";
  * @returns An array of the currently selected blocks.
  */
 export function useSelectedBlocks<
-  BSchema extends BlockSchema,
-  ISchema extends InlineContentSchema,
-  SSchema extends StyleSchema,
+	BSchema extends BlockSchema,
+	ISchema extends InlineContentSchema,
+	SSchema extends StyleSchema,
 >(editor?: BlockNoteEditor<BSchema, ISchema, SSchema>) {
-  return useEditorState({
-    editor,
-    selector: ({ editor }) =>
-      editor.getSelection()?.blocks || [editor.getTextCursorPosition().block],
-  });
+	return useEditorState({
+		editor,
+		selector: ({ editor }) =>
+			editor.getSelection()?.blocks || [editor.getTextCursorPosition().block],
+	});
 }

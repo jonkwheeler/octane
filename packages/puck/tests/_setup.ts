@@ -60,10 +60,13 @@ if (typeof PointerEvent === 'undefined') {
 	vi.stubGlobal('PointerEvent', PointerEventMock);
 }
 
-vi.stubGlobal('requestAnimationFrame', function requestAnimationFrame(callback: FrameRequestCallback) {
-	callback(performance.now());
-	return 1;
-});
+vi.stubGlobal(
+	'requestAnimationFrame',
+	function requestAnimationFrame(callback: FrameRequestCallback) {
+		callback(performance.now());
+		return 1;
+	},
+);
 vi.stubGlobal('cancelAnimationFrame', function cancelAnimationFrame() {});
 
 if (!window.matchMedia) {

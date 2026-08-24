@@ -1,52 +1,43 @@
-import type { BlockNoteEditor } from "@blocknote/core";
-import deepEqual from "fast-deep-equal/es6/react.js";
-import { useDebugValue, useEffect, useLayoutEffect, useState } from "octane";
-import { useSyncExternalStoreWithSelector } from "use-sync-external-store/shim/with-selector";
-import { useBlockNoteContext } from "../editor/BlockNoteContext.js";
+import type { BlockNoteEditor } from '@blocknote/core';
+import deepEqual from 'fast-deep-equal/es6/react.js';
+import { useDebugValue, useEffect, useLayoutEffect, useState } from 'octane';
+import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/with-selector';
+import { useBlockNoteContext } from '../editor/BlockNoteContext.js';
 
-const useIsomorphicLayoutEffect =
-  typeof window !== "undefined" ? useLayoutEffect : useEffect;
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export type EditorStateSnapshot<
-  TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<
-    any,
-    any,
-    any
-  > | null,
+	TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<any, any, any> | null,
 > = {
-  editor: TEditor;
-  transactionNumber: number;
+	editor: TEditor;
+	transactionNumber: number;
 };
 
 export type UseEditorStateOptions<
-  TSelectorResult,
-  TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<
-    any,
-    any,
-    any
-  > | null,
+	TSelectorResult,
+	TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<any, any, any> | null,
 > = {
-  /**
-   * The editor instance. If not provided, will use the editor from BlockNoteContext.
-   */
-  editor?: TEditor;
+	/**
+	 * The editor instance. If not provided, will use the editor from BlockNoteContext.
+	 */
+	editor?: TEditor;
 
-  /**
-   * A selector function to determine the value to compare for re-rendering.
-   */
-  selector: (context: EditorStateSnapshot<TEditor>) => TSelectorResult;
+	/**
+	 * A selector function to determine the value to compare for re-rendering.
+	 */
+	selector: (context: EditorStateSnapshot<TEditor>) => TSelectorResult;
 
-  /**
-   * A custom equality function to determine if the editor should re-render.
-   * @default `deepEqual` from `fast-deep-equal`
-   */
-  equalityFn?: (a: TSelectorResult, b: TSelectorResult | null) => boolean;
+	/**
+	 * A custom equality function to determine if the editor should re-render.
+	 * @default `deepEqual` from `fast-deep-equal`
+	 */
+	equalityFn?: (a: TSelectorResult, b: TSelectorResult | null) => boolean;
 
-  /**
-   * The event to subscribe to.
-   * @default "all"
-   */
-  on?: "all" | "mount" | "selection" | "change";
+	/**
+	 * The event to subscribe to.
+	 * @default "all"
+	 */
+	on?: 'all' | 'mount' | 'selection' | 'change';
 };
 
 /**
@@ -54,107 +45,103 @@ export type UseEditorStateOptions<
  * we need to create a separate instance that is not affected by the component re-renders.
  */
 class EditorStateManager<
-  TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<
-    any,
-    any,
-    any
-  > | null,
+	TEditor extends BlockNoteEditor<any, any, any> | null = BlockNoteEditor<any, any, any> | null,
 > {
-  private transactionNumber = 0;
+	private transactionNumber = 0;
 
-  private lastTransactionNumber = 0;
+	private lastTransactionNumber = 0;
 
-  private lastSnapshot: EditorStateSnapshot<TEditor>;
+	private lastSnapshot: EditorStateSnapshot<TEditor>;
 
-  private editor: TEditor;
+	private editor: TEditor;
 
-  private subscribers = new Set<() => void>();
+	private subscribers = new Set<() => void>();
 
-  constructor(initialEditor: TEditor) {
-    this.editor = initialEditor;
-    this.lastSnapshot = { editor: initialEditor, transactionNumber: 0 };
+	constructor(initialEditor: TEditor) {
+		this.editor = initialEditor;
+		this.lastSnapshot = { editor: initialEditor, transactionNumber: 0 };
 
-    this.getSnapshot = this.getSnapshot.bind(this);
-    this.getServerSnapshot = this.getServerSnapshot.bind(this);
-    this.watch = this.watch.bind(this);
-    this.subscribe = this.subscribe.bind(this);
-  }
+		this.getSnapshot = this.getSnapshot.bind(this);
+		this.getServerSnapshot = this.getServerSnapshot.bind(this);
+		this.watch = this.watch.bind(this);
+		this.subscribe = this.subscribe.bind(this);
+	}
 
-  /**
-   * Get the current editor instance.
-   */
-  getSnapshot(): EditorStateSnapshot<TEditor> {
-    if (this.transactionNumber === this.lastTransactionNumber) {
-      return this.lastSnapshot;
-    }
-    this.lastTransactionNumber = this.transactionNumber;
-    this.lastSnapshot = {
-      editor: this.editor,
-      transactionNumber: this.transactionNumber,
-    };
-    return this.lastSnapshot;
-  }
+	/**
+	 * Get the current editor instance.
+	 */
+	getSnapshot(): EditorStateSnapshot<TEditor> {
+		if (this.transactionNumber === this.lastTransactionNumber) {
+			return this.lastSnapshot;
+		}
+		this.lastTransactionNumber = this.transactionNumber;
+		this.lastSnapshot = {
+			editor: this.editor,
+			transactionNumber: this.transactionNumber,
+		};
+		return this.lastSnapshot;
+	}
 
-  /**
-   * Always disable the editor on the server-side.
-   */
-  getServerSnapshot(): EditorStateSnapshot<null> {
-    return { editor: null, transactionNumber: 0 };
-  }
+	/**
+	 * Always disable the editor on the server-side.
+	 */
+	getServerSnapshot(): EditorStateSnapshot<null> {
+		return { editor: null, transactionNumber: 0 };
+	}
 
-  /**
-   * Subscribe to the editor instance's changes.
-   */
-  subscribe(callback: () => void): () => void {
-    this.subscribers.add(callback);
-    return () => {
-      this.subscribers.delete(callback);
-    };
-  }
+	/**
+	 * Subscribe to the editor instance's changes.
+	 */
+	subscribe(callback: () => void): () => void {
+		this.subscribers.add(callback);
+		return () => {
+			this.subscribers.delete(callback);
+		};
+	}
 
-  /**
-   * Watch the editor instance for changes.
-   */
-  watch(
-    nextEditor: BlockNoteEditor<any, any, any> | null,
-    on: "all" | "mount" | "selection" | "change",
-  ): undefined | (() => void) {
-    this.editor = nextEditor as TEditor;
+	/**
+	 * Watch the editor instance for changes.
+	 */
+	watch(
+		nextEditor: BlockNoteEditor<any, any, any> | null,
+		on: 'all' | 'mount' | 'selection' | 'change',
+	): undefined | (() => void) {
+		this.editor = nextEditor as TEditor;
 
-    if (this.editor) {
-      /**
-       * This will force a re-render when the editor state changes.
-       * This is to support things like `editor.can().toggleBold()` in components that `useEditor`.
-       * This could be more efficient, but it's a good trade-off for now.
-       */
-      const fn = () => {
-        this.transactionNumber += 1;
-        this.subscribers.forEach((callback) => callback());
-      };
+		if (this.editor) {
+			/**
+			 * This will force a re-render when the editor state changes.
+			 * This is to support things like `editor.can().toggleBold()` in components that `useEditor`.
+			 * This could be more efficient, but it's a good trade-off for now.
+			 */
+			const fn = () => {
+				this.transactionNumber += 1;
+				this.subscribers.forEach((callback) => callback());
+			};
 
-      const currentTiptapEditor = this.editor._tiptapEditor;
+			const currentTiptapEditor = this.editor._tiptapEditor;
 
-      const EVENT_TYPES = {
-        all: ["transaction", "create", "mount", "unmount"],
-        // Listen for "create" as "mount" may fire before the hook is run.
-        mount: ["create", "mount", "unmount"],
-        selection: ["selectionUpdate"],
-        change: ["update"],
-      } as const;
+			const EVENT_TYPES = {
+				all: ['transaction', 'create', 'mount', 'unmount'],
+				// Listen for "create" as "mount" may fire before the hook is run.
+				mount: ['create', 'mount', 'unmount'],
+				selection: ['selectionUpdate'],
+				change: ['update'],
+			} as const;
 
-      for (const eventType of EVENT_TYPES[on]) {
-        currentTiptapEditor.on(eventType, fn);
-      }
+			for (const eventType of EVENT_TYPES[on]) {
+				currentTiptapEditor.on(eventType, fn);
+			}
 
-      return () => {
-        for (const eventType of EVENT_TYPES[on]) {
-          currentTiptapEditor.off(eventType, fn);
-        }
-      };
-    }
+			return () => {
+				for (const eventType of EVENT_TYPES[on]) {
+					currentTiptapEditor.off(eventType, fn);
+				}
+			};
+		}
 
-    return undefined;
-  }
+		return undefined;
+	}
 }
 
 /**
@@ -168,10 +155,7 @@ class EditorStateManager<
  * ```
  */
 export function useEditorState<TSelectorResult>(
-  options: UseEditorStateOptions<
-    TSelectorResult,
-    BlockNoteEditor<any, any, any>
-  >,
+	options: UseEditorStateOptions<TSelectorResult, BlockNoteEditor<any, any, any>>,
 ): TSelectorResult;
 /**
  * This hook allows you to watch for changes on the editor instance.
@@ -184,10 +168,7 @@ export function useEditorState<TSelectorResult>(
  * ```
  */
 export function useEditorState<TSelectorResult>(
-  options: UseEditorStateOptions<
-    TSelectorResult,
-    BlockNoteEditor<any, any, any> | null
-  >,
+	options: UseEditorStateOptions<TSelectorResult, BlockNoteEditor<any, any, any> | null>,
 ): TSelectorResult | null;
 
 /**
@@ -201,39 +182,36 @@ export function useEditorState<TSelectorResult>(
  * ```
  */
 export function useEditorState<TSelectorResult>(
-  options:
-    | UseEditorStateOptions<TSelectorResult, BlockNoteEditor<any, any, any>>
-    | UseEditorStateOptions<
-        TSelectorResult,
-        BlockNoteEditor<any, any, any> | null
-      >,
+	options:
+		| UseEditorStateOptions<TSelectorResult, BlockNoteEditor<any, any, any>>
+		| UseEditorStateOptions<TSelectorResult, BlockNoteEditor<any, any, any> | null>,
 ): TSelectorResult | null {
-  const editorContext = useBlockNoteContext();
-  const editor = options.editor || editorContext?.editor || null;
-  const on = options.on || "all";
+	const editorContext = useBlockNoteContext();
+	const editor = options.editor || editorContext?.editor || null;
+	const on = options.on || 'all';
 
-  const [editorStateManager] = useState(() => new EditorStateManager(editor));
+	const [editorStateManager] = useState(() => new EditorStateManager(editor));
 
-  // Using the `useSyncExternalStore` hook to sync the editor instance with the component state
-  const selectedState = useSyncExternalStoreWithSelector(
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
-    editorStateManager.subscribe,
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
-    editorStateManager.getSnapshot,
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
-    editorStateManager.getServerSnapshot,
-    options.selector as UseEditorStateOptions<
-      TSelectorResult,
-      BlockNoteEditor<any, any, any> | null
-    >["selector"],
-    options.equalityFn ?? deepEqual,
-  );
+	// Using the `useSyncExternalStore` hook to sync the editor instance with the component state
+	const selectedState = useSyncExternalStoreWithSelector(
+		// eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
+		editorStateManager.subscribe,
+		// eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
+		editorStateManager.getSnapshot,
+		// eslint-disable-next-line @typescript-eslint/unbound-method -- methods are bound in EditorStateManager constructor
+		editorStateManager.getServerSnapshot,
+		options.selector as UseEditorStateOptions<
+			TSelectorResult,
+			BlockNoteEditor<any, any, any> | null
+		>['selector'],
+		options.equalityFn ?? deepEqual,
+	);
 
-  useIsomorphicLayoutEffect(() => {
-    return editorStateManager.watch(editor, on);
-  }, [editor, editorStateManager, on]);
+	useIsomorphicLayoutEffect(() => {
+		return editorStateManager.watch(editor, on);
+	}, [editor, editorStateManager, on]);
 
-  useDebugValue(selectedState);
+	useDebugValue(selectedState);
 
-  return selectedState;
+	return selectedState;
 }

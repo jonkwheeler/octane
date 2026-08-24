@@ -12,24 +12,32 @@ import type { Edge, Node } from '../types';
  * @param fn - Middleware function. Should be memoized with useCallback to avoid re-registration.
  */
 export function experimental_useOnNodesChangeMiddleware<NodeType extends Node = Node>(
-  fn: (changes: NodeChange<NodeType>[]) => NodeChange<NodeType>[],
-  ...rest: [slot?: symbol]
+	fn: (changes: NodeChange<NodeType>[]) => NodeChange<NodeType>[],
+	...rest: [slot?: symbol]
 ) {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi<NodeType, Edge>(slot);
-  const [symbol] = useState(function createSymbol() {
-    return Symbol();
-  }, slot);
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi<NodeType, Edge>(slot);
+	const [symbol] = useState(function createSymbol() {
+		return Symbol();
+	}, slot);
 
-  useEffect(function registerMiddleware() {
-    const { onNodesChangeMiddlewareMap } = store.getState();
-    onNodesChangeMiddlewareMap.set(symbol, fn);
-  }, [fn], slot);
+	useEffect(
+		function registerMiddleware() {
+			const { onNodesChangeMiddlewareMap } = store.getState();
+			onNodesChangeMiddlewareMap.set(symbol, fn);
+		},
+		[fn],
+		slot,
+	);
 
-  useEffect(function unregisterMiddleware() {
-    const { onNodesChangeMiddlewareMap } = store.getState();
-    return function cleanup() {
-      onNodesChangeMiddlewareMap.delete(symbol);
-    };
-  }, [], slot);
+	useEffect(
+		function unregisterMiddleware() {
+			const { onNodesChangeMiddlewareMap } = store.getState();
+			return function cleanup() {
+				onNodesChangeMiddlewareMap.delete(symbol);
+			};
+		},
+		[],
+		slot,
+	);
 }

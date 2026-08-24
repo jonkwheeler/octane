@@ -8252,10 +8252,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/thinking-orbs/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'thinking-orbs',
 					include: ['packages/thinking-orbs/tests/**/*.test.ts'],
@@ -8281,7 +8277,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'thinking-orbs-differential',
 					include: ['packages/thinking-orbs/tests/differential/**/*.test.ts'],
@@ -8304,10 +8299,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/xyflow/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'xyflow',
 					include: ['packages/xyflow/tests/**/*.test.ts'],
@@ -8376,7 +8367,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'xyflow-differential',
 					include: ['packages/xyflow/tests/differential/**/*.test.ts'],
@@ -8400,10 +8390,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: {
-					group: 'react-parity',
-					include: ['packages/puck/tests/differential/**/*.test.ts'],
-				},
 				test: {
 					name: 'puck',
 					include: ['packages/puck/tests/**/*.test.ts'],
@@ -8473,7 +8459,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'puck-differential',
 					include: ['packages/puck/tests/differential/**/*.test.ts'],
@@ -8542,7 +8527,6 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'blocknote',
 					include: ['packages/blocknote/tests/**/*.test.ts'],

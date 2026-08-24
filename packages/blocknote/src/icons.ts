@@ -4,9 +4,9 @@
  * type-checking.
  */
 export type IconType = (
-  props: React.SVGAttributes<SVGElement> & {
-    size?: string | number;
-    color?: string;
-    title?: string;
-  },
+	props: React.SVGAttributes<SVGElement> & {
+		size?: string | number;
+		color?: string;
+		title?: string;
+	},
 ) => React.OctaneNode;

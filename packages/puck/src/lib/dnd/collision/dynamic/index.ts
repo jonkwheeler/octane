@@ -1,20 +1,20 @@
 import {
-  Collision,
-  CollisionDetector,
-  CollisionPriority,
-  CollisionType,
-  UniqueIdentifier,
-} from "@dnd-kit/abstract";
-import { directionalCollision } from "../directional";
-import { getDirection } from "./get-direction";
-import { getMidpointImpact } from "./get-midpoint-impact";
-import { trackMovementInterval } from "./track-movement-interval";
-import { collisionDebug } from "../collision-debug";
-import { closestCorners } from "@dnd-kit/collision";
-import { DragAxis, Direction } from "../../../../types";
-import { collisionStore } from "./store";
+	Collision,
+	CollisionDetector,
+	CollisionPriority,
+	CollisionType,
+	UniqueIdentifier,
+} from '@dnd-kit/abstract';
+import { directionalCollision } from '../directional';
+import { getDirection } from './get-direction';
+import { getMidpointImpact } from './get-midpoint-impact';
+import { trackMovementInterval } from './track-movement-interval';
+import { collisionDebug } from '../collision-debug';
+import { closestCorners } from '@dnd-kit/collision';
+import { DragAxis, Direction } from '../../../../types';
+import { collisionStore } from './store';
 
-let flushNext: UniqueIdentifier = "";
+let flushNext: UniqueIdentifier = '';
 
 /**
  * A factory for creating a "dynamic" collision detector
@@ -35,150 +35,135 @@ let flushNext: UniqueIdentifier = "";
  *
  * @returns
  */
-export const createDynamicCollisionDetector = (
-  dragAxis: DragAxis,
-  midpointOffset: number = 0.05
-) =>
-  ((input) => {
-    const { dragOperation, droppable } = input;
+export const createDynamicCollisionDetector = (dragAxis: DragAxis, midpointOffset: number = 0.05) =>
+	((input) => {
+		const { dragOperation, droppable } = input;
 
-    const { position } = dragOperation;
-    const dragShape = dragOperation.shape?.current;
-    const { shape: dropShape } = droppable;
+		const { position } = dragOperation;
+		const dragShape = dragOperation.shape?.current;
+		const { shape: dropShape } = droppable;
 
-    if (!dragShape || !dropShape) {
-      return null;
-    }
+		if (!dragShape || !dropShape) {
+			return null;
+		}
 
-    const { center: dragCenter } = dragShape;
+		const { center: dragCenter } = dragShape;
 
-    const { fallbackEnabled } = collisionStore.getState();
+		const { fallbackEnabled } = collisionStore.getState();
 
-    const interval = trackMovementInterval(position.current, dragAxis);
+		const interval = trackMovementInterval(position.current, dragAxis);
 
-    const data = {
-      direction: interval.direction,
-    };
+		const data = {
+			direction: interval.direction,
+		};
 
-    const { center: dropCenter } = dropShape;
+		const { center: dropCenter } = dropShape;
 
-    const overMidpoint = getMidpointImpact(
-      dragShape,
-      dropShape,
-      interval.direction,
-      midpointOffset
-    );
+		const overMidpoint = getMidpointImpact(
+			dragShape,
+			dropShape,
+			interval.direction,
+			midpointOffset,
+		);
 
-    if (dragOperation.source?.id === droppable.id) {
-      // If the droppable and draggable are the same item, we check if we're moving towards the droppable.
-      // If we are, we always return that as the highest priority collision target to prevent unexpected
-      // movement in complex grid layouts
+		if (dragOperation.source?.id === droppable.id) {
+			// If the droppable and draggable are the same item, we check if we're moving towards the droppable.
+			// If we are, we always return that as the highest priority collision target to prevent unexpected
+			// movement in complex grid layouts
 
-      const collision = directionalCollision(input, interval.previous);
+			const collision = directionalCollision(input, interval.previous);
 
-      collisionDebug(dragCenter, dropCenter, droppable.id.toString(), "yellow");
+			collisionDebug(dragCenter, dropCenter, droppable.id.toString(), 'yellow');
 
-      if (collision) {
-        return {
-          ...collision,
-          priority: CollisionPriority.Highest,
-          data,
-        };
-      }
-    }
+			if (collision) {
+				return {
+					...collision,
+					priority: CollisionPriority.Highest,
+					data,
+				};
+			}
+		}
 
-    const intersectionArea = dragShape.intersectionArea(dropShape);
-    const intersectionRatio = intersectionArea / dropShape.area;
+		const intersectionArea = dragShape.intersectionArea(dropShape);
+		const intersectionRatio = intersectionArea / dropShape.area;
 
-    if (intersectionArea && overMidpoint) {
-      collisionDebug(
-        dragCenter,
-        dropCenter,
-        droppable.id.toString(),
-        "green",
-        interval.direction
-      );
+		if (intersectionArea && overMidpoint) {
+			collisionDebug(dragCenter, dropCenter, droppable.id.toString(), 'green', interval.direction);
 
-      const collision: Collision = {
-        id: droppable.id,
-        value: intersectionRatio,
-        priority: CollisionPriority.High,
-        type: CollisionType.Collision,
-      };
+			const collision: Collision = {
+				id: droppable.id,
+				value: intersectionRatio,
+				priority: CollisionPriority.High,
+				type: CollisionType.Collision,
+			};
 
-      // HACK: Flush ID if it's already in use by temporarily setting the id to something invalid. This forces dnd-kit to trigger a new dragmove event.
-      const shouldFlushId = flushNext === droppable.id;
+			// HACK: Flush ID if it's already in use by temporarily setting the id to something invalid. This forces dnd-kit to trigger a new dragmove event.
+			const shouldFlushId = flushNext === droppable.id;
 
-      flushNext = "";
+			flushNext = '';
 
-      return { ...collision, id: shouldFlushId ? "flush" : collision.id, data };
-    }
+			return { ...collision, id: shouldFlushId ? 'flush' : collision.id, data };
+		}
 
-    if (fallbackEnabled && dragOperation.source?.id !== droppable.id) {
-      // Only calculate fallbacks when the draggable sits within the droppable's axis projection
-      const xAxisIntersection =
-        dropShape.boundingRectangle.right > dragShape.boundingRectangle.left &&
-        dropShape.boundingRectangle.left < dragShape.boundingRectangle.right;
+		if (fallbackEnabled && dragOperation.source?.id !== droppable.id) {
+			// Only calculate fallbacks when the draggable sits within the droppable's axis projection
+			const xAxisIntersection =
+				dropShape.boundingRectangle.right > dragShape.boundingRectangle.left &&
+				dropShape.boundingRectangle.left < dragShape.boundingRectangle.right;
 
-      const yAxisIntersection =
-        dropShape.boundingRectangle.bottom > dragShape.boundingRectangle.top &&
-        dropShape.boundingRectangle.top < dragShape.boundingRectangle.bottom;
+			const yAxisIntersection =
+				dropShape.boundingRectangle.bottom > dragShape.boundingRectangle.top &&
+				dropShape.boundingRectangle.top < dragShape.boundingRectangle.bottom;
 
-      // If drag axis is Y, then lock to x-axis (vertical) intersect. Otherwise lock to y-axis (horizontal) intersect.
-      if ((dragAxis === "y" && xAxisIntersection) || yAxisIntersection) {
-        const fallbackCollision = closestCorners(input);
+			// If drag axis is Y, then lock to x-axis (vertical) intersect. Otherwise lock to y-axis (horizontal) intersect.
+			if ((dragAxis === 'y' && xAxisIntersection) || yAxisIntersection) {
+				const fallbackCollision = closestCorners(input);
 
-        if (fallbackCollision) {
-          // For fallback collisions, we use a direction determined by the center points of the two items
-          const direction = getDirection(dragAxis, {
-            x: dragShape.center.x - (droppable.shape?.center.x || 0),
-            y: dragShape.center.y - (droppable.shape?.center.y || 0),
-          });
+				if (fallbackCollision) {
+					// For fallback collisions, we use a direction determined by the center points of the two items
+					const direction = getDirection(dragAxis, {
+						x: dragShape.center.x - (droppable.shape?.center.x || 0),
+						y: dragShape.center.y - (droppable.shape?.center.y || 0),
+					});
 
-          data.direction = direction;
+					data.direction = direction;
 
-          // Fallback collision exists for an intersecting item
-          // In this scenario, we trigger a "void" fallback transaction,
-          // which is prioritised over other fallback transactions
-          // Because dnd-kit won't trigger a dragmove event unless the
-          // target ID changes, we introduce an ID "flushing" hack
-          if (intersectionArea) {
-            collisionDebug(
-              dragCenter,
-              dropCenter,
-              droppable.id.toString(),
-              "red",
-              direction || ""
-            );
+					// Fallback collision exists for an intersecting item
+					// In this scenario, we trigger a "void" fallback transaction,
+					// which is prioritised over other fallback transactions
+					// Because dnd-kit won't trigger a dragmove event unless the
+					// target ID changes, we introduce an ID "flushing" hack
+					if (intersectionArea) {
+						collisionDebug(dragCenter, dropCenter, droppable.id.toString(), 'red', direction || '');
 
-            // HACK: We always flush the ID after this collision to ensure dnd-kit triggers onDragMove
-            flushNext = droppable.id;
+						// HACK: We always flush the ID after this collision to ensure dnd-kit triggers onDragMove
+						flushNext = droppable.id;
 
-            return {
-              ...fallbackCollision,
-              priority: CollisionPriority.Low,
-              data,
-            };
-          }
+						return {
+							...fallbackCollision,
+							priority: CollisionPriority.Low,
+							data,
+						};
+					}
 
-          collisionDebug(
-            dragCenter,
-            dropCenter,
-            droppable.id.toString(),
-            "orange",
-            direction || ""
-          );
+					collisionDebug(
+						dragCenter,
+						dropCenter,
+						droppable.id.toString(),
+						'orange',
+						direction || '',
+					);
 
-          return {
-            ...fallbackCollision,
-            priority: CollisionPriority.Lowest,
-            data,
-          };
-        }
-      }
-    }
+					return {
+						...fallbackCollision,
+						priority: CollisionPriority.Lowest,
+						data,
+					};
+				}
+			}
+		}
 
-    collisionDebug(dragCenter, dropCenter, droppable.id.toString(), "hotpink");
+		collisionDebug(dragCenter, dropCenter, droppable.id.toString(), 'hotpink');
 
-    return null;
-  }) as CollisionDetector;
+		return null;
+	}) as CollisionDetector;

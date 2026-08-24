@@ -1,5 +1,5 @@
-import type { BlockNoteEditor } from "@blocknote/core";
-import { useEditorState } from "./useEditorState.js";
+import type { BlockNoteEditor } from '@blocknote/core';
+import { useEditorState } from './useEditorState.js';
 
 /**
  * Returns the bounding box (`DOMRect`) of the current editor selection.
@@ -14,12 +14,11 @@ import { useEditorState } from "./useEditorState.js";
  * or no selection exists.
  */
 export function useEditorSelectionBoundingBox(
-  enabled?: boolean,
-  editor?: BlockNoteEditor<any, any, any>,
+	enabled?: boolean,
+	editor?: BlockNoteEditor<any, any, any>,
 ) {
-  return useEditorState({
-    editor,
-    selector: ({ editor }) =>
-      enabled ? editor.getSelectionBoundingBox() : undefined,
-  });
+	return useEditorState({
+		editor,
+		selector: ({ editor }) => (enabled ? editor.getSelectionBoundingBox() : undefined),
+	});
 }

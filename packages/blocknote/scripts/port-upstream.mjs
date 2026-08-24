@@ -11,7 +11,16 @@
  * Files listed in CHECKPOINT_FILES are copied with transforms but flagged for
  * manual review at the TipTap / react-dom integration boundary.
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+	cpSync,
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -48,7 +57,10 @@ function walk(dir) {
 }
 
 function shimImportPath(fromFile) {
-	const destRel = relative(join(DEST, dirname(fromFile)), join(DEST, 'react-shim.ts')).replace(/\\/g, '/');
+	const destRel = relative(join(DEST, dirname(fromFile)), join(DEST, 'react-shim.ts')).replace(
+		/\\/g,
+		'/',
+	);
 	return destRel.startsWith('.') ? destRel : `./${destRel}`;
 }
 
@@ -66,10 +78,18 @@ function transformSource(text, destRel) {
 	out = out.replace(/from "react-dom"/g, 'from "octane"');
 	out = out.replace(/from '@tanstack\/react-store'/g, "from '@octanejs/tanstack-store'");
 	out = out.replace(/from "@tanstack\/react-store"/g, 'from "@octanejs/tanstack-store"');
-	out = out.replace(/import type \{([^}]+)\} from 'react';/g, `import type {$1} from '${shimPath}';`);
-	out = out.replace(/import type \{([^}]+)\} from "react";/g, `import type {$1} from "${shimPath}";`);
+	out = out.replace(
+		/import type \{([^}]+)\} from 'react';/g,
+		`import type {$1} from '${shimPath}';`,
+	);
+	out = out.replace(
+		/import type \{([^}]+)\} from "react";/g,
+		`import type {$1} from "${shimPath}";`,
+	);
 	out = out.replace(/import \{([^}]+)\} from 'react';/g, (match, imports) => {
-		const typeOnly = !imports.includes(' type ') && imports.split(',').every((part) => part.trim().startsWith('type '));
+		const typeOnly =
+			!imports.includes(' type ') &&
+			imports.split(',').every((part) => part.trim().startsWith('type '));
 		if (typeOnly) return `import {${imports}} from '${shimPath}';`;
 		return `import {${imports}} from 'octane';`;
 	});

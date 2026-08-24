@@ -6,9 +6,9 @@ import { useStore } from '../hooks/useStore';
 import type { ReactFlowState } from '../types';
 
 const viewportSelector = (state: ReactFlowState) => ({
-  x: state.transform[0],
-  y: state.transform[1],
-  zoom: state.transform[2],
+	x: state.transform[0],
+	y: state.transform[1],
+	zoom: state.transform[2],
 });
 
 /**
@@ -40,9 +40,9 @@ const viewportSelector = (state: ReactFlowState) => ({
  * @remarks This hook can only be used in a component that is a child of a
  *{@link ReactFlowProvider} or a {@link ReactFlow} component.
  */
-export function useViewport(...rest: [slot?: symbol]): Viewport  {
-  const slot = resolveHookSlot(rest);
-  const viewport = useStore(viewportSelector, shallow, slot);
+export function useViewport(...rest: [slot?: symbol]): Viewport {
+	const slot = resolveHookSlot(rest);
+	const viewport = useStore(viewportSelector, shallow, slot);
 
-  return viewport;
+	return viewport;
 }

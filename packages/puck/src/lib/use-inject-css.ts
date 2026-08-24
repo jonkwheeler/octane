@@ -1,36 +1,33 @@
-import { useEffect, useState } from "../react-shim.js";
-import { getFrame } from "./get-frame";
+import { useEffect, useState } from '../react-shim.js';
+import { getFrame } from './get-frame';
 
 const styles = ``;
 
-export const useInjectStyleSheet = (
-  initialStyles: string,
-  iframeEnabled?: boolean
-) => {
-  const [el, setEl] = useState<HTMLStyleElement>();
+export const useInjectStyleSheet = (initialStyles: string, iframeEnabled?: boolean) => {
+	const [el, setEl] = useState<HTMLStyleElement>();
 
-  useEffect(() => {
-    setEl(document.createElement("style"));
-  }, []);
+	useEffect(() => {
+		setEl(document.createElement('style'));
+	}, []);
 
-  useEffect(() => {
-    if (!el || typeof window === "undefined") {
-      return;
-    }
+	useEffect(() => {
+		if (!el || typeof window === 'undefined') {
+			return;
+		}
 
-    el.innerHTML = initialStyles;
+		el.innerHTML = initialStyles;
 
-    if (iframeEnabled) {
-      const frame = getFrame();
-      frame?.head?.appendChild(el);
-    }
+		if (iframeEnabled) {
+			const frame = getFrame();
+			frame?.head?.appendChild(el);
+		}
 
-    document.head.appendChild(el);
-  }, [iframeEnabled, el]);
+		document.head.appendChild(el);
+	}, [iframeEnabled, el]);
 
-  return el;
+	return el;
 };
 
 export const useInjectGlobalCss = (iframeEnabled?: boolean) => {
-  return useInjectStyleSheet(styles, iframeEnabled);
+	return useInjectStyleSheet(styles, iframeEnabled);
 };

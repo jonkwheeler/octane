@@ -5,12 +5,12 @@ import type { OnViewportChange } from '@xyflow/system';
 import { useStoreApi } from './useStore';
 
 export type UseOnViewportChangeOptions = {
-  /** Gets called when the viewport starts changing. */
-  onStart?: OnViewportChange;
-  /** Gets called when the viewport changes. */
-  onChange?: OnViewportChange;
-  /** Gets called when the viewport stops changing. */
-  onEnd?: OnViewportChange;
+	/** Gets called when the viewport starts changing. */
+	onStart?: OnViewportChange;
+	/** Gets called when the viewport changes. */
+	onChange?: OnViewportChange;
+	/** Gets called when the viewport stops changing. */
+	onEnd?: OnViewportChange;
 };
 
 /**
@@ -36,21 +36,33 @@ export type UseOnViewportChangeOptions = {
  *```
  */
 export function useOnViewportChange(
-  { onStart, onChange, onEnd }: UseOnViewportChangeOptions,
-  ...rest: [slot?: symbol]
+	{ onStart, onChange, onEnd }: UseOnViewportChangeOptions,
+	...rest: [slot?: symbol]
 ) {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
 
-  useEffect(function setOnStart() {
-    store.setState({ onViewportChangeStart: onStart });
-  }, [onStart], slot);
+	useEffect(
+		function setOnStart() {
+			store.setState({ onViewportChangeStart: onStart });
+		},
+		[onStart],
+		slot,
+	);
 
-  useEffect(function setOnChange() {
-    store.setState({ onViewportChange: onChange });
-  }, [onChange], slot);
+	useEffect(
+		function setOnChange() {
+			store.setState({ onViewportChange: onChange });
+		},
+		[onChange],
+		slot,
+	);
 
-  useEffect(function setOnEnd() {
-    store.setState({ onViewportChangeEnd: onEnd });
-  }, [onEnd], slot);
+	useEffect(
+		function setOnEnd() {
+			store.setState({ onViewportChangeEnd: onEnd });
+		},
+		[onEnd],
+		slot,
+	);
 }

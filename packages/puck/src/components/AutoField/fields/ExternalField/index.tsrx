@@ -1,69 +1,60 @@
-import { useEffect } from "../../../../react-shim.js";
-import { FieldPropsInternal } from "../..";
+import { useEffect } from '../../../../react-shim.js';
+import { FieldPropsInternal } from '../..';
 import type {
-  ExternalField as ExternalFieldType,
-  ExternalFieldWithAdaptor,
-} from "../../../../types";
+	ExternalField as ExternalFieldType,
+	ExternalFieldWithAdaptor,
+} from '../../../../types';
 
-import { ExternalInput } from "../../../ExternalInput";
-import { Link } from "@octanejs/lucide";
+import { ExternalInput } from '../../../ExternalInput';
+import { Link } from '@octanejs/lucide';
 
 export const ExternalField = ({
-  field,
-  onChange,
-  value,
-  name,
-  label,
-  labelIcon,
-  Label,
-  id,
-  readOnly,
+	field,
+	onChange,
+	value,
+	name,
+	label,
+	labelIcon,
+	Label,
+	id,
+	readOnly,
 }: FieldPropsInternal) => {
-  // DEPRECATED
-  const validField = field as ExternalFieldType;
-  const deprecatedField = field as ExternalFieldWithAdaptor;
+	// DEPRECATED
+	const validField = field as ExternalFieldType;
+	const deprecatedField = field as ExternalFieldWithAdaptor;
 
-  useEffect(() => {
-    if (deprecatedField.adaptor) {
-      console.error(
-        "Warning: The `adaptor` API is deprecated. Please use updated APIs on the `external` field instead. This will be a breaking change in a future release."
-      );
-    }
-  }, []);
+	useEffect(() => {
+		if (deprecatedField.adaptor) {
+			console.error(
+				'Warning: The `adaptor` API is deprecated. Please use updated APIs on the `external` field instead. This will be a breaking change in a future release.',
+			);
+		}
+	}, []);
 
-  if (field.type !== "external") {
-    return null;
-  }
+	if (field.type !== 'external') {
+		return null;
+	}
 
-  return (
-    <Label
-      label={label || name}
-      icon={labelIcon || <Link size={16} />}
-      el="div"
-    >
-      <ExternalInput
-        name={name}
-        field={{
-          ...validField,
-          // DEPRECATED
+	return <Label label={label || name} icon={labelIcon || <Link size={16} />} el="div">
+		<ExternalInput
+			name={name}
+			field={{
+				...validField,
+				// DEPRECATED
 
-          placeholder: deprecatedField.adaptor?.name
-            ? `Select from ${deprecatedField.adaptor.name}`
-            : validField.placeholder || "Select data",
-          mapProp: deprecatedField.adaptor?.mapProp || validField.mapProp,
-          mapRow: validField.mapRow,
-          fetchList: deprecatedField.adaptor?.fetchList
-            ? async () =>
-                await deprecatedField.adaptor.fetchList(
-                  deprecatedField.adaptorParams
-                )
-            : validField.fetchList,
-        }}
-        onChange={onChange}
-        value={value}
-        id={id}
-        readOnly={readOnly}
-      />
-    </Label>
-  );
+				placeholder: deprecatedField.adaptor?.name
+					? `Select from ${deprecatedField.adaptor.name}`
+					: validField.placeholder || 'Select data',
+				mapProp: deprecatedField.adaptor?.mapProp || validField.mapProp,
+				mapRow: validField.mapRow,
+				fetchList: deprecatedField.adaptor?.fetchList
+					? async () => await deprecatedField.adaptor.fetchList(deprecatedField.adaptorParams)
+					: validField.fetchList,
+			}}
+			onChange={onChange}
+			value={value}
+			id={id}
+			readOnly={readOnly}
+		/>
+	</Label>;
 };

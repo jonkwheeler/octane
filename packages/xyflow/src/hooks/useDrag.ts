@@ -6,13 +6,13 @@ import { handleNodeClick } from '../components/Nodes/utils';
 import { useStoreApi } from './useStore';
 
 type UseDragParams = {
-  nodeRef: RefObject<HTMLDivElement>;
-  disabled?: boolean;
-  noDragClassName?: string;
-  handleSelector?: string;
-  nodeId?: string;
-  isSelectable?: boolean;
-  nodeClickDistance?: number;
+	nodeRef: RefObject<HTMLDivElement>;
+	disabled?: boolean;
+	noDragClassName?: string;
+	handleSelector?: string;
+	nodeId?: string;
+	isSelectable?: boolean;
+	nodeClickDistance?: number;
 };
 
 /**
@@ -21,66 +21,74 @@ type UseDragParams = {
  * @internal
  */
 export function useDrag(
-  {
-    nodeRef,
-    disabled = false,
-    noDragClassName,
-    handleSelector,
-    nodeId,
-    isSelectable,
-    nodeClickDistance,
-  }: UseDragParams,
-  ...rest: [slot?: symbol]
+	{
+		nodeRef,
+		disabled = false,
+		noDragClassName,
+		handleSelector,
+		nodeId,
+		isSelectable,
+		nodeClickDistance,
+	}: UseDragParams,
+	...rest: [slot?: symbol]
 ) {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
-  const [dragging, setDragging] = useState<boolean>(false, subSlot(slot, 'dragging'));
-  const xyDrag = useRef<XYDragInstance>(undefined, subSlot(slot, 'xyDrag'));
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
+	const [dragging, setDragging] = useState<boolean>(false, subSlot(slot, 'dragging'));
+	const xyDrag = useRef<XYDragInstance>(undefined, subSlot(slot, 'xyDrag'));
 
-  useEffect(function setupDrag() {
-    if (disabled) {
-      return;
-    }
+	useEffect(
+		function setupDrag() {
+			if (disabled) {
+				return;
+			}
 
-    xyDrag.current = XYDrag({
-      getStoreItems: function getStoreItems() {
-        return store.getState();
-      },
-      onNodeMouseDown: function onNodeMouseDown(id: string) {
-        handleNodeClick({
-          id,
-          store,
-          nodeRef,
-        });
-      },
-      onDragStart: function onDragStart() {
-        setDragging(true);
-      },
-      onDragStop: function onDragStop() {
-        setDragging(false);
-      },
-    });
+			xyDrag.current = XYDrag({
+				getStoreItems: function getStoreItems() {
+					return store.getState();
+				},
+				onNodeMouseDown: function onNodeMouseDown(id: string) {
+					handleNodeClick({
+						id,
+						store,
+						nodeRef,
+					});
+				},
+				onDragStart: function onDragStart() {
+					setDragging(true);
+				},
+				onDragStop: function onDragStop() {
+					setDragging(false);
+				},
+			});
 
-    return function destroyDrag() {
-      xyDrag.current?.destroy();
-      xyDrag.current = undefined;
-    };
-  }, [disabled, store, nodeRef], subSlot(slot, 'setup'));
+			return function destroyDrag() {
+				xyDrag.current?.destroy();
+				xyDrag.current = undefined;
+			};
+		},
+		[disabled, store, nodeRef],
+		subSlot(slot, 'setup'),
+	);
 
-  useEffect(function updateDrag() {
-    if (disabled || !nodeRef.current || !xyDrag.current) {
-      return;
-    }
+	useEffect(
+		function updateDrag() {
+			if (disabled || !nodeRef.current || !xyDrag.current) {
+				return;
+			}
 
-    xyDrag.current.update({
-      noDragClassName,
-      handleSelector,
-      domNode: nodeRef.current,
-      isSelectable,
-      nodeId,
-      nodeClickDistance,
-    });
-  }, [noDragClassName, handleSelector, disabled, isSelectable, nodeRef, nodeId, nodeClickDistance], subSlot(slot, 'update'));
+			xyDrag.current.update({
+				noDragClassName,
+				handleSelector,
+				domNode: nodeRef.current,
+				isSelectable,
+				nodeId,
+				nodeClickDistance,
+			});
+		},
+		[noDragClassName, handleSelector, disabled, isSelectable, nodeRef, nodeId, nodeClickDistance],
+		subSlot(slot, 'update'),
+	);
 
-  return dragging;
+	return dragging;
 }

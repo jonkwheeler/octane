@@ -3,11 +3,11 @@ import { resolveHookSlot } from './slot';
 import type { ColorMode, ColorModeClass } from '@xyflow/system';
 
 function getMediaQuery() {
-  if (typeof window === 'undefined' || !window.matchMedia) {
-    return null;
-  }
+	if (typeof window === 'undefined' || !window.matchMedia) {
+		return null;
+	}
 
-  return window.matchMedia('(prefers-color-scheme: dark)');
+	return window.matchMedia('(prefers-color-scheme: dark)');
 }
 
 /**
@@ -17,30 +17,34 @@ function getMediaQuery() {
  * @param colorMode - The color mode to use ('dark', 'light' or 'system')
  */
 export function useColorModeClass(colorMode: ColorMode, ...rest: [slot?: symbol]): ColorModeClass {
-  const slot = resolveHookSlot(rest);
-  const [colorModeClass, setColorModeClass] = useState<ColorModeClass | null>(
-    colorMode === 'system' ? null : colorMode,
-    slot,
-  );
+	const slot = resolveHookSlot(rest);
+	const [colorModeClass, setColorModeClass] = useState<ColorModeClass | null>(
+		colorMode === 'system' ? null : colorMode,
+		slot,
+	);
 
-  useEffect(function syncColorModeClass() {
-    if (colorMode !== 'system') {
-      setColorModeClass(colorMode);
-      return;
-    }
+	useEffect(
+		function syncColorModeClass() {
+			if (colorMode !== 'system') {
+				setColorModeClass(colorMode);
+				return;
+			}
 
-    const mediaQuery = getMediaQuery();
-    const updateColorModeClass = function updateColorModeClass() {
-      setColorModeClass(mediaQuery?.matches ? 'dark' : 'light');
-    };
+			const mediaQuery = getMediaQuery();
+			const updateColorModeClass = function updateColorModeClass() {
+				setColorModeClass(mediaQuery?.matches ? 'dark' : 'light');
+			};
 
-    updateColorModeClass();
-    mediaQuery?.addEventListener('change', updateColorModeClass);
+			updateColorModeClass();
+			mediaQuery?.addEventListener('change', updateColorModeClass);
 
-    return function cleanup() {
-      mediaQuery?.removeEventListener('change', updateColorModeClass);
-    };
-  }, [colorMode], slot);
+			return function cleanup() {
+				mediaQuery?.removeEventListener('change', updateColorModeClass);
+			};
+		},
+		[colorMode],
+		slot,
+	);
 
-  return colorModeClass !== null ? colorModeClass : getMediaQuery()?.matches ? 'dark' : 'light';
+	return colorModeClass !== null ? colorModeClass : getMediaQuery()?.matches ? 'dark' : 'light';
 }

@@ -1,20 +1,17 @@
 // Copied from https://github.com/mantinedev/mantine/blob/90900efc7f107933ba027007cf240fea61d9c9f2/packages/%40mantine/hooks/src/use-focus-within/use-focus-within.ts#L16
-import { useCallback, useEffect, useRef, useState } from "octane";
+import { useCallback, useEffect, useRef, useState } from 'octane';
 
 export interface UseFocusWithinOptions {
-  onFocus?: (event: FocusEvent) => void;
-  onBlur?: (event: FocusEvent) => void;
+	onFocus?: (event: FocusEvent) => void;
+	onBlur?: (event: FocusEvent) => void;
 }
 
 function containsRelatedTarget(event: FocusEvent) {
-  if (
-    event.currentTarget instanceof HTMLElement &&
-    event.relatedTarget instanceof HTMLElement
-  ) {
-    return event.currentTarget.contains(event.relatedTarget);
-  }
+	if (event.currentTarget instanceof HTMLElement && event.relatedTarget instanceof HTMLElement) {
+		return event.currentTarget.contains(event.relatedTarget);
+	}
 
-  return false;
+	return false;
 }
 
 /**
@@ -30,53 +27,53 @@ function containsRelatedTarget(event: FocusEvent) {
  * `focused` boolean indicating current focus-within state.
  */
 export function useFocusWithin<T extends HTMLElement = any>({
-  onBlur,
-  onFocus,
+	onBlur,
+	onFocus,
 }: UseFocusWithinOptions = {}): { ref: RefObject<T>; focused: boolean } {
-  const ref = useRef<T>(null);
-  const [focused, setFocused] = useState(false);
-  const focusedRef = useRef(false);
+	const ref = useRef<T>(null);
+	const [focused, setFocused] = useState(false);
+	const focusedRef = useRef(false);
 
-  const _setFocused = (value: boolean) => {
-    setFocused(value);
-    focusedRef.current = value;
-  };
+	const _setFocused = (value: boolean) => {
+		setFocused(value);
+		focusedRef.current = value;
+	};
 
-  const handleFocusIn = useCallback(
-    (event: FocusEvent) => {
-      if (!focusedRef.current) {
-        _setFocused(true);
-        onFocus?.(event);
-      }
-    },
-    [onFocus],
-  );
+	const handleFocusIn = useCallback(
+		(event: FocusEvent) => {
+			if (!focusedRef.current) {
+				_setFocused(true);
+				onFocus?.(event);
+			}
+		},
+		[onFocus],
+	);
 
-  const handleFocusOut = useCallback(
-    (event: FocusEvent) => {
-      if (focusedRef.current && !containsRelatedTarget(event)) {
-        _setFocused(false);
-        onBlur?.(event);
-      }
-    },
-    [onBlur],
-  );
+	const handleFocusOut = useCallback(
+		(event: FocusEvent) => {
+			if (focusedRef.current && !containsRelatedTarget(event)) {
+				_setFocused(false);
+				onBlur?.(event);
+			}
+		},
+		[onBlur],
+	);
 
-  useEffect(() => {
-    const node = ref.current;
+	useEffect(() => {
+		const node = ref.current;
 
-    if (node) {
-      node.addEventListener("focusin", handleFocusIn);
-      node.addEventListener("focusout", handleFocusOut);
+		if (node) {
+			node.addEventListener('focusin', handleFocusIn);
+			node.addEventListener('focusout', handleFocusOut);
 
-      return () => {
-        node?.removeEventListener("focusin", handleFocusIn);
-        node?.removeEventListener("focusout", handleFocusOut);
-      };
-    }
+			return () => {
+				node?.removeEventListener('focusin', handleFocusIn);
+				node?.removeEventListener('focusout', handleFocusOut);
+			};
+		}
 
-    return undefined;
-  }, [handleFocusIn, handleFocusOut]);
+		return undefined;
+	}, [handleFocusIn, handleFocusOut]);
 
-  return { ref: ref as RefObject<T>, focused };
+	return { ref: ref as RefObject<T>, focused };
 }

@@ -24,43 +24,43 @@ import type { Node } from '../types';
  *```
  */
 export function useNodesData<NodeType extends Node = Node>(
-  /** The id of the node to get the data from. */
-  nodeId: string,
-  ...rest: [slot?: symbol]
+	/** The id of the node to get the data from. */
+	nodeId: string,
+	...rest: [slot?: symbol]
 ): DistributivePick<NodeType, 'id' | 'type' | 'data'> | null;
 export function useNodesData<NodeType extends Node = Node>(
-  /** The ids of the nodes to get the data from. */
-  nodeIds: string[],
-  ...rest: [slot?: symbol]
+	/** The ids of the nodes to get the data from. */
+	nodeIds: string[],
+	...rest: [slot?: symbol]
 ): DistributivePick<NodeType, 'id' | 'type' | 'data'>[];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useNodesData(nodeIds: any, ...rest: [slot?: symbol]): any {
-  const slot = resolveHookSlot(rest);
-  const nodesData = useStore(
-    useCallback(
-      function selectNodesData(s) {
-        const data = [];
-        const isArrayOfIds = Array.isArray(nodeIds);
-        const _nodeIds = isArrayOfIds ? nodeIds : [nodeIds];
+	const slot = resolveHookSlot(rest);
+	const nodesData = useStore(
+		useCallback(
+			function selectNodesData(s) {
+				const data = [];
+				const isArrayOfIds = Array.isArray(nodeIds);
+				const _nodeIds = isArrayOfIds ? nodeIds : [nodeIds];
 
-        for (const nodeId of _nodeIds) {
-          const node = s.nodeLookup.get(nodeId);
-          if (node) {
-            data.push({
-              id: node.id,
-              type: node.type,
-              data: node.data,
-            });
-          }
-        }
+				for (const nodeId of _nodeIds) {
+					const node = s.nodeLookup.get(nodeId);
+					if (node) {
+						data.push({
+							id: node.id,
+							type: node.type,
+							data: node.data,
+						});
+					}
+				}
 
-        return isArrayOfIds ? data : data[0] ?? null;
-      },
-      [nodeIds],
-    ),
-    shallowNodeData,
-    slot,
-  );
+				return isArrayOfIds ? data : (data[0] ?? null);
+			},
+			[nodeIds],
+		),
+		shallowNodeData,
+		slot,
+	);
 
-  return nodesData;
+	return nodesData;
 }

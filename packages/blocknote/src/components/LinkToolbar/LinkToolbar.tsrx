@@ -1,8 +1,8 @@
-import { useComponentsContext } from "../../editor/ComponentsContext.js";
-import { DeleteLinkButton } from "./DefaultButtons/DeleteLinkButton.js";
-import { EditLinkButton } from "./DefaultButtons/EditLinkButton.js";
-import { OpenLinkButton } from "./DefaultButtons/OpenLinkButton.js";
-import { LinkToolbarProps } from "./LinkToolbarProps.js";
+import { useComponentsContext } from '../../editor/ComponentsContext.js';
+import { DeleteLinkButton } from './DefaultButtons/DeleteLinkButton.js';
+import { EditLinkButton } from './DefaultButtons/EditLinkButton.js';
+import { OpenLinkButton } from './DefaultButtons/OpenLinkButton.js';
+import { LinkToolbarProps } from './LinkToolbarProps.js';
 
 /**
  * By default, the LinkToolbar component will render with default buttons.
@@ -16,26 +16,20 @@ import { LinkToolbarProps } from "./LinkToolbarProps.js";
  * `components/mantine-shared/Toolbar` directory.
  */
 export const LinkToolbar = (props: LinkToolbarProps) => {
-  const Components = useComponentsContext()!;
+	const Components = useComponentsContext()!;
 
-  return (
-    <Components.LinkToolbar.Root className={"bn-toolbar bn-link-toolbar"}>
-      {props.children || (
-        <>
-          <EditLinkButton
-            url={props.url}
-            text={props.text}
-            range={props.range}
-            setToolbarOpen={props.setToolbarOpen}
-            setToolbarPositionFrozen={props.setToolbarPositionFrozen}
-          />
-          <OpenLinkButton url={props.url} />
-          <DeleteLinkButton
-            range={props.range}
-            setToolbarOpen={props.setToolbarOpen}
-          />
-        </>
-      )}
-    </Components.LinkToolbar.Root>
-  );
+	return <Components.LinkToolbar.Root className="bn-toolbar bn-link-toolbar">
+		{props.children ||
+			<>
+				<EditLinkButton
+					url={props.url}
+					text={props.text}
+					range={props.range}
+					setToolbarOpen={props.setToolbarOpen}
+					setToolbarPositionFrozen={props.setToolbarPositionFrozen}
+				/>
+				<OpenLinkButton url={props.url} />
+				<DeleteLinkButton range={props.range} setToolbarOpen={props.setToolbarOpen} />
+			</>}
+	</Components.LinkToolbar.Root>;
 };

@@ -1,12 +1,12 @@
-import { CSSProperties } from "../../react-shim.js";
-import { Content, DragAxis } from "../../types";
+import { CSSProperties } from '../../react-shim.js';
+import { Content, DragAxis } from '../../types';
 
 export type DropZoneProps = {
-  zone: string;
-  allow?: string[];
-  disallow?: string[];
-  style?: CSSProperties;
-  minEmptyHeight?: number;
-  className?: string;
-  collisionAxis?: DragAxis;
+	zone: string;
+	allow?: string[];
+	disallow?: string[];
+	style?: CSSProperties;
+	minEmptyHeight?: number;
+	className?: string;
+	collisionAxis?: DragAxis;
 };

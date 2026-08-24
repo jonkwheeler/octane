@@ -6,23 +6,26 @@ import { useStore } from './useStore';
 import type { InternalNode, Node, ReactFlowStore } from '../types';
 
 function storeSelector(s: ReactFlowStore) {
-  return s.connection.inProgress
-    ? { ...s.connection, to: pointToRendererPoint(s.connection.to, s.transform) }
-    : { ...s.connection };
+	return s.connection.inProgress
+		? { ...s.connection, to: pointToRendererPoint(s.connection.to, s.transform) }
+		: { ...s.connection };
 }
 
-function getSelector<NodeType extends Node = Node, SelectorReturn = ConnectionState<InternalNode<NodeType>>>(
-  connectionSelector?: (connection: ConnectionState<InternalNode<NodeType>>) => SelectorReturn
+function getSelector<
+	NodeType extends Node = Node,
+	SelectorReturn = ConnectionState<InternalNode<NodeType>>,
+>(
+	connectionSelector?: (connection: ConnectionState<InternalNode<NodeType>>) => SelectorReturn,
 ): (s: ReactFlowStore) => SelectorReturn | ConnectionState<InternalNode> {
-  if (connectionSelector) {
-    const combinedSelector = (s: ReactFlowStore) => {
-      const connection = storeSelector(s) as ConnectionState<InternalNode<NodeType>>;
-      return connectionSelector(connection);
-    };
-    return combinedSelector;
-  }
+	if (connectionSelector) {
+		const combinedSelector = (s: ReactFlowStore) => {
+			const connection = storeSelector(s) as ConnectionState<InternalNode<NodeType>>;
+			return connectionSelector(connection);
+		};
+		return combinedSelector;
+	}
 
-  return storeSelector;
+	return storeSelector;
 }
 /**
  * The `useConnection` hook returns the current connection when there is an active
@@ -53,11 +56,14 @@ function getSelector<NodeType extends Node = Node, SelectorReturn = ConnectionSt
  *
  * @returns ConnectionState
  */
-export function useConnection<NodeType extends Node = Node, SelectorReturn = ConnectionState<InternalNode<NodeType>>>(
-  connectionSelector?: (connection: ConnectionState<InternalNode<NodeType>>) => SelectorReturn,
-  ...rest: [slot?: symbol]
+export function useConnection<
+	NodeType extends Node = Node,
+	SelectorReturn = ConnectionState<InternalNode<NodeType>>,
+>(
+	connectionSelector?: (connection: ConnectionState<InternalNode<NodeType>>) => SelectorReturn,
+	...rest: [slot?: symbol]
 ): SelectorReturn {
-  const slot = resolveHookSlot(rest);
-  const combinedSelector = getSelector<NodeType, SelectorReturn>(connectionSelector);
-  return useStore(combinedSelector, shallow, slot) as SelectorReturn;
+	const slot = resolveHookSlot(rest);
+	const combinedSelector = getSelector<NodeType, SelectorReturn>(connectionSelector);
+	return useStore(combinedSelector, shallow, slot) as SelectorReturn;
 }

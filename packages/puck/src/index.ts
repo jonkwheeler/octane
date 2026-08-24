@@ -28,10 +28,4 @@ export { registerOverlayPortal } from './lib/overlay-portal';
 export * from './lib/resolve-all-data';
 export { setDeep } from './lib/data/set-deep';
 export { walkTree } from './lib/data/walk-tree';
-export {
-  createUsePuck,
-  usePuck,
-  useGetPuck,
-  type UsePuckData,
-  type PuckApi,
-} from './lib/use-puck';
+export { createUsePuck, usePuck, useGetPuck, type UsePuckData, type PuckApi } from './lib/use-puck';

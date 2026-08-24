@@ -11,29 +11,29 @@
  * cancelled and the editor should stay open.
  */
 export function confirmDiscardUnsavedComment(opts: {
-  /**
-   * Whether the editor(s) being dismissed currently hold unsaved content.
-   */
-  hasUnsavedContent: boolean;
-  /**
-   * Whether the confirmation prompt is enabled (see the `confirmBeforeDiscard`
-   * option on the comments extension).
-   */
-  confirmBeforeDiscard: boolean;
-  /**
-   * The message shown in the confirmation prompt.
-   */
-  message: string;
-  /**
-   * The confirm implementation. Defaults to `window.confirm`; injectable for
-   * testing.
-   */
-  confirm?: (message: string) => boolean;
+	/**
+	 * Whether the editor(s) being dismissed currently hold unsaved content.
+	 */
+	hasUnsavedContent: boolean;
+	/**
+	 * Whether the confirmation prompt is enabled (see the `confirmBeforeDiscard`
+	 * option on the comments extension).
+	 */
+	confirmBeforeDiscard: boolean;
+	/**
+	 * The message shown in the confirmation prompt.
+	 */
+	message: string;
+	/**
+	 * The confirm implementation. Defaults to `window.confirm`; injectable for
+	 * testing.
+	 */
+	confirm?: (message: string) => boolean;
 }): boolean {
-  if (!opts.hasUnsavedContent || !opts.confirmBeforeDiscard) {
-    return true;
-  }
+	if (!opts.hasUnsavedContent || !opts.confirmBeforeDiscard) {
+		return true;
+	}
 
-  const confirm = opts.confirm ?? ((message) => window.confirm(message));
-  return confirm(opts.message);
+	const confirm = opts.confirm ?? ((message) => window.confirm(message));
+	return confirm(opts.message);
 }

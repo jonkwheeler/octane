@@ -7,8 +7,8 @@ import type { ReactFlowState } from '../../types';
 const selector = (s: ReactFlowState) => s.domNode?.querySelector('.react-flow__edgelabel-renderer');
 
 export type EdgeLabelRendererProps = {
-  children: OctaneNode
-}
+	children: OctaneNode;
+};
 
 /**
  * Edges are SVG-based. If you want to render more complex labels you can use the
@@ -52,11 +52,11 @@ export type EdgeLabelRendererProps = {
  * the `nopan` class on the label or the element you want to interact with.
  */
 export function EdgeLabelRenderer({ children }: EdgeLabelRendererProps) {
-  const edgeLabelRenderer = useStore(selector);
+	const edgeLabelRenderer = useStore(selector);
 
-  if (!edgeLabelRenderer) {
-    return null;
-  }
+	if (!edgeLabelRenderer) {
+		return null;
+	}
 
-  return createPortal(children, edgeLabelRenderer);
+	return createPortal(children, edgeLabelRenderer);
 }

@@ -1,3 +1,3 @@
 export type TableHandleMenuProps = {
-  orientation: "row" | "column";
+	orientation: 'row' | 'column';
 };

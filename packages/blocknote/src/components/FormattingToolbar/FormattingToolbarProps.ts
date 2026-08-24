@@ -1,5 +1,5 @@
-import { BlockTypeSelectItem } from "./DefaultSelects/BlockTypeSelect.js";
+import { BlockTypeSelectItem } from './DefaultSelects/BlockTypeSelect.js';
 
 export type FormattingToolbarProps = {
-  blockTypeSelectItems?: BlockTypeSelectItem[];
+	blockTypeSelectItems?: BlockTypeSelectItem[];
 };

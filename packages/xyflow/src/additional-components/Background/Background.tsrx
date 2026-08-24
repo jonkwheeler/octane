@@ -9,83 +9,80 @@ import { type BackgroundProps, BackgroundVariant } from './types';
 import { type ReactFlowState } from '../../types';
 
 const defaultSize = {
-  [BackgroundVariant.Dots]: 1,
-  [BackgroundVariant.Lines]: 1,
-  [BackgroundVariant.Cross]: 6,
+	[BackgroundVariant.Dots]: 1,
+	[BackgroundVariant.Lines]: 1,
+	[BackgroundVariant.Cross]: 6,
 };
 
-const selector = (s: ReactFlowState) => ({ transform: s.transform, patternId: `pattern-${s.rfId}` });
+const selector = (s: ReactFlowState) => ({
+	transform: s.transform,
+	patternId: `pattern-${s.rfId}`,
+});
 
 function BackgroundComponent({
-  id,
-  variant = BackgroundVariant.Dots,
-  // only used for dots and cross
-  gap = 20,
-  // only used for lines and cross
-  size,
-  lineWidth = 1,
-  offset = 0,
-  color,
-  bgColor,
-  style,
-  className,
-  patternClassName,
+	id,
+	variant = BackgroundVariant.Dots,
+	// only used for dots and cross
+	gap = 20,
+	// only used for lines and cross
+	size,
+	lineWidth = 1,
+	offset = 0,
+	color,
+	bgColor,
+	style,
+	className,
+	patternClassName,
 }: BackgroundProps) {
-  const ref = useRef<SVGSVGElement>(null);
-  const { transform, patternId } = useStore(selector, shallow);
-  const patternSize = size || defaultSize[variant];
-  const isDots = variant === BackgroundVariant.Dots;
-  const isCross = variant === BackgroundVariant.Cross;
-  const gapXY: [number, number] = Array.isArray(gap) ? gap : [gap, gap];
-  const scaledGap: [number, number] = [gapXY[0] * transform[2] || 1, gapXY[1] * transform[2] || 1];
-  const scaledSize = patternSize * transform[2];
-  const offsetXY: [number, number] = Array.isArray(offset) ? offset : [offset, offset];
+	const ref = useRef<SVGSVGElement>(null);
+	const { transform, patternId } = useStore(selector, shallow);
+	const patternSize = size || defaultSize[variant];
+	const isDots = variant === BackgroundVariant.Dots;
+	const isCross = variant === BackgroundVariant.Cross;
+	const gapXY: [number, number] = Array.isArray(gap) ? gap : [gap, gap];
+	const scaledGap: [number, number] = [gapXY[0] * transform[2] || 1, gapXY[1] * transform[2] || 1];
+	const scaledSize = patternSize * transform[2];
+	const offsetXY: [number, number] = Array.isArray(offset) ? offset : [offset, offset];
 
-  const patternDimensions: [number, number] = isCross ? [scaledSize, scaledSize] : scaledGap;
-  const scaledOffset: [number, number] = [
-    offsetXY[0] * transform[2] || 1 + patternDimensions[0] / 2,
-    offsetXY[1] * transform[2] || 1 + patternDimensions[1] / 2,
-  ];
+	const patternDimensions: [number, number] = isCross ? [scaledSize, scaledSize] : scaledGap;
+	const scaledOffset: [number, number] = [
+		offsetXY[0] * transform[2] || 1 + patternDimensions[0] / 2,
+		offsetXY[1] * transform[2] || 1 + patternDimensions[1] / 2,
+	];
 
-  const _patternId = `${patternId}${id ? id : ''}`;
+	const _patternId = `${patternId}${id ? id : ''}`;
 
-  return (
-    <svg
-      className={cc(['react-flow__background', className])}
-      style={
-        {
-          ...style,
-          ...containerStyle,
-          '--xy-background-color-props': bgColor,
-          '--xy-background-pattern-color-props': color,
-        } as CSSProperties
-      }
-      ref={ref}
-      data-testid="rf__background"
-    >
-      <pattern
-        id={_patternId}
-        x={transform[0] % scaledGap[0]}
-        y={transform[1] % scaledGap[1]}
-        width={scaledGap[0]}
-        height={scaledGap[1]}
-        patternUnits="userSpaceOnUse"
-        patternTransform={`translate(-${scaledOffset[0]},-${scaledOffset[1]})`}
-      >
-        {isDots ? (
-          <DotPattern radius={scaledSize / 2} className={patternClassName} />
-        ) : (
-          <LinePattern
-            dimensions={patternDimensions}
-            lineWidth={lineWidth}
-            variant={variant}
-            className={patternClassName}
-          />
-        )}
-      </pattern>
-      <rect x="0" y="0" width="100%" height="100%" fill={`url(#${_patternId})`} />
-    </svg>
-  );
+	return <svg
+		className={cc(['react-flow__background', className])}
+		style={{
+			...style,
+			...containerStyle,
+			'--xy-background-color-props': bgColor,
+			'--xy-background-pattern-color-props': color,
+		} as CSSProperties}
+		ref={ref}
+		data-testid="rf__background"
+	>
+		<pattern
+			id={_patternId}
+			x={transform[0] % scaledGap[0]}
+			y={transform[1] % scaledGap[1]}
+			width={scaledGap[0]}
+			height={scaledGap[1]}
+			patternUnits="userSpaceOnUse"
+			patternTransform={`translate(-${scaledOffset[0]},-${scaledOffset[1]})`}
+		>
+			{isDots
+				? <DotPattern radius={scaledSize / 2} className={patternClassName} />
+				: <LinePattern
+						dimensions={patternDimensions}
+						lineWidth={lineWidth}
+						variant={variant}
+						className={patternClassName}
+					/>}
+		</pattern>
+		<rect x="0" y="0" width="100%" height="100%" fill={`url(#${_patternId})`} />
+	</svg>;
 }
 
 BackgroundComponent.displayName = 'Background';

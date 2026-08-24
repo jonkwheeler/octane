@@ -1,13 +1,13 @@
-type Dir = "ltr" | "rtl";
+type Dir = 'ltr' | 'rtl';
 
 export function getDeepDir(el: Element | null | undefined) {
-  function findDir(node: Element | null): Dir {
-    if (!node) return "ltr";
+	function findDir(node: Element | null): Dir {
+		if (!node) return 'ltr';
 
-    const d = node.getAttribute("dir") as Dir | "";
+		const d = node.getAttribute('dir') as Dir | '';
 
-    return d || findDir(node.parentElement);
-  }
+		return d || findDir(node.parentElement);
+	}
 
-  return el ? findDir(el) : "ltr";
+	return el ? findDir(el) : 'ltr';
 }
