@@ -15,10 +15,31 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRsbuild } from '@rsbuild/core';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { pluginReact } from '@rsbuild/plugin-react';
+import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { pluginOctane } from '../src/index.js';
 
 const repositoryRoot = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
+let sharedBrowser: import('playwright').Browser | undefined;
+
+async function getBrowser() {
+	if (sharedBrowser) return sharedBrowser;
+	try {
+		const { chromium } = await import('playwright');
+		sharedBrowser = await chromium.launch({ headless: true });
+		return sharedBrowser;
+	} catch (error) {
+		throw new Error(
+			'[rsbuild-plugin integration] Chromium is required ' +
+				'(run `pnpm exec playwright install chromium`): ' +
+				(error instanceof Error ? error.message.split('\n')[0] : String(error)),
+		);
+	}
+}
+
+afterAll(async () => {
+	await sharedBrowser?.close();
+});
 
 function write(root: string, relativePath: string, content: string) {
 	const file = join(root, relativePath);
@@ -92,6 +113,42 @@ export function Page() @{
 	write(root, 'src/page.css', '.route { color: rebeccapurple; }\n');
 	write(
 		root,
+		'src/Layout.tsrx',
+		`import { Hydrate, type OctaneNode } from 'octane';
+import { interaction } from 'octane/hydration';
+import { LayoutDeferredHydrationProof } from './layout-deferred-hydration.tsrx';
+
+export default function Layout(props: { children: OctaneNode }) @{
+	<section class="layout">
+		<Hydrate when={interaction()}>
+			<LayoutDeferredHydrationProof />
+		</Hydrate>
+		{props.children}
+	</section>
+}
+`,
+	);
+	write(
+		root,
+		'src/layout-deferred-hydration.tsrx',
+		`import { useState } from 'octane';
+import './layout-deferred-hydration.css';
+
+export function LayoutDeferredHydrationProof() @{
+	const [clicks, setClicks] = useState(0);
+	<button class="rsbuild-layout-deferred-hydration-proof" onClick={() => setClicks((count) => count + 1)}>
+		{'rsbuild-layout-deferred-hydration-chunk-proof: ' + clicks}
+	</button>
+}
+`,
+	);
+	write(
+		root,
+		'src/layout-deferred-hydration.css',
+		'.rsbuild-layout-deferred-hydration-proof { color: teal; }\n',
+	);
+	write(
+		root,
 		'src/deferred-hydration.js',
 		`import './deferred-hydration.css';
 
@@ -133,7 +190,7 @@ export default defineConfig({
 	],
 	router: {
 		routes: [
-			new RenderRoute({ path: '/', entry: '/src/Page.tsrx' }),
+			new RenderRoute({ path: '/', entry: '/src/Page.tsrx', layout: '/src/Layout.tsrx' }),
 			new ServerRoute({
 				path: '/api/health',
 				handler: (context) => compose([])(context, () => Response.json({
@@ -397,6 +454,81 @@ export function App() @{
 		expect(files).not.toContain('server/entry.js');
 	}, 60_000);
 
+	it('evaluates a hot TSRX module alongside the React plugin', async () => {
+		const previousNodeEnv = process.env.NODE_ENV;
+		process.env.NODE_ENV = 'development';
+		let page: import('playwright').Page | undefined;
+		let closeServer: (() => Promise<void>) | undefined;
+		try {
+			link(root, 'react', realpathSync(join(repositoryRoot, 'packages/octane/node_modules/react')));
+			link(
+				root,
+				'react-dom',
+				realpathSync(join(repositoryRoot, 'packages/octane/node_modules/react-dom')),
+			);
+			rmSync(join(root, 'node_modules/octane'), { recursive: true, force: true });
+			write(
+				root,
+				'node_modules/octane/package.json',
+				JSON.stringify({ name: 'octane', exports: './index.cjs' }) + '\n',
+			);
+			write(
+				root,
+				'node_modules/octane/index.cjs',
+				`module.exports = new Proxy({}, {
+	get(_target, name) {
+		if (name === 'template') return (html) => html;
+		return (...args) => args[0];
+	},
+});
+`,
+			);
+			write(root, 'index.html', '<!doctype html><html><body><div id="root"></div></body></html>\n');
+			write(
+				root,
+				'src/Counter.tsrx',
+				`import { useState } from 'octane';
+
+export function Counter(props: { start: number }) @{
+	const [count, setCount] = useState(props.start);
+	<button onClick={() => setCount(count + 1)}>{'clicks: ' + count}</button>
+}
+`,
+			);
+			write(
+				root,
+				'src/index.tsx',
+				`import { Counter } from './Counter.tsrx';
+
+document.querySelector('#root')!.textContent = typeof Counter;
+`,
+			);
+
+			const instance = await createRsbuild({
+				cwd: root,
+				rsbuildConfig: {
+					plugins: [pluginOctane({ requireDirective: true }), pluginReact()],
+					dev: { lazyCompilation: false },
+					server: { host: '127.0.0.1' },
+				},
+			});
+			const started = await instance.startDevServer({ getPortSilently: true });
+			closeServer = () => started.server.close();
+			const browser = await getBrowser();
+			page = await browser.newPage();
+			const errors: string[] = [];
+			page.on('pageerror', (error) => errors.push(String(error)));
+			await page.goto(`http://127.0.0.1:${started.port}/`, { waitUntil: 'load' });
+			expect(errors).toEqual([]);
+			expect(await page.locator('#root').textContent()).toBe('function');
+		} finally {
+			await page?.close();
+			await closeServer?.();
+			if (previousNodeEnv === undefined) delete process.env.NODE_ENV;
+			else process.env.NODE_ENV = previousNodeEnv;
+		}
+	}, 60_000);
+
 	it('builds routed client/server environments and serves the production SSR handler', async () => {
 		writeRoutedApp(root);
 
@@ -483,6 +615,24 @@ export function App() @{
 		expect(deferredJavaScript).toBeTruthy();
 		expect(assetMap['/src/Page.tsrx'].css).toContain(deferredCss);
 		expect(assetMap['/src/Page.tsrx'].js).not.toBe(deferredJavaScript);
+		const layoutDeferredCss = listFiles(clientRoot).find(
+			(file) =>
+				file.endsWith('.css') &&
+				readFileSync(join(clientRoot, file), 'utf8').includes(
+					'.rsbuild-layout-deferred-hydration-proof',
+				),
+		);
+		const layoutDeferredJavaScript = listFiles(clientRoot).find(
+			(file) =>
+				file.endsWith('.js') &&
+				readFileSync(join(clientRoot, file), 'utf8').includes(
+					'rsbuild-layout-deferred-hydration-chunk-proof',
+				),
+		);
+		expect(layoutDeferredCss).toBeTruthy();
+		expect(layoutDeferredJavaScript).toBeTruthy();
+		expect(assetMap['/src/Layout.tsrx'].css).toContain(layoutDeferredCss);
+		expect(assetMap['/src/Layout.tsrx'].js).not.toBe(layoutDeferredJavaScript);
 
 		const entry = pathToFileURL(join(serverRoot, 'entry.js'));
 		entry.searchParams.set('test', String(Date.now()));
@@ -496,9 +646,12 @@ export function App() @{
 		expect(response.status).toBe(200);
 		expect(body).toContain('data-rsbuild-ssr="ready"');
 		expect(body).toContain('Rsbuild route');
+		expect(body).toContain('rsbuild-layout-deferred-hydration-chunk-proof: 0');
 		for (const cssFile of assetMap['/src/Page.tsrx'].css) expect(body).toContain(cssFile);
+		expect(body).toContain(`<link rel="stylesheet" href="/${layoutDeferredCss}">`);
 		expect(body).toContain(`<link rel="modulepreload" href="/${assetMap['/src/Page.tsrx'].js}">`);
 		expect(body).not.toContain(`<link rel="modulepreload" href="/${deferredJavaScript}">`);
+		expect(body).not.toContain(`<link rel="modulepreload" href="/${layoutDeferredJavaScript}">`);
 		expect(body).toContain('id="__octane_data"');
 		expect(body).not.toContain('<!--ssr-body-->');
 
@@ -642,26 +795,15 @@ export function App() @{
 		});
 		const started = await instance.startDevServer({ getPortSilently: true });
 		const origin = `http://127.0.0.1:${started.port}`;
-		let browser: import('playwright').Browser | undefined;
+		let page: import('playwright').Page | undefined;
 		try {
-			const { chromium } = await import('playwright');
-			browser = await chromium.launch({ headless: true });
-		} catch (error) {
-			await started.server.close();
-			throw new Error(
-				'[rsbuild-plugin client-only renderer] Chromium is required ' +
-					'(run `pnpm exec playwright install chromium`): ' +
-					(error instanceof Error ? error.message.split('\n')[0] : String(error)),
-			);
-		}
-
-		const page = await browser.newPage();
-		const errors: string[] = [];
-		page.on('console', (message) => {
-			if (message.type() === 'error') errors.push(message.text());
-		});
-		page.on('pageerror', (error) => errors.push('pageerror: ' + String(error)));
-		try {
+			const browser = await getBrowser();
+			page = await browser.newPage();
+			const errors: string[] = [];
+			page.on('console', (message) => {
+				if (message.type() === 'error') errors.push(message.text());
+			});
+			page.on('pageerror', (error) => errors.push('pageerror: ' + String(error)));
 			await page.goto(origin + '/', { waitUntil: 'load' });
 			try {
 				await page.locator('[data-object-region="ready"]').waitFor({ timeout: 30_000 });
@@ -728,8 +870,7 @@ export function App() @{
 			});
 			expect(errors).toEqual([]);
 		} finally {
-			await page.close();
-			await browser.close();
+			await page?.close();
 			await started.server.close();
 		}
 	}, 180_000);
@@ -784,7 +925,10 @@ export function Page() @{
 `,
 			);
 			let updatedBody = '';
-			const deadline = Date.now() + 20_000;
+			// The rebuild takes ~1s on an idle machine, but this suite shares the
+			// box with the rest of the full run. Poll well inside the case budget
+			// so a saturated machine reports the real HTML rather than a stale one.
+			const deadline = Date.now() + 60_000;
 			while (Date.now() < deadline) {
 				await new Promise((resolveDelay) => setTimeout(resolveDelay, 100));
 				updatedBody = await (await fetch(`${origin}/`)).text();

@@ -17,6 +17,7 @@ import { parseModule } from '@tsrx/core';
 import {
 	compile,
 	compileForBundler,
+	hasLowerableJsxReturnBranches,
 	hasOnlyLowerableNullishExits,
 	isVoidJsxCodeBlockFunction,
 } from './compile.js';
@@ -31,6 +32,9 @@ import { findLeadingJsxImportSourcePragma } from './pragma.js';
 import { normalizeUniversalRuntime } from './universal-runtime.js';
 import { formatCompileDiagnostic } from './native-change-diagnostics.js';
 import { findVoidComponentImports, findVoidRootImports, slotHooks } from './slot-hooks.js';
+import { rewriteServerRuntimeRequests } from './runtime-requests.js';
+import { assertStrongMode } from './strong-mode.js';
+import { findCssModuleImportRequests } from './css-module-imports.js';
 import {
 	assertNoLiveClientOnlyImports,
 	createClientOnlyServerStub,
@@ -39,6 +43,11 @@ import {
 } from './client-only-server.js';
 
 export { findVoidComponentImports, findVoidRootImports };
+export {
+	isPlainCssModuleId,
+	readCssModuleExports,
+	validateCssModuleConstants,
+} from './css-module-imports.js';
 export { HYDRATE_QUERY_PARAM } from './hydrate-boundaries.js';
 export {
 	CLIENT_REFERENCE_MANIFEST_FILENAME,
@@ -156,6 +165,27 @@ function expandViteOptimizeDepsExclusions(configured, dependencyNames) {
 	return exclusions;
 }
 
+/**
+ * Locate an installed package's manifest when `require.resolve` cannot open the
+ * package entry. Workspace/source packages may advertise a `require` condition
+ * that points at a prepack-only CommonJS build; discovery still needs the
+ * package root so Vite can compile their authored source.
+ */
+function resolveInstalledPackageManifest(name, issuerRoot, collected) {
+	let candidateRoot = nodePath.resolve(issuerRoot);
+	for (;;) {
+		const manifestPath = nodePath.join(candidateRoot, 'node_modules', name, 'package.json');
+		if (nodeFs.existsSync(manifestPath)) {
+			collected.dependencies.add(manifestPath);
+			return manifestPath;
+		}
+		collected.missingDependencies.add(manifestPath);
+		const parent = nodePath.dirname(candidateRoot);
+		if (parent === candidateRoot) return null;
+		candidateRoot = parent;
+	}
+}
+
 function metadata(dependencies = [], missingDependencies = []) {
 	return { dependencies, missingDependencies };
 }
@@ -224,8 +254,13 @@ export function findVoidComponentExports(source, id) {
 	}
 
 	const voidBindings = new Set();
+	// Mirrors the compile-time lowering decisions exactly (nullish-guard @{}
+	// bodies AND React-style conditional JSX returns), so cross-module call-site
+	// classification agrees with what each module actually compiled to.
 	const isVoidFunction = (node) =>
-		isVoidJsxCodeBlockFunction(node) || hasOnlyLowerableNullishExits(node);
+		isVoidJsxCodeBlockFunction(node) ||
+		hasOnlyLowerableNullishExits(node) ||
+		hasLowerableJsxReturnBranches(node, ast.body || []);
 	for (const declaration of declarations) {
 		if (declaration.type === 'FunctionDeclaration' && declaration.id?.name) {
 			if (isVoidFunction(declaration)) voidBindings.add(declaration.id.name);
@@ -304,8 +339,141 @@ export function findVoidComponentExports(source, id) {
 	return exports;
 }
 
+export function findDescriptorChildrenExports(source, id) {
+	let ast;
+	try {
+		ast = source && typeof source === 'object' ? source : parseModule(source, id);
+	} catch {
+		return [];
+	}
+	const markers = new Set();
+	const bindings = new Set();
+	for (const node of ast.body || []) {
+		if (node.type !== 'ImportDeclaration' || node.source?.value !== 'octane') continue;
+		for (const specifier of node.specifiers || []) {
+			if ((specifier.imported?.name ?? specifier.imported?.value) === 'descriptorChildren') {
+				markers.add(specifier.local.name);
+			}
+		}
+	}
+	for (const node of ast.body || []) {
+		const declaration = node.type === 'ExportNamedDeclaration' ? node.declaration : node;
+		if (declaration?.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
+		for (const item of declaration.declarations || []) {
+			if (
+				item.id?.type === 'Identifier' &&
+				item.init?.type === 'CallExpression' &&
+				item.init.callee?.type === 'Identifier' &&
+				markers.has(item.init.callee.name) &&
+				item.init.arguments?.length === 1
+			)
+				bindings.add(item.id.name);
+		}
+	}
+	const exports = [];
+	for (const node of ast.body || []) {
+		if (node.type === 'ExportDefaultDeclaration') {
+			const declaration = node.declaration;
+			if (
+				(declaration?.type === 'Identifier' && bindings.has(declaration.name)) ||
+				(declaration?.type === 'CallExpression' &&
+					declaration.callee?.type === 'Identifier' &&
+					markers.has(declaration.callee.name) &&
+					declaration.arguments?.length === 1)
+			) {
+				exports.push('default');
+			}
+			continue;
+		}
+		if (node.type !== 'ExportNamedDeclaration') continue;
+		if (node.declaration?.type === 'VariableDeclaration') {
+			for (const item of node.declaration.declarations || []) {
+				if (item.id?.type === 'Identifier' && bindings.has(item.id.name))
+					exports.push(item.id.name);
+			}
+		}
+		for (const specifier of node.specifiers || []) {
+			if (bindings.has(specifier.local?.name))
+				exports.push(specifier.exported?.name ?? specifier.exported?.value);
+		}
+	}
+	return exports;
+}
+
+export function findDescriptorChildrenImports(source, id) {
+	let ast;
+	try {
+		ast = source && typeof source === 'object' ? source : parseModule(source, id);
+	} catch {
+		return [];
+	}
+	const importedBindings = new Map();
+	for (const node of ast.body || []) {
+		if (node.type !== 'ImportDeclaration' || node.importKind === 'type') continue;
+		for (const specifier of node.specifiers || []) {
+			if (specifier.type === 'ImportSpecifier') {
+				importedBindings.set(specifier.local.name, {
+					request: node.source.value,
+					imported: specifier.imported?.name ?? specifier.imported?.value,
+				});
+			} else if (specifier.type === 'ImportDefaultSpecifier') {
+				importedBindings.set(specifier.local.name, {
+					request: node.source.value,
+					imported: 'default',
+				});
+			}
+		}
+	}
+	const jsxBindings = new Set();
+	const visited = new WeakSet();
+	const pending = [ast];
+	while (pending.length > 0) {
+		const value = pending.pop();
+		if (value === null || typeof value !== 'object' || visited.has(value)) continue;
+		visited.add(value);
+		// Match void-import discovery: JSX tags use openingElement.name
+		// (JSXIdentifier), while TSRX Element nodes expose the tag as id/name
+		// (Identifier). Only JSXOpeningElement/JSXIdentifier missed the latter.
+		if (value.type === 'JSXElement' || value.type === 'Element') {
+			const tag = value.openingElement?.name || value.id || value.name;
+			if (tag?.type === 'Identifier' || tag?.type === 'JSXIdentifier') {
+				jsxBindings.add(tag.name);
+			}
+		}
+		for (const [key, child] of Object.entries(value)) {
+			if (key === 'loc' || key === 'metadata') continue;
+			if (Array.isArray(child)) pending.push(...child);
+			else pending.push(child);
+		}
+	}
+	const candidates = [];
+	for (const [local, imported] of importedBindings) {
+		if (jsxBindings.has(local)) candidates.push({ ...imported, local });
+	}
+	for (const node of ast.body || []) {
+		if (node.type !== 'ExportNamedDeclaration') continue;
+		for (const specifier of node.specifiers || []) {
+			const exported = specifier.exported?.name ?? specifier.exported?.value;
+			if (node.source?.value) {
+				candidates.push({
+					request: node.source.value,
+					imported: specifier.local?.name ?? specifier.local?.value,
+					exported,
+				});
+				continue;
+			}
+			const imported = importedBindings.get(specifier.local?.name);
+			if (imported !== undefined) candidates.push({ ...imported, exported });
+		}
+	}
+	return candidates;
+}
+
 class OctaneBundlerCompiler {
 	constructor(options) {
+		if (options.strong !== undefined && typeof options.strong !== 'boolean') {
+			throw new TypeError('Octane compiler `strong` must be a boolean when provided.');
+		}
 		this.root = nodePath.resolve(options.root ?? process.cwd());
 		try {
 			this.realRoot = nodeFs.realpathSync(this.root);
@@ -318,6 +486,8 @@ class OctaneBundlerCompiler {
 			hmr: normalizeHmrDialect(options.hmr),
 			dev: options.dev,
 			profile: options.profile === true,
+			inlineHookMemo: options.inlineHookMemo !== false,
+			strong: options.strong === true,
 			universalRuntime: normalizeUniversalRuntime(options.universalRuntime),
 		};
 		this.renderers = normalizeRendererConfig(options.renderers);
@@ -447,6 +617,22 @@ class OctaneBundlerCompiler {
 			: nodePath.resolve(this.root, file);
 		if (/(?:^|[\\/])node_modules(?:[\\/]|$)/.test(absoluteFile)) return false;
 		return isPathInside(this.root, absoluteFile) || isPathInside(this.realRoot, absoluteFile);
+	}
+
+	_hasApplicationStrongPolicy(file, collected) {
+		if (!this._isProjectOwnedSource(file)) return false;
+		const absoluteFile = nodePath.isAbsolute(file)
+			? nodePath.resolve(file)
+			: nodePath.resolve(this.root, file);
+		const application = this._nearestOctanePackageRule(this.root);
+		const source = this._nearestOctanePackageRule(nodePath.dirname(absoluteFile));
+		addMetadata(collected, application);
+		addMetadata(collected, source);
+		return (
+			application.rule === null ||
+			source.rule === null ||
+			application.rule.root === source.rule.root
+		);
 	}
 
 	_isInstalledOctaneSource(file, collected) {
@@ -666,43 +852,38 @@ class OctaneBundlerCompiler {
 		const visitedPackageRoots = new Set();
 		const visit = (name, issuerRoot) => {
 			const packageRequire = nodeModule.createRequire(nodePath.join(issuerRoot, 'package.json'));
+			let entry;
 			try {
-				const entry = packageRequire.resolve(name);
-				const lookup = this._nearestOctanePackageRule(nodePath.dirname(entry));
-				addMetadata(collected, lookup);
-				if (!lookup.rule?.usesOctane) return;
-				sourceDependencies.add(name);
-				for (const dependency of lookup.rule.viteOptimizeDepsExclusions) {
-					viteOptimizeDepsExclusionRules.add(dependency);
-				}
-				for (const dependency of lookup.rule.runtimeDependencies) {
-					viteOptimizeDepsCandidates.add(dependency);
-				}
-				let packageRoot = lookup.rule.root;
-				try {
-					packageRoot = nodeFs.realpathSync(packageRoot);
-				} catch {
-					// Keep the resolved/symlink path as the cycle key.
-				}
-				if (visitedPackageRoots.has(packageRoot)) return;
-				visitedPackageRoots.add(packageRoot);
-				for (const dependency of lookup.rule.runtimeDependencies) {
-					visit(dependency, lookup.rule.root);
-				}
+				entry = packageRequire.resolve(name);
 			} catch {
 				// Match Node's upward node_modules search: package managers commonly
 				// satisfy a nested raw-source dependency by hoisting it to the project
-				// root. Any candidate's creation can therefore make this request
-				// resolvable and must invalidate a cached miss.
-				let candidateRoot = nodePath.resolve(issuerRoot);
-				for (;;) {
-					collected.missingDependencies.add(
-						nodePath.join(candidateRoot, 'node_modules', name, 'package.json'),
-					);
-					const parent = nodePath.dirname(candidateRoot);
-					if (parent === candidateRoot) break;
-					candidateRoot = parent;
-				}
+				// root. Prefer the installed manifest when the package entry itself is
+				// unresolvable (for example a require condition targeting a missing
+				// prepack-only CommonJS build).
+				entry = resolveInstalledPackageManifest(name, issuerRoot, collected);
+				if (entry === null) return;
+			}
+			const lookup = this._nearestOctanePackageRule(nodePath.dirname(entry));
+			addMetadata(collected, lookup);
+			if (!lookup.rule?.usesOctane) return;
+			sourceDependencies.add(name);
+			for (const dependency of lookup.rule.viteOptimizeDepsExclusions) {
+				viteOptimizeDepsExclusionRules.add(dependency);
+			}
+			for (const dependency of lookup.rule.runtimeDependencies) {
+				viteOptimizeDepsCandidates.add(dependency);
+			}
+			let packageRoot = lookup.rule.root;
+			try {
+				packageRoot = nodeFs.realpathSync(packageRoot);
+			} catch {
+				// Keep the resolved/symlink path as the cycle key.
+			}
+			if (visitedPackageRoots.has(packageRoot)) return;
+			visitedPackageRoots.add(packageRoot);
+			for (const dependency of lookup.rule.runtimeDependencies) {
+				visit(dependency, lookup.rule.root);
 			}
 		};
 		for (const name of dependencyNames) visit(name, projectManifestRoot);
@@ -738,6 +919,32 @@ class OctaneBundlerCompiler {
 	/** Static requests adapters resolve before a server transform. */
 	findServerImportRequests(code, id) {
 		return findStaticRuntimeImportRequests(code, this._canonicalModuleId(id));
+	}
+
+	/** CSS proof discovery uses the same ownership gate as the eventual compile. */
+	findCssModuleImportRequests(code, id, environment = 'client') {
+		if (typeof code !== 'string' || !code.includes('.module.')) return [];
+		// The live-read witness currently follows DOM host ownership only. Even
+		// a DOM-owned module can delegate a JSX-valued prop to another renderer.
+		if (Object.keys(this.renderers.boundaries).length > 0) return [];
+		const file = cleanModuleId(id);
+		const collected = { dependencies: new Set(), missingDependencies: new Set() };
+		if (!this._isFullCompileSource(file, collected)) return [];
+		const filename = this._canonicalModuleId(file);
+		const pragmaOwned =
+			this.requireDirective &&
+			file.endsWith('.tsx') &&
+			this._isProjectOwnedSource(file) &&
+			this._pragmaClaimsOwnership(code);
+		if (!this._passesOwnershipGate(file, filename, pragmaOwned)) return [];
+		const renderer = resolveRendererForFile(this.renderers, filename);
+		if (
+			renderer.target !== 'dom' ||
+			(environment === 'server' && renderer.server === 'client-only')
+		) {
+			return [];
+		}
+		return findCssModuleImportRequests(code, filename);
 	}
 
 	/**
@@ -816,10 +1023,32 @@ class OctaneBundlerCompiler {
 		// of both HMR and dev hydration diagnostics. Server transforms stay byte-for-
 		// byte identical even when a shared client/server bundler configuration opts in.
 		const profile = environment === 'client' && (options.profile ?? this.defaults.profile) === true;
+		const inlineHookMemo = (options.inlineHookMemo ?? this.defaults.inlineHookMemo) !== false;
+		// An application's global policy never leaks into installed or linked
+		// compatibility packages, including workspace packages nested inside the
+		// project root. Modules may still opt themselves in with their own
+		// directive, which the authored-source compiler resolves separately.
+		const strong =
+			(options.strong ?? this.defaults.strong) === true &&
+			this._hasApplicationStrongPolicy(file, collected);
 		const universalRuntime = normalizeUniversalRuntime(
 			options.universalRuntime ?? this.defaults.universalRuntime,
 		);
 		const filename = this._canonicalModuleId(file);
+		const targetRuntimeRequests = (source, kind) => {
+			if (environment !== 'server' || options.explicitRuntimeRequests !== true) return null;
+			const runtimeResult = rewriteServerRuntimeRequests(source, filename);
+			if (runtimeResult === null) return null;
+			return {
+				code: runtimeResult.code,
+				map: runtimeResult.map,
+				kind,
+				...finishMetadata(collected),
+			};
+		};
+		const passThrough = () => {
+			return targetRuntimeRequests(code, 'runtime-requests') ?? this._passThrough(code, collected);
+		};
 		const clientOnlyImports =
 			environment === 'server' && Array.isArray(options.clientOnlyImports)
 				? options.clientOnlyImports
@@ -853,7 +1082,7 @@ class OctaneBundlerCompiler {
 		if (!hostOwned) this._assertClientOnlySourceSupported(file, filename, renderer, collected);
 		if (
 			plainHelperSource &&
-			renderer.target === 'universal' &&
+			(renderer.target === 'universal' || renderer.target === 'valdi') &&
 			renderer.validation !== undefined &&
 			this._isProjectOwnedSource(file) &&
 			!this.exclude.some((path) => file.includes(path)) &&
@@ -882,6 +1111,10 @@ class OctaneBundlerCompiler {
 				};
 			}
 			const hasRendererBoundaries = Object.keys(this.renderers.boundaries).length > 0;
+			const collectCssModuleConstants =
+				renderer.target === 'dom' &&
+				!hasRendererBoundaries &&
+				typeof options.resolveCssModuleConstant === 'function';
 			const compileFilename =
 				hydrateBoundaryPath === null
 					? filename
@@ -892,6 +1125,8 @@ class OctaneBundlerCompiler {
 				dev,
 				profile,
 				profileFilename,
+				...(inlineHookMemo ? null : { inlineHookMemo: false }),
+				...(strong ? { strong: true } : null),
 				...(universalRuntime === undefined ? null : { universalRuntime }),
 				// Keep the established DOM compiler call byte-for-byte equivalent. A
 				// renderer descriptor is an orthogonal compiler input only for the
@@ -907,15 +1142,30 @@ class OctaneBundlerCompiler {
 				...(environment === 'client' && typeof options.isVoidComponentImport === 'function'
 					? { isVoidComponentImport: options.isVoidComponentImport }
 					: null),
+				...(typeof options.isDescriptorChildrenImport === 'function'
+					? { isDescriptorChildrenImport: options.isDescriptorChildrenImport }
+					: null),
+				...(collectCssModuleConstants
+					? {
+							resolveCssModuleConstant: options.resolveCssModuleConstant,
+							...(options.preserveCssModuleReferences === undefined
+								? null
+								: { preserveCssModuleReferences: options.preserveCssModuleReferences }),
+						}
+					: null),
 			};
 			const collectVoidComponentExports =
 				environment === 'client' && options.collectVoidComponentExports === true;
 			let out;
 			let voidComponentAst = null;
-			if (collectVoidComponentExports) {
+			let cssModuleConstantImports;
+			if (collectVoidComponentExports || collectCssModuleConstants) {
 				const compilation = compileForBundler(code, compileFilename, compileOptions);
 				out = compilation.result;
-				voidComponentAst = compilation.hydrateAst;
+				if (collectVoidComponentExports) voidComponentAst = compilation.hydrateAst;
+				if (collectCssModuleConstants) {
+					cssModuleConstantImports = compilation.cssModuleConstantImports;
+				}
 			} else {
 				out = compile(code, compileFilename, compileOptions);
 			}
@@ -933,6 +1183,8 @@ class OctaneBundlerCompiler {
 					: {
 							voidComponentExports: findVoidComponentExports(voidComponentAst, filename),
 						}),
+				...(cssModuleConstantImports === undefined ? null : { cssModuleConstantImports }),
+				descriptorChildrenExports: findDescriptorChildrenExports(code, filename),
 				...finishMetadata(collected),
 			};
 		}
@@ -945,22 +1197,22 @@ class OctaneBundlerCompiler {
 			if (this.requireDirective && !pragmaOwned && this._isProjectOwnedSource(file)) {
 				this._warnUnmarkedOctaneImport(code, filename);
 			}
-			return this._passThrough(code, collected);
+			return passThrough();
 		}
 
 		if (plainHelperSource) {
-			if (/\/\/\s*octane-no-slot\b/.test(code)) return null;
+			if (/\/\/\s*octane-no-slot\b/.test(code)) return passThrough();
 			if (this.exclude.some((path) => file.includes(path))) {
 				// Same conflict diagnostic as the full-compile gate: an ownership
 				// pragma inside an excluded path must not fail silent.
 				if (this.requireDirective) {
 					this._warnExcludedPragmaConflict(file, filename, pragmaOwned);
 				}
-				return null;
+				return passThrough();
 			}
-			if (!/from\s*['"]octane['"]/.test(code)) return null;
+			if (!/from\s*['"]octane['"]/.test(code)) return passThrough();
 			if (!this._isInstalledOctaneSource(file, collected)) {
-				return this._passThrough(code, collected);
+				return passThrough();
 			}
 			// Hook slotting is an Octane-ownership rewrite, so the ownership
 			// gate applies to it exactly as to full compilation: an unmarked
@@ -968,35 +1220,62 @@ class OctaneBundlerCompiler {
 			// pragma diagnostic), a pragma-marked one gets its hook slots.
 			if (this.requireDirective && !pragmaOwned && this._isProjectOwnedSource(file)) {
 				this._warnUnmarkedOctaneImport(code, filename);
-				return this._passThrough(code, collected);
+				return passThrough();
 			}
-			if (this._hasManualHookSlots(file, collected)) {
-				return this._passThrough(code, collected);
+			const manualSlots = this._hasManualHookSlots(file, collected);
+			const inlinePlainMemo =
+				inlineHookMemo &&
+				environment === 'client' &&
+				hmr === false &&
+				dev === false &&
+				profile === false &&
+				renderer.target === 'dom' &&
+				universalRuntime === undefined;
+			if (manualSlots && !inlinePlainMemo) {
+				// Hand-slotted bindings still own their authored policy. Opting one
+				// module in must not require changing its established slot ABI.
+				if (strong || code.includes('use strong')) {
+					const authoredSource = code;
+					assertStrongMode(parseModule(authoredSource, filename), authoredSource, filename, {
+						strong,
+					});
+				}
+				return passThrough();
 			}
 			const profileFilename = profile ? this._profileModuleId(file, collected) : undefined;
 			const specializeVoidRoot =
-				environment === 'client' && hmr === false && dev === false && profile === false;
+				!manualSlots &&
+				environment === 'client' &&
+				hmr === false &&
+				dev === false &&
+				profile === false;
 			const out = slotHooks(code, filename, {
 				environment,
 				hmr: !!hmr,
+				dev,
 				profile,
 				profileFilename,
+				inlineHookMemo: inlinePlainMemo,
+				...(manualSlots ? { manualSlots: true } : null),
+				...(strong ? { strong: true } : null),
 				...(specializeVoidRoot
 					? {
 							isVoidComponentImport: options.isVoidComponentImport,
 						}
 					: {}),
 			});
-			if (out === null) return this._passThrough(code, collected);
-			return {
-				code: out.code,
-				map: out.map,
-				kind: 'slots',
-				...finishMetadata(collected),
-			};
+			if (out === null) return passThrough();
+			return (
+				targetRuntimeRequests(out.code, 'slots') ?? {
+					code: out.code,
+					map: out.map,
+					kind: 'slots',
+					...finishMetadata(collected),
+				}
+			);
 		}
 
-		return null;
+		return passThrough();
 	}
 }
 

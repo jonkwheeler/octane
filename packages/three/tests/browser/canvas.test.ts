@@ -1,21 +1,27 @@
 // @vitest-environment node
 import { execFile } from 'node:child_process';
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'node:fs';
 import type { Server } from 'node:http';
-import { resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { launchBrowser } from '../../../../test-utils/playwright-browser.js';
 import { createNodeServer } from '../../../app-core/src/server/node-http.js';
+import { webglLaunchOptions } from './_playwright.js';
 
-const fixtureRoot = resolve(import.meta.dirname, '../_fixtures/ssr-app');
+// The helper stages a copy of the fixture here and builds it, so no bundler
+// output, resolver cache, or `node_modules` link lands in the checkout. The
+// suite owns the directory rather than the helper so an interrupted or failed
+// build still gets cleaned up. The realpath matters on macOS: its temp
+// directory is reached through the /var -> /private/var alias, and Rolldown
+// only accepts an HTML input under the exact normalized build root.
+const stagedRoot = realpathSync(mkdtempSync(join(tmpdir(), 'octane-three-ssr-')));
 const outputs = {
-	vite: resolve(fixtureRoot, 'dist-vite'),
-	rsbuild: resolve(fixtureRoot, 'dist-rsbuild'),
-	rspackClient: resolve(fixtureRoot, 'dist-rspack-client'),
-	rspackServer: resolve(fixtureRoot, 'dist-rspack-server'),
+	vite: resolve(stagedRoot, 'dist-vite'),
+	rsbuild: resolve(stagedRoot, 'dist-rsbuild'),
 };
-const fixtureNodeModules = resolve(fixtureRoot, 'node_modules');
 const buildHelper = resolve(import.meta.dirname, '_build-ssr.mjs');
 const buildEvidenceMarker = '__OCTANE_THREE_SSR_EVIDENCE__';
 const clientReferenceId = 'octane-client-reference-v1:three:/src/Scene.three.tsrx';
@@ -70,12 +76,8 @@ async function originOf(server: Server): Promise<string> {
 }
 
 beforeAll(async () => {
-	for (const output of Object.values(outputs)) {
-		rmSync(output, { recursive: true, force: true });
-	}
-
-	const { stdout } = await execFileAsync(process.execPath, [buildHelper], {
-		cwd: fixtureRoot,
+	const { stdout } = await execFileAsync(process.execPath, [buildHelper, stagedRoot], {
+		cwd: stagedRoot,
 		maxBuffer: 40 * 1024 * 1024,
 	});
 	const evidenceLine = stdout.split('\n').findLast((line) => line.startsWith(buildEvidenceMarker));
@@ -117,10 +119,7 @@ afterAll(async () => {
 			variant.server.close((error) => (error === undefined ? resolveClose() : reject(error)));
 		});
 	}
-	for (const output of Object.values(outputs)) {
-		rmSync(output, { recursive: true, force: true });
-	}
-	rmSync(fixtureNodeModules, { recursive: true, force: true });
+	rmSync(stagedRoot, { recursive: true, force: true });
 }, 30_000);
 
 describe('Three Canvas production SSR and hydration', () => {
@@ -190,20 +189,7 @@ describe('Three Canvas production SSR and hydration', () => {
 	});
 
 	it('hydrates one adopted Canvas/root/scene and tears it down in Vite and Rsbuild', async () => {
-		let browser: import('playwright').Browser | undefined;
-		try {
-			const { chromium } = await import('playwright');
-			browser = await chromium.launch({
-				headless: true,
-				args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
-			});
-		} catch (error) {
-			throw new Error(
-				'[@octanejs/three SSR] Chromium is required ' +
-					'(run `pnpm exec playwright install chromium`): ' +
-					(error instanceof Error ? error.message.split('\n')[0] : String(error)),
-			);
-		}
+		const browser = await launchBrowser(webglLaunchOptions());
 
 		try {
 			for (const variant of variants) {
@@ -309,20 +295,7 @@ describe('Three Canvas production SSR and hydration', () => {
 	}, 120_000);
 
 	it('projects a client-only Three asset pending state and starts it once', async () => {
-		let browser: import('playwright').Browser | undefined;
-		try {
-			const { chromium } = await import('playwright');
-			browser = await chromium.launch({
-				headless: true,
-				args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
-			});
-		} catch (error) {
-			throw new Error(
-				'[@octanejs/three SSR] Chromium is required ' +
-					'(run `pnpm exec playwright install chromium`): ' +
-					(error instanceof Error ? error.message.split('\n')[0] : String(error)),
-			);
-		}
+		const browser = await launchBrowser(webglLaunchOptions());
 
 		const page = await browser.newPage({ viewport: { width: 96, height: 96 } });
 		const errors: string[] = [];
@@ -378,20 +351,7 @@ describe('Three Canvas production SSR and hydration', () => {
 	}, 60_000);
 
 	it('projects a client-only Three render error to the DOM owner', async () => {
-		let browser: import('playwright').Browser | undefined;
-		try {
-			const { chromium } = await import('playwright');
-			browser = await chromium.launch({
-				headless: true,
-				args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
-			});
-		} catch (error) {
-			throw new Error(
-				'[@octanejs/three SSR] Chromium is required ' +
-					'(run `pnpm exec playwright install chromium`): ' +
-					(error instanceof Error ? error.message.split('\n')[0] : String(error)),
-			);
-		}
+		const browser = await launchBrowser(webglLaunchOptions());
 
 		const page = await browser.newPage({ viewport: { width: 96, height: 96 } });
 		const errors: string[] = [];

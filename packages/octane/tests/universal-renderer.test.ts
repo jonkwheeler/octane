@@ -2,10 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { builders as b, parseModule } from '@tsrx/core';
 import { print as esrapPrint } from 'esrap';
 import esrapTsx from 'esrap/languages/tsx';
+import ts from 'typescript';
 import { compile } from '../src/compiler/compile.js';
 import { lowerUniversalRendererRegionAst } from '../src/compiler/compile-universal.js';
 import { normalizeRendererConfig } from '../src/compiler/renderers.js';
 import * as UniversalRuntime from '../src/universal.js';
+import { act } from '../src/index.js';
 import {
 	createObjectContainer,
 	createObjectDriver,
@@ -162,6 +164,40 @@ function objectRoot(compilerLeafProps = false) {
 	return { container, root };
 }
 
+type HmrModule = Record<string, any>;
+type HmrDispose = (data: Record<string, unknown>) => void;
+type HmrAccept = (module: HmrModule | undefined) => void;
+
+interface HmrContext {
+	data: Record<string, unknown> | undefined;
+	dispose(callback: HmrDispose): void;
+	accept(callback?: HmrAccept): void;
+	invalidate(): void;
+}
+
+function evaluateUniversalHmrModule(
+	code: string,
+	hot: HmrContext,
+	modules: Record<string, unknown> = { 'octane/universal': UniversalRuntime },
+): HmrModule {
+	// Preserve ESM semantics: default-expression snapshots must remain
+	// distinguishable from live export aliases after a hot handoff.
+	const executable = ts.transpileModule(
+		code.replaceAll('import.meta.webpackHot', '__hot').replaceAll('import.meta.hot', '__hot'),
+		{ compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ESNext } },
+	).outputText;
+	const exports: HmrModule = {};
+	new Function('require', 'exports', '__hot', executable)(
+		(request: string) => {
+			if (request in modules) return modules[request];
+			throw new Error(`Unexpected compiled module import: ${request}`);
+		},
+		exports,
+		hot,
+	);
+	return exports;
+}
+
 function walkCompiledAst(root: unknown, visit: (node: any) => void): void {
 	const seen = new WeakSet<object>();
 	const walk = (node: any): void => {
@@ -285,6 +321,37 @@ describe('universal compiler target', () => {
 		});
 
 		expect(optionalValidation).toEqual(baseline);
+	});
+
+	it('lowers static class arrays and literal children out of the slot array', () => {
+		// `['row', on && 'danger']` composes clsx-style to a string, so when every
+		// element is statically string-or-falsy the compiler emits the composed
+		// string expression: the slot value becomes a primitive (stable across
+		// renders on transported roots) instead of a fresh array per render.
+		// All-literal arrays and string-literal children leave the slot array
+		// entirely and ride the frozen plan.
+		const source =
+			"export function Row({ selected }) @{ <view class={['row', selected && 'danger']}><text class={['col', 'label']}>{'x'}</text></view> }";
+		const compiled = compile(source, '/src/Row.object.tsrx', { hmr: false, renderer });
+		const values = callsByImportedName(compiled.code, 'octane/universal').get('universalValue');
+		expect(values).toHaveLength(1);
+		const elements = values![0].arguments[1].elements;
+		expect(elements).toHaveLength(1);
+		expect(elements[0].type).toBe('BinaryExpression');
+		expect(compiled.code).toContain('"kind": "text", "value": "x"');
+		expect(compiled.code).toContain('"class": "col label"');
+
+		// Values outside the static string-or-falsy shape keep the authored
+		// array and the runtime's general composition.
+		const dynamic = compile(
+			"export function Row({ extra }) @{ <view class={['row', extra]} /> }",
+			'/src/Row.object.tsrx',
+			{ hmr: false, renderer },
+		);
+		const dynamicValues = callsByImportedName(dynamic.code, 'octane/universal').get(
+			'universalValue',
+		);
+		expect(dynamicValues![0].arguments[1].elements[0].type).toBe('ArrayExpression');
 	});
 
 	it('carries frozen runtime/thread metadata without changing emitted code by default', () => {
@@ -472,6 +539,31 @@ export function onTap(value) {
 		);
 	});
 
+	it('routes thread-function helpers through a renderer-owned cold module', () => {
+		const result = compile(
+			`export const onTap = () => { 'main thread'; return 1; };`,
+			'/src/ColdThreadFunction.object.ts',
+			{
+				hmr: false,
+				renderer: {
+					...renderer,
+					capabilities: ['thread-functions'],
+					threadFunctionsModule: 'octane/universal/thread-functions',
+				},
+				universalRuntime: { runtime: 'object', thread: 'main-thread' },
+			},
+		);
+
+		expect(
+			callsByImportedName(result.code, 'octane/universal/thread-functions').get(
+				'registerThreadFunction',
+			),
+		).toHaveLength(1);
+		expect(result.code).not.toMatch(
+			/import\s*\{[^}]*registerThreadFunction[^}]*\}\s*from\s*["']octane\/universal["']/,
+		);
+	});
+
 	it('registers active thread implementations before authored calls and defers captures', () => {
 		const source = `
 export const immediate = () => {
@@ -595,7 +687,7 @@ export const capturedDeclarationValue = setupCapturedDeclaration();`;
 
 	it.each([
 		['Vite', true, 'import.meta.hot.dispose'],
-		['webpack', 'webpack', 'import.meta.webpackHot.dispose'],
+		['webpack', 'webpack', '__octaneWebpackHot.dispose'],
 	] as const)(
 		'unregisters every active-layer thread site on %s disposal without requiring a component',
 		(_label, hmr, disposeCall) => {
@@ -1830,7 +1922,7 @@ export function Scene() @{
 			hmr: false,
 		}).code;
 		expect(output).toMatch(/__octaneUniversalFor\(\s*items/);
-		expect(output).toMatch(/,\s*null,\s*true,\s*true\s*\)/);
+		expect(output).toMatch(/,\s*null,\s*true,\s*true,\s*void 0,\s*\w+\s*\)/);
 		const hmrOutput = compile(source, '/src/PureList.object.tsrx', {
 			renderer,
 			hmr: true,
@@ -1962,6 +2054,87 @@ export function Scene() @{
 		root.render(GetterStateList as any, { items: [b, a] });
 		expect(container.children).toEqual([hostB, hostA]);
 		expect(container.children.map((child) => child.props.name)).toEqual(['B', 'A2']);
+		root.unmount();
+	});
+
+	it('elides proven intrinsic tree owners while retaining keyed getter hooks and event captures', () => {
+		const source = `
+			export function Scene({items, select}) @{
+				@for (const item of items; key item.id) {
+					<node id={item.id}>
+						<leaf bindtap={() => select(item.id)}>{item.label as string}</leaf>
+					</node>
+				}
+			}
+		`;
+		const supported = { ...renderer, capabilities: ['template-program-mount'] } as const;
+		let output = compile(source, '/src/ProgramTree.object.tsrx', {
+			renderer: supported,
+			hmr: false,
+		}).code;
+		expect(output).toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+		expect(
+			compile(source, '/src/ProgramTree.object.tsrx', { renderer, hmr: false }).code,
+		).not.toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+		expect(
+			compile(source, '/src/ProgramTree.object.tsrx', { renderer: supported, hmr: true }).code,
+		).not.toMatch(/,\s*null,\s*false,\s*false,\s*true\s*\)/);
+
+		output = output.replace(
+			/import\s*\{([\s\S]*?)\}\s*from\s*["']octane\/universal["'];/g,
+			(_match, specifiers: string) =>
+				`const {${specifiers.replace(/\s+as\s+/g, ': ')}} = __universal;`,
+		);
+		output = output.replace('export const Scene =', 'const Scene =');
+		const ProgramTree = new Function('__universal', `${output}\nreturn Scene;`)(
+			UniversalRuntime,
+		) as (props: unknown) => unknown;
+		const container = createObjectContainer();
+		const base = createObjectDriver();
+		const root = createUniversalRoot(container, {
+			...base,
+			capabilities: { ...base.capabilities, templateProgramMount: true },
+			events: {
+				classify(name) {
+					return name === 'bindtap'
+						? { type: 'tap', priority: 'discrete' as const }
+						: (base.events?.classify(name) ?? null);
+				},
+			},
+		});
+		const selected: string[] = [];
+		let setLabel!: (value: string) => void;
+		const first = { id: 'a', label: 'plain' };
+		const second = {
+			id: 'b',
+			get label() {
+				const [value, update] = UniversalRuntime.useState('hooked', 'program-getter');
+				setLabel = update;
+				return value;
+			},
+		};
+
+		root.render(ProgramTree as any, {
+			items: [first, second],
+			select: (id: string) => selected.push(`first:${id}`),
+		});
+		const [plainHost, hookedHost] = container.children;
+		expect(plainHost.children[0].children[0].props.value).toBe('plain');
+		expect(hookedHost.children[0].children[0].props.value).toBe('hooked');
+		container.dispatchEvent(hookedHost.children[0], 'tap', undefined);
+		expect(selected).toEqual(['first:b']);
+
+		UniversalRuntime.flushUniversalSync(() => setLabel('updated'));
+		expect(container.children).toEqual([plainHost, hookedHost]);
+		expect(hookedHost.children[0].children[0].props.value).toBe('updated');
+
+		root.render(ProgramTree as any, {
+			items: [second, first],
+			select: (id: string) => selected.push(`second:${id}`),
+		});
+		expect(container.children).toEqual([hookedHost, plainHost]);
+		container.dispatchEvent(plainHost.children[0], 'tap', undefined);
+		expect(selected).toEqual(['first:b', 'second:a']);
 		root.unmount();
 	});
 
@@ -2148,7 +2321,7 @@ export function Scene() @{
 			renderer,
 			hmr: false,
 		}).code;
-		expect(output).toMatch(/,\s*null,\s*true,\s*true\s*\)/);
+		expect(output).toMatch(/,\s*null,\s*true,\s*true,\s*void 0,\s*\w+\s*\)/);
 		output = output.replace(
 			/import\s*\{([\s\S]*?)\}\s*from\s*["']octane\/universal["'];/g,
 			(_match, specifiers: string) =>
@@ -2472,6 +2645,284 @@ export function Scene() @{
 				column: 14,
 			}),
 		);
+	});
+
+	it.each([
+		['Vite shorthand', 'vite', 'tsrx', undefined],
+		['Vite JSX', true, 'tsx', undefined],
+		['webpack shorthand', 'webpack', 'tsrx', undefined],
+		['webpack JSX', 'webpack', 'tsx', undefined],
+		['Vite addition of constructor', 'vite', 'tsrx', 'constructor'],
+		['Vite addition of __proto__', 'vite', 'tsrx', '__proto__'],
+		['Vite addition of toString', 'vite', 'tsrx', 'toString'],
+	] as const)(
+		'refreshes mounted and newly imported universal components across repeated %s updates',
+		async (_label, hmr, extension, addedExport) => {
+			const hotData: Record<string, unknown> = {};
+			let dispose: HmrDispose[] = [];
+			let accept: HmrAccept[] = [];
+			const invalidate = vi.fn();
+			const evaluate = (
+				version: number,
+				data: Record<string, unknown> | undefined,
+				defaultName = 'Default',
+			) => {
+				const component = (name: string) => {
+					const output = `<scene version={${version}} count={count} increment={() => setCount(count + 1)} />`;
+					const setup = 'const [count, setCount] = useState(0);';
+					return extension === 'tsrx'
+						? `function ${name}() @{ ${setup} ${output} }`
+						: `function ${name}() { ${setup} return ${output}; }`;
+				};
+				const added =
+					version > 1 && addedExport !== undefined ? `\nexport ${component(addedExport)}` : '';
+				const source = `import { useState } from 'octane';\nexport ${component('Named')}\nexport default ${component(defaultName)}${added}`;
+				const output = compile(source, `/src/HotData.object.${extension}`, { renderer, hmr }).code;
+				const hot = {
+					data,
+					dispose(callback: HmrDispose) {
+						// Vite replaces a module's dispose handler; webpack accumulates them.
+						if (hmr === 'webpack') dispose.push(callback);
+						else dispose = [callback];
+					},
+					accept(callback: HmrAccept = () => {}) {
+						accept.push(callback);
+					},
+					invalidate,
+				};
+				return evaluateUniversalHmrModule(output, hot);
+			};
+			const update = async (version: number, defaultName = 'Default') => {
+				const previousAccept = accept;
+				const data = hmr === 'webpack' ? {} : hotData;
+				for (const callback of dispose) callback(data);
+				dispose = [];
+				accept = [];
+				const next = evaluate(version, data, defaultName);
+				if (hmr !== 'webpack') {
+					for (const callback of previousAccept) callback(next);
+				}
+				await Promise.resolve();
+				return next;
+			};
+			const first = evaluate(1, hmr === 'webpack' ? undefined : hotData);
+			const mounted = ['Named', 'default'].map((name) => {
+				const result = objectRoot();
+				result.root.render(first[name], undefined);
+				return result;
+			});
+			const laterExports = [
+				'Named',
+				'default',
+				...(addedExport === undefined ? [] : [addedExport]),
+			];
+			const later = laterExports.map(() => objectRoot());
+			try {
+				for (const { container } of mounted) {
+					expect(container.children[0].props).toMatchObject({ version: 1, count: 0 });
+					(container.children[0].props.increment as () => void)();
+				}
+				await Promise.resolve();
+				const second = await update(2);
+				for (const { container } of mounted) {
+					expect(container.children[0].props).toMatchObject({ version: 2, count: 1 });
+				}
+				for (const [index, name] of laterExports.entries()) {
+					later[index].root.render(second[name], undefined);
+					expect(later[index].container.children[0].props).toMatchObject({ version: 2, count: 0 });
+				}
+				await update(3);
+				for (const { container } of mounted) {
+					expect(container.children[0].props).toMatchObject({ version: 3, count: 1 });
+					(container.children[0].props.increment as () => void)();
+				}
+				for (const { container } of later) {
+					expect(container.children[0].props).toMatchObject({ version: 3, count: 0 });
+				}
+				await Promise.resolve();
+				for (const { container } of mounted) {
+					expect(container.children[0].props.count).toBe(2);
+				}
+				await update(4, 'RenamedDefault');
+				for (const { container } of [...mounted, ...later]) {
+					expect(container.children[0].props.version).toBe(4);
+				}
+				for (const { root } of [...mounted, ...later]) root.unmount();
+				await update(5, 'RenamedDefault');
+				for (const { container } of [...mounted, ...later]) expect(container.children).toEqual([]);
+				expect(invalidate).not.toHaveBeenCalled();
+			} finally {
+				for (const { root } of [...mounted, ...later]) root.unmount();
+			}
+		},
+	);
+
+	it.each([
+		['Named', 'export default function Default() @{ <scene version={2} /> }'],
+		['default', 'export function Named() @{ <scene version={2} /> }'],
+	] as const)(
+		'invalidates a Vite update that removes the %s universal export',
+		(exportName, source) => {
+			let accept: HmrAccept[] = [];
+			const hot: HmrContext = {
+				data: {},
+				dispose() {},
+				accept(callback = () => {}) {
+					accept.push(callback);
+				},
+				invalidate: vi.fn(),
+			};
+			const evaluate = (source: string) =>
+				evaluateUniversalHmrModule(
+					compile(source, '/src/RemovedBoundary.object.tsrx', { renderer, hmr: true }).code,
+					hot,
+				);
+			const first = evaluate(`
+export function Named() @{ <scene version={1} /> }
+export default function Default() @{ <scene version={1} /> }`);
+			const { root, container } = objectRoot();
+			root.render(first[exportName], undefined);
+			try {
+				expect(container.children[0].props.version).toBe(1);
+				const previousAccept = accept;
+				accept = [];
+				const next = evaluate(source);
+				for (const callback of previousAccept) callback(next);
+				expect(hot.invalidate).toHaveBeenCalled();
+			} finally {
+				root.unmount();
+			}
+		},
+	);
+
+	it('keeps mounted universal output when Vite reports a failed module evaluation', () => {
+		let accept: HmrAccept = () => {};
+		const hot: HmrContext = {
+			data: {},
+			dispose() {},
+			accept(callback = () => {}) {
+				accept = callback;
+			},
+			invalidate: vi.fn(),
+		};
+		const module = evaluateUniversalHmrModule(
+			compile(
+				'export function Scene() @{ <scene version={1} /> }',
+				'/src/FailedUpdate.object.tsrx',
+				{
+					renderer,
+					hmr: true,
+				},
+			).code,
+			hot,
+		);
+		const { root, container } = objectRoot();
+		root.render(module.Scene, undefined);
+		try {
+			accept(undefined);
+			expect(container.children[0].props.version).toBe(1);
+			expect(hot.invalidate).not.toHaveBeenCalled();
+		} finally {
+			root.unmount();
+		}
+	});
+
+	it('preserves thread cleanup across Vite edits to mixed renderer modules', async () => {
+		const domRuntime = await import('../src/index.js');
+		const definitions = new Map<string, (...args: any[]) => unknown>();
+		let failRegistration = false;
+		const bridgeModule = '@test/hmr-renderer-bridge';
+		const config = normalizeRendererConfig({
+			registry: {
+				object: {
+					module: 'octane/universal',
+					text: 'host',
+					capabilities: ['thread-functions'],
+				},
+			},
+			boundaries: {
+				[bridgeModule]: {
+					Canvas: { ownerRenderer: 'dom', childRenderer: 'object', prop: 'children' },
+					Html: { ownerRenderer: 'object', childRenderer: 'dom', prop: 'children' },
+				},
+			},
+		});
+		const modules = {
+			octane: domRuntime,
+			'octane/internal/client': domRuntime,
+			'octane/universal': {
+				...UniversalRuntime,
+				registerThreadFunction(
+					_kind: string,
+					id: string,
+					implementation: (...args: any[]) => unknown,
+				) {
+					definitions.set(id, implementation);
+					if (failRegistration) throw new Error('module initialization failed');
+				},
+				unregisterThreadFunction(_kind: string, id: string) {
+					definitions.delete(id);
+				},
+			},
+			[bridgeModule]: {
+				Canvas: UniversalRuntime.createUniversalHostBoundary('object'),
+				Html: defineUniversalComponent('object', () => null),
+			},
+		};
+		const data: Record<string, unknown> = {};
+		let dispose: HmrDispose | undefined;
+		let accept: HmrAccept[] = [];
+		const hot: HmrContext = {
+			data,
+			dispose(callback) {
+				dispose = callback;
+			},
+			accept(callback = () => {}) {
+				accept.push(callback);
+			},
+			invalidate: vi.fn(),
+		};
+		const evaluate = (version: number, fail = false) => {
+			failRegistration = fail;
+			const source = `
+import { Canvas, Html } from '${bridgeModule}';
+export function App() @{
+  <group>
+    <Html>
+      <main data-version={${version}}>
+        <Canvas><scene main-thread:bindtap={() => { 'main thread'; return ${version}; }} /></Canvas>
+        <Canvas><scene version={${version}} /></Canvas>
+      </main>
+    </Html>
+  </group>
+}`;
+			const output = compile(source, '/src/MixedHmr.object.tsrx', {
+				hmr: true,
+				renderer: { ...renderer, capabilities: ['thread-functions'] },
+				rendererBoundaries: config.boundaries,
+				rendererRegistry: config.registry,
+				universalRuntime: { runtime: 'object', thread: 'main-thread' },
+			}).code;
+			return evaluateUniversalHmrModule(output, hot, modules);
+		};
+		let previousAccept: HmrAccept[] = [];
+		for (const version of [1, 2]) {
+			accept = [];
+			const module = evaluate(version);
+			for (const callback of previousAccept) callback(module);
+			expect(
+				[...definitions.values()].map((implementation) => implementation([], undefined, [])),
+			).toEqual([version]);
+			dispose?.(data);
+			expect(definitions.size).toBe(0);
+			previousAccept = accept;
+		}
+		expect(() => evaluate(3, true)).toThrow('module initialization failed');
+		expect(
+			[...definitions.values()].map((implementation) => implementation([], undefined, [])),
+		).toEqual([3]);
+		dispose?.(data);
+		expect(definitions.size).toBe(0);
 	});
 
 	it('warms adjacent universal component trees from a parent with no use()', async () => {
@@ -2871,6 +3322,55 @@ export function Scene() @{
 		expect(loads).toBe(1);
 		first.root.unmount();
 		second.root.unmount();
+	});
+
+	it('applies live lazy defaults without replacing null or mutating supplied props', async () => {
+		const plan = universalPlan('object', {
+			kind: 'host',
+			type: 'lazy-defaults',
+			bindings: [
+				['label', 0],
+				['nullable', 1],
+				['extra', 2],
+			],
+		});
+		const Loaded = defineUniversalComponent(
+			'object',
+			(props: { label?: string; nullable?: string | null; extra?: string; revision: number }) =>
+				universalValue(plan, [props.label, props.nullable, props.extra]),
+		);
+		const component = Loaded as typeof Loaded & {
+			defaultProps: { label: string; nullable: string; extra: string };
+		};
+		component.defaultProps = { label: 'first', nullable: 'unused', extra: 'first extra' };
+		const Lazy = UniversalRuntime.lazy(() => Promise.resolve({ default: component }));
+		const Parent = defineUniversalComponent('object', (props: any) =>
+			UniversalRuntime.universalComponent('object', Lazy, props),
+		);
+		const first = Object.freeze({ label: undefined, nullable: null, revision: 0 });
+		const { container, root } = objectRoot();
+
+		expect(root.render(Parent, first).status).toBe('suspended');
+		await Promise.resolve();
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(container.children[0].props).toMatchObject({
+			label: 'first',
+			nullable: null,
+			extra: 'first extra',
+		});
+		expect(first).toEqual({ label: undefined, nullable: null, revision: 0 });
+
+		component.defaultProps = { label: 'second', nullable: 'still unused', extra: 'second extra' };
+		const second = Object.freeze({ label: undefined, nullable: null, revision: 1 });
+		root.render(Parent, second);
+		expect(container.children[0].props).toMatchObject({
+			label: 'second',
+			nullable: null,
+			extra: 'second extra',
+		});
+		expect(second).toEqual({ label: undefined, nullable: null, revision: 1 });
+		root.unmount();
 	});
 
 	it('composes memo comparators with resolved universal lazy components', async () => {
@@ -3815,6 +4315,109 @@ describe('mixed DOM and universal ownership', () => {
 		root.unmount();
 	});
 
+	it('releases an abandoned DOM scope before retrying with a delayed foreign cleanup scheduler', async () => {
+		const container = createObjectContainer();
+		const scheduled: Array<() => void> = [];
+		const root = createUniversalRoot(container, createObjectDriver(), {
+			scheduleMicrotask(callback) {
+				scheduled.push(callback);
+			},
+		});
+		const plan = universalPlan('object', {
+			kind: 'host',
+			type: 'node',
+			bindings: [
+				['theme', 0],
+				['value', 1],
+			],
+		});
+		let resolve!: (value: string) => void;
+		const pending = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const Child = defineUniversalComponent('object', () =>
+			universalValue(plan, [useUniversalContext(UniversalTheme), use(pending)]),
+		);
+		const props = {
+			root,
+			component: Child,
+			childProps: {},
+			theme: 'dark',
+			log: () => {},
+			failAfterPrepare: false,
+		};
+		const mounted = mount(UniversalBoundaryFixture, props);
+		try {
+			expect(container.children).toEqual([]);
+			// The DOM retry uses native microtasks. The foreign renderer's queued
+			// attempt cleanup deliberately has not run before the new scope mounts.
+			await act(async () => {
+				resolve('ready');
+				await pending;
+			});
+			expect(mounted.container.querySelector('.caught')).toBeNull();
+			expect(container.children).toHaveLength(1);
+			const host = container.children[0];
+			expect(host.props).toMatchObject({ theme: 'dark', value: 'ready' });
+			// Stale abort/bridge-release callbacks must not invalidate the new
+			// owner. A later context update proves its bridge still points live.
+			for (const callback of scheduled.splice(0)) callback();
+			mounted.update(UniversalBoundaryFixture, { ...props, theme: 'light' });
+			expect(container.children).toEqual([host]);
+			expect(host.props).toMatchObject({ theme: 'light', value: 'ready' });
+		} finally {
+			mounted.unmount();
+			root.unmount();
+		}
+		expect(container.children).toEqual([]);
+	});
+
+	it('does not transfer abandoned root suspension ownership to replacement props', async () => {
+		const { container, root } = objectRoot();
+		const plan = universalPlan('object', {
+			kind: 'host',
+			type: 'node',
+			bindings: [['value', 0]],
+		});
+		let resolve!: (value: string) => void;
+		const pending = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const Suspends = defineUniversalComponent('object', () => universalValue(plan, [use(pending)]));
+		const Throw = defineUniversalComponent('object', () => {
+			throw new Error('replacement prepare failed');
+		});
+		const Safe = defineUniversalComponent('object', () => universalValue(plan, ['safe']));
+		const props = {
+			root,
+			component: Suspends,
+			childProps: {},
+			theme: 'dark',
+			log: () => {},
+			failAfterPrepare: false,
+		};
+		const mounted = mount(UniversalBoundaryFixture, props);
+		try {
+			mounted.update(UniversalBoundaryFixture, { ...props, component: Throw });
+			expect(mounted.find('.caught').textContent).toBe('caught: replacement prepare failed');
+			expect(container.children).toEqual([]);
+			// This failure belongs to a superseding request, not the abandoned
+			// suspension's retry. It must not consume an uncommitted host root.
+			expect(root.render(Safe, undefined).status).toBe('committed');
+			const host = container.children[0];
+			await act(async () => {
+				resolve('obsolete');
+				await pending;
+			});
+			expect(container.children).toEqual([host]);
+			expect(host.props.value).toBe('safe');
+			expect(mounted.find('.caught').textContent).toBe('caught: replacement prepare failed');
+		} finally {
+			mounted.unmount();
+			root.unmount();
+		}
+	});
+
 	it('retains suspended ownership for retry and tears it down when the retry errors', async () => {
 		const { container, root } = objectRoot();
 		const plan = universalPlan('object', {
@@ -3845,10 +4448,10 @@ describe('mixed DOM and universal ownership', () => {
 		expect(container.instanceCount).toBe(0);
 
 		failRetry = true;
-		resolve('ready');
-		await pending;
-		await Promise.resolve();
-		await Promise.resolve();
+		await act(async () => {
+			resolve('ready');
+			await pending;
+		});
 
 		expect(mounted.find('.caught').textContent).toBe('caught: object retry failed');
 		expect(container.commits).toHaveLength(0);
@@ -3884,11 +4487,10 @@ describe('universal nested boundary ownership', () => {
 		container.dispatchEvent(mesh, 'pointerdown', 'one');
 
 		root.render(SceneWithEvent, { handler: (payload) => log.push(`second:${payload}`) });
+		// A replaced handler closure keeps its stable listener ID, so no wire
+		// re-announcement is emitted — yet dispatch must reach the new closure.
 		const replacement = container.commits[1].commands.find((command) => command.op === 'event');
-		expect(replacement).toMatchObject({
-			op: 'event',
-			listener: { id: (firstCommand as any).listener.id },
-		});
+		expect(replacement).toBeUndefined();
 		container.dispatchEvent(mesh.id, 'pointerdown', 'two');
 
 		root.render(SceneWithEvent, { handler: null });

@@ -10,6 +10,7 @@ import {
 	detectVanillaCore,
 	scanSource,
 	KNOWN_BINDINGS,
+	KNOWN_VANILLA_CORES,
 	KNOWN_NATIVE_BINDINGS,
 	KNOWN_BINDING_PACKAGE_DIRS,
 } from './bridge.js';
@@ -165,7 +166,7 @@ describe('bridgeReport', () => {
 		expect(report.plan.join('\n')).toContain('octane/server');
 	});
 
-	it('reports class components as needs-rework', async () => {
+	it('reports class components as bridgeable with mandatory rewrites', async () => {
 		const root = await mkdtemp(join(tmpdir(), 'octane-bridge-'));
 		await writeFakePackage(root, 'classy', {
 			'index.js': `
@@ -175,6 +176,20 @@ describe('bridgeReport', () => {
 		});
 		const report = await bridgeReport({ packageName: 'classy', projectRoot: root });
 		expect(report.classComponents).toBe(true);
+		expect(report.apis.find((row) => row.name === 'Component').status).toBe('rewrite');
+		expect(report.verdict).toBe('bridgeable-with-rewrites');
+	});
+
+	it('reserves needs-rework for a public React API with no Octane rewrite', async () => {
+		const root = await mkdtemp(join(tmpdir(), 'octane-bridge-'));
+		await writeFakePackage(root, 'profiler-lib', {
+			'index.js': `
+				import { Profiler } from 'react';
+				export { Profiler };
+			`,
+		});
+		const report = await bridgeReport({ packageName: 'profiler-lib', projectRoot: root });
+		expect(report.apis.find((row) => row.name === 'Profiler').status).toBe('unsupported');
 		expect(report.verdict).toBe('needs-rework');
 	});
 
@@ -184,6 +199,18 @@ describe('bridgeReport', () => {
 		const report = await bridgeReport({ packageName: 'zustand', projectRoot: root });
 		expect(report.existingBinding).toBe('@octanejs/zustand');
 		expect(report.plan[0]).toContain('@octanejs/zustand');
+	});
+
+	it('tells the caller to bridge from a pinned copy of the upstream source', async () => {
+		const root = await mkdtemp(join(tmpdir(), 'octane-bridge-'));
+		await writeFakePackage(root, 'widgets', {
+			'index.js': `
+				import { useState } from 'react';
+				export function useWidget() { return useState(0); }
+			`,
+		});
+		const report = await bridgeReport({ packageName: 'widgets', projectRoot: root });
+		expect(report.plan.join('\n')).toContain('Pin the upstream version');
 	});
 
 	it('errors clearly when the package is not installed', async () => {
@@ -221,13 +248,13 @@ describe('bridgeReportFromSource', () => {
 		expect(report.plan.join('\n')).toContain('forwardRef');
 	});
 
-	it('reports class components as needs-rework', () => {
+	it('reports class components as bridgeable with mandatory rewrites', () => {
 		const report = bridgeReportFromSource(`
 			import React from 'react';
 			export class Panel extends React.Component { render() { return null; } }
 		`);
 		expect(report.classComponents).toBe(true);
-		expect(report.verdict).toBe('needs-rework');
+		expect(report.verdict).toBe('bridgeable-with-rewrites');
 		expect(report.plan.join('\n')).toContain('function component');
 	});
 
@@ -239,6 +266,15 @@ describe('bridgeReportFromSource', () => {
 		expect(report.existingBinding).toBe('@octanejs/tanstack-query');
 		expect(report.vanillaCore).toBe('@tanstack/query-core');
 		expect(report.plan[0]).toContain('@octanejs/tanstack-query');
+	});
+
+	it('routes the React Monaco adapter to its framework-neutral editor core', () => {
+		const report = bridgeReportFromSource(`export {};`, {
+			packageName: '@monaco-editor/react',
+		});
+		expect(report.existingBinding).toBe('@octanejs/monaco-editor');
+		expect(report.vanillaCore).toBe('monaco-editor');
+		expect(report.plan[0]).toContain('@octanejs/monaco-editor');
 	});
 
 	it('same-name hook usage stays bridgeable', () => {
@@ -253,6 +289,37 @@ describe('bridgeReportFromSource', () => {
 });
 
 describe('KNOWN_BINDINGS', () => {
+	it('maps react-alien-signals to the Octane binding and vanilla core', () => {
+		expect(KNOWN_BINDINGS['react-alien-signals']).toBe('@octanejs/alien-signals');
+		expect(KNOWN_VANILLA_CORES['react-alien-signals']).toBe('alien-signals');
+	});
+
+	it('maps react-textarea-autosize to the exact Octane binding', () => {
+		expect(KNOWN_BINDINGS['react-textarea-autosize']).toBe('@octanejs/textarea-autosize');
+	});
+
+	it('maps react-window to its exact official Octane binding', () => {
+		expect(KNOWN_BINDINGS['react-window']).toBe('@octanejs/window');
+	});
+
+	it('maps TanStack React DB to the Octane binding and framework-neutral core', () => {
+		expect(KNOWN_BINDINGS['@tanstack/react-db']).toBe('@octanejs/tanstack-db');
+		expect(KNOWN_VANILLA_CORES['@tanstack/react-db']).toBe('@tanstack/db');
+	});
+
+	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
+		const upstreamPackages = [
+			'streamdown',
+			'@streamdown/code',
+			'@streamdown/math',
+			'@streamdown/mermaid',
+			'@streamdown/cjk',
+		];
+		expect(upstreamPackages.every((name) => KNOWN_BINDINGS[name] === '@octanejs/streamdown')).toBe(
+			true,
+		);
+	});
+
 	it('maps every public Visx entry point to the aggregate Octane port', async () => {
 		const packagesRoot = fileURLToPath(new URL('../..', import.meta.url));
 		const manifest = JSON.parse(await readFile(join(packagesRoot, 'visx', 'package.json'), 'utf8'));

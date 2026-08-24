@@ -1,4 +1,5 @@
 // Deterministic, untimed work gate for Octane's production TSRX target.
+// Set WORK_DIALECT=jsx to check the equivalent return-JSX production target.
 //
 // This deliberately uses Chromium precise call coverage after compilation,
 // rather than source-level counters inside RowsA/@for. Observable mutations in
@@ -13,7 +14,11 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 
-const URL = process.env.TARGET_URL || 'http://localhost:5206/';
+const DIALECT = process.env.WORK_DIALECT || 'tsrx';
+if (DIALECT !== 'tsrx' && DIALECT !== 'jsx') {
+	throw new Error(`Unsupported WORK_DIALECT ${JSON.stringify(DIALECT)}; expected "tsrx" or "jsx".`);
+}
+const URL = process.env.TARGET_URL || `http://localhost:${DIALECT === 'jsx' ? 5207 : 5206}/`;
 const ROWS = 1000;
 const METRICS = [
 	'RowsA',
@@ -22,6 +27,7 @@ const METRICS = [
 	'buildValueRows',
 	'createElement',
 	'shallowEqualProps',
+	'restampCachedContextScope',
 	'RowImpl',
 	'InnerImpl',
 	'Leaf',
@@ -103,20 +109,20 @@ const OPS = [
 			Leaf: 1,
 		},
 	},
-	// Wall B renders through an imported helper's returned descriptors, which
-	// autoMemo deliberately does not cache (per-key descriptor reuse is a later
-	// phase). Every parent update therefore rebuilds all 1000 descriptors and
-	// must be absorbed by value-comparing memo bails — zero row bodies.
+	// Wall B's imported helper is cached against its `items` argument by
+	// production auto-calculation. Equal/context-only parent updates reuse that
+	// descriptor array. Both dialects must also skip the proven-immutable
+	// renderable region, while context updates refresh existing leaf consumers.
 	{
 		name: 'context_B',
 		hook: '__ctxB',
 		expect: {
 			RowsA: 0,
-			updateSurvivor: ROWS,
+			updateSurvivor: 0,
 			itemBody: 0,
-			buildValueRows: 1,
-			createElement: ROWS,
-			shallowEqualProps: ROWS,
+			buildValueRows: 0,
+			createElement: 0,
+			shallowEqualProps: 0,
 			RowImpl: 0,
 			InnerImpl: 0,
 			Leaf: ROWS,
@@ -127,17 +133,52 @@ const OPS = [
 		hook: '__tickB',
 		expect: {
 			RowsA: 0,
-			updateSurvivor: ROWS,
+			updateSurvivor: 0,
 			itemBody: 0,
-			buildValueRows: 1,
-			createElement: ROWS,
-			shallowEqualProps: ROWS,
+			buildValueRows: 0,
+			createElement: 0,
+			shallowEqualProps: 0,
 			RowImpl: 0,
 			InnerImpl: 0,
 			Leaf: 0,
 		},
 	},
 ];
+
+// Return-JSX components keep their public descriptor ABI, so their wrapper
+// allocations differ from TSRX even when both dialects do the same keyed-list
+// work. Keep the consumer-visible bodies and the optimized list work exact:
+// an unchanged wall must visit no keyed survivors, while a changed item must
+// visit the survivors but run exactly one item/row/inner/leaf body.
+const JSX_EXPECTATIONS = {
+	mount: { createElement: 11007 },
+	equal_A: { RowsA: 0, createElement: 1 },
+	one_change_A: { createElement: 8 },
+	context_A: { RowsA: 0, createElement: ROWS + 1 },
+	one_change_B: { createElement: ROWS + 6 },
+	context_B: {
+		updateSurvivor: 0,
+		buildValueRows: 0,
+		createElement: ROWS + 1,
+		shallowEqualProps: 0,
+	},
+	equal_B_control: {
+		updateSurvivor: 0,
+		buildValueRows: 0,
+		createElement: 1,
+		shallowEqualProps: 0,
+	},
+};
+
+// Wrapper descriptors are implementation work, not a required public effect.
+// These ceilings allow equivalent returned-JSX output to allocate fewer while
+// keeping row/context execution and keyed-list visits exact.
+const JSX_MAXIMUMS = {
+	equal_A: { createElement: 1 },
+	context_A: { createElement: ROWS + 1 },
+	context_B: { createElement: ROWS + 1 },
+	equal_B_control: { createElement: 1 },
+};
 
 function callCounts(coverage) {
 	const counts = Object.fromEntries(METRICS.map((name) => [name, 0]));
@@ -200,9 +241,19 @@ try {
 	for (const op of OPS) {
 		const counts = await measure(browser, op);
 		results[op.name] = counts;
+		const expected = {
+			...op.expect,
+			...(DIALECT === 'jsx' ? JSX_EXPECTATIONS[op.name] : {}),
+			// Legacy context-aware list regions must never walk their memoized rows
+			// merely because the owning JSX fragment has an implicit-bail ancestor.
+			restampCachedContextScope: 0,
+		};
 		for (const metric of METRICS) {
-			if (counts[metric] !== op.expect[metric]) {
-				failures.push(`${op.name}.${metric}: ${counts[metric]} !== expected ${op.expect[metric]}`);
+			const maximum = DIALECT === 'jsx' ? JSX_MAXIMUMS[op.name]?.[metric] : undefined;
+			if (maximum !== undefined && counts[metric] > maximum) {
+				failures.push(`${op.name}.${metric}: ${counts[metric]} > maximum ${maximum}`);
+			} else if (maximum === undefined && counts[metric] !== expected[metric]) {
+				failures.push(`${op.name}.${metric}: ${counts[metric]} !== expected ${expected[metric]}`);
 			}
 		}
 	}
@@ -211,15 +262,15 @@ try {
 }
 
 console.log(
-	'Operation       | RowsA | survivors | item body | buildB | descriptors | memo cmp | Row/Inner/Leaf',
+	'Operation       | RowsA | survivors | item body | buildB | descriptors | memo cmp | restamp | Row/Inner/Leaf',
 );
 console.log(
-	'----------------+-------+-----------+-----------+--------+-------------+----------+---------------',
+	'----------------+-------+-----------+-----------+--------+-------------+----------+---------+---------------',
 );
 for (const op of OPS) {
 	const c = results[op.name];
 	console.log(
-		`${op.name.padEnd(15)} | ${String(c.RowsA).padStart(5)} | ${String(c.updateSurvivor).padStart(9)} | ${String(c.itemBody).padStart(9)} | ${String(c.buildValueRows).padStart(6)} | ${String(c.createElement).padStart(11)} | ${String(c.shallowEqualProps).padStart(8)} | ${c.RowImpl}/${c.InnerImpl}/${c.Leaf}`,
+		`${op.name.padEnd(15)} | ${String(c.RowsA).padStart(5)} | ${String(c.updateSurvivor).padStart(9)} | ${String(c.itemBody).padStart(9)} | ${String(c.buildValueRows).padStart(6)} | ${String(c.createElement).padStart(11)} | ${String(c.shallowEqualProps).padStart(8)} | ${String(c.restampCachedContextScope).padStart(7)} | ${c.RowImpl}/${c.InnerImpl}/${c.Leaf}`,
 	);
 }
 

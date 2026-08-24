@@ -1,7 +1,29 @@
 import { describe, it, expect } from 'vitest';
 import { mount, flushEffects } from './_helpers';
-import { flushSync } from '../src/index.js';
-import { ActivityHost, NestedActivity, TextActivityHost } from './_fixtures/activity.tsrx';
+import {
+	act,
+	Activity,
+	createElement,
+	createRoot,
+	ErrorBoundary,
+	flushSync,
+	useEffect,
+	useLayoutEffect,
+	useState,
+} from '../src/index.js';
+import {
+	ActivityHost,
+	InsertionActivityHost,
+	NestedActivity,
+	NestedReplacingRootActivity,
+	NestedRevealActivity,
+	OrderActivity,
+	ReplacingRootActivity,
+	SuspenseHideOwnershipActivity,
+	SuspenseInActivity,
+	TextActivityHost,
+} from './_fixtures/activity.tsrx';
+import { UnstableActivityHost } from './_fixtures/unstable-activity.tsrx';
 
 // Parity with React 19 <Activity mode="hidden"|"visible"> — the portable subset
 // of React's Activity-test.js / ReactDOMActivity-test.js (DOM + effect lifecycle
@@ -35,6 +57,13 @@ function setup(initialMode: string) {
 	};
 }
 
+function directTextContent(element: Element): string {
+	return Array.from(element.childNodes)
+		.filter((node): node is Text => node.nodeType === 3)
+		.map((text) => text.data)
+		.join('');
+}
+
 describe('<Activity> — visible', () => {
 	it('mount visible renders children and mounts effects', () => {
 		const t = setup('visible');
@@ -57,6 +86,117 @@ describe('<Activity> — hidden', () => {
 });
 
 describe('<Activity> — toggling visibility', () => {
+	it.each(['fresh', 'same'] as const)(
+		'registers a %s descriptor fallback’s deferred effects on reveal',
+		async (identity) => {
+			const container = document.createElement('div');
+			document.body.append(container);
+			const error = new Error('hidden primary');
+			const stateSlot = Symbol('state');
+			const layoutSlot = Symbol('layout');
+			const passiveSlot = Symbol('passive');
+			let ref: HTMLButtonElement | null = null;
+			let layout: number | null = null;
+			let passive: number | null = null;
+			const setups: number[] = [];
+			const cleanups: number[] = [];
+			const caught: Array<{ error: unknown; connected: boolean; layout: number | null }> = [];
+			const root = createRoot(container, {
+				onCaughtError: (error) =>
+					caught.push({ error, connected: ref?.isConnected === true, layout }),
+			});
+			const attach = (node: HTMLButtonElement | null) => {
+				ref = node;
+			};
+			function Primary(): never {
+				throw error;
+			}
+			function Fallback() {
+				const [value, setValue] = useState(0, stateSlot);
+				useLayoutEffect(
+					() => {
+						layout = value;
+						setups.push(value);
+						return () => {
+							layout = null;
+							cleanups.push(value);
+						};
+					},
+					[value],
+					layoutSlot,
+				);
+				useEffect(
+					() => {
+						passive = value;
+						return () => {
+							passive = null;
+						};
+					},
+					[value],
+					passiveSlot,
+				);
+				return createElement('button', {
+					ref: attach,
+					onClick: () => setValue(value + 1),
+					children: `caught:${value}`,
+				});
+			}
+			const child = () =>
+				createElement(ErrorBoundary, {
+					children: createElement(Primary, {}),
+					fallback: createElement(Fallback, {}),
+				});
+			const cached = child();
+			const render = (mode: 'visible' | 'hidden') =>
+				root.render(
+					createElement(Activity, { mode, children: identity === 'same' ? cached : child() }),
+				);
+			try {
+				await act(async () => render('hidden'));
+				const button = container.querySelector('button')!;
+				expect(button.style.display).toBe('none');
+				expect(ref).toBeNull();
+				expect(layout).toBeNull();
+				expect(passive).toBeNull();
+				expect(setups).toEqual([]);
+				expect(caught).toEqual([]);
+
+				await act(async () => render('visible'));
+				expect(container.querySelector('button')).toBe(button);
+				expect(button.style.display).toBe('');
+				expect(ref).toBe(button);
+				expect(layout).toBe(0);
+				expect(passive).toBe(0);
+				expect(caught).toEqual([{ error, connected: true, layout: 0 }]);
+
+				await act(async () => button.click());
+				expect(button.textContent).toBe('caught:1');
+				expect(layout).toBe(1);
+				expect(passive).toBe(1);
+				await act(async () => render('hidden'));
+				expect(ref).toBeNull();
+				expect(layout).toBeNull();
+				expect(passive).toBeNull();
+				await act(async () => render('visible'));
+				expect(container.querySelector('button')).toBe(button);
+				expect(button.textContent).toBe('caught:1');
+				expect(layout).toBe(1);
+				expect(passive).toBe(1);
+				expect(setups).toEqual([0, 1, 1]);
+				expect(caught).toHaveLength(1);
+				await act(async () => root.unmount());
+				expect(cleanups).toEqual([0, 1, 1]);
+				expect(ref).toBeNull();
+				expect(layout).toBeNull();
+				expect(passive).toBeNull();
+				expect(container.textContent).toBe('');
+			} finally {
+				root.unmount();
+				container.remove();
+			}
+		},
+	);
+
 	it('unmounts effects on hide and re-mounts them on show, preserving state + DOM', () => {
 		const t = setup('visible');
 		// Build up some state while visible.
@@ -138,6 +278,24 @@ describe('<Activity> — toggling visibility', () => {
 		expect(t.log).toEqual(['render']); // re-rendered, still no effects
 		t.r.unmount();
 	});
+
+	it('re-hides a root independently replaced by descendant state, then restores it', () => {
+		let setBefore!: (value: boolean) => void;
+		const expose = (setter: typeof setBefore) => (setBefore = setter);
+		const r = mount(ReplacingRootActivity, { mode: 'hidden', expose });
+		flushEffects();
+		expect((r.find('#activity-before') as HTMLElement).style.display).toBe('none');
+
+		flushSync(() => setBefore(false));
+		flushEffects();
+		expect(r.container.querySelector('#activity-before')).toBeNull();
+		expect((r.find('#activity-after') as HTMLElement).style.display).toBe('none');
+
+		r.update(ReplacingRootActivity, { mode: 'visible', expose });
+		flushEffects();
+		expect((r.find('#activity-after') as HTMLElement).style.display).toBe('');
+		r.unmount();
+	});
 });
 
 describe('<Activity> — nested', () => {
@@ -156,6 +314,136 @@ describe('<Activity> — nested', () => {
 		flushEffects();
 		expect(log).toEqual(['render inner', 'mount inner']);
 		expect((r.container.querySelector('#inner') as HTMLElement).style.display).toBe('');
+		r.unmount();
+	});
+
+	it('keeps a replacement hidden until both nested Activities reveal', () => {
+		let setBefore!: (value: boolean) => void;
+		const expose = (setter: typeof setBefore) => (setBefore = setter);
+		const props = { outer: 'hidden', inner: 'hidden', expose };
+		const r = mount(NestedReplacingRootActivity, props);
+		flushEffects();
+
+		flushSync(() => setBefore(false));
+		flushEffects();
+		expect((r.find('#activity-after') as HTMLElement).style.display).toBe('none');
+
+		r.update(NestedReplacingRootActivity, { ...props, outer: 'visible' });
+		flushEffects();
+		expect((r.find('#activity-after') as HTMLElement).style.display).toBe('none');
+
+		r.update(NestedReplacingRootActivity, {
+			...props,
+			outer: 'visible',
+			inner: 'visible',
+		});
+		flushEffects();
+		expect((r.find('#activity-after') as HTMLElement).style.display).toBe('');
+		r.unmount();
+	});
+
+	it('retains Activity hiding across a nested Suspense retry', () => {
+		let setStatus!: (value: string) => void;
+		const expose = (setter: typeof setStatus) => (setStatus = setter);
+		const props = { mode: 'hidden', expose, promise: new Promise<string>(() => {}) };
+		const r = mount(SuspenseInActivity, props);
+		flushEffects();
+
+		flushSync(() => setStatus('pending'));
+		flushEffects();
+		expect((r.find('#activity-pending') as HTMLElement).style.display).toBe('none');
+
+		// The never-resolving promise does not settle. State inside the hidden
+		// primary instead makes the next retry complete and reveal that primary.
+		flushSync(() => setStatus('other'));
+		flushEffects();
+		expect(r.container.querySelector('#activity-pending')).toBeNull();
+		expect((r.find('#activity-other') as HTMLElement).style.display).toBe('none');
+
+		r.update(SuspenseInActivity, { ...props, mode: 'visible' });
+		flushEffects();
+		expect((r.find('#activity-other') as HTMLElement).style.display).toBe('');
+		r.unmount();
+	});
+
+	it('restores authored display and text after Activity and Suspense reveal', () => {
+		let setStage!: (value: string) => void;
+		const expose = (setter: typeof setStage) => (setStage = setter);
+		const props = { mode: 'hidden', expose, promise: new Promise<string>(() => {}) };
+		const r = mount(SuspenseHideOwnershipActivity, props);
+		flushEffects();
+
+		// This render inserts the styled element and text before a later sibling
+		// suspends. Suspense hides them before Activity's post-render hide sees them.
+		flushSync(() => setStage('pending'));
+		flushEffects();
+		expect((r.find('#activity-owner-pending') as HTMLElement).style.display).toBe('none');
+
+		// Retry without resolving the promise. Suspense reveals its primary, but
+		// Activity remains an owner and must keep it hidden.
+		flushSync(() => setStage('other'));
+		flushEffects();
+		const owned = r.find('#activity-owned-display') as HTMLElement;
+		expect(owned.style.display).toBe('none');
+		expect(directTextContent(r.find('#host'))).toBe('');
+
+		r.update(SuspenseHideOwnershipActivity, { ...props, mode: 'visible' });
+		flushEffects();
+		expect(owned.style.display).toBe('inline-flex');
+		expect(directTextContent(r.find('#host'))).toBe('authored text');
+		expect((r.find('#activity-stable-display') as HTMLElement).style.display).toBe('inline-grid');
+		r.unmount();
+	});
+
+	it('keeps Suspense content hidden when Activity reveals first', () => {
+		let setStage!: (value: string) => void;
+		const expose = (setter: typeof setStage) => (setStage = setter);
+		const props = { mode: 'hidden', expose, promise: new Promise<string>(() => {}) };
+		const r = mount(SuspenseHideOwnershipActivity, props);
+		flushEffects();
+
+		flushSync(() => setStage('pending'));
+		flushEffects();
+		r.update(SuspenseHideOwnershipActivity, { ...props, mode: 'visible' });
+		flushEffects();
+
+		// Activity released first: the fallback is visible, but Suspense still owns
+		// the connected primary and must keep its stable host hidden.
+		expect((r.find('#activity-owner-pending') as HTMLElement).style.display).toBe('');
+		const stable = r.find('#activity-stable-display') as HTMLElement;
+		expect(stable.style.display).toBe('none');
+
+		flushSync(() => setStage('other'));
+		flushEffects();
+		expect(r.container.querySelector('#activity-owner-pending')).toBeNull();
+		expect(stable.style.display).toBe('inline-grid');
+		expect((r.find('#activity-owned-display') as HTMLElement).style.display).toBe('inline-flex');
+		r.unmount();
+	});
+
+	it('re-hides output introduced by an async Suspense resume', async () => {
+		let setStage!: (value: string) => void;
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => (resolve = done));
+		const expose = (setter: typeof setStage) => (setStage = setter);
+		const props = { mode: 'hidden', expose, promise };
+		const r = mount(SuspenseHideOwnershipActivity, props);
+		flushEffects();
+
+		flushSync(() => setStage('pending'));
+		flushEffects();
+		resolve('resolved');
+		await Promise.resolve();
+		flushEffects();
+
+		const resolved = r.find('#activity-resolved-display') as HTMLElement;
+		expect(resolved.style.display).toBe('none');
+		expect(directTextContent(r.find('#host'))).toBe('');
+
+		r.update(SuspenseHideOwnershipActivity, { ...props, mode: 'visible' });
+		flushEffects();
+		expect(resolved.style.display).toBe('block');
+		expect(directTextContent(r.find('#host'))).toBe('authored textresolved text');
 		r.unmount();
 	});
 });
@@ -193,8 +481,6 @@ describe('<Activity> — bare text child', () => {
 	});
 });
 
-import { NestedRevealActivity } from './_fixtures/activity.tsrx';
-
 describe('<Activity> — nested reveal (conformance)', () => {
 	// Per Activity-test.js:1362 "reveal an outer Activity boundary without revealing an
 	// inner one". Both hidden → reveal the outer while the inner stays hidden → only the
@@ -219,8 +505,6 @@ describe('<Activity> — nested reveal (conformance)', () => {
 	});
 });
 
-import { OrderActivity } from './_fixtures/activity.tsrx';
-
 describe('<Activity> — effect cleanup order on hide (conformance)', () => {
 	// Per Activity-test.js "passive effects are unmounted on hide in the same order as
 	// during a deletion: parent before child" (and child-first on mount/reveal).
@@ -238,8 +522,6 @@ describe('<Activity> — effect cleanup order on hide (conformance)', () => {
 		r.unmount();
 	});
 });
-
-import { InsertionActivityHost } from './_fixtures/activity.tsrx';
 
 describe('<Activity> — insertion effects stay connected while hidden (conformance)', () => {
 	function setupInsertion() {
@@ -304,5 +586,22 @@ describe('<Activity> — insertion effects stay connected while hidden (conforma
 		// already current for n=1.
 		expect(t.log).toEqual(['layout mount']);
 		t.r.unmount();
+	});
+});
+
+describe('unstable_Activity alias', () => {
+	it('compiles and hides/reveals like Activity (React experimental-channel ports)', () => {
+		const r = mount(UnstableActivityHost, { mode: 'visible' });
+		const child = () => r.container.querySelector('#ua-child') as HTMLElement | null;
+		expect(child()).not.toBeNull();
+		expect(child()!.style.display).toBe('');
+		r.update(UnstableActivityHost, { mode: 'hidden' });
+		flushEffects();
+		expect(child()).not.toBeNull(); // state/DOM preserved...
+		expect(child()!.style.display).toBe('none'); // ...just visually hidden
+		r.update(UnstableActivityHost, { mode: 'visible' });
+		flushEffects();
+		expect(child()!.style.display).toBe('');
+		r.unmount();
 	});
 });

@@ -54,6 +54,8 @@ const BUILD_CASES = [
 			'/packages/lynx/src/core/transport.ts',
 			'/packages/octane/src/universal-native.ts',
 			'/packages/octane/src/universal-core.ts',
+			'/packages/lynx/src/main-worklets.ts',
+			'/packages/lynx/src/core/worklets.ts',
 		],
 		thread: 'main-thread',
 	},
@@ -114,6 +116,7 @@ class MetadataProbePlugin {
 		private readonly observed: unknown[],
 		private readonly moduleIdentifiers: string[],
 		private readonly layeredModules: { identifier: string; layer?: string | null }[],
+		private readonly retainedModuleIdentifiers: string[],
 	) {}
 
 	apply(compiler: any): void {
@@ -139,6 +142,25 @@ class MetadataProbePlugin {
 					if (metadata !== null) this.observed.push(metadata);
 				}
 			});
+			compilation.hooks.processAssets.tap(
+				{
+					name: `${this.constructor.name}:retained-modules`,
+					stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+				},
+				() => {
+					for (const module of compilation.modules as Iterable<{
+						identifier?: () => string;
+					}>) {
+						if (
+							compilation.chunkGraph.getModuleChunksIterable(module)[Symbol.iterator]().next().done
+						) {
+							continue;
+						}
+						const identifier = module.identifier?.();
+						if (typeof identifier === 'string') this.retainedModuleIdentifiers.push(identifier);
+					}
+				},
+			);
 		});
 	}
 }
@@ -147,6 +169,7 @@ function metadataProbe(
 	observed: unknown[],
 	moduleIdentifiers: string[],
 	layeredModules: { identifier: string; layer?: string | null }[] = [],
+	retainedModuleIdentifiers: string[] = [],
 ) {
 	return {
 		name: 'octane:lynx-runtime-graph-probe',
@@ -154,7 +177,12 @@ function metadataProbe(
 			api.modifyBundlerChain((chain: any) => {
 				chain
 					.plugin('octane:lynx-runtime-graph-probe')
-					.use(MetadataProbePlugin, [observed, moduleIdentifiers, layeredModules]);
+					.use(MetadataProbePlugin, [
+						observed,
+						moduleIdentifiers,
+						layeredModules,
+						retainedModuleIdentifiers,
+					]);
 			});
 		},
 	};
@@ -208,6 +236,7 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 			const outputRoot = join(temporaryRoot, 'dist');
 			const observed: unknown[] = [];
 			const moduleIdentifiers: string[] = [];
+			const retainedModuleIdentifiers: string[] = [];
 			const rspeedy = await createRspeedy({
 				cwd: FIXTURE,
 				loadEnv: false,
@@ -226,7 +255,7 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 					splitChunks: false,
 					plugins: [
 						pluginOctane({ thread, hmr: false, dev: false }),
-						metadataProbe(observed, moduleIdentifiers),
+						metadataProbe(observed, moduleIdentifiers, [], retainedModuleIdentifiers),
 					],
 				},
 			});
@@ -245,9 +274,12 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 						`expected ${thread} graph to contain ${suffix}`,
 					).toBe(true);
 				}
+				const retainedModules = retainedModuleIdentifiers.map((identifier) =>
+					identifier.split(/[?!]/, 1)[0].replaceAll('\\', '/'),
+				);
 				for (const suffix of forbiddenModules) {
 					expect(
-						[...canonicalModules].some((identifier) => identifier.endsWith(suffix)),
+						retainedModules.some((identifier) => identifier.endsWith(suffix)),
 						`expected ${thread} graph to exclude ${suffix}`,
 					).toBe(false);
 				}
@@ -281,7 +313,7 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 		60_000,
 	);
 
-	it('assembles a normal Octane application and generated receiver into a native bundle', async () => {
+	it('assembles self-contained native bundles for every authored application entry', async () => {
 		const temporaryRoot = mkdtempSync(join(tmpdir(), 'octane-rspeedy-application-'));
 		const outputRoot = join(temporaryRoot, 'dist');
 		const observed: unknown[] = [];
@@ -304,7 +336,12 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 					filename: { js: '[name].[contenthash:6].js' },
 					sourceMap: { css: true, js: 'source-map' },
 				},
-				source: { entry: { main: './src/background.ts' } },
+				source: {
+					entry: {
+						main: './src/background.ts',
+						secondary: './src/secondary.ts',
+					},
+				},
 				splitChunks: false,
 				plugins: [
 					pluginOctane({ hmr: false, dev: false }),
@@ -322,6 +359,11 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 			const mainThread = nativeScriptText(decoded['main-thread-script']);
 			const background = nativeScriptText(decoded['background-thread-script']);
 			const completeBundleText = nativeScriptText(decoded);
+			const secondaryBundle = await decodeNativeBundle(
+				readFileSync(join(outputRoot, 'secondary.lynx.bundle')),
+			);
+			const secondaryMainThread = nativeScriptText(secondaryBundle['main-thread-script']);
+			const secondaryBackground = nativeScriptText(secondaryBundle['background-thread-script']);
 
 			expect(decoded['engine-version']).toBe('3.9');
 			expect(mainThread).toMatch(/getJSContext/);
@@ -337,6 +379,12 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 			expect(background).not.toContain('octane-m7-main-thread-worklet');
 			expect(background).toContain('octane-m7-background-function');
 			expect(background).toContain(BACKGROUND_ONLY_MARKER);
+			expect(mainThread).not.toContain('Secondary bundle');
+			expect(background).not.toContain('Secondary bundle');
+			expect(secondaryMainThread).toContain('Secondary bundle');
+			expect(secondaryMainThread).not.toContain('Native bundle');
+			expect(secondaryBackground).toContain('Secondary bundle');
+			expect(secondaryBackground).not.toContain('Native bundle');
 			expect(completeBundleText).not.toMatch(
 				/@lynx-js[\\/]react|ReactLynx|\b(?:react-dom|preact)\b/i,
 			);
@@ -352,6 +400,8 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 				'/packages/rspeedy-plugin-octane/tests/_fixtures/application/src/App.tsrx',
 				'/packages/lynx/src/root.ts',
 				'/packages/lynx/src/main-thread.ts',
+				'/packages/lynx/src/main-worklets.ts',
+				'/packages/lynx/src/core/worklets.ts',
 			]) {
 				expect(
 					[...canonicalModules].some((identifier) => identifier.endsWith(suffix)),
@@ -405,6 +455,8 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 				'/packages/rspeedy-plugin-octane/src/main-thread-ready.js',
 				'/packages/lynx/src/first-screen.ts',
 				'/packages/lynx/src/main-renderer.ts',
+				'/packages/lynx/src/main-worklets.ts',
+				'/packages/lynx/src/core/worklets.ts',
 			]) {
 				expect(hasSuffix(mainModules, suffix), `missing ${suffix} from main thread`).toBe(true);
 			}
@@ -447,8 +499,19 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 			expect(bundle.includes(Buffer.from(emittedAsset!.split(/[\\/]/).at(-1)!))).toBe(true);
 			expect(mainThread).toContain(emittedAsset!.split(/[\\/]/).at(-1)!);
 
-			expect(debugMetadata).toHaveLength(1);
-			const metadata = JSON.parse(debugMetadata[0]);
+			const metadataRecords = debugMetadata.map((value) => JSON.parse(value));
+			const metadata = metadataRecords.find((value) =>
+				value.buildInfo?.rspeedy?.entryFiles?.some((filename: string) =>
+					filename.endsWith('/src/background.ts'),
+				),
+			);
+			const secondaryMetadata = metadataRecords.find((value) =>
+				value.buildInfo?.rspeedy?.entryFiles?.some((filename: string) =>
+					filename.endsWith('/src/secondary.ts'),
+				),
+			);
+			expect(metadata).toBeDefined();
+			expect(secondaryMetadata).toBeDefined();
 			expect(metadata.buildInfo.rspeedy.entryFiles).toEqual(
 				expect.arrayContaining([
 					expect.stringMatching(
@@ -570,61 +633,6 @@ describe('@octanejs/rspeedy-plugin native production entries', () => {
 				]),
 			);
 			expect(JSON.stringify(lazyMetadata)).toContain('LazyCard.tsrx');
-		} finally {
-			await result?.close();
-			rmSync(temporaryRoot, { recursive: true, force: true });
-		}
-	}, 120_000);
-
-	it('emits one self-contained native bundle for each authored entry', async () => {
-		const temporaryRoot = mkdtempSync(join(tmpdir(), 'octane-rspeedy-multiple-entries-'));
-		const outputRoot = join(temporaryRoot, 'dist');
-		const rspeedy = await createRspeedy({
-			cwd: APPLICATION_FIXTURE,
-			loadEnv: false,
-			environment: ['lynx'],
-			rspeedyConfig: {
-				mode: 'production',
-				environments: { lynx: {} },
-				dev: { hmr: false, liveReload: false },
-				output: {
-					cleanDistPath: true,
-					distPath: { root: outputRoot },
-					filenameHash: false,
-					sourceMap: false,
-				},
-				source: {
-					entry: {
-						main: './src/background.ts',
-						secondary: './src/secondary.ts',
-					},
-				},
-				splitChunks: false,
-				plugins: [pluginOctane({ hmr: false, dev: false })],
-			},
-		});
-		let result: Awaited<ReturnType<typeof rspeedy.build>> | undefined;
-		try {
-			result = await rspeedy.build();
-			const mainBundle = await decodeNativeBundle(
-				readFileSync(join(outputRoot, 'main.lynx.bundle')),
-			);
-			const secondaryBundle = await decodeNativeBundle(
-				readFileSync(join(outputRoot, 'secondary.lynx.bundle')),
-			);
-			const main = nativeScriptText(mainBundle['background-thread-script']);
-			const mainFirstScreen = nativeScriptText(mainBundle['main-thread-script']);
-			const secondary = nativeScriptText(secondaryBundle['background-thread-script']);
-			const secondaryFirstScreen = nativeScriptText(secondaryBundle['main-thread-script']);
-
-			expect(main).toContain('Native bundle');
-			expect(main).not.toContain('Secondary bundle');
-			expect(mainFirstScreen).toContain('Native bundle');
-			expect(mainFirstScreen).not.toContain('Secondary bundle');
-			expect(secondary).toContain('Secondary bundle');
-			expect(secondary).not.toContain('Native bundle');
-			expect(secondaryFirstScreen).toContain('Secondary bundle');
-			expect(secondaryFirstScreen).not.toContain('Native bundle');
 		} finally {
 			await result?.close();
 			rmSync(temporaryRoot, { recursive: true, force: true });

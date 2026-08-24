@@ -1,12 +1,31 @@
 import { defineConfig, type Plugin } from 'vite';
-import { existsSync } from 'node:fs';
+import { cpSync, existsSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { build as esbuildBuild } from 'esbuild';
+import { fileURLToPath } from 'node:url';
 import { octaneMdx } from '@octanejs/mdx/vite';
 import { threeRenderers } from '@octanejs/three/config';
 import { tanstackStart } from '@octanejs/tanstack-start/plugin/vite';
 import { nitro } from 'nitro/vite';
 import { websiteMdxOptions } from './mdx-options.ts';
+import { playgroundRuntime } from './playground-runtime.ts';
+
+// The upstream shadcn CLI fetches registry items directly from /r. Keep the
+// deployed tree derived from the package's checked generated output so website
+// builds cannot publish a second, independently drifting registry copy.
+function prepareShadcnRegistry(): void {
+	const sourceUrl = new URL('../packages/shadcn/registry/', import.meta.url);
+	const source = fileURLToPath(sourceUrl);
+	const destination = fileURLToPath(new URL('./public/r', import.meta.url));
+	if (!existsSync(new URL('registry.json', sourceUrl))) {
+		throw new Error(
+			'shadcn registry is missing; run `pnpm shadcn:registry` from the repository root',
+		);
+	}
+	rmSync(destination, { recursive: true, force: true });
+	cpSync(source, destination, { recursive: true });
+}
+
+prepareShadcnRegistry();
 
 // Does any pre-bundled dependency resolve to a checkout OUTSIDE node_modules —
 // a `link:` override in pnpm-workspace.yaml pointing at a sibling repo?
@@ -56,107 +75,34 @@ function isDeclarable(specifier: string): boolean {
 	return existsSync(new URL(`./node_modules/${name}`, import.meta.url));
 }
 
-// The playground executes user code in a sandboxed iframe with an OPAQUE
-// origin (src/lib/playground-sandbox.ts). That iframe can't import the site's
-// bundled octane (blob URLs are origin-bound and cross-origin module fetches
-// need CORS), so the parent hands it the runtime as TEXT and the iframe turns
-// it into blob modules on its own side of the boundary.
-//
-// The runtime ships as a JSON MANIFEST of esbuild code-split chunks rather
-// than one file: `octane` and `octane/react` are separate entries sharing the
-// octane core through common chunks (bundling `octane/react` standalone would
-// duplicate the core — two runtimes, broken hook/context singletons). React
-// itself stays EXTERNAL: the sandbox's import map resolves the react family to
-// esm.sh, so react is only ever fetched when user code actually imports
-// `octane/react` — pure-octane sessions never touch the network.
-function playgroundRuntime(): Plugin {
-	const MANIFEST_PATH = '/playground-runtime.json'; // = RUNTIME_MANIFEST_PATH in playground-sandbox.ts
-
-	async function bundle(): Promise<string> {
-		const require = createRequire(import.meta.url);
-		const out = await esbuildBuild({
-			// Workspace link: website/node_modules/octane → packages/octane, whose
-			// exports map points entries at raw TS sources — esbuild handles them.
-			entryPoints: {
-				octane: require.resolve('octane'),
-				'octane-react': require.resolve('octane/react'),
-			},
-			bundle: true,
-			splitting: true,
-			format: 'esm',
-			minify: true,
-			write: false,
-			outdir: 'playground-runtime',
-			entryNames: '[name]',
-			chunkNames: 'chunk-[hash]',
-			outExtension: { '.js': '.mjs' },
-			external: [
-				'react',
-				'react-dom',
-				'react-dom/client',
-				'react/jsx-runtime',
-				'react/jsx-dev-runtime',
-			],
-			define: { 'process.env.NODE_ENV': JSON.stringify('production') },
-		});
-
-		const files: Record<string, string> = {};
-		for (const file of out.outputFiles) {
-			files[file.path.replace(/^.*[/\\]/, '')] = file.text;
-		}
-
-		// The sandbox creates a blob URL per file and splices it into the files
-		// that import it, so files must arrive dependencies-first. Topo-sort the
-		// chunk graph (esbuild inter-chunk specifiers are exactly `./<name>.mjs`).
-		const deps = new Map<string, string[]>();
-		for (const [name, code] of Object.entries(files)) {
-			const imported: string[] = [];
-			for (const match of code.matchAll(/(["'])\.\/([\w.-]+\.mjs)\1/g)) {
-				if (files[match[2]] && !imported.includes(match[2])) imported.push(match[2]);
-			}
-			deps.set(name, imported);
-		}
-		const order: string[] = [];
-		const state = new Map<string, 'visiting' | 'done'>();
-		const visit = (name: string, chain: string[]) => {
-			if (state.get(name) === 'done') return;
-			if (state.get(name) === 'visiting') {
-				throw new Error(
-					`playground runtime chunks import each other cyclically (${[...chain, name].join(' → ')}) — the sandbox's dependencies-first blob ordering cannot represent that`,
-				);
-			}
-			state.set(name, 'visiting');
-			for (const dep of deps.get(name) ?? []) visit(dep, [...chain, name]);
-			state.set(name, 'done');
-			order.push(name);
-		};
-		for (const name of deps.keys()) visit(name, []);
-
-		return JSON.stringify({
-			entries: { octane: 'octane.mjs', 'octane/react': 'octane-react.mjs' },
-			order,
-			files,
-		});
-	}
-
+/**
+ * `vite preview` serves the built `public/` through its own static middleware,
+ * which answers `.wasm` with `application/octet-stream`. The Lynx runtime under
+ * /lynx-runtime instantiates its engine with `WebAssembly.compileStreaming`,
+ * which rejects anything that is not `application/wasm` — so every Lynx preview
+ * on /docs/lynx renders nothing, and the production e2e suite (which drives
+ * every route through `vite preview`) sees the failure as page errors.
+ *
+ * Only the preview server needs this. Vite's dev server and the built Nitro
+ * server both type it correctly on their own.
+ */
+function previewWasmContentType(): Plugin {
 	return {
-		name: 'octane-playground-runtime',
-		configureServer(server) {
-			server.middlewares.use(MANIFEST_PATH, (_req, res, next) => {
-				// Rebuilt per request — esbuild bundles the runtime in ~15ms, and
-				// this way dev never serves a stale runtime after octane edits.
-				bundle().then((code) => {
-					res.setHeader('Content-Type', 'application/json; charset=utf-8');
-					res.end(code);
-				}, next);
-			});
-		},
-		async generateBundle() {
-			if (this.environment.name !== 'client') return;
-			this.emitFile({
-				type: 'asset',
-				fileName: MANIFEST_PATH.slice(1),
-				source: await bundle(),
+		name: 'octane-preview-wasm-content-type',
+		configurePreviewServer(server) {
+			server.middlewares.use((request, response, next) => {
+				if (!request.url?.split('?')[0]?.endsWith('.wasm')) return next();
+				// Setting the header here is not enough on its own: the static
+				// handler downstream sets its own Content-Type, and the last write
+				// wins. Pin the value for this response instead of guessing where
+				// the built file lives.
+				const setHeader = response.setHeader.bind(response);
+				response.setHeader = (name: string, value: never) =>
+					name.toLowerCase() === 'content-type'
+						? setHeader(name, 'application/wasm')
+						: setHeader(name, value);
+				setHeader('Content-Type', 'application/wasm');
+				next();
 			});
 		},
 	};
@@ -227,6 +173,7 @@ const PREBUNDLED = [
 export default defineConfig({
 	plugins: [
 		playgroundRuntime(),
+		previewWasmContentType(),
 		// octaneMdx() owns `.mdx` (full pipeline: @mdx-js/mdx → Octane compile,
 		// with Shiki highlighting via rehype). tanstackStart() supplies the Octane
 		// compiler plus file routing, SSR, hydration, and the Start runtime. The
@@ -258,6 +205,16 @@ export default defineConfig({
 						{
 							src: '/assets/(.*)',
 							headers: { 'cache-control': 'public,max-age=31536000,immutable' },
+							continue: true,
+						},
+						// State the Lynx runtime's wasm type rather than inherit it. The
+						// engine loads through WebAssembly.compileStreaming, which
+						// rejects anything that is not `application/wasm`, and the
+						// symptom is a silently blank preview — see
+						// previewWasmContentType above, where exactly that happened.
+						{
+							src: '/lynx-runtime/static/wasm/(.*)',
+							headers: { 'content-type': 'application/wasm' },
 							continue: true,
 						},
 						{ handle: 'filesystem' },
@@ -295,6 +252,9 @@ export default defineConfig({
 	},
 
 	build: {
-		target: 'esnext',
+		target: 'baseline-widely-available',
+		// The client emits hundreds of Shiki language chunks. Computing gzip
+		// sizes for every chunk adds minutes after the build has already succeeded.
+		reportCompressedSize: false,
 	},
 });

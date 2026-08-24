@@ -5,12 +5,18 @@
  */
 import { describe, it } from 'vitest';
 import { resolve } from 'node:path';
-import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import {
+	mountDifferential,
+	preloadDifferentialFixture,
+} from '../../../octane/tests/differential/_rig.js';
 
 const fixture = resolve(__dirname, '../_fixtures/runtime-diff.tsrx');
 const cache = resolve(__dirname, '.react-cache');
 
+await Promise.all([preloadDifferentialFixture(fixture, cache)]);
+
 describe('differential: @octanejs/i18next vs react-i18next', () => {
+	// @parity-case differential:i18next-runtime
 	it('matches hook, provider, Trans, and language subscription output', async () => {
 		const differential = await mountDifferential(fixture, 'I18nextParity', undefined, cache);
 		await differential.step('mount', () => {});

@@ -25,6 +25,7 @@
 import { createRouter } from './router.js';
 import { createContext, runMiddlewareChain } from './middleware.js';
 import { handleRpcRequest } from './rpc.js';
+import { rpcIdCollision } from './rpc-registry.js';
 import { handleServerRoute } from './server-route.js';
 import { composeHtmlStream } from './html-stream.js';
 import {
@@ -96,6 +97,34 @@ function getFetchCoordinator(runtime) {
 }
 
 /**
+ * Name every server function id, built once per handler.
+ *
+ * `build_rpc_lookup` keeps only the namespace object and export name, but a
+ * middleware policy needs the declaring module before the function is resolved.
+ *
+ * @param {Record<string, Record<string, Function>>} rpcModules
+ * @param {(value: string) => string} hashFn
+ * @returns {Map<string, { module: string, export: string }>}
+ */
+function buildRpcDescriptors(rpcModules, hashFn) {
+	/** @type {Map<string, { module: string, export: string }>} */
+	const descriptors = new Map();
+	for (const [entryPath, serverObj] of Object.entries(rpcModules)) {
+		for (const funcName of Object.keys(serverObj)) {
+			const id = hashFn(entryPath + '#' + funcName);
+			// Each manifest entry is listed once, so an id already taken here is a
+			// genuine collision. `build_rpc_lookup` would resolve it by overwriting.
+			const existing = descriptors.get(id);
+			if (existing !== undefined) {
+				throw rpcIdCollision(id, existing, { module: entryPath, export: funcName });
+			}
+			descriptors.set(id, { module: entryPath, export: funcName });
+		}
+	}
+	return descriptors;
+}
+
+/**
  * @typedef {import('@octanejs/app-core').RenderRoute} RenderRoute
  * @typedef {import('@octanejs/app-core').Middleware} Middleware
  * @typedef {import('@octanejs/app-core').Context} Context
@@ -134,6 +163,8 @@ export function createHandler(manifest, deps) {
 	// (compiler hash → server function).
 	const rpcLookup =
 		manifest.rpcModules && runtime ? build_rpc_lookup(manifest.rpcModules, runtime.hash) : null;
+	const rpcDescriptors =
+		manifest.rpcModules && runtime ? buildRpcDescriptors(manifest.rpcModules, runtime.hash) : null;
 
 	// Request-scoped async context + same-origin fetch short-circuit: fetch()
 	// during SSR that resolves to this origin routes through the handler
@@ -161,6 +192,9 @@ export function createHandler(manifest, deps) {
 					if (!entry) return null;
 					const fn = entry.serverObj[entry.funcName];
 					return typeof fn === 'function' ? fn : null;
+				},
+				describeFunction(/** @type {string} */ hash) {
+					return rpcDescriptors?.get(hash) ?? null;
 				},
 				executeServerFunction,
 				asyncContext,
@@ -262,20 +296,35 @@ export function createHandler(manifest, deps) {
 		});
 		const dataScript = `<script id="__octane_data" type="application/json"${nonceAttribute(nonce)}>${escapeScript(routeData)}</script>`;
 
-		// Per-route asset hints from the client manifest: stylesheet links so
-		// page CSS applies before hydration, modulepreload so the page chunk
-		// downloads in parallel with the hydrate entry (which the template's own
-		// script tag already references).
+		// The page, layout, and configured root fallbacks can all contribute
+		// server HTML before hydration. Their asset records also include CSS for
+		// deferred Hydrate descendants, whose JavaScript must remain lazy. Keep
+		// page CSS first, preserve each record's order, and link shared files once.
 		/** @type {string[]} */
 		const preloadTags = [];
-		const entryAssets = entryPath ? manifest.clientAssets?.[entryPath] : undefined;
-		if (entryAssets) {
-			for (const cssFile of entryAssets.css) {
-				preloadTags.push(`<link rel="stylesheet" href="/${cssFile}">`);
+		const clientAssets = manifest.clientAssets;
+		const entryAssets = entryPath ? clientAssets?.[entryPath] : undefined;
+		if (clientAssets) {
+			/** @type {Set<string>} */
+			const stylesheets = new Set();
+			for (const modulePath of [
+				entryPath,
+				route.layout,
+				manifest.rootBoundary?.pending ? manifest.rootBoundaryEntries?.pending?.path : undefined,
+				manifest.rootBoundary?.catch ? manifest.rootBoundaryEntries?.catch?.path : undefined,
+			]) {
+				if (!modulePath) continue;
+				for (const cssFile of clientAssets[modulePath]?.css ?? []) {
+					if (stylesheets.has(cssFile)) continue;
+					stylesheets.add(cssFile);
+					preloadTags.push(`<link rel="stylesheet" href="/${cssFile}">`);
+				}
 			}
-			if (entryAssets.js) {
-				preloadTags.push(`<link rel="modulepreload" href="/${entryAssets.js}">`);
-			}
+		}
+		// Only the page chunk was already eager; do not promote layout, fallback,
+		// or island JavaScript while making their server-rendered CSS available.
+		if (entryAssets?.js) {
+			preloadTags.push(`<link rel="modulepreload" href="/${entryAssets.js}">`);
 		}
 
 		const headContent = [...preloadTags, dataScript].join('\n');

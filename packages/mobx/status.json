@@ -1,0 +1,22 @@
+{
+  "upstream": {
+    "package": "mobx-react-lite",
+    "version": "4.1.1",
+    "core": "mobx@6.16.1"
+  },
+  "surface": "The framework-independent MobX core is re-exported verbatim. The function-component binding includes observer, Observer, useObserver, useLocalObservable, enableStaticRendering, isUsingStaticRendering, and the deprecated useStaticRendering alias.",
+  "divergences": [
+    "React class components and the legacy mobx-react Provider/inject APIs are not included.",
+    "forwardRef compatibility options are omitted because Octane uses refs as props.",
+    "React-specific batching, prop-types validation, React DevTools integration, and useDebugValue output are omitted."
+  ],
+  "ssr": "enableStaticRendering(true) renders observed components without creating a Reaction or retaining observable subscriptions.",
+  "verified": "2026-08-02",
+  "provenance": {
+    "source": "https://github.com/mobxjs/mobx",
+    "license": "MIT",
+    "commit": "989de2d198e7a15c1fc1b981e1a96e50083ff2a0",
+    "verification": "recorded-unverified"
+  },
+  "notes": []
+}

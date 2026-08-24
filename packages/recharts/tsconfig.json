@@ -9,15 +9,14 @@
     "noEmitOnError": true,
     "noErrorTruncation": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "types": ["node"],
+    "skipLibCheck": false,
+    "types": [],
     "strict": true,
-    "allowJs": true,
-    "checkJs": false,
     "jsx": "react-jsx",
     "jsxImportSource": "octane",
     "allowImportingTsExtensions": true
   },
+  "tsrx": { "compiler": "octane/compiler/volar" },
   "include": ["./src/"],
   "exclude": ["node_modules", "dist", "tests"]
 }

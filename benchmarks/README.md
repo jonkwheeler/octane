@@ -21,6 +21,16 @@ capability gaps stay explicit: Svelte's public server renderer is buffered, so
 fake stream. `codegen-size`, `dbmon-deopt`, and `js-framework-deopt` remain
 Octane-only by design.
 
+### React Compiler
+
+Every primary React benchmark uses the production React Compiler 1.0 through
+Vite's official React Compiler preset. The shared
+[`react-compiler.mjs`](react-compiler.mjs) integration also compiles server,
+Worker, and `.tsrx` fixtures, so SSR comparisons receive the same treatment as
+browser-rendered React. The memo-wall suite additionally keeps an explicitly
+labeled uncompiled React control to isolate the compiler's effect without
+changing the primary compiled React comparison.
+
 ## Quick start
 
 ```bash
@@ -43,11 +53,13 @@ suites reuse it. Collected results land in `benchmarks/results/<suite>.json`
 Some suites need no preview servers: **news**, **hydration-interactivity**, and
 the three runtime-stress suites vite-build and time each target themselves (the
 runner loops their per-target invocations and merges them),
-**ssr-throughput**, **streaming-ssr**, **lynx-list**, **lynx-render**, and
-**lynx-bundle-size** are Node-only,
+**ssr-throughput**, **streaming-ssr**, **lynx-list**, **universal-leaf-update**,
+**universal-external-store**,
+**lynx-render**, and **lynx-bundle-size** are Node-only,
 **ssr-http** and **tanstack-start** boot (and kill) their own production HTTP
 servers per sample — that spawn/listen/first-byte cycle IS the measurement —
-and **codegen-size** / **bundle-size** / **three-bundle-size** /
+and **codegen-size** / **bundle-size** / **bundle-reachability** /
+**three-bundle-size** /
 **lynx-bundle-size** are deterministic build/byte checks.
 
 ## Regression modes
@@ -131,24 +143,32 @@ after printing its normal tables:
   ssr-throughput is time-budgeted: its knob is a per-config seconds value and
   `--quick` passes the harness's own `--quick`.
 
-The DOM-heavy browser suites use `lib/dom-nodes.mjs` to publish a deterministic
-census alongside timings. `nodes_*`, `elements_*`, `text_*`, `comments_*`,
-`empty_text_*`, and `whitespace_text_*` are zero-variance operations suitable
-for ratio guards; detailed comment-payload and parent-element histograms live
-under `meta.dom`. Count the fixture root (`#main`, with `#app` fallback) unless
-the behavior intentionally escapes it: portal-swarm records both `#main` and
-the whole body so target-side portal ranges stay visible. Keep visible
-elements/text as independent guards—a lower total obtained by dropping
-user-visible content is a correctness failure, not an optimization.
+Some DOM-heavy browser suites, including TodoMVC, chat-stream, and portal-swarm,
+use `lib/dom-nodes.mjs` to publish a deterministic census alongside timings.
+TodoMVC and chat-stream expose `nodes_*`, `elements_*`, `text_*`, `comments_*`,
+`empty_text_*`, and `whitespace_text_*` as zero-variance operations suitable for
+ratio guards; detailed comment-payload and parent-element histograms live under
+`meta.dom`. Count the fixture root (`#main`, with `#app` fallback) unless the
+behavior intentionally escapes it: portal-swarm records both `#main` and the
+whole body so target-side portal ranges stay visible. Keep visible elements/text
+as independent guards—a lower total obtained by dropping user-visible content
+is a correctness failure, not an optimization. The js-framework suites report
+timings without a DOM census.
 
 Compiler-sensitive work counts use a separate production `work.mjs` invocation
 with jitless Chromium precise call coverage. This avoids source probes changing
 purity or memoization. Such invocations emit unique `*-work` target names, omit
 `iterations` so they cannot overwrite the timing run's sample count, and fail on
-missing production-asset coverage, exact semantic-write mismatches, or increases
-above exhaustive scaffolding ceilings. Specialized component-slot variants use
+missing production-asset coverage or semantic-write mismatches. Established
+optimization guards also fail on increases above exhaustive scaffolding
+ceilings; a new baseline suite reports work without guessing a cost ceiling
+before its pinned-toolchain run. Specialized component-slot variants use
 aggregate ceilings so a cheaper lowering may replace a generic slot without
 turning an optimization into a gate failure.
+The shared collector's optional `after` hooks verify the result after taking the
+coverage snapshot, keeping event-based semantic probes out of the measured work.
+Unhandled page errors and console errors fail the work sample even when its
+semantic hooks complete.
 
 When a dialect timing ratio is important, suites may emit
 `octane-{tsrx,jsx}-dialect-pair` aliases. Those aliases combine fully-warmed raw
@@ -171,23 +191,28 @@ internally, get their own baseline and guard namespace.
 | `weather-app` | weather-app | octane-tsrx, react, preact, solid, svelte, vue | upstream weather UI: cold ready, keyed forecast churn, async search/error/recovery |
 | `weather-app-lighthouse` | weather-app | octane-tsrx, react, preact, solid, svelte, vue | desktop Lighthouse categories plus FCP/LCP/Speed Index/TBT/CLS |
 | `chat-stream` | chat-stream | Octane + reference frameworks | deterministic token streaming + conversation switches |
+| `streamdown-hosted` | streamdown-hosted | React Streamdown + React-hosted Octane binding | React-hosted compatibility boundary: static mount/replace, fine/coarse Markdown streaming, semantic DOM parity, lifecycle diagnostic, and production bytes |
+| `svg-dashboard` | svg-dashboard | octane-tsrx, react, solid, svelte | hand-rolled SVG observability dashboard: path-d/transform churn, keyed reconcile inside `<svg>`, foreignObject labels, portal tooltip overlay, createElement icon de-opt; byte-exact Node-replay + cross-flavor DOM-parity gates |
 | `dbmon` | dbmon | Octane + reference frameworks | per-cell update churn |
 | `recursive-context` | recursive-context | Octane + reference frameworks | context fan-out |
+| `spa-navigation` | spa-navigation | octane-tsrx, octane-jsx, react, solid, vue-vapor | full-page routed-subtree teardown/mount with shell/layout identity and production-work gates |
 | `signal-favoring` | signal-favoring | Octane + reference frameworks | cascade vs targeted |
 | `news` | news | none (builds) | SSR + hydration, per-target |
 | `hydration-interactivity` | hydration-interactivity | none (builds) | real pre-hydration typing, controlled inputs, native event replay, and 1×/6× Chromium CPU throttling across Octane, React, Preact, Solid 2, Svelte, and Vue Vapor |
 | `hydration-stress` | hydration-stress | none (builds) | withheld-chunk hydration, keyboard and pointer Send delivery, DOM adoption, and explicit replay/drop diagnostics at 6× CPU throttling |
 | `lifecycle-memory` | lifecycle-memory | none (builds) | 1,000+ effectful mount/update/unmount cycles, real listener/subscription/timer cleanup, post-teardown event probes, and explicitly collected Chromium heap across all six frameworks |
 | `controlled-form` | controlled-form | none (builds) | 512 controlled fields, real typing, DOM identity, focus and caret, validation cancellation, complete submit/reset, and native select/checkbox/radio correctness |
-| `external-store-fanout` | external-store-fanout | none (builds) | 512 subscribers, narrow and broad writes, rapid-write tearing checks, snapshots, notifications, renders, and exact subscription cleanup |
+| `external-store-fanout` | external-store-fanout | none (builds) | 512 subscribers, narrow and broad writes, rapid-write tearing checks, deterministic 100-notification work guards, and balanced subscription removal |
 | `external-store-integrations` | external-store-integrations | none (builds) | real Zustand stores, Jotai atoms, and TanStack Query caches with selector fan-out, query invalidation, and six-framework cleanup gates |
 | `store-selector-fanout` | store-selector-fanout | none (builds) | 512 subscribers reading one store through a `with-selector`-shaped selector, 20 unrelated parent re-renders with the store untouched, and deterministic selector-invocation counts beside render and snapshot counts |
+| `hook-store-composition` | hook-store-composition | none (builds) | matched direct/nested callbacks and actual Octane Zustand traditional/MobX bindings; separate production timings, named-work counts, and observable identity/update/cleanup controls |
 | `scheduler-responsiveness` | scheduler-responsiveness | none (builds) | real controlled typing during eight 512-subscriber store updates at 6× CPU throttling, with focus, caret, frame, and notification gates |
 | `suspense-recovery` | suspense-recovery | none (builds) | six-framework visible async pending, rejection, retry, cancellation, and stale-response correctness |
 | `event-delegation` | event-delegation | none (builds) | 128 real native input events, 512 event-bearing hosts, capture/bubble accounting, and every controlled output |
 | `application-composition` | application-composition | none (builds) | lifecycle resources, large forms, store fan-out, async recovery, form submission, and navigation teardown in one app |
 | `scaling-curves` | scaling-curves | none (builds) | independently correctness-gated controlled updates at 8, 32, 96, 256, and 512 components |
 | `effectful-list` | effectful-list | Octane + reference frameworks | effect/ref cleanup churn |
+| `activity` | activity | none (builds) | same-source Octane/React Activity lifecycle, hidden/nested work, retained state/effects/DOM, cold-vs-used ordinary-ref controls, and optional-runtime bundle reachability |
 | `list-clear` | list-clear | Octane-only | keyed-list bulk clear by parent shape — the only coverage of the shared-parent path |
 | `memo-wall` | memo-wall | Octane + reference frameworks | memo bail + context walk |
 | `portal-swarm` | portal-swarm | Octane + reference frameworks | portal render/dispatch |
@@ -202,11 +227,17 @@ internally, get their own baseline and guard namespace.
 | `async-waterfall` | async-waterfall | octane-tsrx, react, preact, solid, svelte, ripple | 10-level nested async: `use()` waterfall vs parallel-by-model signals (init + transition update) |
 | `async-composition` | async-composition | octane-tsrx, react | dashboard composition: adjacent async panels, nested children, imported custom hook, and one true dependency |
 | `lynx-list` | lynx-list | none (Node-only) | deterministic 1,000-row native-list physical allocation, reuse, and teardown through a fake Element PAPI |
+| `universal-leaf-update` | universal-leaf-update | none (Node-only) | universal update locality beside 0–4,000 unrelated component siblings through the compiler and native object driver: plain leaf `setState`, keyed `@for` item state, a leaf under an idle `@try`, a structural (insert/remove) update, and compact-row list selection |
+| `universal-external-store` | universal-external-store | none (Node-only) | 128 native universal store subscribers, getter/subscribe identity controls, notification bursts, and deterministic subscription-lifetime and state-projection guards |
 | `lynx-render` | lynx-render | none (Node-only) | dual-thread Lynx render CPU: empty startup, create 1,000 and 10,000 keyed rows through the real background root, transport, and main receiver over a cheap fake Element PAPI, plus a gate that a native tap reaches its background handler via the engine `publishEvent` receiver |
+| `lynx-table` | lynx-table | none (Node-only; separate Chromium harness) | deterministic per-operation wire cost of the cross-framework krausest table (command counts and serialized commit bytes vs a changed-rows floor) through the real dual-thread path and real tap tokens |
+| `lynx-table-web` | lynx-table | none (headless Chromium) | Lynx-for-Web wall clock: the same table app for Octane and the vendored ReactLynx / Vue Lynx reference bundles under one byte-identical page driver; host-bound medians, no ratio guards |
 | `lynx-bundle-size` | lynx-bundle-size | none (builds) | semantic-checksummed production Rspeedy artifact bytes for background preview and dual-thread IFR modes; source/build evidence only |
 | `codegen-size` | codegen-size | none (Node-only) | compiled-output bytes: fixed corpus through octane/compiler, raw/min/gzip, `compiled` vs `source` |
+| `hook-memo` | hook-memo | none (Node-only) | production hook-memo compiler on/off, clean semantic controls, deterministic function/array creation events, and compiled/bundled bytes |
 | `compiler-throughput` | compiler-throughput | none (Node-only) | six real production compiler pipelines, cold/warm/incremental transformations, 10/100/1,000 components, and heap diagnostics |
 | `bundle-size` | bundle-size | none (builds) | shipped JS bytes: production builds of js-framework, TodoMVC, chat-stream, and weather-app, normalized minify, raw/gzip/brotli |
+| `bundle-reachability` | bundle-size | none (builds and executes in jsdom) | isolated public feature imports, exact production-bundle behavior, forbidden-module reachability, and committed raw/gzip/brotli budgets |
 | `three-renderer` | three | Octane Three, R3F, plain Three | 1,000-object lifecycle, reconstruction/disposal, frame subscribers, and raycast events |
 | `three-bundle-size` | three | none (builds, then checks in Chromium) | minimal/full-catalogue shipped JS bytes for Octane Three, R3F, and plain Three |
 
@@ -218,6 +249,11 @@ per-commit signal (its corpus is FIXED — editing the corpus list invalidates t
 baseline, re-record when you change it), `bundle-size` is the cross-framework
 comparison (all targets built with one normalized minify so solid's
 `minify:false` dev config and octane's terser passes don't skew the compare).
+The separate `codegen-size` CSS targets also build the real Rspack/CssExtract
+adapter with named exports and authenticated immutable default maps. They compare
+identical source with the option off/on, keep framework imports external for byte
+measurement, and verify equal emitted CSS and full-runtime SSR output. Their
+same-run ratios catch an adapter that silently stops supplying compiler proofs.
 `lynx-bundle-size` instead uses the pinned Rspeedy native encoder unchanged and
 bounds the incremental decoded/encoded cost of IFR against the equivalent
 background-rendered preview graph; its semantic checks remain source/build
@@ -235,6 +271,57 @@ the primary scaling ratchet as applications grow; `fw_*` tracks the one-time
 runtime cost separately. App-shaped
 sets use `todo_*`, `chat_*`, and `weather_*` operation prefixes; weather's shared
 service and formatting modules count as app code in both framework builds.
+
+`bundle-size/app-budgets.json` independently caps all four complete Octane TSRX
+applications, while `bundle-size/jsx-budgets.json` separately caps the Octane JSX
+rows application. Each fixture has application, framework, and total raw, gzip,
+and brotli ceilings: forty-five deterministic limits in total. The harness
+publishes those committed values as separate same-run `octane-tsrx-budget` and
+`octane-jsx-budget` targets, and forty-five `maxRatio: 1` guards enforce them
+alongside the existing cross-framework comparisons. Independent dialect budgets
+allow either runtime to shrink without making the other dialect look larger by
+comparison. Ceilings retain at least 32 bytes of headroom and are rounded to
+32-byte boundaries, so small changes in another framework cannot hide Octane
+application or runtime growth. Refresh a ceiling only with a reviewed explanation
+and a production measurement using the pinned CI Node version.
+
+`bundle-reachability` builds twenty-one independent public-entry feature fixtures
+across twenty-eight production builds with the production Octane compiler,
+disabled HMR/profiling, and normalized esbuild minification. The seven package
+side-effect fixtures each run through both Vite and esbuild. Each measured IIFE
+executes unchanged in an isolated jsdom realm; its visible DOM, interaction,
+hydration, Suspense, server rendering, store, and cleanup behavior must match its
+feature oracle. Client graphs reject server modules, while server graphs reject
+the client runtime; all reject React, profiling, devtools, package-metadata, and
+RPC-serialization reachability. Early
+hydration-event capture and the vanilla Zustand entry must also exclude the
+client runtime, while the hook binding must retain the real vanilla store.
+The isolated server-hook entry also rejects unrelated DOM namespace tables, and
+the component-owned-effects entry verifies that unused sibling styles, delegated
+events, and ViewTransition initialization disappear while retained styles and
+click handlers remain live.
+
+The generated SPA scenario loads the actual CLI entry and complete landing-page
+templates without maintaining duplicate fixture sources; its compiled bundle
+must render the public page while excluding the reusable-root runtime. The two
+static-root fixtures deliberately measure different public contracts.
+`root-static-specialized` matches an application's disposable top-level
+`createRoot(container).render(ImportedComponent)` entry, allowing the production
+compiler to specialize the root. `root-static` retains an escaped, reusable
+`Root`, calls `render`, and verifies `unmount`; its broader reachable runtime is
+real and must not be disguised as the specialized entry.
+
+`bundle-size/minimal-budgets.json` supplies explicit raw, gzip, and brotli byte
+ceilings for every feature. Budgets leave about 3% deterministic headroom, with
+small byte-aligned allowances for tiny isolated entries. Each scenario publishes
+its committed ceiling as a
+same-run `*-budget` reference target, so eighty-four `maxRatio: 1` entries in
+`baselines/ratios.json` enforce all three metrics in the existing weekly/manual
+Bench CI workflow. Run the complete executable and byte guard directly with:
+
+```bash
+node benchmarks/bench.mjs --quick --ratios bundle-reachability
+```
 
 ## Adding a suite
 

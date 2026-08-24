@@ -10,7 +10,7 @@
 // hook from `../utils/useSlot`; React's CSSProperties/ReactNode/JSX-intrinsics types → minimal
 // structural aliases (`E extends string`); explicit dep arrays are preserved verbatim.
 import type { AriaLabelingProps, DOMProps as SharedDOMProps } from '@react-types/shared';
-import { type Context, createElement, useContext, useMemo, useRef } from 'octane';
+import { type Context, createElement, isChildrenBlock, useContext, useMemo, useRef } from 'octane';
 
 import { S, splitSlot, subSlot } from '../internal';
 import { type MergableRef, mergeRefs } from '../utils/mergeRefs';
@@ -37,101 +37,24 @@ interface SlottedValue<T> {
 export type SlottedContextValue<T> = SlottedValue<T> | T | null | undefined;
 export type ContextValue<T, E> = SlottedContextValue<WithRef<T, E>>;
 
-type ProviderValue<T> = [Context<SlottedContextValue<T>>, SlottedContextValue<T>];
-type ProviderValues<A, B, C, D, E, F, G, H, I, J, K, L> =
-	| [ProviderValue<A>]
-	| [ProviderValue<A>, ProviderValue<B>]
-	| [ProviderValue<A>, ProviderValue<B>, ProviderValue<C>]
-	| [ProviderValue<A>, ProviderValue<B>, ProviderValue<C>, ProviderValue<D>]
-	| [ProviderValue<A>, ProviderValue<B>, ProviderValue<C>, ProviderValue<D>, ProviderValue<E>]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-			ProviderValue<H>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-			ProviderValue<H>,
-			ProviderValue<I>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-			ProviderValue<H>,
-			ProviderValue<I>,
-			ProviderValue<J>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-			ProviderValue<H>,
-			ProviderValue<I>,
-			ProviderValue<J>,
-			ProviderValue<K>,
-	  ]
-	| [
-			ProviderValue<A>,
-			ProviderValue<B>,
-			ProviderValue<C>,
-			ProviderValue<D>,
-			ProviderValue<E>,
-			ProviderValue<F>,
-			ProviderValue<G>,
-			ProviderValue<H>,
-			ProviderValue<I>,
-			ProviderValue<J>,
-			ProviderValue<K>,
-			ProviderValue<L>,
-	  ];
+type ProviderValue<C extends Context<any>> = readonly [
+	C,
+	C extends Context<infer Value> ? Value : never,
+];
+type ProviderValues<Contexts extends readonly Context<any>[]> = {
+	readonly [Index in keyof Contexts]: ProviderValue<Contexts[Index]>;
+};
 
-interface ProviderProps<A, B, C, D, E, F, G, H, I, J, K, L> {
-	values: ProviderValues<A, B, C, D, E, F, G, H, I, J, K, L>;
+interface ProviderProps<Contexts extends readonly Context<any>[]> {
+	values: ProviderValues<Contexts>;
 	children: ReactNode;
 }
 
 // No hooks (Provider nests plain Context.Provider descriptors), so no slot threading. The
 // descriptor `{ value, children }` shape stays stable per values entry (see aria memory
 // octane-provider-children-shape-flip).
-export function Provider<A, B, C, D, E, F, G, H, I, J, K, L>(
-	props: ProviderProps<A, B, C, D, E, F, G, H, I, J, K, L>,
+export function Provider<const Contexts extends readonly Context<any>[]>(
+	props: ProviderProps<Contexts>,
 ): any {
 	let { values, children } = props;
 	for (let [Context, value] of values) {
@@ -246,7 +169,13 @@ export function useRenderProps(...args: any[]): RenderPropsHookRetVal<any, any> 
 				computedStyle = style;
 			}
 
-			if (typeof children === 'function') {
+			// A `.tsrx` component authored with `@{ … }` compiles its children to a
+			// BLOCK FUNCTION, which the compiler tags via markChildrenBlock. Upstream
+			// only ever sees a render prop here, so a bare typeof check would invoke
+			// that block with render values instead of a scope and crash — the
+			// idiomatic authoring form for every RAC component. Same guard the
+			// base-ui binding uses for its own render props.
+			if (typeof children === 'function' && !isChildrenBlock(children)) {
 				computedChildren = children({ ...values, defaultChildren });
 			} else if (children == null) {
 				computedChildren = defaultChildren;
@@ -277,7 +206,15 @@ export function composeRenderProps<T, U, V extends T>(
 	wrap: (prevValue: T, renderProps: U) => V,
 ): (renderProps: U) => V {
 	return (renderProps) =>
-		wrap(typeof value === 'function' ? (value as any)(renderProps) : value, renderProps);
+		wrap(
+			// Same guard as useRenderProps: a `.tsrx` component authored with
+			// `@{ … }` compiles its children to a tagged BLOCK function, which is
+			// not a render prop. Calling it with render values instead of a scope
+			// throws, and this helper is how components forward their own children
+			// (e.g. shadcn's Checkbox wrapping its indicator around them).
+			typeof value === 'function' && !isChildrenBlock(value) ? (value as any)(renderProps) : value,
+			renderProps,
+		);
 }
 
 export type WithRef<T, E> = T & { ref?: MergableRef<E> };

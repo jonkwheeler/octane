@@ -1,5 +1,468 @@
 # @octanejs/base-ui
 
+## 0.1.44
+
+### Patch Changes
+
+- Updated dependencies [7e96f71]
+- Updated dependencies [d7226ff]
+  - octane@0.1.46
+  - @octanejs/floating-ui@0.1.45
+
+## 0.1.43
+
+### Patch Changes
+
+- Updated dependencies [5b1e6a3]
+- Updated dependencies [31abee5]
+- Updated dependencies [fd6ce69]
+- Updated dependencies [5f7a457]
+- Updated dependencies [5227d7b]
+- Updated dependencies [6927595]
+- Updated dependencies [f1a7802]
+  - octane@0.1.45
+  - @octanejs/floating-ui@0.1.44
+
+## 0.1.42
+
+### Patch Changes
+
+- 7535acd: Deduplicate binding hook sub-slot derivation behind Octane's shared helper while preserving each binding's slotless and symbol-identity behavior.
+- Updated dependencies [9b06e47]
+- Updated dependencies [7535acd]
+  - octane@0.1.44
+  - @octanejs/floating-ui@0.1.43
+
+## 0.1.41
+
+### Patch Changes
+
+- Updated dependencies [4b590bd]
+- Updated dependencies [c0ff085]
+- Updated dependencies [6a68a7d]
+- Updated dependencies [6b97f85]
+  - octane@0.1.43
+  - @octanejs/floating-ui@0.1.42
+
+## 0.1.40
+
+### Patch Changes
+
+- Updated dependencies [1581e1b]
+- Updated dependencies [afa3722]
+- Updated dependencies [231e248]
+- Updated dependencies [2f9b301]
+- Updated dependencies [939c64d]
+  - octane@0.1.42
+  - @octanejs/floating-ui@0.1.41
+
+## 0.1.39
+
+### Patch Changes
+
+- Updated dependencies [489a886]
+- Updated dependencies [922b2d4]
+- Updated dependencies [814a3c1]
+  - octane@0.1.41
+  - @octanejs/floating-ui@0.1.40
+
+## 0.1.38
+
+### Patch Changes
+
+- Updated dependencies [ff9b859]
+- Updated dependencies [14b8b40]
+- Updated dependencies [cc6e5ea]
+  - octane@0.1.40
+  - @octanejs/floating-ui@0.1.39
+
+## 0.1.37
+
+### Patch Changes
+
+- Updated dependencies [954028b]
+- Updated dependencies [21f4dfb]
+- Updated dependencies [1cb4a19]
+- Updated dependencies [0fc84da]
+  - octane@0.1.39
+  - @octanejs/floating-ui@0.1.38
+
+## 0.1.36
+
+### Patch Changes
+
+- Updated dependencies [0635af6]
+  - octane@0.1.38
+  - @octanejs/floating-ui@0.1.37
+
+## 0.1.35
+
+### Patch Changes
+
+- Updated dependencies [954c75f]
+- Updated dependencies [94fa199]
+- Updated dependencies [c2e77a3]
+- Updated dependencies [125c861]
+- Updated dependencies [765134a]
+- Updated dependencies [9efd6f4]
+- Updated dependencies [603756a]
+  - octane@0.1.37
+  - @octanejs/floating-ui@0.1.36
+
+## 0.1.34
+
+### Patch Changes
+
+- 9c397a2: Publish executable CommonJS conditions for Octane core, Floating UI, Base UI, and Radix while preserving their existing ESM and source-first entry points.
+- Updated dependencies [972fdd3]
+- Updated dependencies [4a792e3]
+- Updated dependencies [581b8bd]
+- Updated dependencies [24aa236]
+- Updated dependencies [9c397a2]
+- Updated dependencies [24aa236]
+- Updated dependencies [5377ef3]
+- Updated dependencies [6b65644]
+- Updated dependencies [f12a9a9]
+- Updated dependencies [972fdd3]
+- Updated dependencies [1039b7d]
+- Updated dependencies [ffadd39]
+- Updated dependencies [a03ff0f]
+- Updated dependencies [4c1ecd1]
+  - octane@0.1.36
+  - @octanejs/floating-ui@0.1.35
+
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies [50b7988]
+- Updated dependencies [6daa380]
+- Updated dependencies [d2c9e1c]
+- Updated dependencies [01240e6]
+- Updated dependencies [59a35ae]
+- Updated dependencies [a8b432b]
+- Updated dependencies [910c240]
+- Updated dependencies [db5687e]
+- Updated dependencies [e2466a5]
+- Updated dependencies [2d06817]
+  - octane@0.1.35
+  - @octanejs/floating-ui@0.1.34
+
+## 0.1.32
+
+### Patch Changes
+
+- 78316b4: Publish executable CommonJS conditions for Octane core, Floating UI, Base UI, and Radix while preserving their existing ESM and source-first entry points. Source-package discovery still recognizes those packages when the CommonJS build has not been generated yet.
+- Updated dependencies [78316b4]
+- Updated dependencies [4e53ef4]
+- Updated dependencies [4cc7840]
+- Updated dependencies [39b3e19]
+- Updated dependencies [8c29020]
+- Updated dependencies [97e65b9]
+  - octane@0.1.34
+  - @octanejs/floating-ui@0.1.33
+
+## 0.1.31
+
+### Patch Changes
+
+- 677182d: Declare reviewed binding modules tree-shakeable while preserving React Aria's
+  required focus and transition initialization in production consumer bundles.
+- Updated dependencies [1fe297e]
+- Updated dependencies [db0d495]
+- Updated dependencies [677182d]
+- Updated dependencies [677182d]
+- Updated dependencies [3fb96df]
+- Updated dependencies [677182d]
+- Updated dependencies [4653a2e]
+- Updated dependencies [7282555]
+- Updated dependencies [3d09348]
+- Updated dependencies [8cb40df]
+- Updated dependencies [677182d]
+- Updated dependencies [fc1c146]
+- Updated dependencies [a84fcaa]
+- Updated dependencies [217a0b5]
+  - octane@0.1.33
+  - @octanejs/floating-ui@0.1.32
+
+## 0.1.30
+
+### Patch Changes
+
+- Updated dependencies [d453832]
+- Updated dependencies [3152f0b]
+- Updated dependencies [1c44117]
+- Updated dependencies [cbd55ca]
+- Updated dependencies [cdb501c]
+  - octane@0.1.32
+  - @octanejs/floating-ui@0.1.31
+
+## 0.1.29
+
+### Patch Changes
+
+- Updated dependencies [80a9c7e]
+- Updated dependencies [62d7f13]
+- Updated dependencies [16df26e]
+  - octane@0.1.31
+  - @octanejs/floating-ui@0.1.30
+
+## 0.1.28
+
+### Patch Changes
+
+- faaa53a: Keep previous-value history anchored to committed Base UI renders when Suspense abandons a source.
+- 121ab45: Declare reviewed binding modules tree-shakeable while preserving React Aria's
+  required focus and transition initialization in production consumer bundles.
+- Updated dependencies [121ab45]
+- Updated dependencies [10011bb]
+- Updated dependencies [081fa1e]
+- Updated dependencies [60004f0]
+- Updated dependencies [27758f5]
+- Updated dependencies [136b0e3]
+- Updated dependencies [d69ab86]
+- Updated dependencies [1a27e19]
+- Updated dependencies [7f6a134]
+- Updated dependencies [ce68bb8]
+- Updated dependencies [fbe0d39]
+- Updated dependencies [9fa0b47]
+  - @octanejs/floating-ui@0.1.29
+  - octane@0.1.30
+
+## 0.1.27
+
+### Patch Changes
+
+- Updated dependencies [8fb7990]
+  - octane@0.1.29
+  - @octanejs/floating-ui@0.1.28
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies [2b98a33]
+  - octane@0.1.28
+  - @octanejs/floating-ui@0.1.27
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies [46e1833]
+- Updated dependencies [5a8e807]
+  - octane@0.1.27
+  - @octanejs/floating-ui@0.1.26
+
+## 0.1.24
+
+### Patch Changes
+
+- 57b7751: Key the array children the primitives compose, so rendering them stops emitting Octane's
+  missing-key warning.
+
+  Several primitives hand Octane an ARRAY child to place a fixed set of siblings — a rendered root
+  beside a visually-hidden input, a focus guard beside a portal. Octane reconciles an array as a keyed
+  list, so every entry needs a key; without one it warns in development and can rematch the wrong node
+  on reorder. The warning fired for every overlay and form control: dialog, sheet, alert-dialog,
+  popover, checkbox, switch, radio and slider.
+
+  Fixed in `checkbox`, `switch`, `radio`, `number-field`, `meter`, `progress`, `slider`, `dialog`,
+  `utils/FloatingPortalLite` and `utils/floating/FloatingPortal`. These arrays are positional and
+  fixed-arity, so a literal key per slot is correct; values that cannot be keyed in place — a
+  consumer's `children`, an already-built descriptor — go through a keyed Fragment, the pattern `menu`,
+  `popover` and `toast` already used.
+
+- 57b7751: Key two array-children sites the previous pass missed, both on the modal popup path.
+
+  `Popover`'s positioner composes its internal backdrop beside the floating node, and
+  `FloatingFocusManager` composes its inside focus guards around the consumer's children. Neither
+  array was keyed, so a MODAL popover, dialog or menu still emitted Octane's missing-key warning. Only
+  the modal path renders a backdrop and guards, which is why the non-modal fixtures used to verify the
+  first pass stayed silent.
+
+  The regression test now settles effects before collecting warnings. Reading them synchronously
+  missed both, because these slots only mount from an effect — the first version of that test passed
+  with the keys removed.
+
+- 57b7751: Add the `Tabs` primitive, ported from the pinned upstream at `.base-ui/packages/react/src/tabs/`
+  (v1.6.0): `Root`, `List`, `Tab` and `Panel`.
+
+  It layers over the composite infrastructure this package already carries — `List` is a
+  `CompositeRoot` (roving focus, Home/End, loop), each `Tab` a `useCompositeItem`, and `Root` wraps
+  the tree in a `CompositeList` so panels register their own indices.
+
+  `Root` owns the controlled/uncontrolled value, the activation direction (computed during render so
+  children see it on their first render after a change rather than a commit late), an automatic
+  fallback policy for uncontrolled roots only, and the id registries that wire `aria-controls` on a
+  tab to its panel and `aria-labelledby` back.
+
+  `Tabs.Indicator` is not ported. It positions itself from measured tab geometry and ships a
+  pre-hydration script with its own SSR contract; adding it later is additive.
+
+  `REASONS` gains `initial` and `missing`, which the automatic fallback reports and which no
+  previously ported component used.
+
+  15 cases from upstream's own suite are ported as the parity oracle, each citing its source. Upstream
+  ships 84 across five files; the remainder are not ported yet, and most of the untouched ones
+  exercise the Indicator.
+
+- Updated dependencies [1f01b08]
+- Updated dependencies [48e2397]
+  - octane@0.1.26
+  - @octanejs/floating-ui@0.1.25
+
+## 0.1.23
+
+### Patch Changes
+
+- bd8bb1b: Require Node.js 22.22.2 or newer across Octane's published packages.
+
+  Add the `octane/compiler/register` preload for running server and SSG scripts
+  directly with Node or Bun. It compiles imported `.tsrx`/`.tsx` modules and
+  plain TypeScript custom hooks in server mode without a Vite build. Bun also
+  targets bare `octane` imports at `octane/server` in pass-through authored source
+  dependencies, including packages that manage their hook slots manually.
+
+- Updated dependencies [bd8bb1b]
+  - @octanejs/floating-ui@0.1.24
+  - octane@0.1.25
+
+## 0.1.22
+
+### Patch Changes
+
+- ab807ba: Key the array children the primitives compose, so rendering them stops emitting Octane's
+  missing-key warning.
+
+  Several primitives hand Octane an ARRAY child to place a fixed set of siblings — a rendered root
+  beside a visually-hidden input, a focus guard beside a portal. Octane reconciles an array as a keyed
+  list, so every entry needs a key; without one it warns in development and can rematch the wrong node
+  on reorder. The warning fired for every overlay and form control: dialog, sheet, alert-dialog,
+  popover, checkbox, switch, radio and slider.
+
+  Fixed in `checkbox`, `switch`, `radio`, `number-field`, `meter`, `progress`, `slider`, `dialog`,
+  `utils/FloatingPortalLite` and `utils/floating/FloatingPortal`. These arrays are positional and
+  fixed-arity, so a literal key per slot is correct; values that cannot be keyed in place — a
+  consumer's `children`, an already-built descriptor — go through a keyed Fragment, the pattern `menu`,
+  `popover` and `toast` already used.
+
+- ab807ba: Key two array-children sites the previous pass missed, both on the modal popup path.
+
+  `Popover`'s positioner composes its internal backdrop beside the floating node, and
+  `FloatingFocusManager` composes its inside focus guards around the consumer's children. Neither
+  array was keyed, so a MODAL popover, dialog or menu still emitted Octane's missing-key warning. Only
+  the modal path renders a backdrop and guards, which is why the non-modal fixtures used to verify the
+  first pass stayed silent.
+
+  The regression test now settles effects before collecting warnings. Reading them synchronously
+  missed both, because these slots only mount from an effect — the first version of that test passed
+  with the keys removed.
+
+- Updated dependencies [ec77602]
+- Updated dependencies [29c5bdb]
+- Updated dependencies [9b032d8]
+- Updated dependencies [f9b2731]
+- Updated dependencies [6714914]
+  - octane@0.1.24
+  - @octanejs/floating-ui@0.1.23
+
+## 0.1.21
+
+### Patch Changes
+
+- 2ee31bd: Add `Accordion` — Root, Item, Header, Trigger and Panel, matching Base UI v1.6.0's anatomy.
+
+  Available as `@octanejs/base-ui/accordion` and from the package root. It builds directly on
+  `Collapsible`: each `Item` runs its own `useCollapsibleRoot` and provides `CollapsibleRootContext`,
+  so Trigger and Panel reuse the collapsible open/transition machinery unchanged — which is exactly
+  how upstream composes them. `CollapsibleRootContext` is now exported for that reason.
+
+  Ships with `tests/upstream/accordion.test.ts`: 15 cases ported from Base UI's own suite with
+  assertions unchanged, plus 3 covering single-vs-multiple toggling, which upstream only exercises
+  in blocks it skips under jsdom.
+
+- d6d8a60: Add `Collapsible` — Root, Trigger, and Panel, matching Base UI v1.6.0's anatomy.
+
+  Available as `@octanejs/base-ui/collapsible` and from the package root. This also lands the
+  `collapsibleOpenStateMapping` util, kept separate from the identically-named export in
+  `popupStateMapping` because upstream's two `triggerOpenStateMapping`s emit different attributes
+  (`data-panel-open` vs `data-popup-open`).
+
+  The port ships with `tests/upstream/collapsible.test.ts`: Base UI's own test file, assertions
+  unchanged, so behavioral drift fails the same case it would fail upstream.
+
+- Updated dependencies [c1ad31b]
+  - octane@0.1.23
+  - @octanejs/floating-ui@0.1.22
+
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies [43df1f9]
+- Updated dependencies [7a112b4]
+  - octane@0.1.22
+  - @octanejs/floating-ui@0.1.21
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies [10efc28]
+- Updated dependencies [39bfc49]
+- Updated dependencies [4863b39]
+- Updated dependencies [ef82ba3]
+  - octane@0.1.21
+  - @octanejs/floating-ui@0.1.20
+
+## 0.1.18
+
+### Patch Changes
+
+- 9164aee: Port Base UI's `Toast` (Phase 3g).
+
+  `@octanejs/base-ui/toast` exposes the full `Toast` namespace — `Provider`,
+  `Viewport`, `Root`, `Content`, `Title`, `Description`, `Close`, `Action`,
+  `Portal`, `Positioner` and `Arrow` — plus `useToastManager` for driving toasts
+  from a component and `createToastManager` for driving them from outside one.
+
+  Toasts are created imperatively rather than by a trigger. The store owns the
+  list, each toast's auto-dismiss timer, and the rules for pausing those timers
+  while the viewport is hovered, focused, touched, or the window is in the
+  background. Toasts can be updated or upserted in place by id, a `loading` toast
+  opts out of auto-dismiss entirely, and the `promise` helper drives a toast
+  through loading → success or error. Toasts beyond the configured limit are
+  flagged rather than removed so they can animate out, and the viewport mirrors
+  high-priority toasts into a visually hidden assertive live region.
+
+  Swipe-to-dismiss is covered too: dragging past the threshold dismisses the toast,
+  dragging back below it springs back, and a drag starting on a button inside the
+  toast does not swipe it.
+
+- Updated dependencies [c6370b6]
+- Updated dependencies [dd272ad]
+- Updated dependencies [c151b71]
+- Updated dependencies [66b51d8]
+- Updated dependencies [a57c32a]
+- Updated dependencies [e38a557]
+- Updated dependencies [bd90e27]
+- Updated dependencies [ae6811d]
+- Updated dependencies [62d81b8]
+  - octane@0.1.20
+  - @octanejs/floating-ui@0.1.19
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies [9d5d642]
+- Updated dependencies [f469b3f]
+- Updated dependencies [ac2ae2f]
+- Updated dependencies [3aada64]
+  - octane@0.1.19
+  - @octanejs/floating-ui@0.1.18
+
 ## 0.1.16
 
 ### Patch Changes

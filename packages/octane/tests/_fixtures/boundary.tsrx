@@ -1,4 +1,4 @@
-import { Suspense, ErrorBoundary, use, useState } from 'octane';
+import { Suspense, ErrorBoundary, use, useEffect, useLayoutEffect, useState } from 'octane';
 
 export function Suspender(props) @{
 	const v = use(props.promise);
@@ -47,6 +47,42 @@ export function ErrorHost(props) @{
 	</ErrorBoundary>
 }
 
+interface SuspendingErrorFallbackProps {
+	promise: Promise<string>;
+	read: () => string;
+	usePromise: boolean;
+	log: string[];
+}
+
+function SuspendingErrorFallback(props: SuspendingErrorFallbackProps) @{
+	const value =
+		props.usePromise ? use(props.promise) : props.read();
+	useLayoutEffect(() => {
+		props.log.push('mount');
+		return () => {
+			props.log.push('unmount');
+		};
+	}, []);
+	<span id="suspended-error-fallback">{value as string}</span>
+}
+
+// Keep the imported literal ErrorBoundary: its compiler lowering uses errorBlock,
+// unlike a dynamic boundary descriptor, which uses the general tryBlock path.
+export function SuspendingErrorFallbackHost(props: SuspendingErrorFallbackProps) @{
+	<Suspense fallback={<span id="outer-error-pending">{'outer loading'}</span>}>
+		<ErrorBoundary
+			fallback={<SuspendingErrorFallback
+				promise={props.promise}
+				read={props.read}
+				usePromise={props.usePromise}
+				log={props.log}
+			/>}
+		>
+			<Thrower bang={true} />
+		</ErrorBoundary>
+	</Suspense>
+}
+
 function ResetThrower(props) @{
 	if (props.state.failed) throw new Error('reset me');
 	<span id="reset-ok">recovered</span>
@@ -65,5 +101,104 @@ export function ResetErrorHost(props) @{
 		</button>}
 	>
 		<ResetThrower state={props.state} />
+	</ErrorBoundary>
+}
+
+export function RetainedResetErrorHost(props) @{
+	<ErrorBoundary
+		resetRef={props.resetRef}
+		fallback={(error) => <span id="retained-reset-error">{'caught:' + String(error)}</span>}
+	>
+		<ResetThrower state={props.state} />
+	</ErrorBoundary>
+}
+
+export function RetainedResetSuspenseHost(props) @{
+	<ErrorBoundary resetRef={props.resetRef} fallback="error">
+		<Suspense fallback={<span id="retained-pending">pending</span>}>
+			<Suspender promise={props.promise} />
+		</Suspense>
+	</ErrorBoundary>
+}
+
+interface EffectFailureProps {
+	phase: 'layout' | 'passive';
+}
+
+function EffectFailure(props: EffectFailureProps) @{
+	if (props.phase === 'layout') {
+		useLayoutEffect(() => {
+			throw new Error('layout failed');
+		}, []);
+	} else {
+		useEffect(() => {
+			throw new Error('passive failed');
+		}, []);
+	}
+	<span id="effect-before-error">{'before effect'}</span>
+}
+
+export function EffectErrorHost(props: EffectFailureProps) @{
+	<ErrorBoundary
+		fallback={(error: unknown) =>
+			<strong id="effect-error">{(error as Error).message as string}</strong>}
+	>
+		<EffectFailure phase={props.phase} />
+	</ErrorBoundary>
+}
+
+interface BoundaryLifecycleProps {
+	fail: boolean;
+	log: string[];
+	hostRef?: (node: Element | null) => void;
+	onCleanup?: () => void;
+}
+
+function BoundaryLifecycleChild(props: BoundaryLifecycleProps) @{
+	useLayoutEffect(() => {
+		props.log.push('setup');
+		return () => {
+			props.log.push('cleanup');
+			props.onCleanup?.();
+		};
+	}, []);
+	if (props.fail) throw new Error('lifecycle failed');
+	<span id="boundary-primary" ref={props.hostRef}>{'primary'}</span>
+}
+
+export function LifecycleErrorHost(props: BoundaryLifecycleProps) @{
+	<ErrorBoundary
+		fallback={(error: unknown) =>
+			<strong id="lifecycle-error">{(error as Error).message as string}</strong>}
+	>
+		<BoundaryLifecycleChild
+			fail={props.fail}
+			log={props.log}
+			hostRef={props.hostRef}
+			onCleanup={props.onCleanup}
+		/>
+	</ErrorBoundary>
+}
+
+interface BoundaryRefProps {
+	keep: boolean;
+	hostRef: (node: Element | null) => void;
+}
+
+function RemovableRef(props: BoundaryRefProps) @{
+	<section>
+		@if (props.keep) {
+			<span id="boundary-ref" ref={props.hostRef}>{'ref'}</span>
+		}
+		<span id="boundary-ref-sibling">{'sibling'}</span>
+	</section>
+}
+
+export function RefDetachErrorHost(props: BoundaryRefProps) @{
+	<ErrorBoundary
+		fallback={(error: unknown) =>
+			<strong id="ref-error">{(error as Error).message as string}</strong>}
+	>
+		<RemovableRef keep={props.keep} hostRef={props.hostRef} />
 	</ErrorBoundary>
 }

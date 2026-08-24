@@ -783,7 +783,8 @@ run `pnpm rules:generate` and `pnpm rules:check`. Do not hand-edit generated
 Separately update the non-RuleSync agent/MCP sources:
 
 - `.ai/project-map.md`;
-- `.ai/skills/react-library-port.md` and `.ai/skills/bug-hunter.md` (their
+- `.rulesync/skills/octane-react-library-port/SKILL.md` and
+  `.rulesync/skills/bug-hunter/SKILL.md` (their
   controlled-input wording is stale);
 - `packages/octane-mcp-server/src/bridge.js` and its README;
 - `packages/octane-mcp-server/skills/migrate-react-component.md`,
@@ -1119,7 +1120,7 @@ adjusted during Wave 0, but the final equivalent gates are mandatory.
 Focused iteration:
 
 ```bash
-./node_modules/.bin/vitest run packages/octane/tests/native-change-compiler.test.ts packages/octane/tests/native-change-runtime-diagnostic.test.ts --project octane --reporter=verbose
+./node_modules/.bin/vitest run packages/octane/tests/compiler/native-change-compiler.test.ts packages/octane/tests/native-change-runtime-diagnostic.test.ts --project octane --reporter=verbose
 ./node_modules/.bin/vitest run packages/octane/tests/differential/native-change-matrix.test.ts --project octane --reporter=verbose
 ./node_modules/.bin/vitest run packages/octane/tests/differential/native-change-matrix.test.ts --project octane-prod --reporter=verbose
 ./node_modules/.bin/vitest run packages/octane/tests/conformance/controlled-input.test.ts packages/octane/tests/conformance/controlled-restore.test.ts packages/octane/tests/controlled-checkable-native-events.test.tsrx --project octane --reporter=verbose

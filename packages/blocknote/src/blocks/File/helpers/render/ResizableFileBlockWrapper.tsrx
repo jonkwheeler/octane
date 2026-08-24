@@ -198,7 +198,7 @@ export const ResizableFileBlockWrapper = (
         />
         {/* This element ensures `mousemove` and `mouseup` events are captured
         while resizing when the cursor is over the wrapper content. This is
-        because embeds are treated as separate HTML documents, so if the 
+        because embeds are treated as separate HTML documents, so if the
         content is an embed, the events will only fire within that document. */}
         {resizeParams && (
           <div

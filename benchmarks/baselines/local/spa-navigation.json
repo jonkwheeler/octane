@@ -1,0 +1,1180 @@
+{
+  "suite": "spa-navigation",
+  "iterations": 20,
+  "targets": [
+    {
+      "name": "octane-tsrx",
+      "ops": {
+        "nav_deep": {
+          "score": 1.4124999642372131,
+          "median": 1.4000000953674316,
+          "min": 1.299999713897705,
+          "mean": 1.4299999713897704,
+          "p95": 1.5,
+          "sd": 0.057124099234320894,
+          "rme": 1.8695520751919623,
+          "scoreRme": 3.7937446572032547,
+          "warmupRatio": 1.008849549306588,
+          "samples": 20
+        },
+        "nav_teardown": {
+          "score": 0.612500011920929,
+          "median": 0.5999999046325684,
+          "min": 0.5,
+          "mean": 0.6099999666213989,
+          "p95": 0.7000002861022949,
+          "sd": 0.07181847556054893,
+          "rme": 5.510114222380374,
+          "scoreRme": 11.392479204883184,
+          "warmupRatio": 0.959183615875563,
+          "samples": 20
+        },
+        "nav_mount": {
+          "score": 1.2499999403953552,
+          "median": 1.1999998092651367,
+          "min": 1.0999999046325684,
+          "mean": 1.2149999618530274,
+          "p95": 1.4000000953674316,
+          "sd": 0.08127278367602538,
+          "rme": 3.1305677086543637,
+          "scoreRme": 5.056587157660212,
+          "warmupRatio": 0.9499999976158141,
+          "samples": 20
+        },
+        "nav_nested": {
+          "score": 0.11249995231628418,
+          "median": 0.09999990463256836,
+          "min": 0,
+          "mean": 0.11499998569488526,
+          "p95": 0.20000028610229492,
+          "sd": 0.0670819903156356,
+          "rme": 27.29998345084515,
+          "scoreRme": 62.02569452706518,
+          "warmupRatio": 1.0000010596385784,
+          "samples": 20
+        },
+        "nav_deep_6x": {
+          "score": 9.76250010728836,
+          "median": 9.699999809265137,
+          "min": 9,
+          "mean": 9.615000009536743,
+          "p95": 10.400000095367432,
+          "sd": 0.42707698556465545,
+          "rme": 2.078792351169454,
+          "scoreRme": 3.717554782565576,
+          "warmupRatio": 0.9756722019441609,
+          "samples": 20
+        },
+        "nodes_deep": {
+          "median": 3078,
+          "min": 3078,
+          "samples": 1
+        },
+        "elements_deep": {
+          "median": 2052,
+          "min": 2052,
+          "samples": 1
+        },
+        "text_deep": {
+          "median": 1025,
+          "min": 1025,
+          "samples": 1
+        },
+        "comments_deep": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass",
+        "dom": {
+          "deep": {
+            "root": "#main",
+            "total": 3078,
+            "elements": 2052,
+            "text": 1025,
+            "comments": 1,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {
+              "": 1
+            },
+            "commentParents": {
+              "div.outlet": 1
+            }
+          },
+          "nested": {
+            "root": "#main",
+            "total": 105,
+            "elements": 70,
+            "text": 33,
+            "comments": 2,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {
+              "": 2
+            },
+            "commentParents": {
+              "div.outlet": 1,
+              "div.outlet-inner": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "octane-jsx",
+      "ops": {
+        "nav_deep": {
+          "score": 1.6875000596046448,
+          "median": 1.6999998092651367,
+          "min": 1.5999999046325684,
+          "mean": 1.6800000667572021,
+          "p95": 1.8000001907348633,
+          "sd": 0.06958524316481707,
+          "rme": 1.9384833750660782,
+          "scoreRme": 3.175500644510877,
+          "warmupRatio": 0.977777764434187,
+          "samples": 20
+        },
+        "nav_teardown": {
+          "score": 0.7375001311302185,
+          "median": 0.7000002861022949,
+          "min": 0.5999999046325684,
+          "mean": 0.7150000333786011,
+          "p95": 0.8000001907348633,
+          "sd": 0.058714302983027385,
+          "rme": 3.843191967527335,
+          "scoreRme": 5.867810499793269,
+          "warmupRatio": 0.9322031432614961,
+          "samples": 20
+        },
+        "nav_mount": {
+          "score": 1.3500001430511475,
+          "median": 1.3999996185302734,
+          "min": 1.299999713897705,
+          "mean": 1.390000009536743,
+          "p95": 1.5999999046325684,
+          "sd": 0.11192097635269159,
+          "rme": 3.7683472634273443,
+          "scoreRme": 3.3106853017453948,
+          "warmupRatio": 1.0925923620232092,
+          "samples": 20
+        },
+        "nav_nested": {
+          "score": 0.1750001311302185,
+          "median": 0.19999980926513672,
+          "min": 0.09999990463256836,
+          "mean": 0.1900000810623169,
+          "p95": 0.40000009536743164,
+          "sd": 0.07181848953858172,
+          "rme": 17.690361641552503,
+          "scoreRme": 33.785714285871066,
+          "warmupRatio": 1.0714281091888154,
+          "samples": 20
+        },
+        "nav_deep_6x": {
+          "score": 10.637500047683716,
+          "median": 10.699999809265137,
+          "min": 9.599999904632568,
+          "mean": 10.599999976158141,
+          "p95": 11.299999713897705,
+          "sd": 0.4052290209788345,
+          "rme": 1.7891588728955639,
+          "scoreRme": 1.828411978051828,
+          "warmupRatio": 1.0129259570626015,
+          "samples": 20
+        },
+        "nodes_deep": {
+          "median": 3077,
+          "min": 3077,
+          "samples": 1
+        },
+        "elements_deep": {
+          "median": 2052,
+          "min": 2052,
+          "samples": 1
+        },
+        "text_deep": {
+          "median": 1025,
+          "min": 1025,
+          "samples": 1
+        },
+        "comments_deep": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass",
+        "dom": {
+          "deep": {
+            "root": "#main",
+            "total": 3077,
+            "elements": 2052,
+            "text": 1025,
+            "comments": 0,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          },
+          "nested": {
+            "root": "#main",
+            "total": 103,
+            "elements": 70,
+            "text": 33,
+            "comments": 0,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "react",
+      "ops": {
+        "nav_deep": {
+          "score": 1.5874999165534973,
+          "median": 1.5999999046325684,
+          "min": 1.5,
+          "mean": 1.5999999284744262,
+          "p95": 1.700000286102295,
+          "sd": 0.056195139763006705,
+          "rme": 1.6437396185701434,
+          "scoreRme": 3.375529678540751,
+          "warmupRatio": 1.015748054851595,
+          "samples": 20
+        },
+        "nav_teardown": {
+          "score": 0.800000011920929,
+          "median": 0.8000001907348633,
+          "min": 0.6999998092651367,
+          "mean": 0.8000000238418579,
+          "p95": 0.9000000953674316,
+          "sd": 0.05619513976339002,
+          "rme": 3.2874789922264283,
+          "scoreRme": 7.900912230063617,
+          "warmupRatio": 1.0000001490116097,
+          "samples": 20
+        },
+        "nav_mount": {
+          "score": 1.2750000953674316,
+          "median": 1.299999713897705,
+          "min": 1.1999998092651367,
+          "mean": 1.3,
+          "p95": 1.5,
+          "sd": 0.08583945490205318,
+          "rme": 3.090279986631547,
+          "scoreRme": 4.637246973815458,
+          "warmupRatio": 1.058823422164661,
+          "samples": 20
+        },
+        "nav_nested": {
+          "score": 0.1375001072883606,
+          "median": 0.19999980926513672,
+          "min": 0.09999990463256836,
+          "mean": 0.18499999046325682,
+          "p95": 0.3000001907348633,
+          "sd": 0.07451594633702925,
+          "rme": 18.85088507589534,
+          "scoreRme": 31.472762800337435,
+          "warmupRatio": 1.5454531661745856,
+          "samples": 20
+        },
+        "nav_deep_6x": {
+          "score": 10.550000011920929,
+          "median": 10.699999809265137,
+          "min": 9.900000095367432,
+          "mean": 10.754999995231628,
+          "p95": 11.799999713897705,
+          "sd": 0.5124501794440575,
+          "rme": 2.2299517464237426,
+          "scoreRme": 2.54185537244847,
+          "warmupRatio": 1.052132691193381,
+          "samples": 20
+        },
+        "nodes_deep": {
+          "median": 3077,
+          "min": 3077,
+          "samples": 1
+        },
+        "elements_deep": {
+          "median": 2052,
+          "min": 2052,
+          "samples": 1
+        },
+        "text_deep": {
+          "median": 1025,
+          "min": 1025,
+          "samples": 1
+        },
+        "comments_deep": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass",
+        "dom": {
+          "deep": {
+            "root": "#main",
+            "total": 3077,
+            "elements": 2052,
+            "text": 1025,
+            "comments": 0,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          },
+          "nested": {
+            "root": "#main",
+            "total": 103,
+            "elements": 70,
+            "text": 33,
+            "comments": 0,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "solid",
+      "ops": {
+        "nav_deep": {
+          "score": 1.9750000834465027,
+          "median": 2,
+          "min": 1.8999996185302734,
+          "mean": 1.9700000286102295,
+          "p95": 2.1000003814697266,
+          "sd": 0.06569468228604473,
+          "rme": 1.5606956311991391,
+          "scoreRme": 2.9936730027973595,
+          "warmupRatio": 0.993670832020145,
+          "samples": 20
+        },
+        "nav_teardown": {
+          "score": 0.550000011920929,
+          "median": 0.5,
+          "min": 0.5,
+          "mean": 0.5350000143051148,
+          "p95": 0.6000003814697266,
+          "sd": 0.04893606849415651,
+          "rme": 4.280845088331994,
+          "scoreRme": 8.126237931047248,
+          "warmupRatio": 0.9545454988794869,
+          "samples": 20
+        },
+        "nav_mount": {
+          "score": 1.7374999523162842,
+          "median": 1.799999713897705,
+          "min": 1.5999999046325684,
+          "mean": 1.7549999952316284,
+          "p95": 1.9000000953674316,
+          "sd": 0.07591554181755097,
+          "rme": 2.0244535047965027,
+          "scoreRme": 2.490654680571434,
+          "warmupRatio": 1.035971292618437,
+          "samples": 20
+        },
+        "nav_nested": {
+          "score": 0.13750004768371582,
+          "median": 0.19999980926513672,
+          "min": 0.09999990463256836,
+          "mean": 0.17500002384185792,
+          "p95": 0.3000001907348633,
+          "sd": 0.06386669434461657,
+          "rme": 17.080105971330806,
+          "scoreRme": 31.47280645810064,
+          "warmupRatio": 1.181817945370086,
+          "samples": 20
+        },
+        "nav_deep_6x": {
+          "score": 13.4375,
+          "median": 13.599999904632568,
+          "min": 12.599999904632568,
+          "mean": 13.524999976158142,
+          "p95": 14.200000286102295,
+          "sd": 0.44233236722643193,
+          "rme": 1.5306139849663403,
+          "scoreRme": 3.4395268215568917,
+          "warmupRatio": 1.0213953461757925,
+          "samples": 20
+        },
+        "nodes_deep": {
+          "median": 5123,
+          "min": 5123,
+          "samples": 1
+        },
+        "elements_deep": {
+          "median": 2052,
+          "min": 2052,
+          "samples": 1
+        },
+        "text_deep": {
+          "median": 1025,
+          "min": 1025,
+          "samples": 1
+        },
+        "comments_deep": {
+          "median": 2046,
+          "min": 2046,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass",
+        "dom": {
+          "deep": {
+            "root": "#main",
+            "total": 5123,
+            "elements": 2052,
+            "text": 1025,
+            "comments": 2046,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {
+              "": 2046
+            },
+            "commentParents": {
+              "div.n": 2046
+            }
+          },
+          "nested": {
+            "root": "#main",
+            "total": 165,
+            "elements": 70,
+            "text": 33,
+            "comments": 62,
+            "emptyText": 0,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {
+              "": 62
+            },
+            "commentParents": {
+              "div.n": 62
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "vue-vapor",
+      "ops": {
+        "nav_deep": {
+          "score": 2.799999952316284,
+          "median": 2.8000001907348633,
+          "min": 2.6999998092651367,
+          "mean": 2.7849999904632567,
+          "p95": 2.9000000953674316,
+          "sd": 0.058714352138262746,
+          "rme": 0.986673140029248,
+          "scoreRme": 2.25740625741528,
+          "warmupRatio": 0.9910714582216988,
+          "samples": 20
+        },
+        "nav_teardown": {
+          "score": 0.8000001311302185,
+          "median": 0.7999997138977051,
+          "min": 0.6999998092651367,
+          "mean": 0.7899999856948853,
+          "p95": 0.9000000953674316,
+          "sd": 0.07181852448315193,
+          "rme": 4.254647901540931,
+          "scoreRme": 7.900901634101612,
+          "warmupRatio": 0.999999701976825,
+          "samples": 20
+        },
+        "nav_mount": {
+          "score": 2.400000035762787,
+          "median": 2.4000000953674316,
+          "min": 2.200000286102295,
+          "mean": 2.3850000381469725,
+          "p95": 2.5,
+          "sd": 0.08750938766729839,
+          "rme": 1.7171984394516628,
+          "scoreRme": 3.724523523622099,
+          "warmupRatio": 0.9895833434226611,
+          "samples": 20
+        },
+        "nav_nested": {
+          "score": 0.16250008344650269,
+          "median": 0.3000001907348633,
+          "min": 0.09999990463256836,
+          "mean": 0.2600001096725464,
+          "p95": 0.5,
+          "sd": 0.10462964493230605,
+          "rme": 18.833691437308993,
+          "scoreRme": 26.63080639667609,
+          "warmupRatio": 1,
+          "samples": 20
+        },
+        "nav_deep_6x": {
+          "score": 18.637500047683716,
+          "median": 19.09999990463257,
+          "min": 18,
+          "mean": 19.23499999046326,
+          "p95": 21,
+          "sd": 0.7915840112046747,
+          "rme": 1.9260122880326878,
+          "scoreRme": 1.8720041054638485,
+          "warmupRatio": 1.0697518384646874,
+          "samples": 20
+        },
+        "nodes_deep": {
+          "median": 5125,
+          "min": 5125,
+          "samples": 1
+        },
+        "elements_deep": {
+          "median": 2052,
+          "min": 2052,
+          "samples": 1
+        },
+        "text_deep": {
+          "median": 3073,
+          "min": 3073,
+          "samples": 1
+        },
+        "comments_deep": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass",
+        "dom": {
+          "deep": {
+            "root": "#main",
+            "total": 5125,
+            "elements": 2052,
+            "text": 3073,
+            "comments": 0,
+            "emptyText": 2048,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          },
+          "nested": {
+            "root": "#main",
+            "total": 169,
+            "elements": 70,
+            "text": 99,
+            "comments": 0,
+            "emptyText": 66,
+            "whitespaceText": 0,
+            "hydrationMarkersPhysical": 0,
+            "hydrationMarkersLogical": 0,
+            "hydrationMarkersCounted": 0,
+            "hydrationMarkerMaxMultiplicity": 0,
+            "leadingHydrationStartsPhysical": 0,
+            "leadingHydrationStartsLogical": 0,
+            "commentsByData": {},
+            "commentParents": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "octane-tsrx-work",
+      "ops": {
+        "nav_deep_renderBlock": {
+          "median": 5119,
+          "min": 5119,
+          "samples": 1
+        },
+        "nav_deep_componentSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_componentSlotVoid": {
+          "median": 3070,
+          "min": 3070,
+          "samples": 1
+        },
+        "nav_deep_componentSlotLite": {
+          "median": 2,
+          "min": 2,
+          "samples": 1
+        },
+        "nav_deep_childSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_createElement": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_deep_unmountBlock": {
+          "median": 5118,
+          "min": 5118,
+          "samples": 1
+        },
+        "nav_deep_unmountScope": {
+          "median": 5120,
+          "min": 5120,
+          "samples": 1
+        },
+        "nav_teardown_renderBlock": {
+          "median": 160,
+          "min": 160,
+          "samples": 1
+        },
+        "nav_teardown_componentSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_componentSlotVoid": {
+          "median": 94,
+          "min": 94,
+          "samples": 1
+        },
+        "nav_teardown_componentSlotLite": {
+          "median": 3,
+          "min": 3,
+          "samples": 1
+        },
+        "nav_teardown_childSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_createElement": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_teardown_unmountBlock": {
+          "median": 5118,
+          "min": 5118,
+          "samples": 1
+        },
+        "nav_teardown_unmountScope": {
+          "median": 5120,
+          "min": 5120,
+          "samples": 1
+        },
+        "nav_mount_renderBlock": {
+          "median": 5119,
+          "min": 5119,
+          "samples": 1
+        },
+        "nav_mount_componentSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_componentSlotVoid": {
+          "median": 3070,
+          "min": 3070,
+          "samples": 1
+        },
+        "nav_mount_componentSlotLite": {
+          "median": 2,
+          "min": 2,
+          "samples": 1
+        },
+        "nav_mount_childSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_createElement": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_mount_unmountBlock": {
+          "median": 159,
+          "min": 159,
+          "samples": 1
+        },
+        "nav_mount_unmountScope": {
+          "median": 162,
+          "min": 162,
+          "samples": 1
+        },
+        "nav_nested_renderBlock": {
+          "median": 160,
+          "min": 160,
+          "samples": 1
+        },
+        "nav_nested_componentSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_componentSlotVoid": {
+          "median": 94,
+          "min": 94,
+          "samples": 1
+        },
+        "nav_nested_componentSlotLite": {
+          "median": 3,
+          "min": 3,
+          "samples": 1
+        },
+        "nav_nested_childSlot": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_createElement": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_nested_unmountBlock": {
+          "median": 158,
+          "min": 158,
+          "samples": 1
+        },
+        "nav_nested_unmountScope": {
+          "median": 160,
+          "min": 160,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass"
+      }
+    },
+    {
+      "name": "octane-jsx-work",
+      "ops": {
+        "nav_deep_renderBlock": {
+          "median": 6147,
+          "min": 6147,
+          "samples": 1
+        },
+        "nav_deep_componentSlot": {
+          "median": 2051,
+          "min": 2051,
+          "samples": 1
+        },
+        "nav_deep_componentSlotVoid": {
+          "median": 2046,
+          "min": 2046,
+          "samples": 1
+        },
+        "nav_deep_componentSlotLite": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_childSlot": {
+          "median": 2,
+          "min": 2,
+          "samples": 1
+        },
+        "nav_deep_createElement": {
+          "median": 1029,
+          "min": 1029,
+          "samples": 1
+        },
+        "nav_deep_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_deep_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_deep_unmountBlock": {
+          "median": 6144,
+          "min": 6144,
+          "samples": 1
+        },
+        "nav_deep_unmountScope": {
+          "median": 6144,
+          "min": 6144,
+          "samples": 1
+        },
+        "nav_teardown_renderBlock": {
+          "median": 197,
+          "min": 197,
+          "samples": 1
+        },
+        "nav_teardown_componentSlot": {
+          "median": 68,
+          "min": 68,
+          "samples": 1
+        },
+        "nav_teardown_componentSlotVoid": {
+          "median": 62,
+          "min": 62,
+          "samples": 1
+        },
+        "nav_teardown_componentSlotLite": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_childSlot": {
+          "median": 3,
+          "min": 3,
+          "samples": 1
+        },
+        "nav_teardown_createElement": {
+          "median": 39,
+          "min": 39,
+          "samples": 1
+        },
+        "nav_teardown_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_teardown_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_teardown_unmountBlock": {
+          "median": 6144,
+          "min": 6144,
+          "samples": 1
+        },
+        "nav_teardown_unmountScope": {
+          "median": 6144,
+          "min": 6144,
+          "samples": 1
+        },
+        "nav_mount_renderBlock": {
+          "median": 6147,
+          "min": 6147,
+          "samples": 1
+        },
+        "nav_mount_componentSlot": {
+          "median": 2051,
+          "min": 2051,
+          "samples": 1
+        },
+        "nav_mount_componentSlotVoid": {
+          "median": 2046,
+          "min": 2046,
+          "samples": 1
+        },
+        "nav_mount_componentSlotLite": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_childSlot": {
+          "median": 2,
+          "min": 2,
+          "samples": 1
+        },
+        "nav_mount_createElement": {
+          "median": 1029,
+          "min": 1029,
+          "samples": 1
+        },
+        "nav_mount_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_mount_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_mount_unmountBlock": {
+          "median": 194,
+          "min": 194,
+          "samples": 1
+        },
+        "nav_mount_unmountScope": {
+          "median": 194,
+          "min": 194,
+          "samples": 1
+        },
+        "nav_nested_renderBlock": {
+          "median": 197,
+          "min": 197,
+          "samples": 1
+        },
+        "nav_nested_componentSlot": {
+          "median": 68,
+          "min": 68,
+          "samples": 1
+        },
+        "nav_nested_componentSlotVoid": {
+          "median": 62,
+          "min": 62,
+          "samples": 1
+        },
+        "nav_nested_componentSlotLite": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_childSlot": {
+          "median": 3,
+          "min": 3,
+          "samples": 1
+        },
+        "nav_nested_createElement": {
+          "median": 39,
+          "min": 39,
+          "samples": 1
+        },
+        "nav_nested_hostElementBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_deoptItemBody": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_reconcileKeyed": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_updateSurvivor": {
+          "median": 0,
+          "min": 0,
+          "samples": 1
+        },
+        "nav_nested_setText": {
+          "median": 1,
+          "min": 1,
+          "samples": 1
+        },
+        "nav_nested_unmountBlock": {
+          "median": 192,
+          "min": 192,
+          "samples": 1
+        },
+        "nav_nested_unmountScope": {
+          "median": 192,
+          "min": 192,
+          "samples": 1
+        }
+      },
+      "meta": {
+        "gates": "pass"
+      }
+    }
+  ],
+  "harnessExit": 0
+}

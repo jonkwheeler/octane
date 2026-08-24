@@ -62,6 +62,14 @@ unchanged.
      (`snapshotKeyed`/`diffIdentity`) — Octane's LIS reconciler moves a *different set*
      of nodes than React's `lastPlacedIndex` even at identical final DOM.
 
+Executable binding parity follows the repository-wide
+[React parity test-execution contract](./react-parity-testing.md). The complete
+local Vitest project declares parity ownership with `testExecution.group` and,
+for a mixed project, the parity-owned `testExecution.include` patterns. The
+generic Node 24 parity job discovers package manifests automatically; the
+ordinary sharded config derives and runs the non-parity complement. Package
+paths and package-specific parity jobs do not belong in `ci.yml`.
+
 ## 3. Ranked targets
 
 | # | Library | Effort | Why it's here | What passing proves |
@@ -103,6 +111,21 @@ fidelity.)*
   useRef/useMemo/useEffect/uSES) for zustand-traditional, react-redux, xstate.
 
 ## 5. Phases
+
+The maintained binding catalog now also includes
+`@octanejs/alien-signals`, a thin port of `react-alien-signals@0.3.0` over the
+framework-neutral `alien-signals@1.0.4` core. Its focused suite covers external
+store subscriptions, computed values, effect and scope ownership, SSR, and
+hydration rather than the differential DOM harness.
+
+Target #5 has landed as [`@octanejs/xstate`](../packages/xstate) (a port of
+`@xstate/react@6.1.0`), alongside
+[`@octanejs/xstate-store`](../packages/xstate-store) (`@xstate/store-react@2.0.0`),
+which the ranked table did not anticipate. Both carry the full six-lane evidence
+model: the vendored upstream suite run unchanged against React, the same case
+identities re-run on Octane, both type suites, and — for `@octanejs/xstate` — a
+differential lane. `docs/bindings-status.md` is the generated source of truth for
+what is landed; this table stays a record of the original ranking.
 
 - **P0 — Bootstrap (1–2d):** audit existing assets (rig, `_setup.ts` rename mechanics,
   conformance + identity helpers, the two existing store fixtures), add the
