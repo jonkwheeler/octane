@@ -22,7 +22,8 @@
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
       "@octanejs/remix-router",
-      "@octanejs/nuqs"
+      "@octanejs/nuqs",
+      "@octanejs/xyflow"
     ]
   },
   {
@@ -39,6 +40,8 @@
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",
+      "@octanejs/puck",
+      "@octanejs/thinking-orbs",
       "@octanejs/tanstack-hotkeys",
       "@octanejs/tanstack-pacer"
     ]
@@ -49,10 +52,21 @@
     "packages": [
       "@octanejs/hook-form",
       "@octanejs/tanstack-form",
+      "@octanejs/blocknote",
       "@octanejs/lexical",
       "@octanejs/tiptap",
       "@octanejs/mdx",
       "@octanejs/i18next"
+    ]
+  },
+  {
+    "title": "Sanity content",
+    "description": "Portable Text rendering, Sanity query loading and Live Mode, icons, and brand marks.",
+    "packages": [
+      "@octanejs/portabletext",
+      "@octanejs/sanity-loader",
+      "@octanejs/sanity-icons",
+      "@octanejs/sanity-logos"
     ]
   },
   {
