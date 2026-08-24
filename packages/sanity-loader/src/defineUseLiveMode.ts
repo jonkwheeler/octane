@@ -39,7 +39,7 @@ export function defineUseLiveMode({
 
 		useEffect(() => {
 			setStudioUrl(
-				(studioUrl ?? typeof client === 'object') ? client?.config().stega.studioUrl : undefined,
+				studioUrl ?? (typeof client === 'object' ? client?.config().stega.studioUrl : undefined),
 			);
 		}, [studioUrl, client]);
 	};

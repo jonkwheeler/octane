@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as sanityLoader from '@octanejs/sanity-loader';
 import * as upstream from '@sanity/react-loader';
-import { mount } from '../../../octane/tests/_helpers.js';
+import { flushEffects, mount } from '../../../octane/tests/_helpers.js';
 import { createQueryStore as createClientQueryStore } from '../../src/createQueryStore/client-only';
 import { createQueryStore as createServerQueryStore } from '../../src/createQueryStore/server-only';
+import { defineUseLiveMode } from '../../src/defineUseLiveMode';
 import { defineStudioUrlStore } from '../../src/defineStudioUrlStore';
 import { InitialQuery } from '../_fixtures/initial-query.tsrx';
+import { LiveModeStudioUrl } from '../_fixtures/live-mode-studio-url.tsrx';
 import { OptionalQueryArguments } from '../_fixtures/optional-query-arguments.tsrx';
 
 describe('@octanejs/sanity-loader — runtime', () => {
@@ -26,6 +28,37 @@ describe('@octanejs/sanity-loader — runtime', () => {
 		expect(mounted.find('[data-call="query-only"]').textContent).toBe(expected);
 		expect(mounted.find('[data-call="query-with-params"]').textContent).toBe(expected);
 		mounted.unmount();
+	});
+
+	// OCTANE DIVERGENCE: @sanity/react-loader@2.2.1 uses an operator-precedence expression
+	// that discards an explicit studioUrl; the public option must win over the client fallback.
+	it('prefers an explicit Live Mode Studio URL and falls back to the client configuration', () => {
+		const explicitStudioUrl = 'https://explicit.sanity.studio';
+		const clientStudioUrl = 'https://client.sanity.studio';
+		const setStudioUrl = vi.fn();
+		const useLiveMode = defineUseLiveMode({
+			enableLiveMode: vi.fn(() => vi.fn()),
+			setStudioUrl,
+		});
+
+		const explicit = mount(LiveModeStudioUrl, {
+			useLiveMode,
+			options: { studioUrl: explicitStudioUrl },
+		});
+		flushEffects();
+		expect(setStudioUrl).toHaveBeenLastCalledWith(explicitStudioUrl);
+		explicit.unmount();
+
+		const client = {
+			config: () => ({ stega: { studioUrl: clientStudioUrl } }),
+		} as NonNullable<Parameters<typeof useLiveMode>[0]['client']>;
+		const fallback = mount(LiveModeStudioUrl, {
+			useLiveMode,
+			options: { client },
+		});
+		flushEffects();
+		expect(setStudioUrl).toHaveBeenLastCalledWith(clientStudioUrl);
+		fallback.unmount();
 	});
 
 	it('notifies studio URL subscribers and preserves the server snapshot', () => {
