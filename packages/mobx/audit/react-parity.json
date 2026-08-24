@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "51c01eee8182f3f5def2665d46d51768ba49db37e485ff793ec4a5f169ad99b2"
+      "lockfileSha256": "21b48000f9805a63aa8db6170697c6b608c6b8db042ed091f179856e7f75e932"
     }
   },
   "lanes": [
@@ -78,7 +78,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "3e97762d731f0899f33b4060672dd79f302582b317c0bdf8e8872b9135ee2d64"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         }
       ]
     }

@@ -49,6 +49,20 @@ describe('@octanejs/aria/components — advanced React Aria Components families'
 		r.unmount();
 	});
 
+	it('updates a DateField when the hidden native date input receives input', async () => {
+		const r = mount(DateFieldScenario);
+		const field = r.container.querySelector('.react-aria-DateField')!;
+		const input = r.container.querySelector('input[type="date"]') as HTMLInputElement;
+		expect(input.value).toBe('2026-08-18');
+
+		input.value = '2027-09-22';
+		await act(() => input.dispatchEvent(new InputEvent('input', { bubbles: true })));
+
+		expect(field.textContent).toContain('9/22/2027');
+		expect(input.value).toBe('2027-09-22');
+		r.unmount();
+	});
+
 	it('uses native input events to update a ColorField', async () => {
 		const onChange = vi.fn();
 		const r = mount(ColorFieldScenario, { onChange });

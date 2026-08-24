@@ -120,7 +120,9 @@ export function useHiddenDateInput(
 			name,
 			step: inputStep,
 			value: dateValue,
-			onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+			// React's synthetic onChange follows the native input event for date controls.
+			// Octane has no synthetic layer, so wire the equivalent event directly.
+			onInput: (e: React.ChangeEvent<HTMLInputElement>) => {
 				let targetString = e.currentTarget.value.toString();
 				if (targetString) {
 					try {
