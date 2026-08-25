@@ -58,6 +58,19 @@ export function NegativeHosts(props) @{
 	</section>
 }
 
+interface DiagnosticBatchProps {
+	items: Array<{ id: string; type: string }>;
+	hostProps: Record<string, unknown>;
+}
+
+export function DiagnosticBatch(props: DiagnosticBatchProps) @{
+	<section>
+		@for (const item of props.items; key item.id) {
+			<input id={item.id} type={item.type} {...props.hostProps} />
+		}
+	</section>
+}
+
 export function PortalText(props) @{
 	<div>{createPortal(<input id="portal-text" {...props.hostProps} />, props.target)}</div>
 }
