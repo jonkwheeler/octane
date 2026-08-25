@@ -1,8 +1,9 @@
-import { RootRenderable, TextRenderable, type BoxRenderable } from '@opentui/core';
+import { ImageRenderable, RootRenderable, TextRenderable, type BoxRenderable } from '@opentui/core';
 import { createTestRenderer, type TestRendererSetup } from '@opentui/core/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { universalComponent } from 'octane/universal';
+import { universalComponent, type UniversalHostBatch } from 'octane/universal';
 import { act, createOctaneSlotRegistry, createRoot, type Root } from '@octanejs/opentui';
+import { createOpenTUIContainer, createOpenTUIDriver } from '@octanejs/opentui/renderer';
 import { testRender } from '@octanejs/opentui/test-utils';
 import {
 	BrokenApp,
@@ -21,6 +22,13 @@ interface MountedApp {
 
 const mounted: MountedApp[] = [];
 
+const PNG_1X1 = Uint8Array.from(
+	Buffer.from(
+		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4AWP4z8DwHwAFAAH/e+m+7wAAAABJRU5ErkJggg==',
+		'base64',
+	),
+);
+
 async function createApp(width = 40, height = 8): Promise<MountedApp> {
 	const setup = await createTestRenderer({ width, height, useThread: false });
 	const app = { setup, root: createRoot(setup.renderer) };
@@ -36,6 +44,47 @@ afterEach(() => {
 });
 
 describe('@octanejs/opentui root and hooks', () => {
+	it('loads a deferred image source after recreating its physical host', async () => {
+		const setup = await createTestRenderer({ width: 10, height: 6, useThread: false });
+		const container = createOpenTUIContainer(setup.renderer, {
+			eventScope(_priority, run) {
+				return run();
+			},
+		});
+		const driver = createOpenTUIDriver();
+		const context = {
+			invokeLocalCallback() {
+				throw new Error('Unexpected local callback.');
+			},
+		};
+		const prepare = (version: number, commands: UniversalHostBatch['commands']) =>
+			driver.prepareBatch(container, { renderer: container.renderer, version, commands }, context);
+
+		try {
+			prepare(1, [
+				{ op: 'create', id: 1, type: 'image', props: { source: PNG_1X1 } },
+				{ op: 'insert', parent: null, id: 1, before: null },
+			]).apply();
+			const original = driver.getPublicInstance(container, 1) as ImageRenderable;
+			await original.loadPromise;
+
+			prepare(2, [{ op: 'recreate', id: 1, type: 'image', props: { source: PNG_1X1 } }]).apply();
+			const replacement = driver.getPublicInstance(container, 1) as ImageRenderable;
+
+			expect(replacement).not.toBe(original);
+			expect(replacement.source).toBe(PNG_1X1);
+			await replacement.loadPromise;
+			expect(replacement.image?.width).toBe(1);
+
+			prepare(3, [
+				{ op: 'remove', parent: null, id: 1 },
+				{ op: 'destroy', id: 1 },
+			]).apply();
+		} finally {
+			setup.renderer.destroy();
+		}
+	});
+
 	it('renders live terminal output and preserves host identity across hook and prop updates', async () => {
 		const { root, setup } = await createApp();
 		const onKey = vi.fn();
@@ -113,9 +162,11 @@ describe('@octanejs/opentui root and hooks', () => {
 		await act(() => root.render(SlotApp, { registry }));
 		await setup.renderOnce();
 		expect(setup.captureCharFrame()).toContain('fallback:sam');
+		const fallback = setup.renderer.root.findDescendantById('fallback-status-text');
 
-		await act(() =>
-			registry.register({
+		let unregisterStatusPlugin!: () => void;
+		await act(() => {
+			unregisterStatusPlugin = registry.register({
 				id: 'status-plugin',
 				slots: {
 					statusbar(_context, props) {
@@ -125,16 +176,18 @@ describe('@octanejs/opentui root and hooks', () => {
 						});
 					},
 				},
-			}),
-		);
+			});
+		});
 		await setup.renderOnce();
 		const frame = setup.captureCharFrame();
 		expect(frame).toContain('fallback:sam');
 		expect(frame).toContain('plugin:sam');
+		expect(setup.renderer.root.findDescendantById('fallback-status-text')).toBe(fallback);
 		const retained = setup.renderer.root.findDescendantById('status-plugin-text');
 
-		await act(() =>
-			registry.register({
+		let unregisterSecondStatusPlugin!: () => void;
+		await act(() => {
+			unregisterSecondStatusPlugin = registry.register({
 				id: 'second-status-plugin',
 				slots: {
 					statusbar() {
@@ -144,9 +197,20 @@ describe('@octanejs/opentui root and hooks', () => {
 						});
 					},
 				},
-			}),
-		);
+			});
+		});
 		expect(setup.renderer.root.findDescendantById('status-plugin-text')).toBe(retained);
+		expect(setup.renderer.root.findDescendantById('fallback-status-text')).toBe(fallback);
+
+		await act(() => registry.updateOrder('second-status-plugin', -1));
+		expect(setup.renderer.root.findDescendantById('status-plugin-text')).toBe(retained);
+		expect(setup.renderer.root.findDescendantById('fallback-status-text')).toBe(fallback);
+
+		await act(() => {
+			unregisterStatusPlugin();
+			unregisterSecondStatusPlugin();
+		});
+		expect(setup.renderer.root.findDescendantById('fallback-status-text')).toBe(fallback);
 	});
 
 	it('provides a component-plus-props test renderer helper', async () => {

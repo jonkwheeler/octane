@@ -230,6 +230,12 @@ function createRecord(
 	};
 }
 
+function applyDeferredImageSource(record: OpenTUIHostRecord): void {
+	if (record.instance instanceof ImageRenderable && record.appliedProps.source !== undefined) {
+		record.instance.source = record.appliedProps.source as ImageRenderable['source'];
+	}
+}
+
 function safeDestroy(instance: BaseRenderable): void {
 	try {
 		if (instance.parent !== null) instance.parent.remove(instance);
@@ -457,13 +463,10 @@ function prepareOpenTUIBatch(
 				}
 			}
 			for (const record of stagedCreates.values()) {
-				if (
-					state.instances.get(record.id) === record &&
-					record.instance instanceof ImageRenderable &&
-					record.appliedProps.source !== undefined
-				) {
-					record.instance.source = record.appliedProps.source as ImageRenderable['source'];
-				}
+				if (state.instances.get(record.id) === record) applyDeferredImageSource(record);
+			}
+			for (const record of stagedReplacements.values()) {
+				if (state.instances.get(record.id) === record) applyDeferredImageSource(record);
 			}
 			(container.commits as UniversalHostBatch[]).push(batch);
 			container.cliRenderer.requestRender();

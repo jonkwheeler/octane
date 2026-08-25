@@ -76,7 +76,7 @@ interface SlotAppProps {
 
 export function SlotApp(props: SlotAppProps) @{
 	<Slot registry={props.registry} name="statusbar" user="sam">
-		<text>fallback:sam</text>
+		<text id="fallback-status-text">fallback:sam</text>
 	</Slot>
 }
 
