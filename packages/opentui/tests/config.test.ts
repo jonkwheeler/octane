@@ -4,6 +4,7 @@ import { createOctaneSlotRegistry, createReactSlotRegistry } from '@octanejs/ope
 import { opentuiRenderers } from '@octanejs/opentui/config';
 
 describe('@octanejs/opentui renderer preset', () => {
+	// @parity-case adapted:opentui-renderer-config
 	it('selects the host-text universal renderer for .opentui.tsrx modules', () => {
 		const config = normalizeRendererConfig(opentuiRenderers);
 
@@ -20,6 +21,7 @@ describe('@octanejs/opentui renderer preset', () => {
 		]);
 	});
 
+	// @parity-case adapted:opentui-slot-registry-alias
 	it('retains the upstream slot-registry migration alias', () => {
 		expect(createReactSlotRegistry).toBe(createOctaneSlotRegistry);
 	});

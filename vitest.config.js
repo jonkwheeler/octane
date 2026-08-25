@@ -4487,9 +4487,13 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
 				test: {
 					name: 'opentui',
-					include: ['packages/opentui/tests/**/*.test.ts'],
+					include: [
+						'packages/opentui/tests/config.test.ts',
+						'packages/opentui/tests/props.test.ts',
+					],
 					environment: 'node',
 					globals: false,
 				},

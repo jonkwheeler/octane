@@ -21,12 +21,6 @@ interface MountedApp {
 
 const mounted: MountedApp[] = [];
 
-const nodeVersion = process.versions.node.split('.').map(Number);
-const supportsNativeFfi =
-	typeof process.versions.bun === 'string' ||
-	nodeVersion[0] > 26 ||
-	(nodeVersion[0] === 26 && nodeVersion[1] >= 4 && process.execArgv.includes('--experimental-ffi'));
-
 async function createApp(width = 40, height = 8): Promise<MountedApp> {
 	const setup = await createTestRenderer({ width, height, useThread: false });
 	const app = { setup, root: createRoot(setup.renderer) };
@@ -41,7 +35,7 @@ afterEach(() => {
 	}
 });
 
-describe.skipIf(!supportsNativeFfi)('@octanejs/opentui root and hooks', () => {
+describe('@octanejs/opentui root and hooks', () => {
 	it('renders live terminal output and preserves host identity across hook and prop updates', async () => {
 		const { root, setup } = await createApp();
 		const onKey = vi.fn();

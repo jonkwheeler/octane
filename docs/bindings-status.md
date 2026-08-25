@@ -834,7 +834,7 @@ SSR / hydration: Unsupported. OpenTUI is a native terminal renderer; `.opentui.t
 
 Scope/evidence last checked: 2026-08-25.
 
-- OpenTUI 0.5.8 requires Bun 1.3+ or Node.js 26.4+ with `--experimental-ffi`. The package's native integration suite runs with Bun; the repository's Node 22 Vitest run keeps compiler/config coverage and skips only FFI-dependent cases.
+- OpenTUI 0.5.8 requires Bun 1.3+ or Node.js 26.4+ with `--experimental-ffi`. The package's native integration suite runs as an always-executed Bun lane; the repository's Node Vitest project owns the framework-neutral configuration and prop coverage.
 - The port reuses `@opentui/core@0.5.8` unchanged and preserves OpenTUI callback names and multi-argument callback shapes, including select and tab-select `onChange(index, option)` and `onSelect(index, option)`.
 
 ## @octanejs/pdf

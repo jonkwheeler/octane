@@ -10,7 +10,6 @@
     "noErrorTruncation": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "types": ["node"],
     "strict": true,
     "jsxImportSource": "@octanejs/opentui/intrinsics"
   },
