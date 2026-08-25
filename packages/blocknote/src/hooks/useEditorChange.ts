@@ -15,6 +15,10 @@ export function useEditorChange(
 	callback: Parameters<BlockNoteEditor<any, any, any>['onChange']>[0],
 	editor?: BlockNoteEditor<any, any, any>,
 ) {
+	if (typeof (editor as unknown) === 'symbol') {
+		editor = undefined;
+	}
+
 	const editorContext = useBlockNoteContext();
 	if (!editor) {
 		editor = editorContext?.editor;

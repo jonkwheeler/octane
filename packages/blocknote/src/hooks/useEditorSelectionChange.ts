@@ -18,6 +18,13 @@ export function useEditorSelectionChange(
 	editor?: BlockNoteEditor<any, any, any>,
 	includeSelectionChangedByRemote?: boolean,
 ) {
+	if (typeof (editor as unknown) === 'symbol') {
+		editor = undefined;
+	}
+	if (typeof (includeSelectionChangedByRemote as unknown) === 'symbol') {
+		includeSelectionChangedByRemote = undefined;
+	}
+
 	const editorContext = useBlockNoteContext();
 	if (!editor) {
 		editor = editorContext?.editor;
