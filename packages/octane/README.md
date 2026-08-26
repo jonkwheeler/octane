@@ -17,12 +17,47 @@ wrapper is narrower: the wrapper must be locally declared in a fully compiled
 parameter to a supported hook. This package ships both the runtime and compiler,
 with the compiler exposed at `octane/compiler`.
 
+Custom Node build pipelines can opt into project-aware string-child inference
+through `octane/compiler/typescript`. See the
+[type-aware text compilation guide](https://github.com/octanejs/octane/blob/main/docs/compiler-text-inference.md).
+
+Vite builds can fold proven immutable CSS-module class strings into templates.
+See the [CSS-module constants guide](https://github.com/octanejs/octane/blob/main/docs/compiler-css-module-constants.md)
+for the provider contract and stylesheet-loading guarantees.
+
+Custom native integrations can opt into the experimental
+[Valdi writer compiler](https://github.com/octanejs/octane/blob/main/docs/valdi-compiler.md).
+It requires an application-provided adapter; Octane does not bundle a Valdi
+runtime or native build integration.
+
 Direct Node or Bun server scripts can preload `octane/compiler/register` to
 compile imported Octane components without going through Vite. See the
 [SSR guide](https://github.com/octanejs/octane/blob/main/docs/ssr.md#run-an-ssg-script-directly).
 
+Applications that stream or update their own server-rendered DOM can import
+`attachBehaviorRoot` from `octane/behavior`. Behavior-only roots attach native
+interactions and disposable behavior without creating a component root or
+taking ownership of the existing markup. See the
+[external ownership guide](https://github.com/octanejs/octane/blob/main/docs/deferred-hydration.md#behavior-only-roots-and-external-ownership).
+
 For the full story, see the
 [main README](https://github.com/octanejs/octane#readme).
+
+## Browser compatibility
+
+See the [browser support guide](https://octanejs.dev/docs/browser-support) for
+recommended targets, required browser APIs, and optional fallbacks.
+
+Configure your application's build target for the browser engines you support.
+The Rsbuild integration's `modules` target includes Chromium 87 and Samsung
+Internet 14; Samsung Internet can also be selected directly with targets such as
+`samsung24`. Samsung Internet versions do not match their Chromium engine
+versions, and Android System WebView is updated independently from the browser.
+
+Build targets transpile JavaScript syntax; they do not polyfill application Web
+APIs. Features such as native `inert` may require a polyfill on older supported
+browsers. Validate text entry with the keyboards, languages, and browser or
+WebView versions your application supports.
 
 Octane is alpha software. It is ready to try, but not yet ready for production.
 

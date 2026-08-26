@@ -6,21 +6,21 @@
       "name": "octane-min",
       "ops": {
         "js_raw": {
-          "score": 1228918,
-          "median": 1228918,
-          "min": 1228918,
+          "score": 866967,
+          "median": 866967,
+          "min": 866967,
           "samples": 1
         },
         "js_gzip": {
-          "score": 277984,
-          "median": 277984,
-          "min": 277984,
+          "score": 194117,
+          "median": 194117,
+          "min": 194117,
           "samples": 1
         },
         "js_brotli": {
-          "score": 226047,
-          "median": 226047,
-          "min": 226047,
+          "score": 158974,
+          "median": 158974,
+          "min": 158974,
           "samples": 1
         }
       },
@@ -38,21 +38,21 @@
       "name": "octane-full",
       "ops": {
         "js_raw": {
-          "score": 1227206,
-          "median": 1227206,
-          "min": 1227206,
+          "score": 1147269,
+          "median": 1147269,
+          "min": 1147269,
           "samples": 1
         },
         "js_gzip": {
-          "score": 277481,
-          "median": 277481,
-          "min": 277481,
+          "score": 255905,
+          "median": 255905,
+          "min": 255905,
           "samples": 1
         },
         "js_brotli": {
-          "score": 225686,
-          "median": 225686,
-          "min": 225686,
+          "score": 206689,
+          "median": 206689,
+          "min": 206689,
           "samples": 1
         }
       },
@@ -76,9 +76,9 @@
           "samples": 1
         },
         "js_gzip": {
-          "score": 187392,
-          "median": 187392,
-          "min": 187392,
+          "score": 187994,
+          "median": 187994,
+          "min": 187994,
           "samples": 1
         },
         "js_brotli": {
@@ -108,9 +108,9 @@
           "samples": 1
         },
         "js_gzip": {
-          "score": 249637,
-          "median": 249637,
-          "min": 249637,
+          "score": 250292,
+          "median": 250292,
+          "min": 250292,
           "samples": 1
         },
         "js_brotli": {
@@ -140,9 +140,9 @@
           "samples": 1
         },
         "js_gzip": {
-          "score": 38850,
-          "median": 38850,
-          "min": 38850,
+          "score": 38929,
+          "median": 38929,
+          "min": 38929,
           "samples": 1
         },
         "js_brotli": {
@@ -172,9 +172,9 @@
           "samples": 1
         },
         "js_gzip": {
-          "score": 190033,
-          "median": 190033,
-          "min": 190033,
+          "score": 190621,
+          "median": 190621,
+          "min": 190621,
           "samples": 1
         },
         "js_brotli": {

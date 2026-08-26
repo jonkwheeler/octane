@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { flushSync } from 'octane';
+import { act, flushSync } from 'octane';
+import { TorusKnotGeometry } from 'three';
 import { events as createPointerEvents } from '../src/index.js';
+import { createThreeObject } from '../src/core/catalogue.js';
 import type { EventManager, Renderer, RootState } from '../src/core/index.js';
 import { mount, type MountResult } from '../../octane/tests/_helpers.js';
 import {
@@ -110,6 +112,21 @@ describe('Canvas', () => {
 	afterEach(() => {
 		mounted?.unmount();
 		vi.unstubAllGlobals();
+	});
+
+	it('registers the full Three catalogue only when a measured client Canvas becomes active', async () => {
+		const { factory } = rendererHarness();
+		const createRareGeometry = () => createThreeObject('torusKnotGeometry', {});
+		expect(createRareGeometry).toThrow('Call extend({ TorusKnotGeometry })');
+
+		mounted = mount(EmptyCanvasApp, { gl: factory, onCreated: undefined });
+		expect(createRareGeometry).toThrow('Call extend({ TorusKnotGeometry })');
+
+		ControlledResizeObserver.instances[0].emit({ width: 240, height: 160 });
+		await flushCanvasWork();
+		const { object } = createRareGeometry();
+		expect(object).toBeInstanceOf(TorusKnotGeometry);
+		object.dispose();
 	});
 
 	it('waits for positive layout, then mounts and resizes one retained Three scene', async () => {
@@ -433,9 +450,11 @@ describe('Canvas', () => {
 		expect(mounted.find('.canvas-pending').textContent).toBe('Loading 3D asset');
 		expect(objectRef.current).toBeNull();
 
-		resolve('projected asset ready');
-		await resource;
-		await flushCanvasWork();
+		await act(async () => {
+			resolve('projected asset ready');
+			await resource;
+			await flushCanvasWork();
+		});
 		expect(mounted.container.querySelector('.canvas-pending')).toBeNull();
 		expect(objectRef.current?.name).toBe('projected asset ready');
 	});
@@ -453,9 +472,11 @@ describe('Canvas', () => {
 		await flushCanvasWork();
 		expect(mounted.find('.canvas-pending').textContent).toBe('Loading 3D asset');
 
-		reject(new Error('projected asset failed'));
-		await resource.catch(() => undefined);
-		await flushCanvasWork();
+		await act(async () => {
+			reject(new Error('projected asset failed'));
+			await resource.catch(() => undefined);
+			await flushCanvasWork();
+		});
 		expect(mounted.find('.canvas-error').textContent).toBe('projected asset failed');
 		expect(objectRef.current).toBeNull();
 	});

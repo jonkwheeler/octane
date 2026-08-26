@@ -1,6 +1,10 @@
 import * as Octane from 'octane';
 import type { ComponentBody, Root } from 'octane';
-import { isRendererRegion, type RendererRegion } from 'octane/universal';
+import {
+	isRendererRegion,
+	registerUniversalHostBridge,
+	type RendererRegion,
+} from 'octane/universal';
 
 export type DOMRegionTarget = HTMLElement | { current: HTMLElement | null };
 
@@ -23,11 +27,13 @@ function resolveTarget(target: DOMRegionTarget): HTMLElement | null {
 
 /** Package-private owner for the one DOM root materialized by a DOMRegion. */
 export interface DOMRegionBinding {
+	readonly container: HTMLDivElement;
 	attach(): () => void;
 	commit(target: DOMRegionTarget, region: RendererRegion | undefined): void;
 }
 
 export function createDOMRegionBinding(): DOMRegionBinding {
+	registerUniversalHostBridge();
 	const createRoot = Reflect.get(Octane, 'createRoot') as
 		typeof import('octane').createRoot | undefined;
 	if (typeof createRoot !== 'function' || typeof document === 'undefined') {
@@ -68,6 +74,7 @@ export function createDOMRegionBinding(): DOMRegionBinding {
 	};
 
 	return {
+		container: host,
 		attach() {
 			attached = true;
 			let active = true;
