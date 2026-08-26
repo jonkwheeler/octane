@@ -45,7 +45,7 @@ JavaScript entry points and all 20 runtime exports are tracked fail-closed in
 | `react-select` | `default`, `NonceProvider`, `components`, `createFilter`, `defaultTheme`, `mergeStyles`, `useStateManager` | Ported and tested |
 | `react-select/base` | `default`, `defaultProps` | Ported and tested |
 | `react-select/async` | `default`, `useAsync` | Ported and tested |
-| `react-select/animated` | `default`, `Input`, `MultiValue`, `Placeholder`, `SingleValue`, `ValueContainer` | Ported and tested through `@octanejs/react-transition-group` |
+| `react-select/animated` | `default`, `Input`, `MultiValue`, `Placeholder`, `SingleValue`, `ValueContainer` | Ported and tested through `@octanejs/transition-group` |
 | `react-select/creatable` | `default`, `useCreatable` | Ported and tested |
 | `react-select/async-creatable` | `default` | Ported and tested |
 

@@ -6,6 +6,13 @@ export { initializeHydrationEventCapture } from './hydration/event-capture.js';
 // behavior-only consumers never retain component or hydration machinery.
 export { attachBehaviorRoot } from './behavior-root.js';
 export type * from './behavior-root.js';
+export {
+	createSubSlot,
+	subSlot,
+	type SubSlot,
+	type SlotlessSubSlot,
+	type SubSlotOptions,
+} from './sub-slot.js';
 
 // Profiling's application API and compiler ABI live at `octane/profiling`;
 // neither belongs on the React-shaped main namespace.
@@ -57,6 +64,8 @@ export {
 	// Resource hints (React DOM parity)
 	preload,
 	preinit,
+	preloadModule,
+	preinitModule,
 	preconnect,
 	prefetchDNS,
 	// Context
@@ -70,6 +79,9 @@ export {
 	ErrorBoundary,
 	Hydrate,
 	Activity,
+	// React shipped Activity as unstable_Activity before 19.2 — alias it so
+	// experimental-channel ports compile unchanged (mirrors unstable_ViewTransition).
+	Activity as unstable_Activity,
 	ViewTransition,
 	addTransitionType,
 	// React ships View Transitions on the experimental channel as unstable_-
@@ -139,7 +151,9 @@ export {
 	evt2u,
 	evtN,
 	evtNu,
+	setEventHandler,
 	devEventListener,
+	devHtmlNesting,
 	htext,
 	htextSwap,
 	child,
@@ -158,10 +172,12 @@ export {
 	setClassAttr,
 	normalizeClass,
 	setStyle,
+	setStyleProperty,
 	setSpread,
 	snapshotSpread,
 	setHostPropSources,
 	queueNativeChangeDiagnostic,
+	queueFormAuthoringDiagnostic,
 	markNativeChangeDiagnosticStatic,
 	setFormAction,
 	// Controlled form components (value/checked/defaultValue/defaultChecked
@@ -180,8 +196,14 @@ export {
 	attachRef,
 	queueRefAttach,
 	queueRefDetach,
+	replaceRef,
+	queueOwnRefDetach,
 	injectStyle,
 	headBlock,
+	// React Float resources (stylesheet precedence links, style resources, async scripts)
+	stylesheetResource,
+	styleResource,
+	scriptResource,
 	namespaceHead,
 	namespaceHeadElement,
 	delegateEvents,
@@ -201,6 +223,7 @@ export {
 	componentSlotVoid,
 	componentSlotLite,
 	compilerCacheArray,
+	compilerCacheImmutableArrayFilter,
 	compilerCacheMappedArray,
 	compilerCacheContext,
 	compilerOwnsContextProvider,
@@ -208,6 +231,7 @@ export {
 	// Compact compiler ABI; keep the descriptive export for older compiled output.
 	markSingleRoot as __s,
 	markChildrenBlock,
+	descriptorChildren,
 	createScopedValue,
 	createScopedElement,
 	childSlot,
@@ -247,6 +271,7 @@ export {
 	// ── 3. Test-only (this repo's test infrastructure; not API) ───────────────
 	drainPassiveEffects,
 	setIsOctaneActEnvironment,
+	resetFloatResourceState,
 	setTransitionFallbackTimeout,
 	getTransitionFallbackTimeout,
 } from './runtime.js';

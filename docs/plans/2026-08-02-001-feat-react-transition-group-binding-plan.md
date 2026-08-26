@@ -12,7 +12,7 @@ execution: code
 
 ## Goal Capsule
 
-- **Objective:** Publish `@octanejs/react-transition-group` as an exact Octane binding for the public surface and observable behavior of `react-transition-group@4.4.5`.
+- **Objective:** Publish `@octanejs/transition-group` as an exact Octane binding for the public surface and observable behavior of `react-transition-group@4.4.5`.
 - **Authority:** The pinned upstream tag and its tests define parity; Octane's documented intentional divergences and repository binding guidance constrain adaptations.
 - **Execution profile:** One binding, one focused pull request, with vendored provenance, exhaustive export and test disposition, and registered React parity lanes.
 - **Stop condition:** A required behavior needs a runtime, compiler, SSR, or shared parity-harness change outside the binding package. That work is split into a prerequisite PR rather than hidden in this port.
@@ -141,7 +141,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 ### U1. Pin upstream evidence and scaffold the package
 
 - **Goal:** Create the reviewable source, license, integrity, package, documentation, status, and test skeleton for R1, R6, R7, and R10.
-- **Files:** `packages/react-transition-group/package.json`, `packages/react-transition-group/README.md`, `packages/react-transition-group/UPSTREAM.md`, `packages/react-transition-group/LICENSE`, `packages/react-transition-group/status.json`, `packages/react-transition-group/tsconfig.json`, `packages/react-transition-group/upstream/**`, `packages/react-transition-group/audit/**`.
+- **Files:** `packages/transition-group/package.json`, `packages/transition-group/README.md`, `packages/transition-group/UPSTREAM.md`, `packages/transition-group/LICENSE`, `packages/transition-group/status.json`, `packages/transition-group/tsconfig.json`, `packages/transition-group/upstream/**`, `packages/transition-group/audit/**`.
 - **Patterns:** Follow `packages/three/UPSTREAM.md`, the complete parity manifest in `packages/hook-form/audit/`, and current publishable binding manifests.
 - **Test scenarios:** Verify the upstream checkout commit and version; verify byte hashes for every vendored source, test, and license artifact; fail on missing, extra, or modified evidence; verify upstream files are absent from packed output.
 - **Verification:** The package metadata and evidence validators pass before implementation claims exist.
@@ -149,7 +149,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 ### U2. Port the Transition state machine
 
 - **Goal:** Implement the foundational transition lifecycle for R2 and R3 using Octane function components and cleanup-safe hooks, governed by KTD4 and KTD6.
-- **Files:** `packages/react-transition-group/src/Transition.tsrx`, `packages/react-transition-group/src/TransitionGroupContext.ts`, `packages/react-transition-group/src/config.ts`, `packages/react-transition-group/src/types.ts`, `packages/react-transition-group/tests/adapted/Transition.test.ts`, `packages/react-transition-group/tests/differential/transition.test.ts`, `packages/react-transition-group/tests/ssr/transition.test.ts`.
+- **Files:** `packages/transition-group/src/Transition.tsrx`, `packages/transition-group/src/TransitionGroupContext.ts`, `packages/transition-group/src/config.ts`, `packages/transition-group/src/types.ts`, `packages/transition-group/tests/adapted/Transition.test.ts`, `packages/transition-group/tests/differential/transition.test.ts`, `packages/transition-group/tests/ssr/transition.test.ts`.
 - **Patterns:** Use Octane refs-as-props, explicit dependency arrays for React-equivalent lifecycle boundaries, and nearby function-component ports that project child render functions as descriptors.
 - **Test scenarios:** Cover all five visible states; appear, enter, and exit defaults; mount-on-enter and unmount-on-exit; numeric and object timeouts; zero timeout; custom end listener; disabled transitions; interrupted and reversed transitions; stale completion suppression; callback arguments and order; node refs; context-driven group enter/exit; SSR initial state.
 - **Verification:** Adapted cases retain upstream case names/citations, differential cases match the pinned React oracle, and cleanup tests prove no post-unmount callbacks.
@@ -157,7 +157,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 ### U3. Port CSSTransition class orchestration
 
 - **Goal:** Preserve R4 on top of U2 without owning CSS animation rendering.
-- **Files:** `packages/react-transition-group/src/CSSTransition.tsrx`, `packages/react-transition-group/src/utils/reflow.ts`, `packages/react-transition-group/tests/adapted/CSSTransition.test.ts`, `packages/react-transition-group/tests/adapted/CSSTransitionGroup.test.ts`, `packages/react-transition-group/tests/differential/css-transition.test.ts`.
+- **Files:** `packages/transition-group/src/CSSTransition.tsrx`, `packages/transition-group/src/utils/reflow.ts`, `packages/transition-group/tests/adapted/CSSTransition.test.ts`, `packages/transition-group/tests/adapted/CSSTransitionGroup.test.ts`, `packages/transition-group/tests/differential/css-transition.test.ts`.
 - **Patterns:** Mirror upstream class-name resolution and forced-reflow boundaries; observe DOM classes and callbacks through public props.
 - **Test scenarios:** Cover enter, appear, and exit base/active/done classes; string prefix and object class-name forms; child classes preserved; forced reflow before active class; interrupted transitions; repeated cycles; nodeRef; callback node arguments; unmount cleanup.
 - **Verification:** Every class assertion is paired with a pinned upstream citation or differential React run, and deliberate legacy-ref divergence is explicit.
@@ -165,7 +165,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 ### U4. Port grouped and switched transitions
 
 - **Goal:** Implement R5 using Octane descriptor traversal, stable keys, cloning, context, and state.
-- **Files:** `packages/react-transition-group/src/TransitionGroup.tsrx`, `packages/react-transition-group/src/SwitchTransition.tsrx`, `packages/react-transition-group/src/ReplaceTransition.tsrx`, `packages/react-transition-group/src/utils/ChildMapping.ts`, `packages/react-transition-group/src/utils/SimpleSet.ts`, `packages/react-transition-group/tests/adapted/ChildMapping.test.ts`, `packages/react-transition-group/tests/adapted/TransitionGroup.test.ts`, `packages/react-transition-group/tests/adapted/SwitchTransition.test.ts`, `packages/react-transition-group/tests/differential/groups.test.ts`.
+- **Files:** `packages/transition-group/src/TransitionGroup.tsrx`, `packages/transition-group/src/SwitchTransition.tsrx`, `packages/transition-group/src/ReplaceTransition.tsrx`, `packages/transition-group/src/utils/ChildMapping.ts`, `packages/transition-group/src/utils/SimpleSet.ts`, `packages/transition-group/tests/adapted/ChildMapping.test.ts`, `packages/transition-group/tests/adapted/TransitionGroup.test.ts`, `packages/transition-group/tests/adapted/SwitchTransition.test.ts`, `packages/transition-group/tests/differential/groups.test.ts`.
 - **Patterns:** Use public `Children`, `cloneElement`, `isValidElement`, and descriptor keys; assert final DOM and survivor identity, not React's physical move set.
 - **Test scenarios:** Cover initial mapping, insertion, removal retention, reorder, simultaneous enter/exit, `component={null}`, custom wrappers, child factories, callback chaining, nested groups, `out-in` and `in-out`, rapid key replacement, ReplaceTransition callback routing, and cleanup after group deletion.
 - **Verification:** Utility cases run unchanged where framework-neutral, component cases run as adapted or differential evidence, and node identity assertions cover keyed survivors.
@@ -173,7 +173,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 ### U5. Complete export, test, type, and parity crosswalks
 
 - **Goal:** Make every compatibility claim auditable for R1, R6, R8, and R9.
-- **Files:** `packages/react-transition-group/src/index.ts`, `packages/react-transition-group/tests/exports.test.ts`, `packages/react-transition-group/tests/parity-controls.test.ts`, `packages/react-transition-group/typetests/**`, `packages/react-transition-group/audit/react-parity.json`, `packages/react-transition-group/audit/test-classifications.json`, `packages/react-transition-group/audit/*.json`.
+- **Files:** `packages/transition-group/src/index.ts`, `packages/transition-group/tests/exports.test.ts`, `packages/transition-group/tests/parity-controls.test.ts`, `packages/transition-group/typetests/**`, `packages/transition-group/audit/react-parity.json`, `packages/transition-group/audit/test-classifications.json`, `packages/transition-group/audit/*.json`.
 - **Patterns:** Follow existing exhaustive export tests and the registered pristine/adapted manifest lanes; keep package-specific logic inside the package unless the harness needs a reusable extension.
 - **Test scenarios:** Verify all six root exports and documented per-component entry points; exercise public prop types and rejected misuse; fail controls for removed upstream files, deleted adapted cases, skipped markers, stale hashes, unclassified tests, and a required lane that validates but does not execute.
 - **Verification:** `react-parity:check` both validates metadata and executes every required runtime/type lane.
@@ -207,7 +207,7 @@ U1 establishes immutable evidence and package scaffolding before behavior is aut
 
 ## Definition of Done
 
-- `@octanejs/react-transition-group` exists as a publishable source package with exact root and per-component import coverage for the pinned release.
+- `@octanejs/transition-group` exists as a publishable source package with exact root and per-component import coverage for the pinned release.
 - Every upstream export and test artifact has an evidence-backed disposition, and every port-authored test has exactly one parity classification.
 - The vendored BSD-3-Clause source, tests, and license match committed hashes and are excluded from the package tarball.
 - Transition, CSS class, group, switch, replacement, SSR, ref, interruption, and cleanup contracts satisfy the pinned React oracle or carry an explicit consumer-facing divergence.

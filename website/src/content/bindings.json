@@ -1,8 +1,9 @@
 [
   {
     "title": "Shared state",
-    "description": "Small stores, atoms, observable state, Redux, RTK Query, and TanStack Store.",
+    "description": "Small stores, atoms, observable state, state machines, Redux, RTK Query, and TanStack Store.",
     "packages": [
+      "@octanejs/alien-signals",
       "@octanejs/zustand",
       "@octanejs/valtio",
       "@octanejs/jotai",
@@ -10,7 +11,9 @@
       "@octanejs/rxjs",
       "@octanejs/redux",
       "@octanejs/redux-toolkit",
-      "@octanejs/tanstack-store"
+      "@octanejs/tanstack-store",
+      "@octanejs/xstate",
+      "@octanejs/xstate-store"
     ]
   },
   {
@@ -21,57 +24,85 @@
       "@octanejs/apollo-client",
       "@octanejs/livestore",
       "@octanejs/dexie",
+      "@octanejs/swr",
       "@octanejs/tanstack-query",
+      "@octanejs/tanstack-db",
       "@octanejs/tanstack-router",
       "@octanejs/tanstack-router-ssr-query",
       "@octanejs/remix-router",
       "@octanejs/inertia",
-      "@octanejs/nuqs"
+      "@octanejs/nuqs",
+      "@octanejs/wouter"
     ]
   },
   {
     "title": "Web3",
     "description": "Wallet connection, chain state, contract reads, signing, and transactions.",
-    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit", "@octanejs/solana-react"]
+    "packages": ["@octanejs/wagmi", "@octanejs/rainbowkit", "@octanejs/solana-kit"]
   },
   {
     "title": "UI and interaction",
     "description": "Primitives, browser hooks, positioning, motion, drag and drop, toasts, command menus, icons, keyboard shortcuts, and event pacing.",
     "packages": [
       "@octanejs/radix",
+      "@octanejs/zag",
+      "@octanejs/vaul",
       "@octanejs/base-ui",
       "@octanejs/aria",
       "@octanejs/mantine-hooks",
+      "@octanejs/embla-carousel",
       "@octanejs/floating-ui",
       "@octanejs/animejs",
       "@octanejs/gsap",
+      "@octanejs/popper",
       "@octanejs/motion",
+      "@octanejs/spring",
       "@octanejs/dnd-kit",
       "@octanejs/sonner",
+      "@octanejs/draggable",
       "@octanejs/react-error-boundary",
-      "@octanejs/react-transition-group",
+      "@octanejs/resizable-panels",
+      "@octanejs/transition-group",
       "@octanejs/select",
+      "@octanejs/day-picker",
+      "@octanejs/textarea-autosize",
+      "@octanejs/colorful",
       "@octanejs/cmdk",
       "@octanejs/shadcn",
       "@octanejs/lucide",
       "@octanejs/phosphor-icons",
       "@octanejs/usehooks-ts",
+      "@octanejs/intersection-observer",
+      "@octanejs/waypoint",
       "@octanejs/tanstack-hotkeys",
-      "@octanejs/tanstack-pacer"
+      "@octanejs/tanstack-pacer",
+      "@octanejs/stick-to-bottom",
+      "@octanejs/image-crop",
+      "@octanejs/content-loader",
+      "@octanejs/to-print",
+      "@octanejs/calendar",
+      "@octanejs/auto-animate"
     ]
   },
   {
     "title": "Forms and content",
-    "description": "Forms, rich-text editing, streaming Markdown, MDX, and translations.",
+    "description": "Forms, file acquisition, rich-text editing, streaming Markdown, MDX, and translations.",
     "packages": [
+      "@octanejs/formisch",
       "@octanejs/hook-form",
+      "@octanejs/input-otp",
+      "@octanejs/dropzone",
       "@octanejs/tanstack-form",
       "@octanejs/lexical",
       "@octanejs/tiptap",
+      "@octanejs/markdown",
       "@octanejs/streamdown",
+      "@octanejs/pdf",
       "@octanejs/monaco-editor",
+      "@octanejs/syntax-highlighter",
       "@octanejs/mdx",
-      "@octanejs/i18next"
+      "@octanejs/i18next",
+      "@octanejs/html-react-parser"
     ]
   },
   {
@@ -80,6 +111,7 @@
     "packages": [
       "@octanejs/tanstack-table",
       "@octanejs/tanstack-virtual",
+      "@octanejs/window",
       "@octanejs/recharts",
       "@octanejs/visx",
       "@octanejs/react-map-gl"
@@ -88,7 +120,17 @@
   {
     "title": "Web 3D",
     "description": "Technical-preview, React Three Fiber-style scene graphs on Octane's universal renderer.",
-    "packages": ["@octanejs/three"]
+    "packages": ["@octanejs/three", "@octanejs/drei"]
+  },
+  {
+    "title": "Terminal UI",
+    "description": "Ink components, Yoga layout, input handling, and interactive ANSI terminal rendering.",
+    "packages": ["@octanejs/ink"]
+  },
+  {
+    "title": "Terminal",
+    "description": "Technical-preview native terminal interfaces through OpenTUI and Octane's universal renderer.",
+    "packages": ["@octanejs/opentui"]
   },
   {
     "title": "Desktop",

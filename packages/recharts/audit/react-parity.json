@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f35079e8eb326a27cb442e0c3b49feac6241452364210e1387c807b8a16568e9"
+      "lockfileSha256": "4e028f8a6a1875c2eff1c7846c3a993171973ebf6bd2b997d3098d33a31f26b8"
     }
   },
   "lanes": [
@@ -56,7 +56,7 @@
         {
           "path": "packages/recharts/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "64fcd60608aa017c0a8a0eab9e82ac5b880e4117b4db9cc1cb4cb2fee8fe5c77",
+          "sha256": "11fe5f0b44fe64f02211ddef138d96396e0ad77ed1f877d4865c2d7c6e837922",
           "cases": [
             {
               "id": "differential:recharts-shapes",
@@ -83,7 +83,7 @@
         {
           "path": "packages/recharts/tests/_fixtures/charts.tsrx",
           "role": "support",
-          "sha256": "808357ce11299198b533b7468b0f522acc140da8fc6930fa40017825d79fa1ea"
+          "sha256": "14028c4342b0d708d2b21a24530285c5c8df13ece0e105c61cb2f3597cef1674"
         },
         {
           "path": "packages/recharts/tests/differential/_setup.ts",
@@ -93,12 +93,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "d655cda963da8e255cf0b519a00b34ca8f0604f7e6631c447f6585b4a93c51a7"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         }
       ]
     }

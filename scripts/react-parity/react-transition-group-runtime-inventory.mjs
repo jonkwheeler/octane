@@ -7,15 +7,28 @@ import { fileURLToPath } from 'node:url';
 import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
+const adaptedRoots = [
+	'packages/transition-group/tests/upstream',
+	'packages/transition-group/tests/ssr',
+];
 const lanes = [
-	['react-transition-group-adapted', 'packages/react-transition-group/audit/adapted-runtime.json'],
 	[
-		'react-transition-group-adapted-ssr',
-		'packages/react-transition-group/audit/adapted-runtime-ssr.json',
+		'transition-group',
+		'packages/transition-group/audit/adapted-runtime.json',
+		function isParityOwned(relativeFile) {
+			return relativeFile.startsWith('packages/transition-group/tests/upstream/');
+		},
+	],
+	[
+		'transition-group-ssr',
+		'packages/transition-group/audit/adapted-runtime-server.json',
+		function isParityOwned(relativeFile) {
+			return relativeFile === 'packages/transition-group/tests/ssr/upstream-import.test.ts';
+		},
 	],
 ];
 
-for (const [project, destination] of lanes) {
+for (const [project, destination, isParityOwned] of lanes) {
 	const idOccurrences = new Map();
 	const output = execFileSync(
 		process.execPath,
@@ -23,11 +36,13 @@ for (const [project, destination] of lanes) {
 		{ cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
 	);
 	const tests = JSON.parse(output)
-		.map((test) => ({ ...test, relativeFile: toPortablePath(relative(root, test.file)) }))
-		.filter((test) =>
-			test.relativeFile.startsWith('packages/react-transition-group/tests/adapted/'),
-		)
-		.map((test) => {
+		.map(function withRelative(test) {
+			return { ...test, relativeFile: toPortablePath(relative(root, test.file)) };
+		})
+		.filter(function keepParityOwned(test) {
+			return isParityOwned(test.relativeFile);
+		})
+		.map(function toIdentity(test) {
 			const fullName = test.name.replaceAll(' > ', ' ');
 			const baseId = `runtime:${createHash('sha256')
 				.update(`${test.relativeFile}\0${fullName}`)
@@ -45,8 +60,14 @@ for (const [project, destination] of lanes) {
 	const inventory = {
 		schemaVersion: 1,
 		project,
-		roots: ['packages/react-transition-group/tests/adapted'],
-		files: [...new Set(tests.map((test) => test.file))],
+		roots: adaptedRoots,
+		files: [
+			...new Set(
+				tests.map(function fileOf(test) {
+					return test.file;
+				}),
+			),
+		],
 		tests,
 	};
 	const absolute = resolve(root, destination);

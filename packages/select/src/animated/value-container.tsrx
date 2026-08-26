@@ -7,7 +7,7 @@ import {
 	useEffect,
 	useState,
 } from 'octane';
-import { TransitionGroup } from '@octanejs/react-transition-group';
+import { TransitionGroup } from '@octanejs/transition-group';
 import type { ValueContainerProps } from '../components.tsrx';
 import { markInspectableValueChildren } from '../animated-registry.ts';
 import { asComponentElement } from './component-element';

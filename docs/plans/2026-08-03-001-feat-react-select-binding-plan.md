@@ -14,7 +14,7 @@ execution: code
 
 - **Objective:** Publish `@octanejs/select` as an exact Octane runtime binding for `react-select@5.10.2`, with consumer-compiled public types and explicit Octane renderer type adaptations.
 - **Authority:** The pinned upstream package, source, tests, and observable React behavior define parity. Octane repository guidance defines evidence and packaging requirements.
-- **Execution profile:** One binding on one isolated branch and pull request, stacked on the Transition Group prerequisite until that prerequisite merges.
+- **Execution profile:** One binding on one isolated branch and pull request, using the merged Transition Group prerequisite.
 - **Stop condition:** A required behavior needs an Octane runtime, compiler, SSR, or shared parity-harness change outside this package. Such work becomes a separate prerequisite pull request.
 - **Tail ownership:** The pull request opens as draft. It remains draft until lightweight checks and current-head automated review are clean, then moves ready for full CI. Maintainers own merge approval.
 
@@ -36,7 +36,7 @@ React Select is a common application dependency with a large consumer-visible co
 - R4. Preserve option categorization, filtering, formatting, selection, keyboard, pointer, touch, accessibility, live-region, menu placement, scrolling, and portal behavior.
 - R5. Preserve asynchronous loading, caching, stale-request suppression, default options, loading notices, and replacement of the focused option set.
 - R6. Preserve creatable-option validation, placement, metadata, delegated creation, and the composed Async Creatable contract.
-- R7. Preserve animated component behavior through the exact `@octanejs/react-transition-group` prerequisite without requiring React at runtime.
+- R7. Preserve animated component behavior through the exact `@octanejs/transition-group` prerequisite without requiring React at runtime.
 - R8. Preserve styling, theming, CSP nonce, component overrides, and Emotion-compatible serialized output at consumer-observable boundaries.
 - R9. Record the exact upstream version, commit, source and test boundary, license, published entry points, runtime exports, and integrity hashes.
 - R10. Back every parity claim with executable SSR, Chromium, differential, runtime, or paired type evidence, with fail-closed inventories and crosswalks.
@@ -65,7 +65,7 @@ React Select is a common application dependency with a large consumer-visible co
 - KTD1. **Exact package compatibility.** Port React Select rather than recommend a similar Octane select component. (session-settled: user-directed — chosen over similar alternatives: package.json migration needs a direct equivalent.)
 - KTD2. **One binding per pull request.** Keep React Select isolated on its own branch and pull request. (session-settled: user-directed — chosen over bundled ports: each binding needs independent review and status.)
 - KTD3. **Pinned executable parity.** Pin `react-select@5.10.2` at commit `052e864b4990a67c4ee416851c34d1eb7b58267b`, retain MIT provenance, and use executable React/Octane evidence. (session-settled: user-directed — chosen over ad hoc compatibility claims: every port follows current repository parity guidance.)
-- KTD4. **Transition Group is an explicit prerequisite.** Implement the animated entry point with `@octanejs/react-transition-group` and stack this branch until that prerequisite merges.
+- KTD4. **Transition Group is an explicit prerequisite.** Implement the animated entry point with the merged `@octanejs/transition-group` binding.
 - KTD5. **Consumer-observable adaptation.** Recreate React lifecycle and state semantics with Octane state, refs, effects, context, and descriptors. Do not emulate private React internals.
 - KTD6. **Draft-first shipping gate.** Open the pull request as draft. Promote it only after lightweight checks and current-head automated review are clean. Return it to draft after any full-CI failure and repeat the gate on the new head. (session-settled: user-directed — chosen over immediately ready pull requests: automated review must evaluate the actual head before full review.)
 - KTD7. **Fail-closed public surface and evidence.** Cross-check all entry points, runtime exports, type fixtures, vendored hashes, and collected test identities so missing evidence fails validation.
@@ -80,7 +80,7 @@ U1 establishes immutable provenance and package boundaries. U2 ports the core co
 - Public TypeScript compatibility is structurally broad. Paired fixtures alone can accept independently incompatible declarations, so exact compatibility assertions cover shared pure types and selected non-renderer members; renderer-owned substitutions are explicit, fail-closed adaptations rather than hidden exactness claims.
 - Scroll locking is global state. Multiple mounted selects must preserve the first document-style snapshot until the final lock releases.
 - Async option replacement can invalidate focused object identity. Focus reconciliation must not allow Enter to select stale data.
-- The animated entry point cannot merge before `@octanejs/react-transition-group` is available on the target branch.
+- The animated entry point depends on the `@octanejs/transition-group` binding now available on the target branch.
 
 ## Implementation Units
 

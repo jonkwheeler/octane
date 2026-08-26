@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type OctaneNode } from 'octane';
-import { Transition, type TransitionStatus } from '@octanejs/react-transition-group';
+import { Transition, type TransitionStatus } from '@octanejs/transition-group';
 
 type Component<Props> = (props: Props) => OctaneNode;
 
@@ -16,7 +16,7 @@ export function Fade<Props extends Record<string, unknown>>(props: FadeProps<Pro
 		duration = 1,
 		in: inProp,
 		onExited: _onExited,
-		innerProps: consumerInnerProps,
+		innerProps: rawConsumerInnerProps,
 		...componentProps
 	} = props;
 	const nodeRef = useRef<HTMLElement | null>(null);
@@ -26,18 +26,18 @@ export function Fade<Props extends Record<string, unknown>>(props: FadeProps<Pro
 		exiting: { opacity: 0 },
 		exited: { opacity: 0 },
 	};
+	const consumerInnerProps = rawConsumerInnerProps as Record<string, unknown> | undefined;
 	const consumerStyle = (consumerInnerProps?.style ?? {}) as Record<string, unknown>;
 
 	<Transition mountOnEnter unmountOnExit in={inProp} timeout={duration} nodeRef={nodeRef}>
-		{(status: TransitionStatus) =>
-			<Tag
-				{...componentProps as unknown as Props}
-				innerProps={{
-					...consumerInnerProps,
-					style: { ...consumerStyle, ...transition[status] },
-					ref: nodeRef,
-				}}
-			/>}
+		{(status: TransitionStatus) => <Tag
+			{...componentProps as unknown as Props}
+			innerProps={{
+				...consumerInnerProps,
+				style: { ...consumerStyle, ...transition[status] },
+				ref: nodeRef,
+			}}
+		/>}
 	</Transition>
 }
 

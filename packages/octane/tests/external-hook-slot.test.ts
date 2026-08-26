@@ -579,6 +579,7 @@ export function App() @{ <main><Canvas><Scene /></Canvas><p>after</p></main> }
 			const aliasedEntry = await (plugin.transform as any).call(
 				{
 					resolve: async () => ({ id: aliased }),
+					getModuleInfo: () => ({ meta: aliasedModule.meta }),
 					load: async () => ({
 						id: aliased,
 						code: aliasedModule.code,
@@ -592,6 +593,7 @@ export function App() @{ <main><Canvas><Scene /></Canvas><p>after</p></main> }
 			const changedAfterOctane = await (plugin.transform as any).call(
 				{
 					resolve: async () => ({ id: aliased }),
+					getModuleInfo: () => ({ meta: aliasedModule.meta }),
 					load: async () => ({
 						id: aliased,
 						code: aliasedModule.code + '\n// changed by a later transform',
@@ -711,17 +713,21 @@ describe('manifest-declared manual hook slots', () => {
 			})
 			.sort();
 		expect(declared).toEqual([
+			'alien-signals',
 			'animejs',
 			'aria',
 			'base-ui',
 			'devtools',
 			'dexie',
 			'dnd-kit',
+			'drei',
 			'electron',
 			'floating-ui',
+			'formisch',
 			'gsap',
 			'i18next',
 			'inertia',
+			'ink',
 			'jotai',
 			'lexical',
 			'livestore',
@@ -729,15 +735,20 @@ describe('manifest-declared manual hook slots', () => {
 			'mdx',
 			'mobx',
 			'motion',
+			'opentui',
 			'phosphor-icons',
 			'radix',
 			'rainbowkit',
 			'react-error-boundary',
 			'remix-router',
 			'rxjs',
-			'solana-react',
+			'solana-kit',
+			'spring',
+			'stick-to-bottom',
 			'styled-components',
 			'stylex',
+			'syntax-highlighter',
+			'tanstack-db',
 			'tanstack-query',
 			'tanstack-router',
 			'tanstack-start',
@@ -747,9 +758,17 @@ describe('manifest-declared manual hook slots', () => {
 			'testing-library',
 			'three',
 			'tiptap',
+			'to-print',
 			'usehooks-ts',
 			'valtio',
+			'vaul',
 			'wagmi',
+			'waypoint',
+			'window',
+			'wouter',
+			'xstate',
+			'xstate-store',
+			'zag',
 			'zustand',
 		]);
 	});

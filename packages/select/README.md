@@ -27,7 +27,7 @@ import CreatableSelect from '@octanejs/select/creatable';
 import AsyncCreatableSelect from '@octanejs/select/async-creatable';
 ```
 
-The animated entry point uses `@octanejs/react-transition-group`; consumers do not need to configure it separately.
+The animated entry point uses `@octanejs/transition-group`; consumers do not need to configure it separately.
 
 See [UPSTREAM.md](./UPSTREAM.md) for the exact source pin, public-surface crosswalk, retained upstream evidence, and verification commands.
 

@@ -50,18 +50,18 @@ try {
 		const reportJson = JSON.parse(readFileSync(report, 'utf8'));
 		const tests = reportJson.testResults
 			.flatMap((suite) =>
-				suite.assertionResults
-					.filter((test) => test.status === 'passed')
-					.map((test) => ({
-						file: toPortablePath(relative(absoluteSuiteRoot, suite.name)),
-						fullName: test.fullName,
-						status: test.status,
-					})),
+				suite.assertionResults.map((test) => ({
+					file: toPortablePath(relative(absoluteSuiteRoot, suite.name)),
+					fullName: test.fullName,
+					status: test.status,
+				})),
 			)
+			.filter((test) => test.status === 'passed')
 			.sort(compareTestIdentities);
 		process.stdout.write(
 			JSON.stringify({
 				schemaVersion: 1,
+				root: suiteRoot,
 				tests,
 				snapshots: reportJson.snapshot?.total ?? 0,
 			}),

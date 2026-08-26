@@ -18,7 +18,10 @@ import { useStyleResolver } from './style-context.tsrx';
 export type Ref<T> = ((value: T | null) => void) | { current: T | null } | null;
 export type ClassNamesState = Record<string, boolean>;
 export type CX = (state: ClassNamesState, ...classNames: (string | undefined)[]) => string;
-type DivProps = Omit<Octane.JSX.IntrinsicElements['div'], 'ref'>;
+type DivProps =
+	Omit<Octane.JSX.IntrinsicElements['div'], 'ref'> & {
+		ref?: Octane.Ref<HTMLDivElement>;
+	};
 type InputPropsBase = Omit<Octane.JSX.IntrinsicElements['input'], 'ref'>;
 type SpanProps = Octane.JSX.IntrinsicElements['span'];
 type SvgProps = Octane.JSX.IntrinsicElements['svg'];
@@ -44,7 +47,7 @@ function useStyleProps(
 	props: CommonComponentProps,
 	name: string,
 	state: ClassNamesState = {},
-): { className: string } {
+): { className: string; ref?: undefined } {
 	const resolveStyle = useStyleResolver();
 	const prefixed = props.cx(state, props.getClassNames(name, props), props.className);
 	const css = props.getStyles(name, props);
@@ -771,9 +774,8 @@ export function MenuPortal(props: MenuPortalProps) @{
 
 	if (!props.appendTo && props.menuPosition !== 'fixed' || !computedPosition) return null;
 
-	const menuWrapper = <div
-		ref={setMenuPortalElement}
-		{...useStyleProps(
+	const menuWrapperProps: DivProps = {
+		...useStyleProps(
 			{
 				...props,
 				offset: computedPosition.offset,
@@ -782,9 +784,11 @@ export function MenuPortal(props: MenuPortalProps) @{
 			},
 			'menuPortal',
 			{ 'menu-portal': true },
-		)}
-		{...props.innerProps}
-	>{props.children}</div>;
+		),
+		...props.innerProps,
+		ref: [setMenuPortalElement, props.innerProps.ref],
+	};
+	const menuWrapper = <div {...menuWrapperProps}>{props.children}</div>;
 
 	<PortalPlacementContext.Provider value={portalPlacementContext}>
 		{props.appendTo ? createPortal(menuWrapper, props.appendTo) : menuWrapper}

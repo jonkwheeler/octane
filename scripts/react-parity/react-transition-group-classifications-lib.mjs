@@ -1,42 +1,46 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve, sep } from 'node:path';
 
-const CONFIG = 'packages/react-transition-group/audit/test-classifications.json';
-const MANIFEST = 'packages/react-transition-group/audit/react-parity.json';
+const CONFIG = 'packages/transition-group/audit/test-classifications.json';
+const MANIFEST = 'packages/transition-group/audit/react-parity.json';
 const DISPOSITIONS = new Set([
 	'unmodified-upstream-suite-wrapper',
 	'adapted-upstream-suite',
+	'audit-verifier-test',
 	'react-octane-differential',
-	'octane-only-framework-contract',
 	'octane-only-divergence',
-	'repo-authored-type-parity',
+	'octane-only-framework-contract',
 ]);
 
-function discoverExecutableEvidence(root) {
-	const roots = [
-		resolve(root, 'packages/react-transition-group/tests'),
-		resolve(root, 'packages/react-transition-group/typetests'),
-	];
-	const discovered = [];
-	for (const evidenceRoot of roots) {
-		if (!existsSync(evidenceRoot)) continue;
-		for (const entry of readdirSync(evidenceRoot, { recursive: true, withFileTypes: true })) {
-			if (!entry.isFile()) continue;
-			const absolute = resolve(entry.parentPath ?? entry.path, entry.name);
-			const portable = relative(root, absolute).split(sep).join('/');
-			if (portable.includes('/typetests/')) {
-				if (!/\.ts$/.test(entry.name) || entry.name.startsWith('tsconfig')) continue;
-			} else if (!/\.test\.(?:ts|tsx|tsrx|mjs)$/.test(entry.name)) {
-				continue;
-			}
-			discovered.push(portable);
-		}
-	}
-	return discovered.sort();
+function discoverUnder(root, relativeRoot, predicate) {
+	const absoluteRoot = resolve(root, relativeRoot);
+	if (!existsSync(absoluteRoot)) return [];
+	return readdirSync(absoluteRoot, { recursive: true, withFileTypes: true })
+		.filter(function keepFiles(entry) {
+			return entry.isFile() && predicate(entry.name);
+		})
+		.map(function toPortablePath(entry) {
+			return relative(root, resolve(entry.parentPath ?? entry.path, entry.name))
+				.split(sep)
+				.join('/');
+		});
 }
 
 export function verifyReactTransitionGroupTestClassifications(root) {
-	const discovered = discoverExecutableEvidence(root);
+	const discovered = [
+		...discoverUnder(root, 'packages/transition-group/tests', function isRuntimeTest(name) {
+			return /\.test\.(?:ts|tsx|tsrx)$/.test(name);
+		}),
+		...discoverUnder(root, 'packages/transition-group/upstream-types', function isTypeProbe(name) {
+			return name.endsWith('-tests.tsx');
+		}),
+		...discoverUnder(root, 'packages/transition-group/typetests', function isTypeProbe(name) {
+			return name.endsWith('.test-d.ts') || name.endsWith('-tests.tsx');
+		}),
+		...discoverUnder(root, 'scripts/react-parity', function isVerifierTest(name) {
+			return name.startsWith('react-transition-group-') && name.endsWith('.test.mjs');
+		}),
+	].sort();
 	const configPath = resolve(root, CONFIG);
 	if (!existsSync(configPath)) throw new Error(`missing port-test classifications: ${CONFIG}`);
 	const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -53,29 +57,41 @@ export function verifyReactTransitionGroupTestClassifications(root) {
 		.sort();
 	if (JSON.stringify(discovered) !== JSON.stringify(declared)) {
 		throw new Error(
-			'every authored react-transition-group test must have exactly one classification',
+			'every port-authored react-transition-group test must have exactly one classification',
 		);
 	}
 	for (const entry of config.tests) {
-		if (!DISPOSITIONS.has(entry.disposition))
+		if (!DISPOSITIONS.has(entry.disposition)) {
 			throw new Error(`${entry.path}: unknown test disposition`);
+		}
+		if (entry.disposition === 'audit-verifier-test') {
+			if (!entry.reason) {
+				throw new Error(`${entry.path}: audit verifier tests require an explicit reason`);
+			}
+			if (entry.oracle) {
+				throw new Error(`${entry.path}: audit verifier tests must not claim React parity`);
+			}
+			continue;
+		}
 		if (entry.disposition.startsWith('octane-only-')) {
-			if (!entry.reason)
+			if (!entry.reason) {
 				throw new Error(`${entry.path}: Octane-only tests require an explicit reason`);
-			if (entry.oracle)
+			}
+			if (entry.oracle) {
 				throw new Error(`${entry.path}: Octane-only tests must not claim React parity`);
+			}
 		} else if (!entry.oracle) {
 			throw new Error(
 				`${entry.path}: React-parity evidence requires a React oracle or upstream citation`,
 			);
 		}
 		if (entry.disposition === 'octane-only-divergence') {
-			const classifiedDivergences = entry.divergenceIds ?? [entry.divergenceId].filter(Boolean);
-			if (!classifiedDivergences.length)
+			if (!entry.divergenceId) {
 				throw new Error(`${entry.path}: divergence tests require a manifest divergence id`);
-			for (const divergenceId of classifiedDivergences)
-				if (!divergenceIds.has(divergenceId))
-					throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
+			}
+			if (!divergenceIds.has(entry.divergenceId)) {
+				throw new Error(`${entry.path}: divergence id is not present in the parity manifest`);
+			}
 		}
 	}
 	return { tests: discovered.length };

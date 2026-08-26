@@ -21,9 +21,7 @@ export function pristineTestIdentities(result, repoRoot = root) {
 			suite.assertionResults
 				.filter((test) => test.status === 'passed')
 				.map((test) => ({
-					file: toPortablePath(
-						relative(resolve(repoRoot, 'packages/select/upstream'), suite.name),
-					),
+					file: toPortablePath(relative(resolve(repoRoot, 'packages/select/upstream'), suite.name)),
 					fullName: test.fullName,
 					status: test.status,
 				})),

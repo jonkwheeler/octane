@@ -23,6 +23,12 @@ describe('the shipped catalog', () => {
 		expect(resolveBinding('@octanejs/zustand')).toMatchObject({ via: 'binding' });
 		expect(resolveBinding('zustand')?.binding.name).toBe('@octanejs/zustand');
 		expect(resolveBinding('@tanstack/react-query')?.binding.name).toBe('@octanejs/tanstack-query');
+		expect(resolveBinding('react-textarea-autosize')?.binding.name).toBe(
+			'@octanejs/textarea-autosize',
+		);
+		expect(resolveBinding('react-syntax-highlighter')?.binding.name).toBe(
+			'@octanejs/syntax-highlighter',
+		);
 		expect(resolveBinding('react-select')?.binding.name).toBe('@octanejs/select');
 	});
 
@@ -106,17 +112,17 @@ describe('octane add', () => {
 		expect(report.resolved[0].divergences.length).toBeGreaterThan(0);
 	});
 
-	it('installs react-select through its exact binding', async () => {
+	it('says so when nothing ports the package, and suggests near names', async () => {
 		const { root } = fixture();
-		const result = await runCli(['add', 'react-select', '--cwd', root, '--no-install', '--json'], {
-			exec: noExec,
-		});
+		const result = await runCli(
+			['add', 'react-resizable', '--cwd', root, '--no-install', '--json'],
+			{ exec: noExec },
+		);
 
-		expect(result.exitCode).toBe(0);
-		expect(result.json().resolved[0]).toMatchObject({
-			requested: 'react-select',
-			binding: '@octanejs/select',
-			via: 'react-package',
+		expect(result.exitCode).toBe(1);
+		expect(result.json().unavailable[0]).toMatchObject({
+			requested: 'react-resizable',
+			suggestions: expect.arrayContaining(['@octanejs/resizable-panels']),
 		});
 	});
 

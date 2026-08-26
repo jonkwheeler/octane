@@ -21,11 +21,12 @@
  *     rig diff-asserts `i.container.innerHTML === r.container.innerHTML`
  *     after a brief normalisation pass.
  */
-import { expect } from 'vitest';
+import { expect, vi } from 'vitest';
 import {
 	createRoot as octaneCreateRoot,
 	flushSync as octaneFlushSync,
 	drainPassiveEffects as octaneDrainEffects,
+	act as octaneAct,
 } from '../../src/index.js';
 import { existsSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
@@ -84,6 +85,20 @@ function loadReactFixture(
 	const promise = import(/* @vite-ignore */ outFile);
 	reactImportCache.set(cacheKey, promise);
 	return promise;
+}
+
+/**
+ * Start both fixture imports outside an individual differential case. Heavy
+ * React oracle packages can make the first dynamic import dominate the first
+ * test's runtime, especially when the parity-wide Vitest scheduler is busy.
+ * Preloading keeps that one-time module work at the suite boundary while
+ * `mountDifferential` continues to consume the same cached module promises.
+ */
+export function preloadDifferentialFixture(
+	srcPath: string,
+	cacheDir?: string,
+): Promise<[any, any]> {
+	return Promise.all([import(/* @vite-ignore */ srcPath), loadReactFixture(srcPath, cacheDir)]);
 }
 
 function hashString(s: string): string {
@@ -299,14 +314,13 @@ export async function mountDifferential(
 	// resolves that package's deps (zustand, react, …). Defaults to octane's.
 	cacheDir?: string,
 ): Promise<DiffPair> {
-	// octane side — import via Vitest's normal pipeline (the
-	// octane() plugin handles compilation).
-	const octaneMod = await import(/* @vite-ignore */ srcPath);
+	// Both imports may already have been started at the suite boundary by a
+	// heavy differential fixture. Dynamic imports and loadReactFixture's map
+	// make this a cached lookup for every subsequent mount.
+	const [octaneMod, reactMod] = await preloadDifferentialFixture(srcPath, cacheDir);
 	const OctaneComp = octaneMod[octaneEntry];
 	if (!OctaneComp) throw new Error(`octane export "${octaneEntry}" not found in ${srcPath}`);
 
-	// React side — compile, write, dynamic-import.
-	const reactMod = await loadReactFixture(srcPath, cacheDir);
 	const ReactComp = reactMod[octaneEntry];
 	if (!ReactComp) throw new Error(`@tsrx/react export "${octaneEntry}" not found in ${srcPath}`);
 
@@ -318,15 +332,15 @@ export async function mountDifferential(
 	document.body.appendChild(octaneContainer);
 	document.body.appendChild(reactContainer);
 
-	// Octane mount.
+	// Both mounts use their public test boundary, just like subsequent steps.
 	const octaneRoot = octaneCreateRoot(octaneContainer);
-	octaneRoot.render(OctaneComp, initialProps);
-	octaneFlushSync(() => {});
-
-	// React mount.
 	const rRoot: ReactRoot = reactCreateRoot(reactContainer);
-	await reactAct(async () => {
-		rRoot.render(React.createElement(ReactComp, initialProps));
+	await octaneAct(async () => {
+		octaneRoot.render(OctaneComp, initialProps);
+		octaneFlushSync(() => {});
+		await reactAct(async () => {
+			rRoot.render(React.createElement(ReactComp, initialProps));
+		});
 	});
 
 	function mkMount(container: HTMLElement, isReact: boolean): DiffMount {
@@ -459,19 +473,34 @@ export async function mountDifferential(
 	const octane = mkMount(octaneContainer, false);
 	const react = mkMount(reactContainer, true);
 
-	async function settle(): Promise<void> {
+	async function settle(action?: () => void | Promise<void>): Promise<void> {
 		// Settle octane's async work too: a store notify (useSyncExternalStore),
 		// transition, or deferred value schedules its re-render as a passive effect
 		// that flushSync (used inside `click`) doesn't drain. Without this the rig
 		// only sees synchronous (useState) updates. Strictly more draining — inert
 		// for fixtures that were already settled.
-		octaneDrainEffects();
 		// Drain React commits + effects, including external stores that chain work
 		// from a renderer-completion promise. Keeping one macrotask inside act()
 		// gives those promise continuations a chance to enqueue their final commit
-		// without escaping React's test boundary.
-		await reactAct(async () => {
-			await new Promise<void>((resolve) => setTimeout(resolve, 0));
+		// without escaping React's test boundary. When Vitest fake timers are
+		// active, flush the 0-delay timer explicitly so the await can resolve.
+		// Keep Octane's act scope active when an action resolves a promise. React
+		// event helpers and callers own their act boundaries: an extra outer React
+		// act would prevent nested waits from observing commits until the action
+		// itself returns. The final React act drains remaining work; the separate
+		// no-act timing oracle tests the real retry commit budget.
+		await octaneAct(async () => {
+			if (action !== undefined) await action();
+			await reactAct(async () => {
+				octaneDrainEffects();
+				const wait = new Promise<void>(function (resolve) {
+					setTimeout(resolve, 0);
+				});
+				if (typeof vi.isFakeTimers === 'function' && vi.isFakeTimers()) {
+					await vi.advanceTimersByTimeAsync(0);
+				}
+				await wait;
+			});
 		});
 	}
 
@@ -479,8 +508,7 @@ export async function mountDifferential(
 		name: string,
 		fn: (i: DiffMount, r: DiffMount) => void | Promise<void>,
 	): Promise<void> {
-		await fn(octane, react);
-		await settle();
+		await settle(() => fn(octane, react));
 		const i = normaliseHtml(octaneContainer.innerHTML);
 		const r = normaliseHtml(reactContainer.innerHTML);
 		if (i !== r) {
@@ -499,8 +527,7 @@ export async function mountDifferential(
 		_name: string,
 		fn: (i: DiffMount, r: DiffMount) => void | Promise<void>,
 	): Promise<void> {
-		await fn(octane, react);
-		await settle();
+		await settle(() => fn(octane, react));
 	}
 
 	function unmount(): void {

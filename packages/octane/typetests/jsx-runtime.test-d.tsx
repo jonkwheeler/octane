@@ -4,7 +4,7 @@
  * with octane's exceptions. Compile-only (tsgo --noEmit); never executed and
  * never imported by runtime code.
  */
-import { Fragment, type FragmentInstance } from 'octane';
+import { Fragment, isValidElement, type ElementDescriptor, type FragmentInstance } from 'octane';
 import { Fragment as AutomaticRuntimeFragment, type JSX as OctaneJSX } from 'octane/jsx-runtime';
 import type * as React from 'react';
 
@@ -63,6 +63,10 @@ export function TypeSurface() {
 			<div ref={obj} />
 			<div ref={[cb, obj]} />
 			<div ref={[[cb], obj]} />
+			<div ref={[cb, undefined]} />
+			<div ref={[[undefined, cb], obj, null]} />
+			{/* @ts-expect-error — optional array entries do not erase a ref's element type */}
+			<div ref={[undefined, (el: SVGSVGElement | null) => {}]} />
 
 			{/* ── native `for` and React's htmlFor both work ── */}
 			<label for="field" />
@@ -74,13 +78,87 @@ export function TypeSurface() {
 			{/* @ts-expect-error — numbers are not a style value */}
 			<div style={42} />
 
-			{/* ── React-shaped attribute surface ── */}
+			{/* ── React aliases and native HTML attribute spellings ── */}
 			<main tabIndex={-1} />
-			{/* @ts-expect-error — lowercase `tabindex` is not the typed surface */}
 			<main tabindex={-1} />
+			<main tabindex="-1" />
+			<main enterkeyhint="send" inputmode="numeric" spellcheck={false} autocorrect="on" />
+			<input autocomplete="email" autocapitalize="sentences" readonly maxlength="24" />
+			<form novalidate autocomplete="off" />
+			<form accept-charset="utf-8" />
+			<a referrerpolicy="no-referrer" />
+			<img crossorigin="anonymous" />
+			<meta http-equiv="refresh" />
+			<button popovertarget="details" popovertargetaction="show" />
+			<button command="show-modal" commandfor="dialog" />
+			<button command={undefined} commandfor={undefined} />
+			<button
+				formaction={(data) => {
+					use<FormData>(data);
+				}}
+			/>
+			<input
+				formaction={async (data) => {
+					use<FormData>(data);
+				}}
+			/>
+			<table>
+				<tbody>
+					<tr>
+						<td colspan="2" rowspan={2} />
+					</tr>
+				</tbody>
+			</table>
+			<svg hidden tabindex="0" viewBox="0 0 10 10" />
+			<svg tabindex={-1} strokeWidth={2} />
+			{/* @ts-expect-error — numeric HTML attributes reject nonnumeric text */}
+			<main tabindex="first" />
+			{/* @ts-expect-error — lowercase aliases preserve their enumerated values */}
+			<button popovertargetaction="expand" />
+			{/* @ts-expect-error — lowercase aliases preserve enter-key-hint tokens */}
+			<main enterkeyhint={String('send')} />
+			{/* @ts-expect-error — lowercase aliases preserve input-mode tokens */}
+			<main inputmode="latin" />
+			{/* @ts-expect-error — spellcheck accepts booleans and boolean strings only */}
+			<main spellcheck="perhaps" />
+			{/* @ts-expect-error — lowercase aliases preserve referrer-policy values */}
+			<a referrerpolicy="always" />
+			{/* @ts-expect-error — command invoker attributes belong to buttons */}
+			<div command="show-modal" />
+			{/* @ts-expect-error — SVG attribute names remain case sensitive */}
+			<svg viewbox="0 0 10 10" />
+			{/* @ts-expect-error — autoFocus is a mount action, not a native boolean attribute */}
+			<input autofocus />
+			{/* @ts-expect-error — controlled defaults are React/Octane props, not attributes */}
+			<input defaultvalue="value" />
+			{/* @ts-expect-error — controlled defaults are React/Octane props, not attributes */}
+			<input defaultchecked />
+			{/* @ts-expect-error — warning hints are framework props, not attributes */}
+			<div suppresshydrationwarning />
+			{/* @ts-expect-error — native delegated events keep their onClick spelling */}
+			<button onclick={() => {}} />
+			{/* @ts-expect-error — htmlFor's native spelling is `for`, never `htmlfor` */}
+			<label htmlfor="field" />
+			{/* @ts-expect-error — acceptCharset's native spelling is `accept-charset` */}
+			<form acceptcharset="utf-8" />
+			{/* @ts-expect-error — httpEquiv's native spelling is `http-equiv` */}
+			<meta httpequiv="refresh" />
+			<button aria-pressed="mixed" />
+			<input aria-checked={true} />
+			{/* @ts-expect-error — ARIA token unions must reject widened arbitrary strings */}
+			<button aria-pressed={String(true)} />
+			{/* @ts-expect-error — ARIA token unions must reject widened arbitrary strings */}
+			<input aria-checked={String(false)} />
 			<div dangerouslySetInnerHTML={{ __html: '<b>x</b>' }} suppressHydrationWarning />
 			<input defaultValue="a" defaultChecked />
 			<div data-testid="anything" aria-hidden="true" />
+			<svg>
+				<foreignObject>
+					<div xmlns="http://www.w3.org/1999/xhtml" />
+				</foreignObject>
+			</svg>
+			{/* @ts-expect-error — namespace declarations are string attributes */}
+			<div xmlns={42} />
 
 			{/* ── children are renderables (unknown) ── */}
 			<div>{123}</div>
@@ -127,3 +205,35 @@ export async function elementAwaitRejected() {
 }
 // @ts-expect-error — .then with a callback fails overload resolution
 export const elementThenRejected = someElement.then(() => null);
+
+// Element inspection preserves known prop types and can identify the element
+// alternative in a generic element-or-props union without widening either arm.
+export function propsFromElementOrObject<P extends object>(
+	option: ElementDescriptor<Partial<P>> | Partial<P>,
+): Partial<P> {
+	if (isValidElement<Partial<P>>(option)) return option.props;
+	return option;
+}
+
+declare const namedElement: ElementDescriptor<{ label: string }> | null;
+if (isValidElement(namedElement)) {
+	use<string>(namedElement.props.label);
+	// @ts-expect-error — the guard must not erase known props to any.
+	use(namedElement.props.missing);
+}
+
+declare const elementUnion:
+	ElementDescriptor<{ label: string }> | ElementDescriptor<{ count: number }> | null | undefined;
+if (isValidElement(elementUnion)) {
+	use<{ label: string } | { count: number }>(elementUnion.props);
+	// @ts-expect-error — recognizing a descriptor union must not erase its props to any.
+	use(elementUnion.props.missing);
+} else {
+	use<null | undefined>(elementUnion);
+}
+
+declare const opaqueElement: ElementDescriptor<unknown>;
+if (isValidElement(opaqueElement)) {
+	// @ts-expect-error — recognizing an element does not validate unknown props.
+	use(opaqueElement.props.label);
+}

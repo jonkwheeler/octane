@@ -1,9 +1,11 @@
-import type { TransitionProps } from '@octanejs/react-transition-group';
+import type { TransitionProps } from '@octanejs/transition-group';
 import type { InputProps } from '../components.tsrx';
 import { asComponentElement } from './component-element';
 
 type InputComponent = typeof import('../components.tsrx').Input;
-export type AnimatedInputProps = InputProps & Partial<TransitionProps>;
+type AnimatedTransitionProps =
+	Pick<TransitionProps, 'in' | 'onExited' | 'appear' | 'enter' | 'exit'>;
+export type AnimatedInputProps = InputProps & AnimatedTransitionProps;
 
 export function animatedInput(WrappedComponent: InputComponent): InputComponent {
 	function AnimatedInput(props: AnimatedInputProps) {

@@ -127,10 +127,9 @@ derived-state behavior must be re-authored as a functional Octane component and
 proved against the complete pinned suite. Non-production test adaptation may
 start after U1 while release work remains gated on all dependencies.
 
-The animated entry point also depends on `react-transition-group`. Draft PR
-#487 supplies the candidate Octane binding, but React Select cannot publish its
-animated entry point until that dependency is merged or equivalent exact
-behavior is included and independently proved.
+The animated entry point also depends on `react-transition-group`. The merged
+`@octanejs/transition-group` binding supplies the exact Octane behavior used by
+React Select's animated entry point.
 
 ## Rejected substitutes
 

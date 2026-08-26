@@ -39,7 +39,7 @@
     "crosswalk:verify": "node scripts/verify-crosswalk.mjs"
   },
   "dependencies": {
-    "@octanejs/react-transition-group": "workspace:*",
+    "@octanejs/transition-group": "workspace:*",
     "@emotion/cache": "11.9.3",
     "@emotion/serialize": "1.1.0",
     "@emotion/utils": "1.2.0",

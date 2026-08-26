@@ -36,7 +36,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "f35079e8eb326a27cb442e0c3b49feac6241452364210e1387c807b8a16568e9"
+      "lockfileSha256": "4e028f8a6a1875c2eff1c7846c3a993171973ebf6bd2b997d3098d33a31f26b8"
     }
   },
   "lanes": [
@@ -63,7 +63,7 @@
         {
           "path": "scripts/react-parity/react-select-pristine-runtime.mjs",
           "role": "support",
-          "sha256": "1ebc4cfff637a54a194bfd0bea67db22af0498ce6ad4df89166a6049d45262aa"
+          "sha256": "3ccba4c004932b6c96b9d96d8a6a771a83fb1eed137453cacb0fc13eb5e1a909"
         },
         {
           "path": "scripts/react-parity/react-select-pristine-runtime.d.mts",
@@ -73,7 +73,7 @@
         {
           "path": "scripts/react-parity/jest-full-runner.mjs",
           "role": "support",
-          "sha256": "63641841ef1036467238d4a01188d14d529b639808814783b86d886efa00dc92"
+          "sha256": "814293ec04c0617093e241064e19f38e18e040cc02d0fb9108dabc87df2b8d5d"
         },
         {
           "path": "packages/select/upstream/SHA256SUMS",
@@ -123,7 +123,7 @@
         {
           "path": "packages/select/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "280e8f0e8871bf746258ccd8510be05c68c86aa3cb8113a213269b158885c211"
+          "sha256": "6b0a0c244bae2c5fbaf0f4d71b67897e9d1f8ff1ddc80ff8c5170641f50250d7"
         },
         {
           "path": "packages/select/audit/adaptation.json",
@@ -138,7 +138,7 @@
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "d213831e88940ed79628e558f6c072e02c6d35f3f381b7cf76c394ac75bb3797"
+          "sha256": "c43984b91843587e8490b42652c10d0757e8df15ae4295e311f2350ebe30b80f"
         },
         {
           "path": "scripts/react-parity/react-select-adaptation.mjs",
@@ -159,6 +159,31 @@
           "path": "scripts/react-parity/react-select-classifications-lib.test.mjs",
           "role": "support",
           "sha256": "b9d586cdc6ebbcf56c1cb031d348445fd03daf4c35139d6e521d139de63cf8b4"
+        }
+      ]
+    },
+    {
+      "id": "react-select-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "select-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Runs the bounded React/Octane SSR, state-hook, component, and default-style comparisons under the dedicated differential project.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/select/audit/differential-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/select/audit/differential-runtime.json",
+          "role": "support",
+          "sha256": "b5ff60f3cb89d4888ce6402092f0effb339ca6854b4649c91fb00e18b9e78887"
+        },
+        {
+          "path": "scripts/react-parity/react-select-runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "c43984b91843587e8490b42652c10d0757e8df15ae4295e311f2350ebe30b80f"
         }
       ]
     },

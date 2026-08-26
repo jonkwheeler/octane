@@ -9,6 +9,7 @@ import {
 	useState,
 } from 'octane';
 import type { OctaneNode } from 'octane';
+import type { Octane } from 'octane/jsx-runtime';
 
 import {
 	formatGroupLabel as formatGroupLabelBuiltin,
@@ -1259,7 +1260,9 @@ export function Select<
 	}
 	const ariaActiveDescendant =
 		appleDevice ? undefined : focusedOptionId();
-	const commonInputAttributes = {
+	const commonInputAttributes: Omit<Octane.JSX.IntrinsicElements['input'], 'ref'> & {
+		ref?: Octane.Ref<HTMLInputElement>;
+	} = {
 		id: inputId,
 		disabled: props.isDisabled,
 		onBlur: handleInputBlur,
@@ -1268,7 +1271,7 @@ export function Select<
 		form: props.form,
 		'aria-autocomplete': 'list' as const,
 		'aria-expanded': props.menuIsOpen,
-		'aria-haspopup': 'true',
+		'aria-haspopup': 'true' as const,
 		'aria-errormessage': props['aria-errormessage'],
 		'aria-invalid': props['aria-invalid'],
 		'aria-label': props['aria-label'],
@@ -1278,12 +1281,12 @@ export function Select<
 		'aria-activedescendant': ariaActiveDescendant,
 		'aria-controls': props.menuIsOpen ? elementId('listbox') : undefined,
 		'aria-describedby': ariaDescribedBy,
+		ref: inputRef,
 	};
 	const inputUI =
 		!props.isSearchable
 			? <input
 					{...commonInputAttributes}
-					ref={inputRef}
 					className={resolveStyle(dummyInputStyle).className}
 					inputMode="none"
 					value=""

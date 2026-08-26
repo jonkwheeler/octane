@@ -272,6 +272,7 @@ const UNIVERSAL_RUNTIME_IMPORTS = new Set([
 // ordinary renderers while allowing native first-screen programs to erase
 // background-owned callbacks from their render-only specialization.
 const MAIN_THREAD_RENDER_ONLY_CAPABILITY = 'main-thread-render-only';
+const COMPONENT_SCOPE_FOR_CAPABILITY = 'component-scope-for';
 const THREAD_FUNCTION_CAPABILITY = 'thread-functions';
 const THREAD_DIRECTIVES = new Map([
 	['main thread', 'main-thread'],
@@ -684,7 +685,7 @@ function createLexicalScope(parent, isFunction = false) {
 	return scope;
 }
 
-function createLexicalAnalysis(ast) {
+export function createLexicalAnalysis(ast) {
 	const bindingNodes = new WeakSet();
 	const nonReferenceNodes = new WeakSet();
 	const nodeScopes = new WeakMap();
@@ -1621,6 +1622,12 @@ function importSourceRanges(sources) {
 export function validateRendererModuleSource(source, filename, renderer) {
 	if (renderer?.validation === undefined) return;
 	const ast = parseModule(source, filename);
+	validateRendererAst(ast, filename, renderer);
+}
+
+/** Reuse renderer restrictions without reparsing an already adopted AST. */
+export function validateRendererAst(ast, filename, renderer) {
+	if (renderer?.validation === undefined) return;
 	validateRendererSource(ast, { filename, renderer });
 }
 
@@ -2352,6 +2359,159 @@ function ownerFreeForThreeHostComponent(node, state) {
 	return binding?.scope === trusted.lexical.rootScope ? component : null;
 }
 
+function isTemplateProgramForExpression(node) {
+	if (isOwnerFreeForExpression(node)) return true;
+	if (!node || typeof node !== 'object') return false;
+	if (node.type === 'TemplateLiteral') {
+		return (node.expressions ?? []).every(isTemplateProgramForExpression);
+	}
+	if (node.type === 'ConditionalExpression') {
+		return (
+			isTemplateProgramForExpression(node.test) &&
+			isTemplateProgramForExpression(node.consequent) &&
+			isTemplateProgramForExpression(node.alternate)
+		);
+	}
+	if (node.type === 'BinaryExpression' || node.type === 'LogicalExpression') {
+		return isTemplateProgramForExpression(node.left) && isTemplateProgramForExpression(node.right);
+	}
+	if (node.type === 'UnaryExpression') return isTemplateProgramForExpression(node.argument);
+	if (
+		node.type === 'ParenthesizedExpression' ||
+		node.type === 'ChainExpression' ||
+		node.type === 'TSAsExpression' ||
+		node.type === 'TSNonNullExpression' ||
+		node.type === 'TypeCastExpression'
+	) {
+		return isTemplateProgramForExpression(node.expression);
+	}
+	return false;
+}
+
+function isTemplateProgramForHost(node) {
+	if (
+		(node.type !== 'JSXElement' && node.type !== 'Element') ||
+		isComponentElement(node) ||
+		jsxName(node) === 'Activity'
+	) {
+		return false;
+	}
+	const type = jsxName(node);
+	if (type === null || !/^[a-z]/.test(type) || type === 'list' || type === 'list-item') {
+		return false;
+	}
+	for (const attribute of node.openingElement?.attributes ?? node.attributes ?? []) {
+		if (attribute.type === 'JSXSpreadAttribute' || attribute.type === 'SpreadAttribute') {
+			return false;
+		}
+		const name = attributeName(attribute);
+		if (
+			name === null ||
+			name === 'key' ||
+			name === 'ref' ||
+			name === 'children' ||
+			name === 'hidden' ||
+			name === 'attach' ||
+			name === 'onUpdate' ||
+			name.startsWith('main-thread:')
+		) {
+			return false;
+		}
+		const value = attribute.value;
+		if (value === null || value?.type === 'Literal') continue;
+		if (value?.type !== 'JSXExpressionContainer') return false;
+		const expression = value.expression;
+		if (expression?.type === 'JSXEmptyExpression') return false;
+		const event = /^(?:bind|catch|capture-bind|capture-catch|global-bind)/.test(name);
+		if (
+			event &&
+			(expression.type === 'ArrowFunctionExpression' || expression.type === 'FunctionExpression')
+		) {
+			continue;
+		}
+		if (!isTemplateProgramForExpression(expression)) return false;
+	}
+	for (const child of node.children ?? []) {
+		if (child.type === 'JSXText') continue;
+		if (child.type === 'JSXExpressionContainer') {
+			if (!isTemplateProgramForExpression(child.expression)) return false;
+			continue;
+		}
+		if (!isTemplateProgramForHost(child)) return false;
+	}
+	return true;
+}
+
+function templateProgramForHost(node, state) {
+	if (
+		node.empty != null ||
+		!rendererHasCapability(state, 'template-program-mount') ||
+		!isOwnerFreeForExpression(node.right) ||
+		!isOwnerFreeForExpression(node.key)
+	) {
+		return false;
+	}
+	const body = (node.body?.body ?? []).filter(
+		(statement) => statement.type !== 'JSXText' || normalizeJsxText(statement.value ?? '') !== '',
+	);
+	return body.length === 1 && isTemplateProgramForHost(body[0]);
+}
+
+function templateProgramForComponent(node, state) {
+	if (
+		node.empty != null ||
+		(!rendererHasCapability(state, 'template-program-mount') &&
+			!rendererHasCapability(state, COMPONENT_SCOPE_FOR_CAPABILITY)) ||
+		!isOwnerFreeForExpression(node.right) ||
+		!isOwnerFreeForExpression(node.key)
+	) {
+		return null;
+	}
+	const body = (node.body?.body ?? []).filter(
+		(statement) => statement.type !== 'JSXText' || normalizeJsxText(statement.value ?? '') !== '',
+	);
+	if (body.length !== 1) return null;
+	const component = body[0];
+	if (
+		(component.type !== 'JSXElement' && component.type !== 'Element') ||
+		!isComponentElement(component) ||
+		(component.openingElement?.name ?? component.name)?.type !== 'JSXIdentifier' ||
+		(component.children ?? []).some(
+			(child) => child.type !== 'JSXText' || normalizeJsxText(child.value ?? '') !== '',
+		)
+	) {
+		return null;
+	}
+	const names = new Set();
+	for (const attribute of component.openingElement?.attributes ?? component.attributes ?? []) {
+		if (attribute.type === 'JSXSpreadAttribute' || attribute.type === 'SpreadAttribute') {
+			return null;
+		}
+		const name = attributeName(attribute);
+		if (
+			name === null ||
+			name === 'key' ||
+			name === 'ref' ||
+			name === 'children' ||
+			name === '__proto__' ||
+			names.has(name)
+		) {
+			return null;
+		}
+		names.add(name);
+		const value = attribute.value;
+		if (value === null || value?.type === 'Literal') continue;
+		if (
+			value?.type !== 'JSXExpressionContainer' ||
+			value.expression?.type === 'JSXEmptyExpression' ||
+			!isTemplateProgramForExpression(value.expression)
+		) {
+			return null;
+		}
+	}
+	return component;
+}
+
 function allocPlan(state, root, origin = null) {
 	const name = allocName(
 		state,
@@ -3067,10 +3227,20 @@ function compileComponentElementAst(node, context, state) {
 	const component = jsxNameExpressionAst(node, state);
 	const providerContext = contextProviderExpressionAst(node, state);
 	const childNodes = node.children ?? [];
+	const meaningfulChildren = childNodes.filter(
+		(child) => child.type !== 'JSXText' || normalizeJsxText(child.value) !== '',
+	);
 	let childrenExpression = null;
 	if (
-		childNodes.some((child) => child.type !== 'JSXText' || normalizeJsxText(child.value) !== '')
+		meaningfulChildren.length === 1 &&
+		meaningfulChildren[0].type === 'JSXExpressionContainer' &&
+		meaningfulChildren[0].expression?.type !== 'JSXEmptyExpression'
 	) {
+		// A sole expression child has React value semantics: pass the value itself.
+		// This is required for function-as-child APIs and scalar consumers. Nested
+		// JSX inside the expression is still lowered by dynamicExpressionAst.
+		childrenExpression = dynamicExpressionAst(meaningfulChildren[0].expression, state);
+	} else if (meaningfulChildren.length > 0) {
 		const body = compileBlockValueAst(childNodes, state, [], node);
 		childrenExpression = generatedCall(
 			state.helpers.children,
@@ -3249,6 +3419,26 @@ function compileOwnerFreeThreeHostComponentAst(component, state, itemBinding, in
 	};
 }
 
+function compileTemplateProgramForComponentAst(component, state, itemBinding, indexBinding) {
+	const attributes = component.openingElement?.attributes ?? component.attributes ?? [];
+	const props = generatedCall(
+		state.helpers.props,
+		[
+			compilePlainPropsObjectAst(attributes, state, component),
+			inheritGeneratedOrigin(b.unary('void', b.literal(0)), component),
+			b.literal(false),
+			b.literal(true),
+		],
+		component,
+	);
+	const descriptor = generatedCall(
+		state.helpers.nestedComponent,
+		[b.literal(state.renderer.id), jsxNameExpressionAst(component, state), props],
+		component,
+	);
+	return generatedArrow([itemBinding, indexBinding], descriptor, component);
+}
+
 function compileForAst(node, context, state) {
 	if (node.await) {
 		throw universalError(
@@ -3271,6 +3461,10 @@ function compileForAst(node, context, state) {
 	assertNoResidualTemplate(node.key, state, '@for key');
 	const host = !state.hmr ? ownerFreeForHost(node) : null;
 	const component = host === null ? ownerFreeForThreeHostComponent(node, state) : null;
+	const templateComponent =
+		host === null && component === null && !state.hmr
+			? templateProgramForComponent(node, state)
+			: null;
 	const compactHost =
 		host === null ? null : compileOwnerFreeForHostAst(host, state, itemBinding, indexBinding);
 	const compactComponent =
@@ -3282,6 +3476,14 @@ function compileForAst(node, context, state) {
 		generatedArrow([itemBinding, indexBinding], rewriteSourceAst(node.key, state), node.key),
 		compactHost?.render ??
 			compactComponent?.render ??
+			(templateComponent === null
+				? null
+				: compileTemplateProgramForComponentAst(
+						templateComponent,
+						state,
+						itemBinding,
+						indexBinding,
+					)) ??
 			compileBlockValueAst(
 				node.body?.body ?? [],
 				state,
@@ -3306,6 +3508,18 @@ function compileForAst(node, context, state) {
 			compactComponent.plan,
 			compactComponent.signature,
 		);
+	} else if (templateComponent !== null) {
+		args.push(
+			b.literal(null, 'null'),
+			b.literal(false),
+			b.literal(false),
+			inheritGeneratedOrigin(b.unary('void', b.literal(0)), templateComponent),
+			inheritGeneratedOrigin(b.unary('void', b.literal(0)), templateComponent),
+			inheritGeneratedOrigin(b.unary('void', b.literal(0)), templateComponent),
+			b.literal(true),
+		);
+	} else if (!state.hmr && templateProgramForHost(node, state)) {
+		args.push(b.literal(null, 'null'), b.literal(false), b.literal(false), b.literal(true));
 	} else if (node.empty) {
 		args.push(compileBlockValueAst(node.empty?.body ?? [], state, [], node.empty));
 	}
@@ -3580,7 +3794,7 @@ function emitComponentAst(shape, state) {
 		name,
 		wrapped,
 		fn,
-		state.hmrDialect === 'webpack' && exportKind !== null ? 'let' : 'const',
+		state.hmr && exportKind !== null ? 'let' : 'const',
 	);
 	if (exportKind === 'named') {
 		return [inheritGeneratedOrigin(b.export(declaration), fn)];
@@ -3588,7 +3802,12 @@ function emitComponentAst(shape, state) {
 	if (exportKind === 'default') {
 		return [
 			declaration,
-			inheritGeneratedOrigin(b.export_default(generatedIdentifier(name, fn)), fn),
+			inheritGeneratedOrigin(
+				state.hmr
+					? b.export(null, [b.export_specifier(name, 'default')])
+					: b.export_default(generatedIdentifier(name, fn)),
+				fn,
+			),
 		];
 	}
 	return [declaration];
@@ -3606,6 +3825,17 @@ export const UNIVERSAL_COMPILER_RUNTIME_IMPORTS = new Set([
 	'withSlot',
 ]);
 
+export const UNIVERSAL_THREAD_RUNTIME_IMPORTS = new Set([
+	'attachThreadFunction',
+	'bindThreadFunction',
+	'invokeThreadFunction',
+	'registerThreadFunction',
+	'runOnBackground',
+	'runOnMainThread',
+	'unregisterThreadFunction',
+	'useMainThreadRef',
+]);
+
 function threadHelperImportPairs(state) {
 	return [
 		['registerThreadFunction', state.helpers.registerThreadFunction],
@@ -3616,7 +3846,9 @@ function threadHelperImportPairs(state) {
 	].filter(([, local]) => local !== undefined);
 }
 
-function universalHelperImportAst(state, extraPairs = [], origin = null) {
+function universalHelperImportAsts(state, extraPairs = [], origin = null) {
+	const threadPairs = threadHelperImportPairs(state);
+	const threadModule = state.renderer.threadFunctionsModule ?? state.renderer.module;
 	const pairs = [
 		['defineUniversalComponent', state.helpers.component],
 		['universalPlan', state.helpers.plan],
@@ -3639,7 +3871,6 @@ function universalHelperImportAst(state, extraPairs = [], origin = null) {
 		...(state.helpers.firstScreenEvent === undefined
 			? []
 			: [['firstScreenEvent', state.helpers.firstScreenEvent]]),
-		...threadHelperImportPairs(state),
 		...(state.hmr
 			? [
 					['hmrUniversalComponent', state.helpers.hmr],
@@ -3647,8 +3878,13 @@ function universalHelperImportAst(state, extraPairs = [], origin = null) {
 				]
 			: []),
 		...extraPairs,
+		...(threadModule === state.renderer.module ? threadPairs : []),
 	];
-	return inheritGeneratedOrigin(b.imports(pairs, state.renderer.module), origin);
+	const imports = [inheritGeneratedOrigin(b.imports(pairs, state.renderer.module), origin)];
+	if (threadPairs.length !== 0 && threadModule !== state.renderer.module) {
+		imports.push(inheritGeneratedOrigin(b.imports(threadPairs, threadModule), origin));
+	}
+	return imports;
 }
 
 function threeHostIntrinsicStatementsAst(state, origin = null) {
@@ -3750,7 +3986,8 @@ function hmrHandoffStatements(state, hot, origin) {
 	const output = [];
 	for (const component of state.hmrComponents) {
 		const componentOrigin = component.origin ?? origin;
-		const existing = b.member(hmrComponentStore(hot, componentOrigin), component.name);
+		const exportName = component.exportKind === 'default' ? 'default' : component.name;
+		const existing = b.member(hmrComponentStore(hot, componentOrigin), exportName);
 		// Webpack/rspack leave `hot.data` undefined until a previous instance of
 		// the module has disposed, so first evaluation must guard the bag itself.
 		const test = b.logical(
@@ -3760,7 +3997,16 @@ function hmrHandoffStatements(state, hot, origin) {
 				memberPath(hot, ['data'], componentOrigin),
 				hmrComponentStore(hot, componentOrigin),
 			),
-			existing,
+			// Newly added exports can share names with Object.prototype properties.
+			b.logical(
+				'&&',
+				b.call(
+					b.member(b.member(b.object([]), 'hasOwnProperty'), 'call'),
+					hmrComponentStore(hot, componentOrigin),
+					b.literal(exportName),
+				),
+				existing,
+			),
 		);
 		const update = b.stmt(
 			b.call(
@@ -3778,9 +4024,19 @@ function hmrComponentObject(state, existing, origin) {
 	return inheritGeneratedOrigin(
 		b.object([
 			b.spread(existing),
-			...state.hmrComponents.map((component) =>
-				b.prop('init', b.id(component.name), b.id(component.name), false, true),
-			),
+			...state.hmrComponents.map((component) => {
+				const exportName = component.exportKind === 'default' ? 'default' : component.name;
+				// Export lowering can expand __proto__ shorthand into a prototype setter.
+				// A computed key keeps the retained wrapper an own data property.
+				const computed = exportName === '__proto__';
+				return b.prop(
+					'init',
+					computed ? b.literal(exportName) : b.id(exportName),
+					b.id(component.name),
+					computed,
+					!computed && component.exportKind !== 'default',
+				);
+			}),
 		]),
 		origin,
 	);
@@ -3791,58 +4047,32 @@ function buildUniversalHmrBlocksAst(state, origin) {
 	if (state.hmrComponents.length === 0 && disposals.length === 0) {
 		return { prelude: [], tail: [] };
 	}
-	if (state.hmrDialect === 'webpack') {
-		// Rspack only guarantees that the `import.meta.webpackHot` root is lowered.
-		// Keep `.data` and the HMR methods on an ordinary local so Rsbuild's React
-		// transform cannot turn a deeper meta-property chain into `undefined`.
-		const hotName = allocName(state, '__octaneWebpackHot');
-		const hot = generatedIdentifier(hotName, origin);
-		const prelude = [generatedConst(hotName, importMetaMember('webpackHot', origin), origin)];
-		const tail = [];
-		if (disposals.length === 0) {
-			const data = generatedIdentifier('data', origin);
-			const store = inheritGeneratedOrigin(b.member(data, '__octaneUniversalComponents'), origin);
-			const dispose = b.stmt(
-				b.call(
-					b.member(hot, 'dispose'),
-					b.arrow(
-						[data],
-						b.block([b.stmt(b.assignment('=', store, hmrComponentObject(state, store, origin)))]),
-					),
-				),
-			);
-			tail.push(
-				inheritGeneratedOrigin(
-					b.if(
-						hot,
-						b.block([
-							...hmrHandoffStatements(state, hot, origin),
-							dispose,
-							b.stmt(b.call(b.member(hot, 'accept'))),
-						]),
-					),
-					origin,
-				),
-			);
-			return { prelude, tail };
-		}
-		const ready =
-			state.hmrComponents.length === 0
-				? null
-				: allocName(state, '__octaneUniversalHmrComponentsReady');
-		if (ready !== null) prelude.push(generatedConst(ready, b.literal(false), origin, 'let'));
-		const data = generatedIdentifier('data', origin);
-		const store = inheritGeneratedOrigin(b.member(data, '__octaneUniversalComponents'), origin);
-		const disposalBody = [];
-		if (ready !== null) {
-			disposalBody.push(
-				b.if(
-					b.id(ready),
-					b.block([b.stmt(b.assignment('=', store, hmrComponentObject(state, store, origin)))]),
-				),
-			);
-		}
-		disposalBody.push(...disposals);
+	// Rspack only lowers the webpackHot root reliably. Vite's self-accept call
+	// must stay a direct import.meta.hot.accept(...) for its static analysis.
+	const webpack = state.hmrDialect === 'webpack';
+	const hotName = webpack ? allocName(state, '__octaneWebpackHot') : null;
+	const hot =
+		hotName === null ? importMetaMember('hot', origin) : generatedIdentifier(hotName, origin);
+	const prelude =
+		hotName === null
+			? []
+			: [generatedConst(hotName, importMetaMember('webpackHot', origin), origin)];
+	const tail = [];
+	const data = generatedIdentifier('data', origin);
+	const store = inheritGeneratedOrigin(b.member(data, '__octaneUniversalComponents'), origin);
+	const save = b.stmt(b.assignment('=', store, hmrComponentObject(state, store, origin)));
+	const ready =
+		webpack && state.hmrComponents.length > 0 && disposals.length > 0
+			? allocName(state, '__octaneUniversalHmrComponentsReady')
+			: null;
+	if (ready !== null) prelude.push(generatedConst(ready, b.literal(false), origin, 'let'));
+	if (disposals.length > 0) {
+		// Register thread cleanup before any registration can throw. A failed
+		// webpack evaluation must not read component bindings still in their TDZ.
+		const disposalBody = [
+			...(ready === null ? [] : [b.if(b.id(ready), b.block([save]))]),
+			...disposals,
+		];
 		prelude.push(
 			inheritGeneratedOrigin(
 				b.if(
@@ -3854,74 +4084,63 @@ function buildUniversalHmrBlocksAst(state, origin) {
 				origin,
 			),
 		);
-		if (ready !== null) {
-			tail.push(
-				inheritGeneratedOrigin(
-					b.if(
-						hot,
-						b.block([
-							...hmrHandoffStatements(state, hot, origin),
-							b.stmt(b.assignment('=', b.id(ready), b.literal(true))),
-							b.stmt(b.call(b.member(hot, 'accept'))),
-						]),
-					),
-					origin,
+	}
+	if (state.hmrComponents.length > 0) {
+		// Each evaluation must keep exporting the wrapper that owns mounted roots.
+		// Updating a fresh wrapper from its own accept callback loses those owners
+		// on the second edit. Hand off once while evaluating the replacement.
+		const handoff = hmrHandoffStatements(state, hot, origin);
+		if (webpack) {
+			handoff.push(
+				ready === null
+					? b.stmt(b.call(b.member(hot, 'dispose'), b.arrow([data], b.block([save]))))
+					: b.stmt(b.assignment('=', b.id(ready), b.literal(true))),
+			);
+		} else {
+			// Vite keeps hot.data across evaluations but has only one dispose handler
+			// per module. Persist now so DOM and sibling regions cannot replace thread
+			// cleanup or each other's retained component tables.
+			const currentStore = hmrComponentStore(hot, origin);
+			// Without persistent data, the accept callback falls back to invalidation.
+			handoff.push(
+				b.if(
+					b.member(hot, 'data'),
+					b.stmt(b.assignment('=', currentStore, hmrComponentObject(state, currentStore, origin))),
 				),
 			);
 		}
-		return { prelude, tail };
+		const acceptArgs = [];
+		if (!webpack) {
+			const moduleName = allocName(state, '__octaneUniversalHmrModule');
+			const changedExports = state.hmrComponents
+				.map((component) =>
+					b.binary(
+						'!==',
+						b.member(
+							b.id(moduleName),
+							component.exportKind === 'default' ? 'default' : component.name,
+						),
+						b.id(component.name),
+					),
+				)
+				.reduce((left, right) => b.logical('||', left, right));
+			// The handoff already refreshed compatible exports. Missing or changed
+			// boundaries must invalidate rather than leave the previous owner live.
+			acceptArgs.push(
+				b.arrow(
+					[b.id(moduleName)],
+					b.block([
+						b.if(
+							b.logical('&&', b.id(moduleName), changedExports),
+							b.stmt(b.call(b.member(hot, 'invalidate'))),
+						),
+					]),
+				),
+			);
+		}
+		handoff.push(b.stmt(b.call(b.member(hot, 'accept'), ...acceptArgs)));
+		tail.push(inheritGeneratedOrigin(b.if(hot, b.block(handoff)), origin));
 	}
-	const hot = importMetaMember('hot', origin);
-	const prelude =
-		disposals.length === 0
-			? []
-			: [
-					inheritGeneratedOrigin(
-						b.if(
-							hot,
-							b.block([b.stmt(b.call(b.member(hot, 'dispose'), b.arrow([], b.block(disposals))))]),
-						),
-						origin,
-					),
-				];
-	const tail =
-		state.hmrComponents.length === 0
-			? []
-			: [
-					inheritGeneratedOrigin(
-						b.if(
-							hot,
-							b.block([
-								b.stmt(
-									b.call(
-										b.member(hot, 'accept'),
-										b.arrow(
-											[b.id('module')],
-											b.block(
-												state.hmrComponents.map((component) => {
-													const incoming =
-														component.exportKind === 'default'
-															? b.member(b.id('module'), 'default')
-															: b.member(b.id('module'), component.name);
-													return b.stmt(
-														b.call(
-															b.member(
-																b.member(b.id(component.name), b.id(state.helpers.hmrSymbol), true),
-																'update',
-															),
-															incoming,
-														),
-													);
-												}),
-											),
-										),
-									),
-								),
-							]),
-						),
-						origin,
-					),
-				];
 	return { prelude, tail };
 }
 
@@ -4195,14 +4414,7 @@ export function lowerUniversalRendererRegionAst(
 		);
 	}
 	const componentDeclaration = inheritGeneratedOrigin(
-		b.export(
-			generatedConst(
-				componentName,
-				componentValue,
-				origin,
-				state.hmrDialect === 'webpack' ? 'let' : 'const',
-			),
-		),
+		b.export(generatedConst(componentName, componentValue, origin, state.hmr ? 'let' : 'const')),
 		origin,
 	);
 	specializationBindings.add(componentName);
@@ -4253,7 +4465,7 @@ export function lowerUniversalRendererRegionAst(
 			...(universalRuntime === undefined ? null : { universalRuntime }),
 		}),
 		statements: Object.freeze([
-			universalHelperImportAst(state, helperImportPairs, origin),
+			...universalHelperImportAsts(state, helperImportPairs, origin),
 			...threeHostIntrinsics.imports,
 			...(profileImport === null ? [] : [profileImport]),
 			...hmrBlocks.prelude,
@@ -4392,7 +4604,7 @@ export function compileUniversal(
 	const program = {
 		...ast,
 		body: [
-			universalHelperImportAst(state, [], moduleOrigin),
+			...universalHelperImportAsts(state, [], moduleOrigin),
 			...threeHostIntrinsics.imports,
 			...(profileImport === null ? [] : [profileImport]),
 			...hmrBlocks.prelude,

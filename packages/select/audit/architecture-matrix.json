@@ -62,8 +62,8 @@
     {
       "id": "animated-transition-runtime",
       "prerequisite": "exact react-transition-group behavior",
-      "currentState": "draft prerequisite PR #487 exists",
-      "result": "WAIT"
+      "currentState": "merged as @octanejs/transition-group",
+      "result": "REUSE"
     },
     {
       "id": "class-select-reimplementation",
