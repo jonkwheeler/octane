@@ -232,7 +232,7 @@ export function useHover(...args: any[]): ElementProps {
 				const openDelay = getDelay(delayRef.current, 'open', pointerTypeRef.current);
 				if (openDelay) {
 					timeoutRef.current = window.setTimeout(() => {
-						if (!openRef.current) {
+						if (!openRef.current && elements.domReference?.isConnected) {
 							onOpenChange(true, event, 'hover');
 						}
 					}, openDelay);

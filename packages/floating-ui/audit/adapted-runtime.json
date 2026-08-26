@@ -1,0 +1,1461 @@
+{
+  "schemaVersion": 1,
+  "project": "floating-ui-adapted-child",
+  "roots": ["packages/floating-ui/tests/upstream"],
+  "files": [
+    "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/FloatingDelayGroup.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/NextFloatingDelayGroup.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+    "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+    "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useFloatingRootContext.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useId.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useMergeRefs.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+    "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx"
+  ],
+  "tests": [
+    {
+      "id": "runtime:b15b6a5544f0b38f",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "grid grid flow"
+    },
+    {
+      "id": "runtime:e01fa400146e23e7",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "grid grid flow: dense"
+    },
+    {
+      "id": "runtime:55984b69382662f4",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "grid uniform 1x1 items"
+    },
+    {
+      "id": "runtime:99cf8296a14b7caa",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "grid wider and taller item"
+    },
+    {
+      "id": "runtime:b873457860bbd2e9",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "grid wider item"
+    },
+    {
+      "id": "runtime:0989578e80dad5b6",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "list controlled mode"
+    },
+    {
+      "id": "runtime:5f07761edf90efb1",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "list uncontrolled mode"
+    },
+    {
+      "id": "runtime:f639857dfe312477",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "rtl grid"
+    },
+    {
+      "id": "runtime:837e2f70c6cd981b",
+      "file": "packages/floating-ui/tests/upstream/unit/Composite.test.tsx",
+      "fullName": "rtl list"
+    },
+    {
+      "id": "runtime:470b91c7573a641d",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingDelayGroup.test.tsx",
+      "fullName": "groups delays correctly"
+    },
+    {
+      "id": "runtime:55ee502163c0ed7c",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingDelayGroup.test.tsx",
+      "fullName": "timeoutMs"
+    },
+    {
+      "id": "runtime:68b9f16da85567b8",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Drawer closeOnFocusOut=false - does not close when tabbing out"
+    },
+    {
+      "id": "runtime:bcefc4be0bbd8f26",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Drawer does not close when clicking another button outside"
+    },
+    {
+      "id": "runtime:7b6a6381f27fdae9",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Drawer returns focus when tabbing out then back to close button"
+    },
+    {
+      "id": "runtime:4a8729b03c42a63a",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Navigation closes when unhovering floating element even when focus is inside it"
+    },
+    {
+      "id": "runtime:7700275c36ff5a2b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Navigation does not focus reference when hovering it"
+    },
+    {
+      "id": "runtime:94972fd2901376b0",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Navigation does not re-open after closing via escape key"
+    },
+    {
+      "id": "runtime:35c9b09729fde28d",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Navigation returns focus to reference when floating element was opened by hover but is closed by an explicit close button"
+    },
+    {
+      "id": "runtime:2a1cf25094311935",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "Navigation returns focus to reference when floating element was opened by hover but is closed by esc key"
+    },
+    {
+      "id": "runtime:95ad802626b88c1b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "aria-hidden is not applied on root combobox with virtual nested menu"
+    },
+    {
+      "id": "runtime:63c6db87ac4caf85",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "closeOnFocusOut with FloatingPortal false: does not close when focus moves outside"
+    },
+    {
+      "id": "runtime:26ee83190df8f7b1",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "closeOnFocusOut with FloatingPortal true: closes when focus moves outside"
+    },
+    {
+      "id": "runtime:297a021993763b68",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "closeOnFocusOut without FloatingPortal false: does not close when focus moves outside"
+    },
+    {
+      "id": "runtime:a6ee6dd736352ca6",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "closeOnFocusOut without FloatingPortal true: closes when focus moves outside"
+    },
+    {
+      "id": "runtime:7fe72492e9c85943",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "disabled false"
+    },
+    {
+      "id": "runtime:4f7f3d9df0e45b56",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "disabled supports keepMounted behavior"
+    },
+    {
+      "id": "runtime:7c42c92587677520",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "disabled true -> false"
+    },
+    {
+      "id": "runtime:d7239f23ec1d6efb",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "floating element closes upon tabbing out of modal combobox"
+    },
+    {
+      "id": "runtime:514139047f0e24e7",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "floating element with listbox role ignores tabIndex setting"
+    },
+    {
+      "id": "runtime:a2705643273d7d3f",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "floating element with no focusable elements and no listbox role gets tabIndex=0 when initialFocus is -1"
+    },
+    {
+      "id": "runtime:a7a9ea4da0d92360",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "focus does not return to reference when floating element is triggered by hover"
+    },
+    {
+      "id": "runtime:1880e62485401be4",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "focus is placed on element with floating props when floating element is a wrapper"
+    },
+    {
+      "id": "runtime:434f4a79e95aaaba",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "getInsideElements returns a list of elements that should be considered part of the floating element"
+    },
+    {
+      "id": "runtime:b1aa8a6fff2fe264",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "guards false"
+    },
+    {
+      "id": "runtime:f1c8e4894f9e8f8e",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "guards true"
+    },
+    {
+      "id": "runtime:4e960c3310ca60fd",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "handles manual tabindex on dialog floating element"
+    },
+    {
+      "id": "runtime:9f39dd34999d7df5",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "iframe focus navigation shift+tab from the popover to the previous element in the iframe"
+    },
+    {
+      "id": "runtime:572da1e75ea26ccf",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "iframe focus navigation tabs from the popover to the next element in the iframe"
+    },
+    {
+      "id": "runtime:b990055264b55abe",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "initialFocus number"
+    },
+    {
+      "id": "runtime:5ffbbb5ce614efd0",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "initialFocus ref"
+    },
+    {
+      "id": "runtime:41fed83a2d3c00b1",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "initialFocus respects autoFocus"
+    },
+    {
+      "id": "runtime:d7636574146bc75a",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal fallback to floating element when it has no tabbable content"
+    },
+    {
+      "id": "runtime:21b31be59df03f79",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal false"
+    },
+    {
+      "id": "runtime:fee4bd97cdc6059d",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal false - comboboxes do not hide all other nodes"
+    },
+    {
+      "id": "runtime:a1c2bda1ebaedbdb",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal false - does not apply inert to outside nodes"
+    },
+    {
+      "id": "runtime:fdd2cc40c9c86523",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal false — shift tabbing does not trap focus when reference is in order"
+    },
+    {
+      "id": "runtime:743eec2f4734b9b6",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal mixed modality and nesting"
+    },
+    {
+      "id": "runtime:970a389eabd74bb0",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal true"
+    },
+    {
+      "id": "runtime:83f9dac3b0228778",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal true - applies aria-hidden to outside nodes"
+    },
+    {
+      "id": "runtime:3f628c8718b78e46",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal true - applies inert to outside nodes when outsideElementsInert=true"
+    },
+    {
+      "id": "runtime:f20a7975b07e9c2d",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal true - comboboxes hide all other nodes with aria-hidden"
+    },
+    {
+      "id": "runtime:9b71c80d39a6d73b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "modal true - comboboxes hide all other nodes with inert when outsideElementsInert=true"
+    },
+    {
+      "id": "runtime:08ddb761b88b9309",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "non-modal + FloatingPortal focuses inside element, tabbing out focuses last document element"
+    },
+    {
+      "id": "runtime:25c704bca9071840",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "non-modal + FloatingPortal order: [reference, content] focuses reference, then inside, then, last document element"
+    },
+    {
+      "id": "runtime:d21503c5a80dd66b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "non-modal + FloatingPortal order: [reference, floating, content] focuses reference, then inside, then, last document element"
+    },
+    {
+      "id": "runtime:24a11b9b29909198",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "non-modal + FloatingPortal shift+tab"
+    },
+    {
+      "id": "runtime:e0a06d212efc9da8",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "order [floating, content]"
+    },
+    {
+      "id": "runtime:5e2e91acbd09956b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "order [reference, content]"
+    },
+    {
+      "id": "runtime:7a964c33b304839e",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "order [reference, floating, content]"
+    },
+    {
+      "id": "runtime:965cb11dfa10115d",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus always returns to the reference for nested elements"
+    },
+    {
+      "id": "runtime:babceaf28453bbc2",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus does not return focus to reference on outside press when preventScroll is not supported"
+    },
+    {
+      "id": "runtime:0213b080a7f9e208",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus false"
+    },
+    {
+      "id": "runtime:dfa30b97a38adf7b",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus preserves tabbable context next to reference element if removed (modal)"
+    },
+    {
+      "id": "runtime:094a58061a0cd6be",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus preserves tabbable context next to reference element if removed (non-modal)"
+    },
+    {
+      "id": "runtime:550062fa47f789ec",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus ref"
+    },
+    {
+      "id": "runtime:a612b3f9bfde3318",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus return to the first focusable descendent of the reference, if the reference is not focusable"
+    },
+    {
+      "id": "runtime:b68abe1f18e7aebd",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus returns focus to reference on outside press when preventScroll is supported"
+    },
+    {
+      "id": "runtime:97766146aeb23107",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returnFocus true"
+    },
+    {
+      "id": "runtime:97a4c3b61a26b07a",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "returns focus to last connected element"
+    },
+    {
+      "id": "runtime:b65b3ffa0b821463",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "standard tabbing back and forth of a non-modal floating element"
+    },
+    {
+      "id": "runtime:fc713d3d46397eea",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "trapped combobox prevents focus moving outside floating element"
+    },
+    {
+      "id": "runtime:b6007da1678adba8",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "untrapped combobox creates non-modal focus management"
+    },
+    {
+      "id": "runtime:9e8c40b888eee0b0",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingFocusManager.test.tsx",
+      "fullName": "uses aria-hidden instead of inert on outside nodes if opened with hover and modal=true"
+    },
+    {
+      "id": "runtime:c2ca9faea4be0d39",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+      "fullName": "handles re-ordering"
+    },
+    {
+      "id": "runtime:54aa76b6eaa921af",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+      "fullName": "registers an element ref and index correctly"
+    },
+    {
+      "id": "runtime:00a7d542b43b4222",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+      "fullName": "registers element ref and indexes correctly"
+    },
+    {
+      "id": "runtime:8db937ab1894f32a",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+      "fullName": "registers strings correctly (label)"
+    },
+    {
+      "id": "runtime:32ba0f469ab727ce",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingList.test.tsx",
+      "fullName": "registers strings correctly (no value)"
+    },
+    {
+      "id": "runtime:b4cd49830e3eb4cd",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "allows custom roots"
+    },
+    {
+      "id": "runtime:3721d041e9956986",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "allows refs as roots"
+    },
+    {
+      "id": "runtime:0caf5c74f40bf955",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "allows roots to be initially null"
+    },
+    {
+      "id": "runtime:bd2abfebf32e7736",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "creates a custom id node"
+    },
+    {
+      "id": "runtime:d4c675d6b63d6361",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "creates a custom id node as the root"
+    },
+    {
+      "id": "runtime:708abfb59c493ac1",
+      "file": "packages/floating-ui/tests/upstream/unit/FloatingPortal.test.tsx",
+      "fullName": "uses a custom id node as the root"
+    },
+    {
+      "id": "runtime:26a6b5d46af2c583",
+      "file": "packages/floating-ui/tests/upstream/unit/NextFloatingDelayGroup.test.tsx",
+      "fullName": "does not re-render unrelated consumers"
+    },
+    {
+      "id": "runtime:4ceac451b3816848",
+      "file": "packages/floating-ui/tests/upstream/unit/NextFloatingDelayGroup.test.tsx",
+      "fullName": "groups delays correctly"
+    },
+    {
+      "id": "runtime:699a78f82f8988b5",
+      "file": "packages/floating-ui/tests/upstream/unit/NextFloatingDelayGroup.test.tsx",
+      "fullName": "timeoutMs"
+    },
+    {
+      "id": "runtime:517488a90663d801",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "does not recurse infinitely with target inside anchor in shadow root"
+    },
+    {
+      "id": "runtime:84360541dfdae9bc",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "mixed controlAttribute usage (aria-hidden/inert/none)"
+    },
+    {
+      "id": "runtime:cfac0d62262d0fec",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "multiple calls"
+    },
+    {
+      "id": "runtime:01f83498596449c8",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "multiple cleanups with differing controlAttribute"
+    },
+    {
+      "id": "runtime:c8af21a74bf69ced",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "out of order cleanup"
+    },
+    {
+      "id": "runtime:f95696a81f84e0e7",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "single call"
+    },
+    {
+      "id": "runtime:ceecf3d58e733c12",
+      "file": "packages/floating-ui/tests/upstream/unit/markOthers.test.ts",
+      "fullName": "uses shadow root host as avoid element when parent chain includes anchor"
+    },
+    {
+      "id": "runtime:6174b3c30185282e",
+      "file": "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+      "fullName": "handles deep parent structures correctly (onlyOpenChildren=false)"
+    },
+    {
+      "id": "runtime:e862c8783fcc8d0b",
+      "file": "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+      "fullName": "handles deep parent structures correctly (onlyOpenChildren=true)"
+    },
+    {
+      "id": "runtime:6902a6d227670cf0",
+      "file": "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+      "fullName": "returns an array of ancestors"
+    },
+    {
+      "id": "runtime:4c78420adf022c63",
+      "file": "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+      "fullName": "returns an array of children, ignoring closed ones when onlyOpenChildren=true"
+    },
+    {
+      "id": "runtime:f2229de80b46684f",
+      "file": "packages/floating-ui/tests/upstream/unit/nodes.test.ts",
+      "fullName": "returns an array of children, including closed ones when onlyOpenChildren=false"
+    },
+    {
+      "id": "runtime:78b473cad91637b4",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`stickIfOpen` prop false: `open` state becomes `false` after click and mouseleave"
+    },
+    {
+      "id": "runtime:736cff932720e74a",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`stickIfOpen` prop true: `open` state remains `true` after click and mouseleave"
+    },
+    {
+      "id": "runtime:4bde43c4fc232a09",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`toggle` prop `open` state becomes `false` after clicking when initially open"
+    },
+    {
+      "id": "runtime:b7c5cec627572648",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`toggle` prop `open` state remains `true` after two clicks"
+    },
+    {
+      "id": "runtime:7219e40b14e2a130",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`toggle` prop `open` state remains `true` after two clicks with `mousedown`"
+    },
+    {
+      "id": "runtime:d435daf21780eb21",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "`toggle` prop changes `open` state to `true` after click"
+    },
+    {
+      "id": "runtime:c4a9ab227e3bd88e",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "default changes `open` state to `false` after two clicks"
+    },
+    {
+      "id": "runtime:a2d19c5f066382eb",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "default changes `open` state to `true` after click"
+    },
+    {
+      "id": "runtime:1ee2159698819716",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "ignores Space keydown on another element then keyup on the button"
+    },
+    {
+      "id": "runtime:b31704191c176276",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "mousedown `event` prop changes `open` state to `false` after two clicks"
+    },
+    {
+      "id": "runtime:31edab2f8439406f",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "mousedown `event` prop changes `open` state to `true` after click"
+    },
+    {
+      "id": "runtime:0d70d8e6b376364b",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "non-buttons adds Enter keydown"
+    },
+    {
+      "id": "runtime:7a93fd9226b41366",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "non-buttons adds Space keyup"
+    },
+    {
+      "id": "runtime:d73f256330217311",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "non-buttons anchor does not add Enter keydown"
+    },
+    {
+      "id": "runtime:48997a6cef87797c",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "non-buttons typeable reference does not receive space key handler"
+    },
+    {
+      "id": "runtime:11f6afb739437406",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "non-buttons typeable reference does receive Enter key handler"
+    },
+    {
+      "id": "runtime:f17f73a4bc029b4e",
+      "file": "packages/floating-ui/tests/upstream/unit/useClick.test.tsx",
+      "fullName": "reason string"
+    },
+    {
+      "id": "runtime:e83de02efd85254b",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "axis x"
+    },
+    {
+      "id": "runtime:331a953a92fc0d4b",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "axis y"
+    },
+    {
+      "id": "runtime:bcbe21fdc2415fe0",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "cleans up window listener when closing or disabling"
+    },
+    {
+      "id": "runtime:79b7aeb3d1776961",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "ignores mouse events when explicit coords are specified"
+    },
+    {
+      "id": "runtime:34e41fe70225040e",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "removes window listener when cursor lands on floating element"
+    },
+    {
+      "id": "runtime:1f86b06a206736c2",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "renders at explicit client point and can be updated"
+    },
+    {
+      "id": "runtime:66104907b2e1b1ab",
+      "file": "packages/floating-ui/tests/upstream/unit/useClientPoint.test.tsx",
+      "fullName": "renders at mouse event coords"
+    },
+    {
+      "id": "runtime:1e44ab2bfaea44b4",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles escapeKey false"
+    },
+    {
+      "id": "runtime:5380b2c93a4b655f",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles escapeKey mixed"
+    },
+    {
+      "id": "runtime:0b71d1b62eb16591",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles escapeKey true"
+    },
+    {
+      "id": "runtime:94b03b086806504d",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles escapeKey without FloatingTree"
+    },
+    {
+      "id": "runtime:cec799407b91240d",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles outsidePress false"
+    },
+    {
+      "id": "runtime:baddcfd23d33bd22",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles outsidePress mixed"
+    },
+    {
+      "id": "runtime:404cfbd72321a965",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles outsidePress true"
+    },
+    {
+      "id": "runtime:c1c87d2a58289dc5",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles prop resolution false"
+    },
+    {
+      "id": "runtime:c9fe13bce1fbd61f",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles prop resolution undefined"
+    },
+    {
+      "id": "runtime:87052e85f2b7b3c1",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles prop resolution { escapeKey: false }"
+    },
+    {
+      "id": "runtime:37d67cd5b0a18f5f",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles prop resolution { outsidePress: false }"
+    },
+    {
+      "id": "runtime:1e833a7852541198",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "bubbles prop resolution {}"
+    },
+    {
+      "id": "runtime:06f69d2d259628e8",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture escapeKey false"
+    },
+    {
+      "id": "runtime:2c1ec0aac87659b3",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture escapeKey true"
+    },
+    {
+      "id": "runtime:7ecf1a118fbaf373",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture outsidePress false"
+    },
+    {
+      "id": "runtime:92fc5d735c937486",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture outsidePress true"
+    },
+    {
+      "id": "runtime:102b32c5ec44affc",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution false"
+    },
+    {
+      "id": "runtime:3c7d5192ab3055bb",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution true"
+    },
+    {
+      "id": "runtime:8818e9a3d4bbfbf4",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution undefined"
+    },
+    {
+      "id": "runtime:b3857c358efa940c",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution { escapeKey: true }"
+    },
+    {
+      "id": "runtime:fa8b8aefce89aab8",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution { outsidePress: false }"
+    },
+    {
+      "id": "runtime:8216e7ce9a1e392c",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "capture prop resolution {}"
+    },
+    {
+      "id": "runtime:b2ca693e99286365",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false dismisses with ancestor scroll"
+    },
+    {
+      "id": "runtime:f732d6cc9ea7c7aa",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false dismisses with escape key"
+    },
+    {
+      "id": "runtime:1b6a36cae33fc3bd",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false dismisses with outside press"
+    },
+    {
+      "id": "runtime:757d41eff9f9af89",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false dismisses with reference pointer down"
+    },
+    {
+      "id": "runtime:d56811fea6dd0f32",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false does not dismiss when clicking portaled children"
+    },
+    {
+      "id": "runtime:e789a1a5bf7d3153",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "false outsidePress function guard"
+    },
+    {
+      "id": "runtime:411ca3cedf68721a",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "nested floating elements with different portal roots"
+    },
+    {
+      "id": "runtime:69d69acb9d9fff13",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "outsidePressEvent click dragging inside the floating element does not close"
+    },
+    {
+      "id": "runtime:cdc444869ad6d3ab",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "outsidePressEvent click dragging outside the floating element does not close"
+    },
+    {
+      "id": "runtime:6296d37d2cc5b1db",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "outsidePressEvent click dragging outside the floating element then clicking outside closes"
+    },
+    {
+      "id": "runtime:5395bbf884d9e013",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "outsidePressEvent click right clicking inside the floating element then clicking outside closes"
+    },
+    {
+      "id": "runtime:86b789df82cd3c42",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true dismisses with ancestor scroll"
+    },
+    {
+      "id": "runtime:ce305946688b825a",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true dismisses with escape key"
+    },
+    {
+      "id": "runtime:08d2db0b38e7cb8f",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true dismisses with native click"
+    },
+    {
+      "id": "runtime:2575a5013058714a",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true dismisses with outside pointer press"
+    },
+    {
+      "id": "runtime:a9e7814674fbb618",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true dismisses with reference press"
+    },
+    {
+      "id": "runtime:3a312ec054b319b5",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true does not dismiss with escape key if IME is active"
+    },
+    {
+      "id": "runtime:c58c9ddab0f8829b",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true outsidePress function guard"
+    },
+    {
+      "id": "runtime:96c19f5860c6babe",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true outsidePress ignored for third party elements"
+    },
+    {
+      "id": "runtime:ad3a9a1e4a3dcfcc",
+      "file": "packages/floating-ui/tests/upstream/unit/useDismiss.test.tsx",
+      "fullName": "true outsidePress not ignored for nested floating elements"
+    },
+    {
+      "id": "runtime:b6fbd7524220cd83",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "#2129: interactions.getFloatingProps as a dep does not cause setState loop"
+    },
+    {
+      "id": "runtime:c92bfc589868eb57",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "domReference refers to externally synchronized `reference`"
+    },
+    {
+      "id": "runtime:e902fa99187d2ff6",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "onOpenChange is passed an event as second param"
+    },
+    {
+      "id": "runtime:be48bc2962f08a4e",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "positionReference does not error when using `inline` middleware and setting the position reference to a real element"
+    },
+    {
+      "id": "runtime:b7a9730aad6f254b",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "positionReference handles real virtual element"
+    },
+    {
+      "id": "runtime:ab158a1473cd23e0",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "positionReference handles unstable reference prop"
+    },
+    {
+      "id": "runtime:229cbc032f7049bf",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "positionReference sets separate refs"
+    },
+    {
+      "id": "runtime:f1c6ae6c3343acdc",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloating.test.tsx",
+      "fullName": "refs.domReference.current is synchronized with external reference"
+    },
+    {
+      "id": "runtime:8a3113318c0b77f5",
+      "file": "packages/floating-ui/tests/upstream/unit/useFloatingRootContext.test.tsx",
+      "fullName": "interaction hooks accept root context"
+    },
+    {
+      "id": "runtime:87d2f5897a244a03",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "closes on blur"
+    },
+    {
+      "id": "runtime:81db5f7bcd0a73d4",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "does not open when window blurs then receives focus"
+    },
+    {
+      "id": "runtime:0a26b6fad216c068",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "does not open with a reference pointerDown dismissal"
+    },
+    {
+      "id": "runtime:3db5b778bdd0ae92",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "opens on focus"
+    },
+    {
+      "id": "runtime:6f6839717f69d738",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "reason string"
+    },
+    {
+      "id": "runtime:4f2ca54d11dd0563",
+      "file": "packages/floating-ui/tests/upstream/unit/useFocus.test.tsx",
+      "fullName": "visibleOnly prop true"
+    },
+    {
+      "id": "runtime:ab8609fa74075ebe",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "cleans up blockPointerEvents if trigger changes"
+    },
+    {
+      "id": "runtime:2e21d94bb6ba3ed3",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "closes on mouseleave"
+    },
+    {
+      "id": "runtime:3105d53f038e08a9",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "delay close"
+    },
+    {
+      "id": "runtime:b59d3f3eb3bd820c",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "delay open"
+    },
+    {
+      "id": "runtime:11646c6c70f7c39f",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "delay open with close 0"
+    },
+    {
+      "id": "runtime:58a68aa752aea28b",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "delay restMs + nullish open delay should respect restMs"
+    },
+    {
+      "id": "runtime:59d42a11a18aed43",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "delay symmetric number"
+    },
+    {
+      "id": "runtime:22f26ec9b234189b",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "does not show after delay if domReference changes"
+    },
+    {
+      "id": "runtime:bf6942653ae56544",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "mouseleave on the floating element closes it (mouse)"
+    },
+    {
+      "id": "runtime:19ae6e829a238529",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "opens on mouseenter"
+    },
+    {
+      "id": "runtime:75bb305f52fc1dea",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "reason string"
+    },
+    {
+      "id": "runtime:f2749d732ea3107b",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "restMs"
+    },
+    {
+      "id": "runtime:6431ed0091c80fab",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "restMs does not cause floating element to open if mouseOnly is true"
+    },
+    {
+      "id": "runtime:05819c5878beff90",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "restMs does not reset timer for minor mouse movement"
+    },
+    {
+      "id": "runtime:f740f007317d9af9",
+      "file": "packages/floating-ui/tests/upstream/unit/useHover.test.tsx",
+      "fullName": "restMs is always 0 for touch input"
+    },
+    {
+      "id": "runtime:a47354f319e8ee3d",
+      "file": "packages/floating-ui/tests/upstream/unit/useId.test.tsx",
+      "fullName": "generates a random string"
+    },
+    {
+      "id": "runtime:edb83da17c543a1a",
+      "file": "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+      "fullName": "correctly merges functions"
+    },
+    {
+      "id": "runtime:2e4b70e8e7361fe6",
+      "file": "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+      "fullName": "does not break props that return values"
+    },
+    {
+      "id": "runtime:e833663c0d7fbb07",
+      "file": "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+      "fullName": "does not break props that start with `on`"
+    },
+    {
+      "id": "runtime:715087214a9a97ee",
+      "file": "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+      "fullName": "does not error with undefined user supplied functions"
+    },
+    {
+      "id": "runtime:78426bc14c5f8ac5",
+      "file": "packages/floating-ui/tests/upstream/unit/useInteractions.test.tsx",
+      "fullName": "prop getters are memoized"
+    },
+    {
+      "id": "runtime:c2f435362a8fa88f",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "Home or End key press is ignored for typeable combobox reference"
+    },
+    {
+      "id": "runtime:20b2ed59b5d70a0e",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "allowEscape + virtual false"
+    },
+    {
+      "id": "runtime:1476e600b8687010",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "allowEscape + virtual true"
+    },
+    {
+      "id": "runtime:93438becb0889da0",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "allowEscape + virtual true - onNavigate is called with `null` when escaped"
+    },
+    {
+      "id": "runtime:c1d74b0fd06eca42",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "async selectedIndex"
+    },
+    {
+      "id": "runtime:bc45898c121c8a1a",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "disabledIndices indices are skipped in focus order"
+    },
+    {
+      "id": "runtime:3f1b2413c7066eee",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "domReference trigger in nested virtual menu is set as virtual item"
+    },
+    {
+      "id": "runtime:1b82f8a3f45c71cc",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "focus management in nested lists"
+    },
+    {
+      "id": "runtime:5bfc638bbb083cc5",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "focusItemOnOpen false click"
+    },
+    {
+      "id": "runtime:755798bc6b5fbd7e",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "focusItemOnOpen true click"
+    },
+    {
+      "id": "runtime:29793e3834848931",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "focusOnHover false - does not focus item on hover and does not sync the active index"
+    },
+    {
+      "id": "runtime:823558310d622edc",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "focusOnHover true - focuses item on hover and syncs the active index"
+    },
+    {
+      "id": "runtime:adca1ff84533d79e",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation ArrowDown focuses first item"
+    },
+    {
+      "id": "runtime:3951eb62231717c1",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation does not leave row with \"both\" orientation while looping"
+    },
+    {
+      "id": "runtime:62927624702de34b",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation focuses first non-disabled item in grid"
+    },
+    {
+      "id": "runtime:bb77e6ca54b219f1",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation focuses next item using ArrowRight key, skipping disabled items"
+    },
+    {
+      "id": "runtime:47d2bd953e6f40d5",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation focuses previous item using ArrowLeft key, skipping disabled items"
+    },
+    {
+      "id": "runtime:55060ce610ba27ce",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation looping works on last row"
+    },
+    {
+      "id": "runtime:d21f8ca947a60585",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation loops on the same column with ArrowDown"
+    },
+    {
+      "id": "runtime:36ded158df4c87a8",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation loops on the same column with ArrowUp"
+    },
+    {
+      "id": "runtime:873b34e5f9096f85",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation skips row and remains on same column when pressing ArrowDown"
+    },
+    {
+      "id": "runtime:f02763fdbac8db0d",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation skips row and remains on same column when pressing ArrowUp"
+    },
+    {
+      "id": "runtime:0b3d29a683b9c57f",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes focuses first non-disabled item in grid"
+    },
+    {
+      "id": "runtime:b3e30d483fd8e3d7",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false focuses next item using ArrowRight key, skipping disabled items"
+    },
+    {
+      "id": "runtime:b16f2fa487849527",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false focuses previous item using ArrowLeft key, skipping disabled items"
+    },
+    {
+      "id": "runtime:f867efad0827014c",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false looping works on last row"
+    },
+    {
+      "id": "runtime:05d1780b74e067e8",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false loops over column with ArrowDown, prefers left side of wide items"
+    },
+    {
+      "id": "runtime:4e484ce1715ead93",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false loops over column with ArrowUp, prefers left side of wide items"
+    },
+    {
+      "id": "runtime:1f2ac46c1d53ec2a",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false loops over row with \"both\" orientation, prefers top side of tall items"
+    },
+    {
+      "id": "runtime:85a7eb5e26725a65",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false moves through rows when pressing ArrowDown, prefers left side of wide items"
+    },
+    {
+      "id": "runtime:1e3fb3b82408ac6e",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl false moves through rows when pressing ArrowUp, prefers left side of wide items"
+    },
+    {
+      "id": "runtime:a254496e334b4635",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true focuses next item using ArrowLeft key, skipping disabled items"
+    },
+    {
+      "id": "runtime:67bc399422c4b0fd",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true focuses previous item using ArrowRight key, skipping disabled items"
+    },
+    {
+      "id": "runtime:2ebf8cdbfbbdfd71",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true looping works on last row"
+    },
+    {
+      "id": "runtime:4709da93de6c1699",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true loops over column with ArrowDown, prefers right side of wide items"
+    },
+    {
+      "id": "runtime:131fe85850b619d3",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true loops over column with ArrowUp, prefers right side of wide items"
+    },
+    {
+      "id": "runtime:0d87ffce002006ec",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true loops over row with \"both\" orientation, prefers top side of tall items"
+    },
+    {
+      "id": "runtime:955dd1e3b1ed799a",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true moves through rows when pressing ArrowDown, prefers right side of wide items"
+    },
+    {
+      "id": "runtime:aef66571af2cfa67",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation when items have different sizes with rtl true moves through rows when pressing ArrowUp, prefers right side of wide items"
+    },
+    {
+      "id": "runtime:25e93a7c9af1444c",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation with changing list items"
+    },
+    {
+      "id": "runtime:edde7f25b05f0f8b",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "grid navigation with disabled list items"
+    },
+    {
+      "id": "runtime:91c1caee3235ffdb",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "keyboard navigation in nested menus lists"
+    },
+    {
+      "id": "runtime:5fba30730bb7a769",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "keyboard navigation in nested menus with different orientation"
+    },
+    {
+      "id": "runtime:569a1be8b609916c",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "loop ArrowDown looping"
+    },
+    {
+      "id": "runtime:8c533c7869d4211f",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "loop ArrowUp looping"
+    },
+    {
+      "id": "runtime:4aff1945c712c670",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "navigates down on ArrowDown"
+    },
+    {
+      "id": "runtime:da22998915ec2daf",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "navigates up on ArrowUp"
+    },
+    {
+      "id": "runtime:fd44dc36b2f3c99f",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "openOnArrowKeyDown false ArrowDown"
+    },
+    {
+      "id": "runtime:d64dc603b7f2d11e",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "openOnArrowKeyDown false ArrowUp"
+    },
+    {
+      "id": "runtime:ee89299be7896872",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "openOnArrowKeyDown true ArrowDown"
+    },
+    {
+      "id": "runtime:4f94a860ba991226",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "openOnArrowKeyDown true ArrowUp"
+    },
+    {
+      "id": "runtime:dd99574d42718a95",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "opens on ArrowDown and focuses first item"
+    },
+    {
+      "id": "runtime:04989e4da4beeb46",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "opens on ArrowUp and focuses last item"
+    },
+    {
+      "id": "runtime:7fe9da7a565d1d40",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "orientation navigates down on ArrowRight"
+    },
+    {
+      "id": "runtime:1399bcc82d326f91",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "orientation navigates up on ArrowLeft"
+    },
+    {
+      "id": "runtime:0b416912a2c31740",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "resets indexRef to -1 upon close"
+    },
+    {
+      "id": "runtime:4ad287ccadee9395",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "rtl navigates down on ArrowLeft"
+    },
+    {
+      "id": "runtime:92e67575ce7c8fcc",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "rtl navigates up on ArrowRight"
+    },
+    {
+      "id": "runtime:23b09e2d88ae1ec2",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "scheduled list population"
+    },
+    {
+      "id": "runtime:e9ebc6dba82ce924",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "selectedIndex changing does not steal focus"
+    },
+    {
+      "id": "runtime:e9ce89d1c0cb8cc0",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "selectedIndex scrollIntoView on open"
+    },
+    {
+      "id": "runtime:4e5ce0f406af8474",
+      "file": "packages/floating-ui/tests/upstream/unit/useListNavigation.test.tsx",
+      "fullName": "virtual nested Home or End key press"
+    },
+    {
+      "id": "runtime:f17f2d0ce8882bff",
+      "file": "packages/floating-ui/tests/upstream/unit/useMergeRefs.test.tsx",
+      "fullName": "calls clean up function if it exists"
+    },
+    {
+      "id": "runtime:11346cee522f54cd",
+      "file": "packages/floating-ui/tests/upstream/unit/useMergeRefs.test.tsx",
+      "fullName": "conditional refs"
+    },
+    {
+      "id": "runtime:970d4ea957087ab6",
+      "file": "packages/floating-ui/tests/upstream/unit/useMergeRefs.test.tsx",
+      "fullName": "merges refs and cleans up"
+    },
+    {
+      "id": "runtime:d92a3c4097c773cb",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "automatically handles custom id attributes"
+    },
+    {
+      "id": "runtime:367ae0349a745b44",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "combobox sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:d314f57710e0302f",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "dialog sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:691957a6207fed3c",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "dialog sets correct aria attributes with external ref, multiple useRole calls"
+    },
+    {
+      "id": "runtime:0c7afc72c279c51a",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "label sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:54b42845d3b32abd",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "listbox sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:e396a74d30bc7ef5",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "menu sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:c09ca605d2a82dbb",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "select sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:5b9bc1ea89a319ad",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "tooltip has correct role"
+    },
+    {
+      "id": "runtime:f85595250cd0d4bf",
+      "file": "packages/floating-ui/tests/upstream/unit/useRole.test.tsx",
+      "fullName": "tooltip sets correct aria attributes based on the open state"
+    },
+    {
+      "id": "runtime:541f0ba2f24cdbc7",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "Menu - resets once a match is no longer found"
+    },
+    {
+      "id": "runtime:34c3467239968e3d",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "Menu - skips disabled items and opens submenu on space if no match"
+    },
+    {
+      "id": "runtime:855218671dc7519e",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "bails out of rapid focus of first letter if the list contains a string that starts with two of the same letter"
+    },
+    {
+      "id": "runtime:60ab8826fd4e47e5",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "capslock characters continue to match"
+    },
+    {
+      "id": "runtime:21d1764a719af596",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "matches when focus is within floating"
+    },
+    {
+      "id": "runtime:d93445ab68139ed6",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "matches when focus is within reference"
+    },
+    {
+      "id": "runtime:7931e7b8de043bc6",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "onTypingChange is called when typing starts or stops"
+    },
+    {
+      "id": "runtime:5d764a3e9197820e",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "rapidly focuses list items when they start with the same letter"
+    },
+    {
+      "id": "runtime:6b895e698e8badab",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "starts from the current activeIndex and correctly loops"
+    },
+    {
+      "id": "runtime:dccd4d59d89b245e",
+      "file": "packages/floating-ui/tests/upstream/unit/useTypeahead.test.tsx",
+      "fullName": "typing spaces on <div> references does not open the menu"
+    }
+  ],
+  "snapshots": 0
+}

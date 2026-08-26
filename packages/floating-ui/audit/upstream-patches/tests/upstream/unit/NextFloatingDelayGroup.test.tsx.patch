@@ -1,0 +1,16 @@
+diff --git a/tests/upstream/unit/NextFloatingDelayGroup.test.tsx b/tests/upstream/unit/NextFloatingDelayGroup.test.tsx
+--- a/tests/upstream/unit/NextFloatingDelayGroup.test.tsx
++++ b/tests/upstream/unit/NextFloatingDelayGroup.test.tsx
+@@ -242,7 +242,9 @@ it('does not re-render unrelated consumers', async () => {
+   });
+ 
+   expect(screen.queryByTestId('floating-two')).toBeInTheDocument();
+-  expect(screen.queryByTestId('render-count-one')).toHaveTextContent('8');
+-  expect(screen.queryByTestId('render-count-two')).toHaveTextContent('5');
+-  expect(screen.queryByTestId('render-count-three')).toHaveTextContent('2');
++  // Octane updates these keyed component instances without re-entering their
++  // component bodies, so the stronger no-extra-render invariant is one each.
++  expect(screen.queryByTestId('render-count-one')).toHaveTextContent('1');
++  expect(screen.queryByTestId('render-count-two')).toHaveTextContent('1');
++  expect(screen.queryByTestId('render-count-three')).toHaveTextContent('1');
+ });

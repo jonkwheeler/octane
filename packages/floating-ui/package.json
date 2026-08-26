@@ -46,7 +46,11 @@
   "scripts": {
     "build:cjs": "node ../../scripts/build-package-commonjs.mjs",
     "prepack": "pnpm build:cjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:upstream": "node ../../scripts/react-parity/floating-ui-upstream-runtime.mjs",
+    "test:type-parity": "tsc -p audit/upstream-typetests/tsconfig.pristine.json && tsrx-tsc -p typetests/tsconfig.upstream-adapted.json",
+    "parity:inventory": "node ../../scripts/react-parity/floating-ui-upstream-runtime.mjs --write && node ../../scripts/react-parity/floating-ui-types-lib.mjs --write && node ../../scripts/react-parity/floating-ui-manifest.mjs",
+    "upstream:check": "node ../../scripts/react-port/materialize.mjs run --check --package-dir ."
   },
   "dependencies": {
     "@floating-ui/dom": "catalog:default",
@@ -57,14 +61,34 @@
     "octane": "workspace:*"
   },
   "devDependencies": {
+    "@floating-ui/react-dom": "2.1.8",
+    "@octanejs/testing-library": "workspace:*",
+    "@testing-library/jest-dom": "6.2.0",
+    "@testing-library/react": "16.2.0",
+    "@testing-library/user-event": "14.6.1",
     "@tsrx/react": "catalog:default",
+    "@types/react": "18.3.19",
+    "@types/react-dom": "18.3.1",
+    "@vitest/browser": "3.0.9",
+    "@vitejs/plugin-react": "4.3.4",
     "@floating-ui/react": "catalog:default",
+    "@radix-ui/react-checkbox": "1.0.4",
+    "@radix-ui/react-icons": "1.3.0",
+    "clsx": "1.2.1",
+    "config": "link:tests/_support/upstream-config",
     "esbuild": "catalog:default",
+    "jsdom": "26.0.0",
     "octane": "workspace:*",
     "playwright": "catalog:default",
-    "react": "catalog:default",
-    "react-dom": "catalog:default",
-    "vite": "catalog:default",
-    "vitest": "catalog:default"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-upstream": "npm:react@18.2.0",
+    "react-responsive": "9.0.2",
+    "resize-observer-polyfill": "1.5.1",
+    "use-isomorphic-layout-effect": "1.2.1",
+    "vite": "6.2.2",
+    "vitest-browser-react": "0.1.1",
+    "vitest": "catalog:default",
+    "vitest-upstream": "npm:vitest@3.0.9"
   }
 }

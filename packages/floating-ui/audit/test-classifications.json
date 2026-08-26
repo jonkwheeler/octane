@@ -30,6 +30,21 @@
       "path": "packages/floating-ui/tests/package-boundary.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Checks published sideEffects metadata and tree-shaking boundaries for the positioning entry point."
+    },
+    {
+      "path": "packages/floating-ui/tests/parity/adapted-upstream.test.ts",
+      "disposition": "adapted-upstream-suite",
+      "oracle": "Runs every paired assertion from the pinned @floating-ui/react@0.27.19 suite against Octane and rejects child-inventory drift."
+    },
+    {
+      "path": "packages/floating-ui/tests/parity/pristine-upstream.test.ts",
+      "disposition": "unmodified-upstream-suite-wrapper",
+      "oracle": "Runs the byte-exact pinned @floating-ui/react@0.27.19 suite under its exact dependency stack and rejects child-inventory drift."
+    },
+    {
+      "path": "packages/floating-ui/typetests/public-api.test-d.ts",
+      "disposition": "octane-only-type-conformance",
+      "reason": "Checks the broader Octane binding declaration surface beyond the paired upstream type program."
     }
   ]
 }

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "project": "floating-ui-upstream-adapted",
+  "roots": ["packages/floating-ui/tests/parity"],
+  "files": ["packages/floating-ui/tests/parity/adapted-upstream.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:1b4b38d0943b7128",
+      "file": "packages/floating-ui/tests/parity/adapted-upstream.test.ts",
+      "fullName": "runs every paired upstream assertion against Octane"
+    }
+  ],
+  "snapshots": 0
+}

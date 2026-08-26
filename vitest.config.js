@@ -41,6 +41,9 @@ const REACT_TEXTAREA_AUTOSIZE_USE_ISOMORPHIC_LAYOUT_EFFECT = reactTextareaAutosi
 const requireTanstackStore = createRequire(
 	resolve(import.meta.dirname, 'packages/tanstack-store/package.json'),
 );
+const requireFloatingUi = createRequire(
+	resolve(import.meta.dirname, 'packages/floating-ui/package.json'),
+);
 const requireXstate = createRequire(resolve(import.meta.dirname, 'packages/xstate/package.json'));
 // The shared differential rig lives under packages/octane, whose React
 // dependency can differ from this package's pinned oracle. Resolve the renderer
@@ -69,7 +72,18 @@ const TANSTACK_STORE_REACT_ALIASES = [
 		replacement: realpathSync(requireTanstackStore.resolve(specifier)),
 	};
 });
-
+const FLOATING_UI_REACT_ALIASES = [
+	'react/jsx-runtime',
+	'react/jsx-dev-runtime',
+	'react-dom',
+	'react-dom/client',
+	'react-dom/test-utils',
+].map(function pinFloatingUiReactOracle(specifier) {
+	return {
+		find: new RegExp(`^${specifier.replace('/', '\\/')}$`),
+		replacement: realpathSync(requireFloatingUi.resolve(specifier)),
+	};
+});
 const FORMISCH_UPSTREAM_CORE = resolve(
 	import.meta.dirname,
 	'packages/formisch/upstream/packages/core/src',
@@ -3916,6 +3930,9 @@ export default defineConfig({
 					exclude: [
 						'packages/floating-ui/tests/browser/**/*.test.ts',
 						'packages/floating-ui/tests/differential/**/*.test.ts',
+						'packages/floating-ui/tests/parity/**/*.test.ts',
+						'packages/floating-ui/tests/upstream/**/*.test.ts',
+						'packages/floating-ui/tests/upstream/**/*.test.tsx',
 					],
 					environment: 'jsdom',
 					globals: false,
@@ -3936,6 +3953,28 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src') + '/$1.ts',
 						},
 					],
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'floating-ui-pristine',
+					include: ['packages/floating-ui/tests/parity/pristine-upstream.test.ts'],
+					environment: 'node',
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
+					globals: false,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'floating-ui-upstream-adapted',
+					include: ['packages/floating-ui/tests/parity/adapted-upstream.test.ts'],
+					environment: 'node',
+					testTimeout: 120_000,
+					hookTimeout: 120_000,
+					globals: false,
 				},
 			},
 			{
@@ -3960,6 +3999,14 @@ export default defineConfig({
 				resolve: {
 					alias: [
 						{
+							find: /^react$/,
+							replacement: resolve(
+								import.meta.dirname,
+								'packages/floating-ui/tests/_support/react18-act-compat.ts',
+							),
+						},
+						...FLOATING_UI_REACT_ALIASES,
+						{
 							find: /^@octanejs\/floating-ui$/,
 							replacement: resolve(import.meta.dirname, 'packages/floating-ui/src/index.ts'),
 						},
@@ -3971,6 +4018,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'floating-ui-browser',
 					include: ['packages/floating-ui/tests/browser/**/*.test.ts'],

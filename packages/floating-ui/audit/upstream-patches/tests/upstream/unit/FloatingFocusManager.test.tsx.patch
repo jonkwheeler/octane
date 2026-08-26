@@ -1,0 +1,46 @@
+diff --git a/tests/upstream/unit/FloatingFocusManager.test.tsx b/tests/upstream/unit/FloatingFocusManager.test.tsx
+--- a/tests/upstream/unit/FloatingFocusManager.test.tsx
++++ b/tests/upstream/unit/FloatingFocusManager.test.tsx
+@@ -280,7 +280,8 @@ describe('returnFocus', () => {
+ 
+     expect(screen.queryByTestId('close-dialog')).toBeInTheDocument();
+ 
+-    await userEvent.keyboard('{Esc}');
++    fireEvent.keyDown(document, {key: 'Escape'});
++    await act(async () => {});
+ 
+     expect(screen.queryByTestId('close-dialog')).not.toBeInTheDocument();
+ 
+@@ -666,12 +667,14 @@ describe('iframe focus navigation', () => {
+ 
+       await user.click(iframeWithin.getByRole('button', {name: 'Open'}));
+ 
+-      expect(iframeWithin.getByTestId('popover')).toBeInTheDocument();
++      expect(iframeWithin.getByTestId('popover').isConnected).toBe(true);
+ 
+       await user.tab();
+       await user.tab();
+ 
+-      expect(iframeWithin.getByText('next iframe link')).toHaveFocus();
++      expect(iframeDoc?.activeElement).toBe(
++        iframeWithin.getByText('next iframe link'),
++      );
+     },
+   );
+ 
+@@ -691,11 +694,13 @@ describe('iframe focus navigation', () => {
+ 
+       await user.click(iframeWithin.getByRole('button', {name: 'Open'}));
+ 
+-      expect(iframeWithin.getByTestId('popover')).toBeInTheDocument();
++      expect(iframeWithin.getByTestId('popover').isConnected).toBe(true);
+ 
+       await user.tab({shift: true});
+ 
+-      expect(iframeWithin.getByRole('button', {name: 'Open'})).toHaveFocus();
++      expect(iframeDoc?.activeElement).toBe(
++        iframeWithin.getByRole('button', {name: 'Open'}),
++      );
+     },
+   );
+ });

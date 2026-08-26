@@ -51,6 +51,9 @@ export function FocusGuard(
 	},
 ): OctaneNode {
 	const [role, setRole] = useState<'button' | undefined>(undefined, S('FocusGuard:role'));
+	const elementRef = useRef<HTMLSpanElement | null>(null, S('FocusGuard:element'));
+	const forwardedRef = props.ref;
+	const onFocus = props.onFocus;
 	useModernLayoutEffect(
 		() => {
 			if (isSafari()) {
@@ -60,8 +63,28 @@ export function FocusGuard(
 		[],
 		S('FocusGuard:eff'),
 	);
+	useModernLayoutEffect(
+		() => {
+			const element = elementRef.current;
+			if (!element || !onFocus) return;
+			const handleFocus = (event: FocusEvent) => onFocus(event as any);
+			element.addEventListener('focusin', handleFocus);
+			return () => element.removeEventListener('focusin', handleFocus);
+		},
+		[onFocus],
+		S('FocusGuard:focus'),
+	);
+	const { ref: _ref, onFocus: _onFocus, ...elementProps } = props;
 	return createElement('span', {
-		...props,
+		...elementProps,
+		ref: (element: HTMLSpanElement | null) => {
+			elementRef.current = element;
+			if (typeof forwardedRef === 'function') {
+				forwardedRef(element);
+			} else if (forwardedRef) {
+				forwardedRef.current = element;
+			}
+		},
 		tabIndex: 0,
 		role,
 		'aria-hidden': role ? undefined : true,

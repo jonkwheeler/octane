@@ -1,0 +1,12 @@
+diff --git a/tests/upstream/visual/components/EmojiPicker.tsx b/tests/upstream/visual/components/EmojiPicker.tsx
+--- a/tests/upstream/visual/components/EmojiPicker.tsx
++++ b/tests/upstream/visual/components/EmojiPicker.tsx
+@@ -248,7 +248,7 @@ export const Main = () => {
+                       filteredEmojis.length === 0 ? noResultsId : undefined
+                     }
+                     {...getInputProps({
+-                      onChange: handleInputChange,
++                      onInput: handleInputChange,
+                       onKeyDown: handleKeyDown,
+                     })}
+                   />

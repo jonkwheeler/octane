@@ -601,12 +601,17 @@ describe('resolved evidence', () => {
 		const sourceLicenseBytes = Buffer.from(MIT_TEXT);
 		const sourceSymlinkBytes = Buffer.from('../NOTICE');
 		const sourceTestConfigBytes = Buffer.from(
-			"export default { resolve: { alias: { source: 'src/' } }, test: { include: ['quality/**/*.ts'], includeSource: ['src/**/*.ts'], exclude: ['src/**/*.ts'], setupFiles: ['index.ts'] } };\n",
+			"export default { resolve: { alias: { source: 'src/' } }, test: { root: './quality', include: ['**/*.ts'], includeSource: ['../src/**/*.ts'], exclude: ['../src/**/*.ts'], setupFiles: ['./setupTests.ts'] } };\n",
 		);
 		const sourceTestBytes = Buffer.from("test('renders', () => {});\n");
+		const sourceSetupBytes = Buffer.from('export const configuredTestSetup = true;\n');
 		const ordinarySourceBytes = Buffer.from('export const widgetSource = true;\n');
 		const inlineTestSourceBytes = Buffer.from(
 			"export const inline = true; if (import.meta.vitest) { test('works inline', () => {}); }\n",
+		);
+		const sourceTypeTestBytes = Buffer.from(
+			`WidgetTypes;\nfunction WidgetTypes() { const value: string = 'ok'; void value; }\n` +
+				`RefTypes;\nfunction RefTypes() { const ref: number = 1; void ref; }\n`,
 		);
 		const sourceManifest = sourceManifestBytes.toString('base64');
 		const sourceLicense = sourceLicenseBytes.toString('base64');
@@ -642,6 +647,14 @@ describe('resolved evidence', () => {
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/test',
 			},
 			{
+				path: 'packages/react-widget/quality/setupTests.ts',
+				mode: '100644',
+				type: 'blob',
+				size: sourceSetupBytes.length,
+				sha: gitBlobSha(sourceSetupBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/test-setup',
+			},
+			{
 				path: 'packages/react-widget/src/index.ts',
 				mode: '100644',
 				type: 'blob',
@@ -656,6 +669,14 @@ describe('resolved evidence', () => {
 				size: inlineTestSourceBytes.length,
 				sha: gitBlobSha(inlineTestSourceBytes),
 				url: 'https://api.github.com/repos/example/widgets/git/blobs/inline-source',
+			},
+			{
+				path: 'packages/react-widget/typetests/public.test-d.tsx',
+				mode: '100644',
+				type: 'blob',
+				size: sourceTypeTestBytes.length,
+				sha: gitBlobSha(sourceTypeTestBytes),
+				url: 'https://api.github.com/repos/example/widgets/git/blobs/type-test',
 			},
 			{
 				path: 'packages/react-widget/current',
@@ -729,6 +750,14 @@ describe('resolved evidence', () => {
 				}),
 			],
 			[
+				'https://api.github.com/repos/example/widgets/git/blobs/test-setup',
+				Response.json({
+					encoding: 'base64',
+					content: sourceSetupBytes.toString('base64'),
+					size: sourceSetupBytes.length,
+				}),
+			],
+			[
 				'https://api.github.com/repos/example/widgets/git/blobs/ordinary-source',
 				Response.json({
 					encoding: 'base64',
@@ -742,6 +771,14 @@ describe('resolved evidence', () => {
 					encoding: 'base64',
 					content: inlineTestSourceBytes.toString('base64'),
 					size: inlineTestSourceBytes.length,
+				}),
+			],
+			[
+				'https://api.github.com/repos/example/widgets/git/blobs/type-test',
+				Response.json({
+					encoding: 'base64',
+					content: sourceTypeTestBytes.toString('base64'),
+					size: sourceTypeTestBytes.length,
 				}),
 			],
 		]);
@@ -798,6 +835,38 @@ describe('resolved evidence', () => {
 						source: 'packages/react-widget/src/inline.ts:1:55',
 						kind: 'test',
 						title: 'works inline',
+						estimatedRegistrations: 1,
+						registrationIndex: 0,
+						dynamicExpansion: null,
+						helperExpansion: null,
+						manualReviewReason: null,
+					},
+				],
+			},
+			{
+				path: 'packages/react-widget/typetests/public.test-d.tsx',
+				kind: 'type',
+				gitBlob: gitBlobSha(sourceTypeTestBytes),
+				size: sourceTypeTestBytes.length,
+				registrations: [
+					{
+						id: result.upstreamTestInventory[2].registrations[0].id,
+						declarationId: result.upstreamTestInventory[2].registrations[0].declarationId,
+						source: 'packages/react-widget/typetests/public.test-d.tsx:1:1',
+						kind: 'type-program',
+						title: 'WidgetTypes',
+						estimatedRegistrations: 1,
+						registrationIndex: 0,
+						dynamicExpansion: null,
+						helperExpansion: null,
+						manualReviewReason: null,
+					},
+					{
+						id: result.upstreamTestInventory[2].registrations[1].id,
+						declarationId: result.upstreamTestInventory[2].registrations[1].declarationId,
+						source: 'packages/react-widget/typetests/public.test-d.tsx:3:1',
+						kind: 'type-program',
+						title: 'RefTypes',
 						estimatedRegistrations: 1,
 						registrationIndex: 0,
 						dynamicExpansion: null,

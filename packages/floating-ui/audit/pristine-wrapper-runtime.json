@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "project": "floating-ui-pristine",
+  "roots": ["packages/floating-ui/tests/parity"],
+  "files": ["packages/floating-ui/tests/parity/pristine-upstream.test.ts"],
+  "tests": [
+    {
+      "id": "runtime:a22398ff20dfe464",
+      "file": "packages/floating-ui/tests/parity/pristine-upstream.test.ts",
+      "fullName": "runs the pinned @floating-ui/react 0.27.19 suite unchanged"
+    }
+  ],
+  "snapshots": 0
+}

@@ -93,6 +93,9 @@ allowBuilds:
   keccak: false
   utf-8-validate: false
   bun: true
+  # Vitest's optional browser peer pulls MSW; its postinstall only prints a
+  # welcome message and is not required by the floating-ui jsdom oracle.
+  msw: false
 
 # Variables
 esrap_common: &esrap_common ^2.3.2

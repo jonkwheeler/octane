@@ -134,6 +134,7 @@ export { useListNavigation } from './useListNavigation';
 export { useTypeahead } from './useTypeahead';
 export { useHover } from './useHover';
 export { safePolygon } from './safePolygon';
+export { inner, useInnerOffset } from './deprecatedInner';
 // Interaction-hook prop types (mirror upstream @floating-ui/react's names).
 export type { UseRoleProps } from './useRole';
 export type { UseClickProps } from './useClick';
@@ -166,7 +167,9 @@ export {
 	useDelayGroupContext,
 	FloatingDelayGroupContext,
 } from './delayGroup';
+export { NextFloatingDelayGroup, useNextDelayGroup } from './nextDelayGroup';
 
+// OCTANE DIVERGENCE[ref-as-prop][differential:floating-ui-hook-isolation]
 // Component / transition prop types (mirror upstream's exported names; the
 // octane adaptations — OctaneNode children, ref-as-prop, native events — are
 // documented on each type). FloatingListProps / UseListItemProps are exported
@@ -185,3 +188,9 @@ export type {
 	UseTransitionStylesProps,
 } from './transitions';
 export type { FloatingDelayGroupProps } from './delayGroup';
+export type { InnerProps, UseInnerOffsetProps } from './deprecatedInner';
+export type {
+	NextFloatingDelayGroupProps,
+	UseNextDelayGroupOptions,
+	UseNextDelayGroupReturn,
+} from './nextDelayGroup';

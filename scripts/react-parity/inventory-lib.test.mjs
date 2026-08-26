@@ -54,6 +54,41 @@ describe('extractTestCases', () => {
 		);
 	});
 
+	test('counts named type-program groups in upstream test-d files', () => {
+		const cases = extractTestCases(
+			`App;\nfunction App() { const value: string = 'ok'; void value; }\n` +
+				`NarrowRefType;\nfunction NarrowRefType() { const ref: number = 1; void ref; }\n` +
+				`Unmarked;\nconst Unmarked = true;\nfunction Hidden() {}\n`,
+			{ file: 'packages/react/test/index.test-d.tsx' },
+		);
+
+		assert.deepEqual(
+			cases.map(({ kind, title, estimatedRegistrations, line, column }) => ({
+				kind,
+				title,
+				estimatedRegistrations,
+				line,
+				column,
+			})),
+			[
+				{
+					kind: 'type-program',
+					title: 'App',
+					estimatedRegistrations: 1,
+					line: 1,
+					column: 1,
+				},
+				{
+					kind: 'type-program',
+					title: 'NarrowRefType',
+					estimatedRegistrations: 1,
+					line: 3,
+					column: 1,
+				},
+			],
+		);
+	});
+
 	test('records pragma and transformed runtime gates', () => {
 		const cases = extractTestCases(
 			`// @gate __DEV__ && enableFeature\n` +

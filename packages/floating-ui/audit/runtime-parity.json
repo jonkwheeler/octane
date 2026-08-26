@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "upstreamRoot": "packages/floating-ui/upstream/test/unit",
+  "adaptedRoot": "packages/floating-ui/tests/upstream/unit",
+  "inventories": {
+    "pristine": "packages/floating-ui/audit/pristine-runtime.json",
+    "adapted": "packages/floating-ui/audit/adapted-runtime.json",
+    "pristineWrapper": "packages/floating-ui/audit/pristine-wrapper-runtime.json",
+    "adaptedWrapper": "packages/floating-ui/audit/adapted-wrapper-runtime.json"
+  },
+  "expectedRegistrations": {
+    "pristinePassed": 286,
+    "adaptedPassed": 286,
+    "pristineSkipped": 6,
+    "adaptedSkipped": 6,
+    "omitted": 0
+  },
+  "permittedTransformations": [
+    {
+      "kind": "import-root",
+      "rule": "React, ReactDOM, Testing Library, @floating-ui/react self-imports, and upstream relative source imports retarget their Octane equivalents."
+    },
+    {
+      "kind": "native-event-model",
+      "rule": "Text input onChange handlers become onInput, and the Escape-key driver dispatches a native keydown event so Octane's delegated native listener observes it."
+    },
+    {
+      "kind": "ref-type-nullability",
+      "rule": "Octane mutable ref type arguments explicitly include null where React's useRef overload infers it."
+    },
+    {
+      "kind": "render-scheduling",
+      "rule": "Three delay-group assertions replace React's incidental render totals with a stronger assertion that Octane performs no extra render after the observed state settles."
+    },
+    {
+      "kind": "cross-realm-dom-assertion",
+      "rule": "Iframe assertions use isConnected and the iframe document's activeElement instead of jest-dom matchers bound to the outer document realm."
+    },
+    {
+      "kind": "visual-support",
+      "rule": "Upstream visual fixtures import repo-authored Octane Drawer, Navigation, MenuVirtual, icon, checkbox, and React compatibility support modules."
+    },
+    {
+      "kind": "formatting-and-paths",
+      "rule": "Generated adaptations may differ in formatting and relative paths recorded by the deterministic materializer."
+    }
+  ]
+}

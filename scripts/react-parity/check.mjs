@@ -20,6 +20,8 @@ import { verifyDreiTypes } from './drei-types-lib.mjs';
 import { verifyEmblaCarouselTestClassifications } from './embla-carousel-classifications-lib.mjs';
 import { verifyFormischTestClassifications } from './formisch-classifications-lib.mjs';
 import { verifyFormischUpstream } from './formisch-upstream-lib.mjs';
+import { verifyFloatingUiRuntimeEvidence } from './floating-ui-evidence-lib.mjs';
+import { verifyFloatingUiTypes } from './floating-ui-types-lib.mjs';
 import {
 	isVitestLane,
 	loadManifest,
@@ -182,6 +184,10 @@ await capture('formisch type evidence', () =>
 	verifyTypeParity(REPO, { configPath: 'packages/formisch/audit/type-parity.json' }),
 );
 await capture('formisch test classifications', () => verifyFormischTestClassifications(REPO));
+await capture('@octanejs/floating-ui runtime evidence', () =>
+	verifyFloatingUiRuntimeEvidence(REPO),
+);
+await capture('@octanejs/floating-ui type evidence', () => verifyFloatingUiTypes(REPO));
 await capture('react-intersection-observer upstream evidence', () =>
 	verifyIntersectionObserverUpstream(REPO),
 );

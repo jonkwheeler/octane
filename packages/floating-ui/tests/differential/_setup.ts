@@ -1,31 +1,25 @@
 /**
- * Precompile differential fixtures for React. The same `.tsrx` source is loaded
+ * Precompile differential fixtures for React. The same `.tsx` source is loaded
  * by Octane and rewritten to use the published React binding on the oracle side.
  */
 import { compile as compileToReact } from '@tsrx/react';
 import { transformSync } from 'esbuild';
-import {
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	readdirSync,
-	statSync,
-	writeFileSync,
-} from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// @ts-expect-error differential compiler is plain ESM without declaration emit
 import { compileFixture } from './fixture-compiler.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_DIR = join(__dirname, '../_fixtures');
 const CACHE_DIR = join(__dirname, '.react-cache');
 
-function walk(directory) {
-	const files = [];
+function walk(directory: string): string[] {
+	const files: string[] = [];
 	for (const name of readdirSync(directory)) {
 		const fullPath = join(directory, name);
 		if (statSync(fullPath).isDirectory()) files.push(...walk(fullPath));
-		else if (fullPath.endsWith('.tsrx')) files.push(fullPath);
+		else if (fullPath.endsWith('.tsx')) files.push(fullPath);
 	}
 	return files;
 }

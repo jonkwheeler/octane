@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "pristineFile": "packages/floating-ui/upstream/test/index.test-d.tsx",
+  "adaptedFile": "packages/floating-ui/tests/upstream/index.test-d.tsx",
+  "inventories": {
+    "pristine": "packages/floating-ui/audit/pristine-types.json",
+    "adapted": "packages/floating-ui/audit/adapted-upstream-types.json"
+  },
+  "lanes": {
+    "pristine": {
+      "compiler": "tsc",
+      "project": "packages/floating-ui/audit/upstream-typetests/tsconfig.pristine.json",
+      "sourcePolicy": "byte-exact pinned upstream test/index.test-d.tsx against @floating-ui/react@0.27.19"
+    },
+    "adapted": {
+      "compiler": "tsrx-tsc",
+      "project": "packages/floating-ui/typetests/tsconfig.upstream-adapted.json",
+      "sourcePolicy": "one-for-one Octane adaptation generated from the pinned type program"
+    }
+  },
+  "permittedTransformations": [
+    {
+      "kind": "import-root",
+      "rule": "react and ../src imports retarget octane and ../../src respectively"
+    },
+    {
+      "kind": "ref-type-nullability",
+      "rule": "Octane useRef<T>(null) spells the mutable ref type as T | null"
+    }
+  ]
+}

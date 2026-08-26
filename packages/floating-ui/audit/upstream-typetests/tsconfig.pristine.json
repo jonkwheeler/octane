@@ -1,0 +1,14 @@
+{
+  "extends": "../../upstream/tsconfig.test.json",
+  "compilerOptions": {
+    "composite": false,
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "noEmit": true,
+    "rootDir": "../..",
+    "paths": {
+      "react-dom": ["./react-dom.d.ts"]
+    }
+  },
+  "include": ["./globals.d.ts", "../../upstream/test/index.test-d.tsx"],
+  "references": []
+}

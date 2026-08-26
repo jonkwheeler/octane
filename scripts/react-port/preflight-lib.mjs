@@ -793,10 +793,12 @@ function globMatchesPath(relativePath, pattern) {
 	return new RegExp(`${expression}$`).test(relativePath);
 }
 
-function normalizeConfigurationPattern(value) {
+function normalizeConfigurationPattern(value, allowDirectory = false) {
 	const candidate = value.replace(/^--[^=]+=|^[([{,'"]+|[\]),;'"`]+$/g, '').replace(/^\.\//, '');
 	if (!candidate || /\s/.test(candidate) || candidate.startsWith('!')) return null;
-	return candidate.includes('/') || TEST_SOURCE_PATTERN.test(candidate) ? candidate : null;
+	return allowDirectory || candidate.includes('/') || TEST_SOURCE_PATTERN.test(candidate)
+		? candidate
+		: null;
 }
 
 function commandPathPatterns(testScripts) {
@@ -809,14 +811,14 @@ function propertyName(name) {
 	return ts.isIdentifier(name) || ts.isStringLiteralLike(name) ? name.text : null;
 }
 
-function staticConfigurationPatterns(node) {
+function staticConfigurationPatterns(node, allowDirectory = false) {
 	if (ts.isStringLiteralLike(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
-		const pattern = normalizeConfigurationPattern(node.text);
+		const pattern = normalizeConfigurationPattern(node.text, allowDirectory);
 		return pattern ? [pattern] : [];
 	}
 	if (ts.isArrayLiteralExpression(node)) {
 		return node.elements.flatMap((element) =>
-			ts.isSpreadElement(element) ? [] : staticConfigurationPatterns(element),
+			ts.isSpreadElement(element) ? [] : staticConfigurationPatterns(element, allowDirectory),
 		);
 	}
 	return [];
@@ -840,6 +842,8 @@ function configurationPathSelections(configurationSource, fileName) {
 	);
 	const testFiles = [];
 	const inlineSources = [];
+	const supportFiles = [];
+	const testRoots = [];
 	const visit = (node) => {
 		if (ts.isPropertyAssignment(node)) {
 			const name = propertyName(node.name);
@@ -847,6 +851,19 @@ function configurationPathSelections(configurationSource, fileName) {
 			const withinTestConfiguration = ['test', 'vitest', 'jest', 'ava', 'mocha'].includes(section);
 			if (name === 'includeSource' && withinTestConfiguration) {
 				inlineSources.push(...staticConfigurationPatterns(node.initializer));
+			} else if (name === 'root' && withinTestConfiguration) {
+				testRoots.push(...staticConfigurationPatterns(node.initializer, true));
+			} else if (
+				withinTestConfiguration &&
+				[
+					'globalSetup',
+					'globalTeardown',
+					'setupFiles',
+					'setupFilesAfterEnv',
+					'snapshotResolver',
+				].includes(name)
+			) {
+				supportFiles.push(...staticConfigurationPatterns(node.initializer));
 			} else if (
 				name === 'testMatch' ||
 				name === 'spec' ||
@@ -859,7 +876,15 @@ function configurationPathSelections(configurationSource, fileName) {
 		ts.forEachChild(node, visit);
 	};
 	visit(sourceFile);
-	return { inlineSources, testFiles };
+	const resolveFromTestRoots = (patterns) =>
+		testRoots.length === 0
+			? patterns
+			: testRoots.flatMap((root) => patterns.map((pattern) => path.posix.join(root, pattern)));
+	return {
+		inlineSources: [...new Set(resolveFromTestRoots(inlineSources))],
+		supportFiles: [...new Set(resolveFromTestRoots(supportFiles))],
+		testFiles: [...new Set(resolveFromTestRoots(testFiles))],
+	};
 }
 
 function referencedByTestConfiguration(relativePath, configurationPatterns) {
@@ -931,6 +956,7 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 		...manifestSelections.testFiles,
 	]);
 	const inlineSourcePatterns = new Set(manifestSelections.inlineSources);
+	const supportFilePatterns = new Set(manifestSelections.supportFiles);
 	for (const entry of configurationEntries) {
 		const source = (await fetchGitHubBlob(entry, options)).toString('utf8');
 		const selections = configurationPathSelections(source, entry.path);
@@ -938,9 +964,11 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 			configurationPatterns.add(pattern);
 		}
 		for (const pattern of selections.inlineSources) inlineSourcePatterns.add(pattern);
+		for (const pattern of selections.supportFiles) supportFilePatterns.add(pattern);
 	}
 	const configuredTestPatterns = [...configurationPatterns];
 	const configuredInlineSourcePatterns = [...inlineSourcePatterns];
+	const configuredSupportFilePatterns = [...supportFilePatterns];
 	const configurationEntryPaths = new Set(configurationEntries.map((entry) => entry.path));
 	const candidateEntries = tree.flatMap((entry) => {
 		if (!isGitHubRegularBlob(entry) || !entry.path.startsWith(scopePrefix)) return [];
@@ -949,6 +977,7 @@ async function immutableTestInventory(tree, subdirectory, manifest, options) {
 		if (!TEST_SOURCE_PATTERN.test(relativePath) || /(?:^|\/)node_modules\//i.test(relativePath)) {
 			return [];
 		}
+		if (referencedByTestConfiguration(relativePath, configuredSupportFilePatterns)) return [];
 		const directTest =
 			conventionalTestPath(relativePath) ||
 			referencedByTestConfiguration(relativePath, configuredTestPatterns);

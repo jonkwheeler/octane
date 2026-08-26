@@ -1,0 +1,637 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "packageName": "@floating-ui/react",
+    "version": "0.27.19",
+    "repository": {
+      "owner": "floating-ui",
+      "repo": "floating-ui",
+      "subdirectory": "packages/react"
+    },
+    "commit": "d8020ee98c702caa31fa9b4d929ca782c6b58c59",
+    "integrity": "sha512-31B8h5mm8YxotlE7/AU/PhNAl8eWxAmjL/v2QOxroDNkTFLk3Uu82u63N3b6TXa4EGJeeZLVcd/9AlNlVqzeog=="
+  },
+  "license": {
+    "spdx": "MIT",
+    "declaration": "manifest",
+    "evidence": [
+      {
+        "path": "LICENSE",
+        "sha256": "46c97b198a78dc0befc1a823ba7bcdf993726a887d0215edcce575a61b947115"
+      },
+      {
+        "path": "packages/react/LICENSE",
+        "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+      }
+    ],
+    "notices": []
+  },
+  "scopes": [],
+  "adaptedMappings": [
+    {
+      "fromRoot": "test",
+      "toRoot": "tests/upstream",
+      "include": "^(?:index\\.test-d\\.tsx|unit/.*|visual/.*)$"
+    }
+  ],
+  "adaptedRewrites": [
+    {
+      "find": "from 'react'",
+      "replace": "from 'octane'"
+    },
+    {
+      "find": "from 'react-dom/client'",
+      "replace": "from 'octane'"
+    },
+    {
+      "find": "from 'react-dom'",
+      "replace": "from 'octane'"
+    },
+    {
+      "find": "from '@floating-ui/react'",
+      "replace": "from '@octanejs/floating-ui'"
+    },
+    {
+      "find": "'@testing-library/react'",
+      "replace": "'@octanejs/testing-library'"
+    },
+    {
+      "find": "from '../../src/",
+      "replace": "from '../../../src/"
+    },
+    {
+      "find": "from '../../src'",
+      "replace": "from '../../../src'"
+    },
+    {
+      "find": "from '../src'",
+      "replace": "from '../../src'"
+    },
+    {
+      "find": "from '../../../src/utils/markOthers'",
+      "replace": "from '../../../src/FloatingFocusManager'"
+    },
+    {
+      "find": "from '../../../src/hooks/useDismiss'",
+      "replace": "from '../../../src/useDismiss'"
+    },
+    {
+      "find": "from '../../../src/hooks/useMergeRefs'",
+      "replace": "from '../../../src/useMergeRefs'"
+    },
+    {
+      "find": "import {Context as ResponsiveContext} from 'react-responsive';",
+      "replace": "import {ResponsiveContext} from '../../_support/focus-manager-visuals';"
+    },
+    {
+      "find": "import {Main as Drawer} from '../visual/components/Drawer';",
+      "replace": "import {Drawer} from '../../_support/focus-manager-visuals';"
+    },
+    {
+      "find": "import {Main as Navigation} from '../visual/components/Navigation';",
+      "replace": "import {Navigation} from '../../_support/focus-manager-visuals';"
+    },
+    {
+      "find": "import {Main as MenuVirtual} from '../visual/components/MenuVirtual';",
+      "replace": "import {MenuVirtual} from '../../_support/focus-manager-visuals';"
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "gitBlob": "310d0fcc29b4d26daa565198dc67d8770fcdf952",
+      "size": 7
+    },
+    {
+      "path": ".postcssrc",
+      "gitBlob": "d42c370fb96d7d3e5913a58fb70ef13d6d8034aa",
+      "size": 44
+    },
+    {
+      "path": "api-extractor.json",
+      "gitBlob": "22710d732248684b240c7cb1da0fcdaaecb87779",
+      "size": 362
+    },
+    {
+      "path": "api-extractor.utils.json",
+      "gitBlob": "b9453a30535a822ae40280cc978acbdd5525f0bf",
+      "size": 368
+    },
+    {
+      "path": "babel.config.js",
+      "gitBlob": "4bf1779848f1fa51797f0666e2a8c43735c67ede",
+      "size": 103
+    },
+    {
+      "path": "CHANGELOG.md",
+      "gitBlob": "ca60dcbcc1410544a118364c1af31d6eb2ac0a11",
+      "size": 19883
+    },
+    {
+      "path": "LICENSE",
+      "gitBlob": "639cdc6c98cad0a67de011da403716f83550897f",
+      "size": 1089
+    },
+    {
+      "path": "package.json",
+      "gitBlob": "301aa0ce2644b05d681bf02b6e5a795b616cbb35",
+      "size": 2893
+    },
+    {
+      "path": "README.md",
+      "gitBlob": "2599efc6b90fd3243f8f3309217a7582b64ffbeb",
+      "size": 73
+    },
+    {
+      "path": "rollup.config.mjs",
+      "gitBlob": "e768233651e1b0d7ac4a923bf94b23bef4e134ed",
+      "size": 1213
+    },
+    {
+      "path": "src/_deprecated-inner.ts",
+      "gitBlob": "45919bcd9c8a05e5b71821cc73daa7e84f8209dc",
+      "size": 9818
+    },
+    {
+      "path": "src/components/Composite.tsx",
+      "gitBlob": "ff8651cc0d008adc8616fd73b471de5d90c8aeb9",
+      "size": 10329
+    },
+    {
+      "path": "src/components/FloatingArrow.tsx",
+      "gitBlob": "27c466219e70bea3812f7ef82647d8061b3f2a93",
+      "size": 5342
+    },
+    {
+      "path": "src/components/FloatingDelayGroup.tsx",
+      "gitBlob": "3a9de7e13eb87b4eb9610c2c99cce710c30a49aa",
+      "size": 4712
+    },
+    {
+      "path": "src/components/FloatingFocusManager.tsx",
+      "gitBlob": "c49ab4c775f4ed8b7fe0b6d2f8947c21366d14fe",
+      "size": 26771
+    },
+    {
+      "path": "src/components/FloatingList.tsx",
+      "gitBlob": "7042a4bff26af0c61b690933176ee2a9017038a9",
+      "size": 4024
+    },
+    {
+      "path": "src/components/FloatingOverlay.tsx",
+      "gitBlob": "272de48e273d252a8c94693e2789f81efb42e8c8",
+      "size": 3158
+    },
+    {
+      "path": "src/components/FloatingPortal.tsx",
+      "gitBlob": "85f6796af519e6c1df1f6daca102fa1bf02f8ebd",
+      "size": 9422
+    },
+    {
+      "path": "src/components/FloatingTree.tsx",
+      "gitBlob": "3af41f461fa91ef86dc0258c3fc4e6d424a00ad1",
+      "size": 3470
+    },
+    {
+      "path": "src/components/FocusGuard.tsx",
+      "gitBlob": "413f4902b53a8dcacaf54a57f83d15e120b59f51",
+      "size": 1476
+    },
+    {
+      "path": "src/components/NextFloatingDelayGroup.tsx",
+      "gitBlob": "acd3d0e691b6de215336085f00af7931df5c1369",
+      "size": 5757
+    },
+    {
+      "path": "src/env.d.ts",
+      "gitBlob": "15478be859ef176f88f67e88827f56519dce8ddf",
+      "size": 37
+    },
+    {
+      "path": "src/hooks/useClick.ts",
+      "gitBlob": "34d327d8d1b98274c83e164f6bc1df8f6d29ecef",
+      "size": 5494
+    },
+    {
+      "path": "src/hooks/useClientPoint.ts",
+      "gitBlob": "2b15f656a0b73e4cbcffc5330eeb31cbc04c3f4a",
+      "size": 7399
+    },
+    {
+      "path": "src/hooks/useDismiss.ts",
+      "gitBlob": "a4a81ba84401aa97bf36f510ae91fd6ce84f7dfb",
+      "size": 15914
+    },
+    {
+      "path": "src/hooks/useFloating.ts",
+      "gitBlob": "d209288b9b5fc1be69fb6a0dd5675a62415d30bd",
+      "size": 4416
+    },
+    {
+      "path": "src/hooks/useFloatingRootContext.ts",
+      "gitBlob": "573bc31d6016e013ff588e678ddfdbc830f3c953",
+      "size": 2539
+    },
+    {
+      "path": "src/hooks/useFocus.ts",
+      "gitBlob": "c38f6adcf1b1e3382ac7e2904fd815bf18fbb202",
+      "size": 5763
+    },
+    {
+      "path": "src/hooks/useHover.ts",
+      "gitBlob": "eb0ed15b20fab4608952f57536dcc871e0c9991e",
+      "size": 15019
+    },
+    {
+      "path": "src/hooks/useId.ts",
+      "gitBlob": "19f989f6f1551eced7196289f3d5d220babc959c",
+      "size": 1119
+    },
+    {
+      "path": "src/hooks/useInteractions.ts",
+      "gitBlob": "dafc64417d076725c6391071592652716bdb250e",
+      "size": 3826
+    },
+    {
+      "path": "src/hooks/useListNavigation.ts",
+      "gitBlob": "1190819b80b5628deb8b070492aa7b31c18ff6c1",
+      "size": 31237
+    },
+    {
+      "path": "src/hooks/useMergeRefs.ts",
+      "gitBlob": "79c6b01fda94c3422450b04c9ee16ddaf54a4263",
+      "size": 1582
+    },
+    {
+      "path": "src/hooks/useRole.ts",
+      "gitBlob": "5a509427e0b5340d1eed7c2d85d2abe8ea65851a",
+      "size": 3873
+    },
+    {
+      "path": "src/hooks/useTransition.ts",
+      "gitBlob": "48f7b633309e01540b3a1b721515ee1b85a831fe",
+      "size": 6481
+    },
+    {
+      "path": "src/hooks/useTypeahead.ts",
+      "gitBlob": "c653db68bd93e427a0972a2960de5ff2ee228c8c",
+      "size": 6366
+    },
+    {
+      "path": "src/index.ts",
+      "gitBlob": "befc520f2db3c75ff73d4d8b4b1ad7f0755401c1",
+      "size": 1859
+    },
+    {
+      "path": "src/safePolygon.ts",
+      "gitBlob": "4d047082f3c0fe9fd59040f5f6a22dcaf81bad99",
+      "size": 12063
+    },
+    {
+      "path": "src/types.ts",
+      "gitBlob": "78950808b7b75b24723e20006e405c3edc29fba0",
+      "size": 6931
+    },
+    {
+      "path": "src/utils.ts",
+      "gitBlob": "5650f8b4eea8b8fd10d34b9af9f7c41eba6c17c8",
+      "size": 229
+    },
+    {
+      "path": "src/utils/clearTimeoutIfSet.ts",
+      "gitBlob": "cc9ecacaeb2243b0e5ffa46c29818c6adfa61a54",
+      "size": 226
+    },
+    {
+      "path": "src/utils/composite.ts",
+      "gitBlob": "8db7afe7597657c89f9d894f405b9a86d1289615",
+      "size": 8574
+    },
+    {
+      "path": "src/utils/constants.ts",
+      "gitBlob": "6d9faee063bf470a2474553a5876a4981ae81ad1",
+      "size": 457
+    },
+    {
+      "path": "src/utils/createAttribute.ts",
+      "gitBlob": "8b661e3079b453aa0199aba7fad1f872765f1a5f",
+      "size": 87
+    },
+    {
+      "path": "src/utils/createEventEmitter.ts",
+      "gitBlob": "5f7c4ad94ccee70791b6b39c28aba1765b0f4a43",
+      "size": 495
+    },
+    {
+      "path": "src/utils/element.ts",
+      "gitBlob": "d69dca829fb351b6401657223933093d119e309d",
+      "size": 3212
+    },
+    {
+      "path": "src/utils/enqueueFocus.ts",
+      "gitBlob": "fb085f34b018ddb72939597780b5992b8c786fd2",
+      "size": 512
+    },
+    {
+      "path": "src/utils/event.ts",
+      "gitBlob": "4e0317347ee606552eb087abb0069c7449506d23",
+      "size": 1898
+    },
+    {
+      "path": "src/utils/hooks.ts",
+      "gitBlob": "c097859d4c83e9a0e28aca60d3fdffe3ab44e4a2",
+      "size": 943
+    },
+    {
+      "path": "src/utils/log.ts",
+      "gitBlob": "e4974aa1e50362c2415000344756a2d22eaa34e7",
+      "size": 506
+    },
+    {
+      "path": "src/utils/markOthers.ts",
+      "gitBlob": "d3065127f7dcf36a543dbb3a377529e1ecec4f5e",
+      "size": 4810
+    },
+    {
+      "path": "src/utils/nodes.ts",
+      "gitBlob": "93ecd352dc5babb0c7534803fff8247fdda8926a",
+      "size": 1633
+    },
+    {
+      "path": "src/utils/platform.ts",
+      "gitBlob": "6beaf669b4539ee23bf89b72670e555b8f0b99a2",
+      "size": 1155
+    },
+    {
+      "path": "src/utils/safeReact.ts",
+      "gitBlob": "670863214c7d4d08b3557305e6e357b80dedd7d0",
+      "size": 161
+    },
+    {
+      "path": "src/utils/tabbable.ts",
+      "gitBlob": "768d5c15d96825b0dfd5ea42abc937f4056a64ac",
+      "size": 2466
+    },
+    {
+      "path": "src/utils/useLiteMergeRefs.ts",
+      "gitBlob": "34fb700be6cc6d25bdd08d500063fb34e497a2df",
+      "size": 393
+    },
+    {
+      "path": "tailwind.config.js",
+      "gitBlob": "f27a1d4f4132d7db4706ecfb20759b388ce68247",
+      "size": 162
+    },
+    {
+      "path": "test/index.test-d.tsx",
+      "gitBlob": "b26448e4205a37b5283be3950fc6b189e9ca879a",
+      "size": 4863
+    },
+    {
+      "path": "test/unit/Composite.test.tsx",
+      "gitBlob": "2c81b0ef5bb90d9a2b79a6a42fcfa5b17077f201",
+      "size": 15806
+    },
+    {
+      "path": "test/unit/FloatingDelayGroup.test.tsx",
+      "gitBlob": "f348b87e2d72fdb8ca83864ed172ea9b3f8bc58a",
+      "size": 4573
+    },
+    {
+      "path": "test/unit/FloatingFocusManager.test.tsx",
+      "gitBlob": "8c82e1e7f5d204501d6923eb69cf5a8e9b4bb2de",
+      "size": 72364
+    },
+    {
+      "path": "test/unit/FloatingList.test.tsx",
+      "gitBlob": "f6931b2e709c7088b30f07e4925901fc395bfa84",
+      "size": 6039
+    },
+    {
+      "path": "test/unit/FloatingPortal.test.tsx",
+      "gitBlob": "8ef17aa37d0dc2d636715fe27cb594cad43c1712",
+      "size": 3232
+    },
+    {
+      "path": "test/unit/markOthers.test.ts",
+      "gitBlob": "55db0631fb2aa1aa1e0314c3d6f7ca885265da8d",
+      "size": 6285
+    },
+    {
+      "path": "test/unit/NextFloatingDelayGroup.test.tsx",
+      "gitBlob": "9aa883b2a71227d8c10bb2a02c893e71a65482f4",
+      "size": 6341
+    },
+    {
+      "path": "test/unit/nodes.test.ts",
+      "gitBlob": "810fd782892c3ae082040dfc6621e20da5b52ca3",
+      "size": 3408
+    },
+    {
+      "path": "test/unit/setupTests.ts",
+      "gitBlob": "eba515f6d707dc4f1491bc78fbce5e86df628800",
+      "size": 2020
+    },
+    {
+      "path": "test/unit/useClick.test.tsx",
+      "gitBlob": "3ef5a81838864a04aae6a2cc24a8368395c275bc",
+      "size": 8078
+    },
+    {
+      "path": "test/unit/useClientPoint.test.tsx",
+      "gitBlob": "a04c9d355143464ae2a59f868b225e6fb16c6419",
+      "size": 6224
+    },
+    {
+      "path": "test/unit/useDismiss.test.tsx",
+      "gitBlob": "877c297101fab4ca1bd27fbf209172a9720c2cbc",
+      "size": 29183
+    },
+    {
+      "path": "test/unit/useFloating.test.tsx",
+      "gitBlob": "6e4f5059073adb16b288ec59342fed1db0776d60",
+      "size": 7625
+    },
+    {
+      "path": "test/unit/useFloatingRootContext.test.tsx",
+      "gitBlob": "ac016b1682dc1e435e5f228efdb6c1f0d311c084",
+      "size": 1682
+    },
+    {
+      "path": "test/unit/useFocus.test.tsx",
+      "gitBlob": "a600e1348e305afa7d4aeb2c36b4fefe7d8f0607",
+      "size": 7816
+    },
+    {
+      "path": "test/unit/useHover.test.tsx",
+      "gitBlob": "9743f530c21e8dd05fcfb3491407a111a798bd6e",
+      "size": 9468
+    },
+    {
+      "path": "test/unit/useId.test.tsx",
+      "gitBlob": "12bb6f5ac4fe7a40b869f1f2df61f0b3d67bad4e",
+      "size": 307
+    },
+    {
+      "path": "test/unit/useInteractions.test.tsx",
+      "gitBlob": "39acb0e2e47b38c772e924d5ea38b5360ddb68be",
+      "size": 3894
+    },
+    {
+      "path": "test/unit/useListNavigation.test.tsx",
+      "gitBlob": "94be0a026c7ba34fa8bd11466da15e766b872102",
+      "size": 52211
+    },
+    {
+      "path": "test/unit/useMergeRefs.test.tsx",
+      "gitBlob": "0bc4919da91cc613c9ae7c91ab4196833334b902",
+      "size": 3132
+    },
+    {
+      "path": "test/unit/useRole.test.tsx",
+      "gitBlob": "dfaada1145d5aa51a04778fb46df615609cb24ec",
+      "size": 11253
+    },
+    {
+      "path": "test/unit/useTypeahead.test.tsx",
+      "gitBlob": "19b94a023db335a223c7b473bdca81c68d26a016",
+      "size": 8425
+    },
+    {
+      "path": "test/visual/App.tsx",
+      "gitBlob": "75ab6c522b338f757c442c9ef628959253e201d7",
+      "size": 3576
+    },
+    {
+      "path": "test/visual/components/Arrow.tsx",
+      "gitBlob": "b8db3a9ac5f042fe9a49606fd56521b21f801a39",
+      "size": 7471
+    },
+    {
+      "path": "test/visual/components/Autocomplete.tsx",
+      "gitBlob": "083eaf752c6555c2c01c9e1ba952d34d5dc06c98",
+      "size": 6142
+    },
+    {
+      "path": "test/visual/components/ComplexGrid.tsx",
+      "gitBlob": "723575c00e9dd534c0f2bf60411fba263d7d487b",
+      "size": 3318
+    },
+    {
+      "path": "test/visual/components/Drawer.tsx",
+      "gitBlob": "ed442214907911d7c72a07caad3cc9d3a5a9422a",
+      "size": 2858
+    },
+    {
+      "path": "test/visual/components/EmojiPicker.tsx",
+      "gitBlob": "d66286fba6a5995fe5c920b0a60e44c922088d77",
+      "size": 7915
+    },
+    {
+      "path": "test/visual/components/Grid.tsx",
+      "gitBlob": "1a85fdc2294c2184c257fc69b4699089abf2f479",
+      "size": 2398
+    },
+    {
+      "path": "test/visual/components/ListboxFocus.tsx",
+      "gitBlob": "f81868188b4615097cb4ae9d281d05e361ac7f59",
+      "size": 3219
+    },
+    {
+      "path": "test/visual/components/MacSelect.tsx",
+      "gitBlob": "383f6b760e53cef4e6787c6012a624162b9028fc",
+      "size": 14271
+    },
+    {
+      "path": "test/visual/components/Menu.tsx",
+      "gitBlob": "95a569bbe8e1c03a5b05b79dae32045681598a14",
+      "size": 12030
+    },
+    {
+      "path": "test/visual/components/Menubar.tsx",
+      "gitBlob": "134980e3339a935b08f54ada563190a5cc1c268a",
+      "size": 2293
+    },
+    {
+      "path": "test/visual/components/MenuOrientation.tsx",
+      "gitBlob": "ab394d2ac77532e15e4018eabd5ac5f6b50e9213",
+      "size": 14458
+    },
+    {
+      "path": "test/visual/components/MenuVirtual.tsx",
+      "gitBlob": "cdd5c5dd5f305c15c0dcd280c848af0d51ea4330",
+      "size": 11427
+    },
+    {
+      "path": "test/visual/components/Navigation.tsx",
+      "gitBlob": "ed735a9bc2b131785a2f3bcbff6f5488eb94c7ef",
+      "size": 3661
+    },
+    {
+      "path": "test/visual/components/New.tsx",
+      "gitBlob": "27eaca69f6b3eee7f70806a940d7cd36ab23e71a",
+      "size": 478
+    },
+    {
+      "path": "test/visual/components/Omnibox.tsx",
+      "gitBlob": "9570cb300d8d2a918b4c5aff07ae62d8278f97ed",
+      "size": 6881
+    },
+    {
+      "path": "test/visual/components/Popover.tsx",
+      "gitBlob": "edb08bbe2fcbcce55cb64824815b58db37ffd7f6",
+      "size": 5699
+    },
+    {
+      "path": "test/visual/components/Select.tsx",
+      "gitBlob": "d266df1b15aeaf27b9b4cf577db2e3e8ce1ea360",
+      "size": 8002
+    },
+    {
+      "path": "test/visual/components/Tooltip.tsx",
+      "gitBlob": "d9d2444f65a11037e96714c83ca406d58aefbf32",
+      "size": 3112
+    },
+    {
+      "path": "test/visual/index.css",
+      "gitBlob": "a89a45b683d3a2f998ae3567876a03c57dc78fd7",
+      "size": 258
+    },
+    {
+      "path": "test/visual/index.html",
+      "gitBlob": "eb46548810b4ecaf017ab249ff0db6fdccb6a8e4",
+      "size": 310
+    },
+    {
+      "path": "test/visual/index.tsx",
+      "gitBlob": "e9fa9a0ea5f927c8a5be20cff4479072abcfa038",
+      "size": 173
+    },
+    {
+      "path": "test/visual/lib/Button.tsx",
+      "gitBlob": "a4bc336bb8d2935ac7eb8e0ee3ae3e08747c99d8",
+      "size": 434
+    },
+    {
+      "path": "tsconfig.json",
+      "gitBlob": "f9551612ff389b9de9d2a13c951c0ea2b9d2b3e6",
+      "size": 235
+    },
+    {
+      "path": "tsconfig.lib.json",
+      "gitBlob": "06738987db04f69ffc862f2ba91d3bc14206368b",
+      "size": 257
+    },
+    {
+      "path": "tsconfig.test.json",
+      "gitBlob": "b7976e64255771cd668237b187a2ad09b3ff5e2e",
+      "size": 311
+    },
+    {
+      "path": "vite.config.mts",
+      "gitBlob": "a282f5b7e854f3132e693e54a68b87fd8b7f858d",
+      "size": 486
+    }
+  ],
+  "fingerprint": "173d2bb2e39738fa3d29ca5c923e95bf97fc43aa24313e3d914cc01c992a9b12"
+}

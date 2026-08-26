@@ -1,0 +1,14 @@
+diff --git a/tests/upstream/index.test-d.tsx b/tests/upstream/index.test-d.tsx
+--- a/tests/upstream/index.test-d.tsx
++++ b/tests/upstream/index.test-d.tsx
+@@ -78,8 +78,8 @@ function App() {
+     },
+   });
+ 
+-  const ref1 = React.useRef<HTMLDivElement>(null);
+-  const ref2 = React.useRef<HTMLDivElement>(null);
++  const ref1 = React.useRef<HTMLDivElement | null>(null);
++  const ref2 = React.useRef<HTMLDivElement | null>(null);
+   const ref = useMergeRefs([ref1, ref2, arrowRef, null]);
+ 
+   const {context: contextGeneric} = useFloating<HTMLDivElement>();

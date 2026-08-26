@@ -5,11 +5,11 @@
     "repo": "https://github.com/floating-ui/floating-ui.git",
     "version": "@floating-ui/react@0.27.19",
     "commit": "d8020ee98c702caa31fa9b4d929ca782c6b58c59",
-    "sourceRoot": "packages/react/src; packages/react-dom/src",
-    "testRoot": "packages/react/test; packages/react-dom/test",
+    "sourceRoot": "packages/react/src",
+    "testRoot": "packages/react/test",
     "license": "MIT",
     "integrity": "sha256:55480b7a99c1bffdc662c4b67492503bd7d7705b82c43e1fcb522e71a07e695b",
-    "verification": "recorded-unverified"
+    "verification": "verified"
   },
   "upstreamSuites": {
     "runtime": "present",
@@ -22,14 +22,14 @@
       "exclude": []
     },
     "tests": {
-      "roots": ["packages/floating-ui/tests"],
-      "include": ["\\.test\\.(?:ts|tsx)$"],
+      "roots": ["packages/floating-ui/tests/parity"],
+      "include": ["adapted-upstream\\.test\\.ts$"],
       "exclude": []
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 0,
-    "uniqueIdentities": 0,
+    "inventoryEntries": 1,
+    "uniqueIdentities": 1,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -40,10 +40,311 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "413b89e46dfb8de5c94bb0a3abccc7a9444ef447b1f587ec9617a1278f86a310"
+      "lockfileSha256": "4b5d664af914e7ca5e6e5c02522a47c64b10f166cc8eb3e75a772813c39fb248"
     }
   },
   "lanes": [
+    {
+      "id": "floating-ui-pristine-upstream",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs all 286 passing assertions and retains all 6 upstream skips from the byte-exact @floating-ui/react@0.27.19 Vitest suite under its exact React 18, Vitest 3, Vite 6, and jsdom 26 stack. The single manifest-visible wrapper registration fails on any child inventory drift.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/floating-ui/audit/pristine-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/floating-ui/audit/pristine-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "558a68427fe041854b4bbb68dd818e9a213578397ce7e2fd4354c76ffc24e2e6"
+        },
+        {
+          "path": "packages/floating-ui/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "19e16c8a926b64ebc6ecf7611ef959147d93bae9534aefff0835393f18ecc401"
+        },
+        {
+          "path": "packages/floating-ui/tests/parity/pristine-upstream.test.ts",
+          "role": "support",
+          "sha256": "57f6a91b3af578682ab03e21627f42fcf61077e1cf7e1145776dbd604d104107"
+        },
+        {
+          "path": "packages/floating-ui/audit/runtime-parity.json",
+          "role": "support",
+          "sha256": "fcf8003f9eef4cae656e82e0c35093f3028f74acf54f44d12df0c2cab698f661"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "1b4899c1e4868d62ee708b3f286b5dbaf899540d7833c2294c5a67c19011c829"
+        },
+        {
+          "path": "packages/floating-ui/LICENSE.upstream",
+          "role": "support",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-evidence-lib.mjs",
+          "role": "support",
+          "sha256": "b86e705c539e5ba8f7a846e72efb7c36420a27be3f9bf385208c7ea135575c12"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-upstream-runtime.mjs",
+          "role": "support",
+          "sha256": "0656b40bef13a178ba6ab8d8aef28988aa2c76dcd682145c51bc9131a333fad4"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "95670e42918d32c56043d5ef02d24896d3e0ca8d3d6cacab3a36bf0ca9890c7f"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/upstream-vitest.config.ts",
+          "role": "support",
+          "sha256": "674b5c06660f8ee33330389270afde5948c479d7f05cabf149ee0f8a1a931171"
+        }
+      ]
+    },
+    {
+      "id": "floating-ui-adapted-upstream",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-upstream-adapted",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the deterministic Octane adaptation under the same pinned runner stack: 286 passing assertions, 6 upstream skips, and zero omissions. The wrapper verifies its child report against the committed full inventory; the crosswalk rejects deleted or renamed identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/floating-ui/audit/adapted-wrapper-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/floating-ui/audit/adapted-wrapper-runtime.json",
+          "role": "support",
+          "sha256": "b83db92a44e69d5942d16933814525f5ed19ca2507d9c7e95d6735bc5393b19f"
+        },
+        {
+          "path": "packages/floating-ui/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "99773c331306980979f38d84375244e3d3e66d2fe65c413ee8e7baf1632457a5"
+        },
+        {
+          "path": "packages/floating-ui/tests/parity/adapted-upstream.test.ts",
+          "role": "support",
+          "sha256": "093e79122acfcaab3de5a67a84d06407e2af02566be73bb76b4de3d13b750231"
+        },
+        {
+          "path": "packages/floating-ui/audit/runtime-parity.json",
+          "role": "support",
+          "sha256": "fcf8003f9eef4cae656e82e0c35093f3028f74acf54f44d12df0c2cab698f661"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "1b4899c1e4868d62ee708b3f286b5dbaf899540d7833c2294c5a67c19011c829"
+        },
+        {
+          "path": "packages/floating-ui/LICENSE.upstream",
+          "role": "support",
+          "sha256": "0e4c9a9b6c71019cbbea3bdc20b01223110a9035700f9c960c8fcbf78c2325ce"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-evidence-lib.mjs",
+          "role": "support",
+          "sha256": "b86e705c539e5ba8f7a846e72efb7c36420a27be3f9bf385208c7ea135575c12"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-upstream-runtime.mjs",
+          "role": "support",
+          "sha256": "0656b40bef13a178ba6ab8d8aef28988aa2c76dcd682145c51bc9131a333fad4"
+        },
+        {
+          "path": "vitest.config.js",
+          "role": "support",
+          "sha256": "95670e42918d32c56043d5ef02d24896d3e0ca8d3d6cacab3a36bf0ca9890c7f"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/index.test-d.tsx.patch",
+          "role": "support",
+          "sha256": "3f19a09b19841a7f17cefcad47f88368e2c0aafe7a1dfc9311c7bd5bea23e712"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/unit/FloatingFocusManager.test.tsx.patch",
+          "role": "support",
+          "sha256": "64fb98112f9c6f0fcf35fbbc3146b9c4c539e1f438533fb575664bfe97447e00"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/unit/NextFloatingDelayGroup.test.tsx.patch",
+          "role": "support",
+          "sha256": "4fc679192e18f23270b97a553fe567da6ca207220b4165716bbd837346fb7fde"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/unit/useListNavigation.test.tsx.patch",
+          "role": "support",
+          "sha256": "c10af834cb610d12704ccccd79825623860c31a2cdaba439e18de300511d5d31"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/visual/components/EmojiPicker.tsx.patch",
+          "role": "support",
+          "sha256": "fae810d544f3c19aea7cca53b9fc13a0babb0cff4ad8e6e43d4da2c643841fcf"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/adapted-vitest.config.ts",
+          "role": "support",
+          "sha256": "87bfc2d62c10db0803045845cfd9c822b9546816c26ca60f683c1e51d0e97c0b"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/focus-manager-visuals.tsx",
+          "role": "support",
+          "sha256": "2973a6ba836ac04ca17dca95d174456f9114c5b853835d3eda6e31380dd79d23"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/octane-react-compat.ts",
+          "role": "support",
+          "sha256": "9c5435a0b49559b99b0f7060cafd29e522e76f7a46a9aacb8f1e368d71449d43"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/radix-checkbox.tsx",
+          "role": "support",
+          "sha256": "989767d82a53e79d46f770c105481373fde989d487e4797612e369f637784736"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/radix-icons.tsx",
+          "role": "support",
+          "sha256": "60cd12b090a61af4c0647d75ffe7c168864777d69abc3ab14ea10467de60c79e"
+        }
+      ]
+    },
+    {
+      "id": "floating-ui-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-pristine-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Compiles the byte-exact upstream type program with TypeScript and its pinned React 18 declarations.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/floating-ui/audit/upstream-typetests/tsconfig.pristine.json"
+      },
+      "files": [
+        {
+          "path": "packages/floating-ui/audit/pristine-types.json",
+          "role": "test",
+          "sha256": "3fa40c99734918904b7a7bc041277da4ef49cc89769204ffcde137cbd7edf759",
+          "cases": [
+            {
+              "id": "types:floating-ui-pristine-App",
+              "testName": "App upstream type program",
+              "fullName": "App upstream type program"
+            },
+            {
+              "id": "types:floating-ui-pristine-NarrowRefType",
+              "testName": "NarrowRefType upstream type program",
+              "fullName": "NarrowRefType upstream type program"
+            },
+            {
+              "id": "types:floating-ui-pristine-Root",
+              "testName": "Root upstream type program",
+              "fullName": "Root upstream type program"
+            }
+          ]
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream-typetests/tsconfig.pristine.json",
+          "role": "support",
+          "sha256": "c6322fd072352be83d4a9f91f2f0b6fe400becf9b94283ff908a76d563772d30"
+        },
+        {
+          "path": "packages/floating-ui/upstream/test/index.test-d.tsx",
+          "role": "support",
+          "sha256": "3ef728075100677da49cc5e7a572ff7c4df4aed58ebbc7b2a9f47af504c2209a"
+        },
+        {
+          "path": "packages/floating-ui/audit/type-parity.json",
+          "role": "support",
+          "sha256": "b1e5c8143243974e4488487b11acb0ff029e32ef09f4492b102be3ca841bd98c"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "1b4899c1e4868d62ee708b3f286b5dbaf899540d7833c2294c5a67c19011c829"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-types-lib.mjs",
+          "role": "support",
+          "sha256": "d66566023e238fa257dd04f1f2ecb12607bd58d29b53e5d1d2776f100c2e1c0e"
+        }
+      ]
+    },
+    {
+      "id": "floating-ui-adapted-upstream-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "floating-ui-adapted-upstream-types",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Compiles the structurally crosswalked Octane adaptation of every upstream type-program group.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/floating-ui/typetests/tsconfig.upstream-adapted.json"
+      },
+      "files": [
+        {
+          "path": "packages/floating-ui/audit/adapted-upstream-types.json",
+          "role": "test",
+          "sha256": "5ec99ef4981f30d38b8c178fa6a1f5eb783d086fe301772d43a9aa31b364cc75",
+          "cases": [
+            {
+              "id": "types:floating-ui-adapted-App",
+              "testName": "App upstream type program",
+              "fullName": "App upstream type program"
+            },
+            {
+              "id": "types:floating-ui-adapted-NarrowRefType",
+              "testName": "NarrowRefType upstream type program",
+              "fullName": "NarrowRefType upstream type program"
+            },
+            {
+              "id": "types:floating-ui-adapted-Root",
+              "testName": "Root upstream type program",
+              "fullName": "Root upstream type program"
+            }
+          ]
+        },
+        {
+          "path": "packages/floating-ui/typetests/tsconfig.upstream-adapted.json",
+          "role": "support",
+          "sha256": "87db8cccda539e30b20b1a4afeb08eddd179153224548ca99de24001d3568e13"
+        },
+        {
+          "path": "packages/floating-ui/tests/upstream/index.test-d.tsx",
+          "role": "support",
+          "sha256": "6864b1dfd38709cd2a3ceedb71baac62fbc41c9bddeb70f570c97c39e089dcc9"
+        },
+        {
+          "path": "packages/floating-ui/audit/type-parity.json",
+          "role": "support",
+          "sha256": "b1e5c8143243974e4488487b11acb0ff029e32ef09f4492b102be3ca841bd98c"
+        },
+        {
+          "path": "packages/floating-ui/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "1b4899c1e4868d62ee708b3f286b5dbaf899540d7833c2294c5a67c19011c829"
+        },
+        {
+          "path": "scripts/react-parity/floating-ui-types-lib.mjs",
+          "role": "support",
+          "sha256": "d66566023e238fa257dd04f1f2ecb12607bd58d29b53e5d1d2776f100c2e1c0e"
+        }
+      ]
+    },
     {
       "id": "floating-ui-runtime-differential",
       "type": "differential",
@@ -56,7 +357,7 @@
         {
           "path": "packages/floating-ui/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "8af202037be504182d268d67cd1d05875c0e5e76e92ea2483b3ff37ef773c0da",
+          "sha256": "eeae0fc0c32dfebd9e44233fc2ff1cb2d2b4caa657a038c533d42b93f348d7bb",
           "cases": [
             {
               "id": "differential:floating-ui-hook-isolation",
@@ -64,6 +365,16 @@
               "fullName": "differential: @octanejs/floating-ui vs @floating-ui/react keeps independent useFloating placements byte-identical"
             }
           ]
+        },
+        {
+          "path": "packages/floating-ui/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "6540e78b8972aa59daa0463a3d1b94aecfa153d95fcde98ce5feff910ce191e4"
+        },
+        {
+          "path": "packages/floating-ui/tests/_support/react18-act-compat.ts",
+          "role": "support",
+          "sha256": "21e11716c67056b70bd97acc46e8d447b342109dc75e386f961391cdb7561692"
         },
         {
           "path": "packages/floating-ui/tests/differential/fixture-compiler.mjs",
@@ -83,13 +394,13 @@
       ]
     },
     {
-      "id": "floating-ui-adapted-types",
+      "id": "floating-ui-public-api-types",
       "type": "adapted-types",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "floating-ui-adapted-types",
+      "project": "floating-ui-public-api-types",
       "evidenceOrigin": "repo-authored",
-      "notes": "Compiles positioning, context, interaction, and observer declarations.",
+      "notes": "Compiles the broader repository-authored Octane public API contract.",
       "execution": {
         "kind": "typescript",
         "compiler": "tsrx-tsc",
@@ -112,6 +423,11 @@
           "path": "packages/floating-ui/typetests/public-api.test-d.ts",
           "role": "support",
           "sha256": "7f663e9c4691a77683b927333baffabec6166d50d9840e15c102caf438fd2519"
+        },
+        {
+          "path": "packages/floating-ui/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "d999d9d832e80137a5a0b485aba5348581dd6a45d703bfc2bb659c33361cd13c"
         }
       ]
     }

@@ -109,6 +109,7 @@ export function useFloating(...args: any[]): any {
 	const optionDomReference = computedElements?.domReference;
 	const domReference = optionDomReference || _domReference;
 	const domReferenceRef = useRef<Element | null>(null, subSlot(slot, 'domrefref'));
+	const referenceVersionRef = useRef(0, subSlot(slot, 'domrefver'));
 	const tree = useFloatingTree();
 
 	useModernLayoutEffect(
@@ -150,8 +151,17 @@ export function useFloating(...args: any[]): any {
 
 	const setReference = useCallback(
 		(node: ReferenceType | null) => {
+			const version = ++referenceVersionRef.current;
 			if (isElement(node) || node === null) {
 				domReferenceRef.current = node;
+				if (node === null) {
+					queueMicrotask(() => {
+						if (referenceVersionRef.current !== version || domReferenceRef.current !== null) return;
+						setDomReference(null);
+						position.refs.setReference(null);
+					});
+					return;
+				}
 				setDomReference(node);
 			}
 			if (
@@ -162,7 +172,7 @@ export function useFloating(...args: any[]): any {
 				position.refs.setReference(node);
 			}
 		},
-		[position.refs],
+		[position.refs, referenceVersionRef],
 		subSlot(slot, 'sr'),
 	);
 

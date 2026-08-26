@@ -630,6 +630,49 @@ function extractCoffeeScriptTestCases(source, file) {
 	return cases;
 }
 
+function extractTypeProgramCases(source, file) {
+	const scriptKind = /\.[cm]?[jt]sx$/i.test(file) ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+	const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, scriptKind);
+	const declarations = new Set(
+		sourceFile.statements.flatMap((statement) =>
+			ts.isFunctionDeclaration(statement) && statement.name && statement.body
+				? [statement.name.text]
+				: [],
+		),
+	);
+	const occurrences = new Map();
+	return sourceFile.statements.flatMap((statement) => {
+		if (!ts.isExpressionStatement(statement) || !ts.isIdentifier(statement.expression)) return [];
+		const title = statement.expression.text;
+		if (!declarations.has(title)) return [];
+		const occurrence = occurrences.get(title) ?? 0;
+		occurrences.set(title, occurrence + 1);
+		const declarationId = makeCaseId(file, 'type-program', title, occurrence);
+		const start = statement.expression.getStart(sourceFile);
+		const location = lineAndColumn(source, start);
+		return [
+			{
+				caseId: declarationId,
+				declarationId,
+				kind: 'type-program',
+				title,
+				declaredTitle: title,
+				titleExpression: null,
+				line: location.line,
+				column: location.column,
+				modifiers: [],
+				gate: null,
+				parameterization: null,
+				dynamicExpansion: null,
+				helperExpansion: null,
+				estimatedRegistrations: 1,
+				sourceSnippet: source.slice(statement.getStart(sourceFile), statement.end).trim(),
+				manualReviewReason: null,
+			},
+		];
+	});
+}
+
 export function extractTestCases(
 	source,
 	{ file = '<unknown>', helperExpansions = DEFAULT_HELPER_EXPANSIONS } = {},
@@ -813,6 +856,9 @@ export function extractTestCases(
 			manualReviewReason:
 				'ESLint RuleTester expands valid and invalid fixture matrices at runtime.',
 		});
+	}
+	if (cases.length === 0 && /(?:^|[.-])(?:test-d|d-test)\.[cm]?[jt]sx?$/i.test(file)) {
+		return extractTypeProgramCases(source, file);
 	}
 	return cases;
 }
