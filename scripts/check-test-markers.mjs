@@ -29,7 +29,10 @@ function isBytePinnedUpstreamSource(file, repo) {
 }
 
 function* walk(directory) {
-	for (const entry of readdirSync(directory, { withFileTypes: true })) {
+	const entries = readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+		a.name < b.name ? -1 : a.name > b.name ? 1 : 0,
+	);
+	for (const entry of entries) {
 		const absolute = path.join(directory, entry.name);
 		if (entry.isDirectory()) {
 			// Vendored packages/*/upstream trees are byte-exact pins and may carry

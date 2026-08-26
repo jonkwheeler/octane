@@ -8,6 +8,7 @@ import {
 	createContext,
 	createElement,
 	createPortal,
+	Fragment,
 	useContext,
 	useEffect,
 	useMemo,
@@ -314,40 +315,51 @@ export function FloatingPortal(props: FloatingPortalProps): OctaneNode {
 	return createElement(PortalContext.Provider, {
 		value,
 		children: [
-			shouldRenderGuards &&
-				portalNode &&
-				createElement(FocusGuard, {
-					'data-type': 'outside',
-					ref: beforeOutsideRef,
-					onFocus: (event: FocusEvent) => {
-						if (isOutsideEvent(event, portalNode)) {
-							beforeInsideRef.current?.focus();
-						} else {
-							const domReference = focusManagerState ? focusManagerState.domReference : null;
-							getPreviousTabbable(domReference)?.focus();
-						}
-					},
-				}),
-			shouldRenderGuards &&
-				portalNode &&
-				createElement('span', { 'aria-owns': portalNode.id, style: HIDDEN_OWNER_STYLES }),
-			portalNode && createPortal(children, portalNode),
-			shouldRenderGuards &&
-				portalNode &&
-				createElement(FocusGuard, {
-					'data-type': 'outside',
-					ref: afterOutsideRef,
-					onFocus: (event: FocusEvent) => {
-						if (isOutsideEvent(event, portalNode)) {
-							afterInsideRef.current?.focus();
-						} else {
-							const domReference = focusManagerState ? focusManagerState.domReference : null;
-							getNextTabbable(domReference)?.focus();
-							focusManagerState?.closeOnFocusOut &&
-								focusManagerState?.onOpenChange(false, event, 'focus-out');
-						}
-					},
-				}),
+			shouldRenderGuards && portalNode
+				? createElement(FocusGuard, {
+						key: 'guard-outside-before',
+						'data-type': 'outside',
+						ref: beforeOutsideRef,
+						onFocus: (event: FocusEvent) => {
+							if (isOutsideEvent(event, portalNode)) {
+								beforeInsideRef.current?.focus();
+							} else {
+								const domReference = focusManagerState ? focusManagerState.domReference : null;
+								getPreviousTabbable(domReference)?.focus();
+							}
+						},
+					})
+				: null,
+			shouldRenderGuards && portalNode
+				? createElement('span', {
+						key: 'aria-owns',
+						'aria-owns': portalNode.id,
+						style: HIDDEN_OWNER_STYLES,
+					})
+				: null,
+			portalNode
+				? createElement(Fragment, {
+						key: 'portal-children',
+						children: createPortal(children, portalNode),
+					})
+				: null,
+			shouldRenderGuards && portalNode
+				? createElement(FocusGuard, {
+						key: 'guard-outside-after',
+						'data-type': 'outside',
+						ref: afterOutsideRef,
+						onFocus: (event: FocusEvent) => {
+							if (isOutsideEvent(event, portalNode)) {
+								afterInsideRef.current?.focus();
+							} else {
+								const domReference = focusManagerState ? focusManagerState.domReference : null;
+								getNextTabbable(domReference)?.focus();
+								focusManagerState?.closeOnFocusOut &&
+									focusManagerState?.onOpenChange(false, event, 'focus-out');
+							}
+						},
+					})
+				: null,
 		],
 	});
 }
