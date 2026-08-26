@@ -8,10 +8,8 @@ import { compareTestIdentities, toPortablePath } from './harness-lib.mjs';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const adaptedRoots = [
-	'packages/formisch/upstream/packages/core/src',
-	'packages/formisch/upstream/packages/methods/src',
+	'packages/formisch/audit',
 	'packages/formisch/tests/upstream/frameworks/react/src',
-	'packages/formisch/audit/resolver-canary',
 ];
 const lanes = [
 	{
@@ -33,13 +31,10 @@ const lanes = [
 		project: 'formisch-adapted-core-methods',
 		destination: 'packages/formisch/audit/adapted-runtime-core-methods.json',
 		roots: adaptedRoots,
-		filterRoots: [
-			'packages/formisch/upstream/packages/core/src',
-			'packages/formisch/upstream/packages/methods/src',
-		],
+		filterRoots: ['packages/formisch/audit/adapted-core-methods.test.ts'],
 	},
 	{
-		project: 'formisch-adapted-core-methods',
+		project: 'formisch-adapted-resolver-canary',
 		destination: 'packages/formisch/audit/adapted-runtime-resolver-canary.json',
 		roots: adaptedRoots,
 		filterRoots: ['packages/formisch/audit/resolver-canary'],
@@ -62,7 +57,9 @@ for (const lane of lanes) {
 	const tests = JSON.parse(output)
 		.map((test) => ({ ...test, file: toPortablePath(relative(root, test.file)) }))
 		.filter((test) =>
-			(lane.filterRoots ?? lane.roots).some((testRoot) => test.file.startsWith(`${testRoot}/`)),
+			(lane.filterRoots ?? lane.roots).some(
+				(testRoot) => test.file === testRoot || test.file.startsWith(`${testRoot}/`),
+			),
 		)
 		.map((test) => {
 			const fullName = test.name.replaceAll(' > ', ' ');

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import * as ServerRuntime from 'octane/server';
-import { createElement, flushSync, hydrateRoot, use } from '../src/index.js';
+import { createElement, flushSync, hydrateRoot, use, type OctaneNode } from '../src/index.js';
 import { act, mount } from './_helpers';
 import { loadServerFixture } from './_server-fixture';
 import {
@@ -14,12 +14,10 @@ import {
 	NestedConditionalCallBodyList,
 	NestedConditionalList,
 	NestedConditionalTransition,
-	NestedProjectedHostBoundary,
-	NestedProjectedHostList,
-	NestedProjectedMethodList,
-	NestedProjectedOpaqueList,
 	PlainCalleeList,
 	KeyedSelectionList,
+	KeyedSelectionControlledList,
+	KeyedSelectionRenderableList,
 	KeyedSelectionTransition,
 	KeyedSelectionUuidList,
 	MismatchedKeyedSelectionList,
@@ -40,6 +38,8 @@ import {
 	NestedKeyedReorderList,
 	NestedKeyedReorderBoundary,
 	NestedKeyedReorderTransition,
+	HostBindingList,
+	HostMappedBindingList,
 	setExternal,
 	setNestedConditionalActivityMode,
 } from './_fixtures/for.tsrx';
@@ -492,6 +492,34 @@ describe('keyed list selection', () => {
 		r.unmount();
 	});
 
+	it('uses strict equality for NaN and signed-zero selection keys', () => {
+		const items = [
+			{ id: Number.NaN, label: 'not a number' },
+			{ id: -0, label: 'zero' },
+			{ id: 1, label: 'one' },
+		];
+		const r = mount(KeyedSelectionList, { items, selected: 1 });
+		const originalRows = r.findAll('li');
+
+		r.update(KeyedSelectionList, { items, selected: Number.NaN });
+		expect(r.findAll('li.selected')).toHaveLength(0);
+
+		r.update(KeyedSelectionList, { items, selected: -0 });
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+		r.update(KeyedSelectionList, { items, selected: 0 });
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+		r.update(KeyedSelectionList, { items, selected: 99 });
+		expect(r.findAll('li.selected')).toHaveLength(0);
+
+		const reordered = [items[2]!, items[0]!, items[1]!];
+		r.update(KeyedSelectionList, { items: reordered, selected: Number.NaN });
+		expect(r.findAll('li')).toEqual([originalRows[2], originalRows[0], originalRows[1]]);
+		expect(r.findAll('li.selected')).toHaveLength(0);
+		r.update(KeyedSelectionList, { items: reordered, selected: 0 });
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+		r.unmount();
+	});
+
 	it('matches selection against the authored custom key property', () => {
 		const items = [
 			{ uuid: 'a-1', label: 'first' },
@@ -554,24 +582,83 @@ describe('keyed list selection', () => {
 		r.unmount();
 	});
 
-	it('preserves immutable keyed-row updates when the selection changes together', () => {
+	it('preserves immutable row updates when returning to an earlier selected key', () => {
 		const initialItems = makeRows();
 		const r = mount(KeyedSelectionList, { items: initialItems, selected: 1 });
 		const originalRows = r.findAll('li');
+
+		r.update(KeyedSelectionList, { items: initialItems, selected: 2 });
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+
 		const updatedItems = [
 			initialItems[0]!,
 			{ ...initialItems[1]!, label: 'updated second' },
 			initialItems[2]!,
 		];
 
-		r.update(KeyedSelectionList, { items: updatedItems, selected: 2 });
+		r.update(KeyedSelectionList, { items: updatedItems, selected: 1 });
 		expect(labels(r)).toEqual(['first', 'updated second', 'third']);
-		expect(r.find('.selected').textContent).toBe('updated second');
+		expect(r.findAll('li.selected')).toEqual([originalRows[0]]);
 		expect(r.findAll('li')).toEqual(originalRows);
 
-		r.update(KeyedSelectionList, { items: updatedItems, selected: 3 });
-		expect(r.find('.selected').textContent).toBe('third');
+		r.update(KeyedSelectionList, { items: updatedItems, selected: 2 });
+		expect(r.find('.selected').textContent).toBe('updated second');
 		expect(labels(r)).toEqual(['first', 'updated second', 'third']);
+		r.unmount();
+	});
+
+	it('reasserts controlled values in rows whose selection changes', () => {
+		const items = makeRows();
+		const r = mount(KeyedSelectionControlledList, { items, selected: 1 });
+		const originalRows = r.findAll('li');
+		const controls = r.findAll('input') as HTMLInputElement[];
+		controls[0]!.focus();
+		controls[0]!.value = 'changed outside render';
+		controls[1]!.value = 'changed before selection';
+
+		r.update(KeyedSelectionControlledList, { items, selected: 2 });
+		expect(controls.map((control) => control.value)).toEqual(items.map((row) => row.label));
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+		expect(r.findAll('li')).toEqual(originalRows);
+		expect(r.findAll('input')).toEqual(controls);
+		expect(document.activeElement).toBe(controls[0]);
+		r.unmount();
+	});
+
+	it('keeps stable render-function children live when their rows are selected', () => {
+		let first = 'first';
+		let second = 'second';
+		const items = [
+			{
+				id: 1,
+				content: () =>
+					createElement('span', { className: 'keyed-selection-readable-child' }, first),
+			},
+			{
+				id: 2,
+				content: () =>
+					createElement('span', { className: 'keyed-selection-readable-child' }, second),
+			},
+			{ id: 3, content: 'third' },
+		];
+		const r = mount(KeyedSelectionRenderableList, { items, selected: 1 });
+		const originalRows = r.findAll('li');
+		const originalChildren = r.findAll('.keyed-selection-readable-child');
+		expect(labels(r)).toEqual(['first', 'second', 'third']);
+
+		first = 'updated first';
+		second = 'updated second';
+		r.update(KeyedSelectionRenderableList, { items, selected: 2 });
+		expect(labels(r)).toEqual(['updated first', 'updated second', 'third']);
+		expect(r.findAll('li.selected')).toEqual([originalRows[1]]);
+		expect(r.findAll('li')).toEqual(originalRows);
+		expect(r.findAll('.keyed-selection-readable-child')).toEqual(originalChildren);
+
+		first = 'selected first again';
+		r.update(KeyedSelectionRenderableList, { items, selected: 1 });
+		expect(labels(r)).toEqual(['selected first again', 'updated second', 'third']);
+		expect(r.findAll('li.selected')).toEqual([originalRows[0]]);
+		expect(r.findAll('.keyed-selection-readable-child')).toEqual(originalChildren);
 		r.unmount();
 	});
 
@@ -1030,260 +1117,6 @@ describe('large keyed list fills', () => {
 	});
 });
 
-describe('nested keyed host projections', () => {
-	const makeGroups = () => [
-		{
-			id: 1,
-			label: 'first',
-			segments: [
-				{ id: 11, label: 'one', code: false },
-				{ id: 12, label: 'two', code: true },
-			],
-		},
-		{
-			id: 2,
-			label: 'second',
-			segments: [{ id: 21, label: 'three', code: false }],
-		},
-		{ id: 3, label: 'third', segments: [] },
-	];
-
-	it('keeps stable nested rows while refreshing immutable values, dependencies, and handlers', () => {
-		const groups = makeGroups();
-		const selected: string[] = [];
-		const onPick = (groupId: number, segmentId: number, prefix: string) => {
-			selected.push(`before:${groupId}:${segmentId}:${prefix}`);
-		};
-		const props = { groups, prefix: 'before', onPick };
-		const root = mount(NestedProjectedHostList, props);
-		const originalGroups = root.findAll('.nested-projected-group');
-		const input = root.find('.nested-projected-input') as HTMLInputElement;
-		input.value = 'unfinished edit';
-
-		const updated = [
-			groups[0]!,
-			{
-				...groups[1]!,
-				segments: [{ ...groups[1]!.segments[0]!, label: 'updated', code: true }],
-			},
-			groups[2]!,
-		];
-		root.update(NestedProjectedHostList, { ...props, groups: updated });
-		expect(root.findAll('.nested-projected-group')).toEqual(originalGroups);
-		expect(root.find('[data-projected-segment="21"] button').textContent).toBe('before:updated');
-		expect(root.find('.nested-projected-input')).toBe(input);
-		expect(input.value).toBe('unfinished edit');
-
-		const nextPick = (groupId: number, segmentId: number, prefix: string) => {
-			selected.push(`after:${groupId}:${segmentId}:${prefix}`);
-		};
-		root.update(NestedProjectedHostList, { groups: updated, prefix: 'after', onPick: nextPick });
-		expect(root.findAll('.nested-projected-group h3').map((title) => title.textContent)).toEqual([
-			'after:first',
-			'after:second',
-			'after:third',
-		]);
-		expect(root.find('.nested-projected-empty').textContent).toBe('after:third:empty');
-		expect(input.value).toBe('unfinished edit');
-		root.click('[data-projected-segment="12"] button');
-		expect(selected).toEqual(['after:1:12:after']);
-		root.unmount();
-	});
-
-	it('preserves keyed identities through nested reordering, removal, and empty-arm changes', () => {
-		const groups = makeGroups();
-		const props = { groups, prefix: 'group', onPick: () => {} };
-		const root = mount(NestedProjectedHostList, props);
-		const groupNodes = new Map(
-			root
-				.findAll('.nested-projected-group')
-				.map((group) => [Number(group.getAttribute('data-projected-group')), group]),
-		);
-		const segmentNodes = new Map(
-			root
-				.findAll('[data-projected-segment]')
-				.map((segment) => [Number(segment.getAttribute('data-projected-segment')), segment]),
-		);
-		const reorderedFirst = { ...groups[0]!, segments: groups[0]!.segments.toReversed() };
-		const reordered = [groups[2]!, reorderedFirst, groups[1]!];
-
-		root.update(NestedProjectedHostList, { ...props, groups: reordered });
-		expect(
-			root
-				.findAll('.nested-projected-group')
-				.map((group) => Number(group.getAttribute('data-projected-group'))),
-		).toEqual([3, 1, 2]);
-		expect(root.find('[data-projected-group="1"]')).toBe(groupNodes.get(1));
-		expect(root.find('[data-projected-segment="12"]')).toBe(segmentNodes.get(12));
-		expect(root.find('[data-projected-segment="11"]')).toBe(segmentNodes.get(11));
-		expect(
-			Array.from(
-				root.find('[data-projected-group="1"]').querySelectorAll('[data-projected-segment]'),
-			).map((segment) => Number(segment.getAttribute('data-projected-segment'))),
-		).toEqual([12, 11]);
-
-		const emptiedFirst = { ...reorderedFirst, segments: [] };
-		root.update(NestedProjectedHostList, {
-			...props,
-			groups: [groups[2]!, emptiedFirst, groups[1]!],
-		});
-		expect(root.find('[data-projected-group="1"]')).toBe(groupNodes.get(1));
-		expect(root.find('[data-projected-group="1"] .nested-projected-empty').textContent).toBe(
-			'group:first:empty',
-		);
-
-		const filledThird = {
-			...groups[2]!,
-			segments: [{ id: 31, label: 'restored', code: false }],
-		};
-		root.update(NestedProjectedHostList, { ...props, groups: [filledThird, emptiedFirst] });
-		expect(root.find('[data-projected-group="3"]')).toBe(groupNodes.get(3));
-		expect(root.find('[data-projected-segment="31"] button').textContent).toBe('group:restored');
-		expect(root.findAll('[data-projected-group="2"]')).toHaveLength(0);
-		root.unmount();
-	});
-
-	it('retries suspended nested conditional rows before finishing an outer and inner reorder', async () => {
-		const groups = makeGroups();
-		let resolve!: (value: string) => void;
-		const promise = new Promise<string>((done) => {
-			resolve = done;
-		});
-		const props = { groups, prefix: 'group', onPick: () => {} };
-		const root = mount(NestedProjectedHostBoundary, props);
-		const first = groups[0]!;
-		const reordered = [
-			groups[2]!,
-			groups[1]!,
-			{
-				...first,
-				segments: first.segments.toReversed().map((segment) =>
-					segment.id === 11
-						? {
-								id: segment.id,
-								code: segment.code,
-								get label() {
-									return use(promise);
-								},
-							}
-						: { ...segment },
-				),
-			},
-		];
-
-		root.update(NestedProjectedHostBoundary, { ...props, groups: reordered });
-		expect(root.find('#nested-projected-pending').textContent).toBe('loading');
-
-		await act(() => resolve('resolved one'));
-		expect(
-			root
-				.findAll('.nested-projected-group')
-				.map((group) => Number(group.getAttribute('data-projected-group'))),
-		).toEqual([3, 2, 1]);
-		expect(
-			Array.from(
-				root.find('[data-projected-group="1"]').querySelectorAll('[data-projected-segment]'),
-			).map((segment) => Number(segment.getAttribute('data-projected-segment'))),
-		).toEqual([12, 11]);
-		expect(root.find('[data-projected-segment="11"] button').textContent).toBe(
-			'group:resolved one',
-		);
-		root.unmount();
-	});
-
-	it('continues reading live nested receiver methods when outer item identities are stable', () => {
-		let current = 'initial';
-		const group = { id: 1, segments: [{ id: 11, read: () => current }] };
-		const props = { groups: [group], prefix: 'value' };
-		const root = mount(NestedProjectedMethodList, props);
-		expect(root.find('.nested-projected-method').textContent).toBe('value:initial');
-
-		current = 'updated';
-		root.update(NestedProjectedMethodList, { ...props, groups: [group] });
-		expect(root.find('.nested-projected-method').textContent).toBe('value:updated');
-		root.unmount();
-	});
-
-	it('keeps nested Activity visibility, context consumers, and callback refs live', () => {
-		const first = makeGroups()[0]!;
-		const group = { ...first, segments: [first.segments[0]!] };
-		const refs: Array<HTMLSpanElement | null> = [];
-		const onRef = (element: HTMLSpanElement | null) => {
-			refs.push(element);
-		};
-		const props = { groups: [group], value: 'initial', visible: true, onRef };
-		const root = mount(NestedProjectedOpaqueList, props);
-		const original = root.find('.nested-projected-context') as HTMLSpanElement;
-
-		try {
-			expect(original.textContent).toBe('initial:one');
-			expect(refs).toEqual([original]);
-
-			setNestedConditionalActivityMode('hidden');
-			root.update(NestedProjectedOpaqueList, { ...props, groups: [group] });
-			expect(original.style.display).toBe('none');
-
-			setNestedConditionalActivityMode('visible');
-			root.update(NestedProjectedOpaqueList, { ...props, groups: [group], value: 'updated' });
-			expect(root.find('.nested-projected-context')).toBe(original);
-			expect(original.style.display).toBe('');
-			expect(original.textContent).toBe('updated:one');
-
-			root.update(NestedProjectedOpaqueList, {
-				...props,
-				groups: [group],
-				value: 'updated',
-				visible: false,
-			});
-			expect(root.findAll('.nested-projected-context')).toHaveLength(0);
-			expect(root.find('.nested-projected-opaque-placeholder').textContent).toBe('hidden');
-			expect(refs.at(-1)).toBeNull();
-		} finally {
-			root.unmount();
-			setNestedConditionalActivityMode('visible');
-		}
-	});
-
-	it('adopts nested projected rows and preserves pre-hydration edits and live handlers', () => {
-		const groups = makeGroups();
-		const picked: string[] = [];
-		const onPick = (groupId: number, segmentId: number, prefix: string) => {
-			picked.push(`${groupId}:${segmentId}:${prefix}`);
-		};
-		const props = { groups, prefix: 'server', onPick };
-		const server = loadServerFixture('packages/octane/tests/_fixtures/for.tsrx', {
-			compileOptions: { hmr: false, dev: false },
-		});
-		const container = document.createElement('div');
-		document.body.appendChild(container);
-		container.innerHTML = ServerRuntime.renderToString(server.NestedProjectedHostList, props).html;
-		const originalGroups = Array.from(container.querySelectorAll('.nested-projected-group'));
-		const input = container.querySelector('.nested-projected-input') as HTMLInputElement;
-		input.value = 'typed before hydration';
-		const root = hydrateRoot(container, NestedProjectedHostList, props);
-		flushSync(() => {});
-
-		expect(Array.from(container.querySelectorAll('.nested-projected-group'))).toEqual(
-			originalGroups,
-		);
-		expect(container.querySelector('.nested-projected-input')).toBe(input);
-		expect(input.value).toBe('typed before hydration');
-
-		flushSync(() => root.render(NestedProjectedHostList, { ...props, prefix: 'client' }));
-		expect(Array.from(container.querySelectorAll('.nested-projected-group'))).toEqual(
-			originalGroups,
-		);
-		expect(container.querySelector('[data-projected-segment="12"] button')?.textContent).toBe(
-			'client:two',
-		);
-		expect(input.value).toBe('typed before hydration');
-		(container.querySelector('[data-projected-segment="12"] button') as HTMLButtonElement).click();
-		expect(picked).toEqual(['1:12:client']);
-		root.unmount();
-		container.remove();
-	});
-});
-
 describe('nested keyed list reordering', () => {
 	const makeGroups = (length = 11) =>
 		Array.from({ length }, (_, groupIndex) => {
@@ -1572,5 +1405,179 @@ describe('nested keyed list reordering', () => {
 		r.click('[data-reorder-row="112"] button');
 		expect(picked).toEqual([[1, 112]]);
 		r.unmount();
+	});
+});
+
+describe.each([
+	['@for', HostBindingList],
+	['native map', HostMappedBindingList],
+] as const)('host-row bindings — %s', (_kind, Body) => {
+	function loggedRow(label: string, log: string[], beforeTitleCoercion = () => {}) {
+		const className = ['row', label];
+		const title = {
+			toString() {
+				log.push('coerce-title');
+				beforeTitleCoercion();
+				return label;
+			},
+		};
+		const data = {
+			toString() {
+				log.push('coerce-data');
+				return label;
+			},
+		};
+		return {
+			id: 1,
+			get className() {
+				log.push('class');
+				return className;
+			},
+			get title() {
+				log.push('title');
+				return title as unknown as string;
+			},
+			get data() {
+				log.push('data');
+				return data as unknown as string;
+			},
+			get aria() {
+				log.push('aria');
+				return label;
+			},
+			get hidden() {
+				log.push('hidden');
+				return label === 'second';
+			},
+			get only() {
+				log.push('only');
+				return label;
+			},
+			get mixed() {
+				log.push('mixed');
+				return label;
+			},
+		};
+	}
+	const readAndCoerce = [
+		'class',
+		'title',
+		'coerce-title',
+		'data',
+		'coerce-data',
+		'aria',
+		'hidden',
+		'only',
+		'mixed',
+	];
+
+	it('evaluates bindings once in order and skips coercing unchanged scalar values', () => {
+		const log: string[] = [];
+		const r = mount(Body, { items: [loggedRow('first', log)], version: 0, context: 'inside' });
+		try {
+			const host = r.find('li');
+			expect(log.splice(0)).toEqual(readAndCoerce);
+			const second = loggedRow('second', log);
+			r.update(Body, { items: [second], version: 1, context: 'inside' });
+			expect(log.splice(0)).toEqual(readAndCoerce);
+			expect(r.find('li')).toBe(host);
+			expect(host.className).toBe('row second');
+			expect(host.getAttribute('title')).toBe('second');
+			expect(host.getAttribute('data-value')).toBe('second');
+			expect(host.getAttribute('aria-label')).toBe('second');
+			expect(host.hasAttribute('hidden')).toBe(true);
+			expect(r.find('[data-kind="only"]').textContent).toBe('second');
+			expect(r.find('[data-kind="mixed"]').textContent).toBe('beforesecondafter');
+			r.update(Body, { items: [second], version: 2, context: 'inside' });
+			expect(log).toEqual(['class', 'title', 'data', 'aria', 'hidden', 'only', 'mixed']);
+		} finally {
+			r.unmount();
+		}
+	});
+
+	it('retries the same scalar value after coercion throws without reading later bindings', () => {
+		const log: string[] = [];
+		const r = mount(Body, { items: [loggedRow('first', log)], version: 0, context: 'inside' });
+		try {
+			log.length = 0;
+			let shouldThrow = true;
+			const second = loggedRow('second', log, () => {
+				if (shouldThrow) throw new Error('title coercion failed');
+			});
+			expect(() => r.update(Body, { items: [second], version: 1, context: 'inside' })).toThrow(
+				'title coercion failed',
+			);
+			expect(log.splice(0)).toEqual(['class', 'title', 'coerce-title']);
+			shouldThrow = false;
+			r.update(Body, { items: [second], version: 2, context: 'inside' });
+			expect(log).toEqual(readAndCoerce);
+			expect(r.find('li').getAttribute('title')).toBe('second');
+			expect(r.find('li').getAttribute('data-value')).toBe('second');
+			expect(r.find('[data-kind="only"]').textContent).toBe('second');
+		} finally {
+			r.unmount();
+		}
+	});
+
+	it('preserves only-child and mixed-child ownership across primitive and complex updates', () => {
+		const row = { id: 1, className: 'row', title: '', data: '', aria: '', hidden: false };
+		const r = mount(Body, {
+			items: [{ ...row, only: 'first', mixed: 'first' }],
+			version: 0,
+			context: 'initial',
+		});
+		try {
+			const host = r.find('li');
+			const only = r.find('[data-kind="only"]');
+			const mixed = r.find('[data-kind="mixed"]');
+			const onlyText = only.firstChild;
+			const mixedText = Array.from(mixed.childNodes).find(
+				(node) => node.nodeType === Node.TEXT_NODE && node.textContent === 'first',
+			);
+			let version = 0;
+			const update = (content: OctaneNode, text: string, context = 'inside') => {
+				r.update(Body, {
+					items: [{ ...row, only: content, mixed: content }],
+					version: ++version,
+					context,
+				});
+				expect(r.find('li')).toBe(host);
+				expect(r.find('[data-kind="only"]')).toBe(only);
+				expect(r.find('[data-kind="mixed"]')).toBe(mixed);
+				expect(only.textContent).toBe(text);
+				expect(mixed.textContent).toBe(`before${text}after`);
+			};
+			update('second', 'second');
+			expect(only.firstChild).toBe(onlyText);
+			expect(Array.from(mixed.childNodes)).toContain(mixedText);
+			for (const value of [0, -0, false, true, null, undefined, '', NaN]) {
+				update(value, typeof value === 'number' ? String(value) : '');
+			}
+			const clicks: string[] = [];
+			let label = 'function first';
+			const render = () => createElement('button', { onClick: () => clicks.push(label) }, label);
+			update(render, label);
+			const buttons = r.findAll('button');
+			label = 'function second';
+			update(render, label);
+			expect(r.findAll('button')).toEqual(buttons);
+			r.click('[data-kind="only"] button');
+			expect(clicks).toEqual(['function second']);
+			function CurrentContext() {
+				return createElement('b', null, use(FastRowContext));
+			}
+			const descriptor = createElement(CurrentContext, {});
+			update(descriptor, 'context first', 'context first');
+			expect(buttons.every((button) => !button.isConnected)).toBe(true);
+			const consumers = r.findAll('b');
+			update(descriptor, 'context second', 'context second');
+			expect(r.findAll('b')).toEqual(consumers);
+			update([createElement('u', null, 'array'), ' tail'], 'array tail');
+			expect(consumers.every((consumer) => !consumer.isConnected)).toBe(true);
+			update('final', 'final');
+			expect(r.findAll('button, b, u')).toHaveLength(0);
+		} finally {
+			r.unmount();
+		}
 	});
 });

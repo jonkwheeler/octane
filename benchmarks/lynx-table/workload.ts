@@ -36,6 +36,14 @@ interface FakeNode {
 
 type Listener = (event: LynxContextProxyEvent) => void;
 
+interface WireMessageSnapshot {
+	readonly direction: 'background-to-main' | 'main-to-background';
+	readonly type: string;
+	readonly bytes: number;
+	readonly commandOps: Readonly<Record<string, number>>;
+	readonly handleOps: Readonly<Record<string, number>>;
+}
+
 /**
  * Two cross-wired synchronous ContextProxy ends. Dispatching on one end runs
  * the other end's listeners, matching the direction the real dual-thread
@@ -43,10 +51,19 @@ type Listener = (event: LynxContextProxyEvent) => void;
  * immediately: this harness measures per-commit wire cost, not the
  * backpressure coalescing an asynchronous main thread produces.
  */
-function createContextPair(): { background: LynxContextProxy; main: LynxContextProxy } {
+function createContextPair(): {
+	background: LynxContextProxy;
+	main: LynxContextProxy;
+	messages: WireMessageSnapshot[];
+} {
 	const backgroundListeners = new Map<string, Listener[]>();
 	const mainListeners = new Map<string, Listener[]>();
-	const end = (own: Map<string, Listener[]>, other: Map<string, Listener[]>): LynxContextProxy => ({
+	const messages: WireMessageSnapshot[] = [];
+	const end = (
+		own: Map<string, Listener[]>,
+		other: Map<string, Listener[]>,
+		direction: WireMessageSnapshot['direction'],
+	): LynxContextProxy => ({
 		addEventListener(type, listener) {
 			const list = own.get(type);
 			if (list === undefined) own.set(type, [listener]);
@@ -60,14 +77,44 @@ function createContextPair(): { background: LynxContextProxy; main: LynxContextP
 			if (list.length === 0) own.delete(type);
 		},
 		dispatchEvent(event) {
+			const data = event.data as {
+				type?: unknown;
+				batch?: { commands?: readonly { op?: unknown }[] };
+				handles?: readonly { op?: unknown }[];
+			};
+			const commandOps: Record<string, number> = {};
+			for (const command of data.batch?.commands ?? []) {
+				const op = typeof command.op === 'string' ? command.op : '<unknown>';
+				commandOps[op] = (commandOps[op] ?? 0) + 1;
+			}
+			const handleOps: Record<string, number> = {};
+			for (const handle of data.handles ?? []) {
+				const op = typeof handle.op === 'string' ? handle.op : '<unknown>';
+				handleOps[op] = (handleOps[op] ?? 0) + 1;
+			}
+			let bytes = 0;
+			try {
+				bytes = JSON.stringify(data).length;
+			} catch {
+				// Protocol validation owns serialization failures. The observer must
+				// not alter delivery while measuring a rejected message.
+			}
+			messages.push({
+				direction,
+				type: typeof data.type === 'string' ? data.type : '<unknown>',
+				bytes,
+				commandOps,
+				handleOps,
+			});
 			const list = other.get(event.type);
 			if (list === undefined) return;
 			for (const listener of list.slice()) listener(event);
 		},
 	});
 	return {
-		background: end(backgroundListeners, mainListeners),
-		main: end(mainListeners, backgroundListeners),
+		background: end(backgroundListeners, mainListeners, 'background-to-main'),
+		main: end(mainListeners, backgroundListeners, 'main-to-background'),
+		messages,
 	};
 }
 
@@ -171,6 +218,7 @@ interface Harness {
 	readonly main: ReturnType<typeof installLynxMainThread>;
 	readonly diagnostics: Error[];
 	readonly backgroundTarget: Record<string, unknown>;
+	readonly wireMessages: WireMessageSnapshot[];
 	dispose(): Promise<void>;
 }
 
@@ -211,6 +259,7 @@ function createHarness(): Harness {
 		root,
 		main,
 		diagnostics,
+		wireMessages: contexts.messages,
 		backgroundTarget: backgroundTarget as unknown as Record<string, unknown>,
 		async dispose() {
 			await root.unmount();
@@ -223,16 +272,101 @@ function createHarness(): Harness {
 
 interface ProfileGlobals {
 	__OCTANE_LYNX_PROF?: LynxWireProfile;
+	__BENCH_ROW_RENDERS__?: number;
 }
 
-function profileSnapshot(): { commits: number; commands: number; bytes: number } {
+function profileSnapshot(): {
+	commits: number;
+	commands: number;
+	bytes: number;
+	itemRenders: number;
+	selfcheckMs: number;
+	dispatchMs: number;
+	validateMs: number;
+	prepareMs: number;
+	applyMs: number;
+	ackMs: number;
+	destroyRunExpandMs: number;
+	denseValidateMs: number;
+	eventDetachMs: number;
+	papiRemoveMs: number;
+	denseReleaseMs: number;
+	synthesizedCommands: number;
+	eventDetachCount: number;
+	papiRemoveCount: number;
+	denseReleaseHostCount: number;
+} {
 	const profile = (globalThis as ProfileGlobals).__OCTANE_LYNX_PROF;
 	// Both fake threads share this realm, so the main-thread receiver also
 	// counted each commit; halve to report per-wire commits and commands once.
+	// Row bodies only run on the background side and must not be halved.
 	return {
 		commits: (profile?.commits ?? 0) / 2,
 		commands: (profile?.commands ?? 0) / 2,
 		bytes: profile?.bytes ?? 0,
+		itemRenders: (globalThis as ProfileGlobals).__BENCH_ROW_RENDERS__ ?? 0,
+		selfcheckMs: profile?.selfcheckMs ?? 0,
+		dispatchMs: profile?.dispatchMs ?? 0,
+		validateMs: profile?.validateMs ?? 0,
+		prepareMs: profile?.prepareMs ?? 0,
+		applyMs: profile?.applyMs ?? 0,
+		ackMs: profile?.ackMs ?? 0,
+		destroyRunExpandMs: profile?.destroyRunExpandMs ?? 0,
+		denseValidateMs: profile?.denseValidateMs ?? 0,
+		eventDetachMs: profile?.eventDetachMs ?? 0,
+		papiRemoveMs: profile?.papiRemoveMs ?? 0,
+		denseReleaseMs: profile?.denseReleaseMs ?? 0,
+		synthesizedCommands: profile?.synthesizedCommands ?? 0,
+		eventDetachCount: profile?.eventDetachCount ?? 0,
+		papiRemoveCount: profile?.papiRemoveCount ?? 0,
+		denseReleaseHostCount: profile?.denseReleaseHostCount ?? 0,
+	};
+}
+
+function addCounts(target: Record<string, number>, source: Readonly<Record<string, number>>): void {
+	for (const [name, count] of Object.entries(source)) target[name] = (target[name] ?? 0) + count;
+}
+
+function summarizeWire(
+	messages: readonly WireMessageSnapshot[],
+): Pick<
+	OpCounters,
+	| 'wireToMainBytes'
+	| 'wireToBackgroundBytes'
+	| 'wireToMainMessages'
+	| 'wireToBackgroundMessages'
+	| 'commandOps'
+	| 'handleOps'
+	| 'messageTypes'
+> {
+	let wireToMainBytes = 0;
+	let wireToBackgroundBytes = 0;
+	let wireToMainMessages = 0;
+	let wireToBackgroundMessages = 0;
+	const commandOps: Record<string, number> = {};
+	const handleOps: Record<string, number> = {};
+	const messageTypes: Record<string, number> = {};
+	for (const message of messages) {
+		if (message.direction === 'background-to-main') {
+			wireToMainBytes += message.bytes;
+			wireToMainMessages++;
+		} else {
+			wireToBackgroundBytes += message.bytes;
+			wireToBackgroundMessages++;
+		}
+		addCounts(commandOps, message.commandOps);
+		addCounts(handleOps, message.handleOps);
+		const key = `${message.direction}:${message.type}`;
+		messageTypes[key] = (messageTypes[key] ?? 0) + 1;
+	}
+	return {
+		wireToMainBytes,
+		wireToBackgroundBytes,
+		wireToMainMessages,
+		wireToBackgroundMessages,
+		commandOps,
+		handleOps,
+		messageTypes,
 	};
 }
 
@@ -337,6 +471,29 @@ export interface OpCounters {
 	readonly commits: number;
 	readonly commands: number;
 	readonly bytes: number;
+	readonly itemRenders: number;
+	readonly wireToMainBytes: number;
+	readonly wireToBackgroundBytes: number;
+	readonly wireToMainMessages: number;
+	readonly wireToBackgroundMessages: number;
+	readonly commandOps: Readonly<Record<string, number>>;
+	readonly handleOps: Readonly<Record<string, number>>;
+	readonly messageTypes: Readonly<Record<string, number>>;
+	readonly selfcheckMs: number;
+	readonly dispatchMs: number;
+	readonly validateMs: number;
+	readonly prepareMs: number;
+	readonly applyMs: number;
+	readonly ackMs: number;
+	readonly destroyRunExpandMs: number;
+	readonly denseValidateMs: number;
+	readonly eventDetachMs: number;
+	readonly papiRemoveMs: number;
+	readonly denseReleaseMs: number;
+	readonly synthesizedCommands: number;
+	readonly eventDetachCount: number;
+	readonly papiRemoveCount: number;
+	readonly denseReleaseHostCount: number;
 }
 
 export interface TableRunResult {
@@ -344,6 +501,9 @@ export interface TableRunResult {
 	readonly create: OpCounters;
 	readonly update10th: OpCounters;
 	readonly select: OpCounters;
+	readonly swap: OpCounters;
+	readonly swapIdentityChecksum: number;
+	readonly swapEventSurvived: boolean;
 	readonly updateStorm: OpCounters;
 	readonly selectStorm: OpCounters;
 	readonly createdElements: number;
@@ -362,23 +522,53 @@ const CREATE_BUTTON: Record<number, string> = {
 const STORM_UPDATE_TICKS = 50;
 const STORM_SELECT_TICKS = 30;
 
+function seededRandom(seed: number): () => number {
+	return () => {
+		seed |= 0;
+		seed = (seed + 0x6d2b79f5) | 0;
+		let value = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+		value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value;
+		return ((value ^ (value >>> 14)) >>> 0) / 4_294_967_296;
+	};
+}
+
 /** Run the full op sequence at one scale and report per-op counter deltas. */
 export async function runTable(rows: number): Promise<TableRunResult> {
 	const createButton = CREATE_BUTTON[rows];
 	if (createButton === undefined) throw new Error(`no create button for ${rows} rows`);
 	const harness = createHarness();
+	const previousRandom = Math.random;
+	Math.random = seededRandom(0x0c7a_4e11);
 	try {
 		await harness.root.render(App, {});
 		await until(harness, () => buttonTapToken(harness.papi, createButton) !== null, 'mount', 200);
 
 		const measure = async (drive: () => Promise<void>): Promise<OpCounters> => {
 			const before = profileSnapshot();
+			const wireStart = harness.wireMessages.length;
 			await drive();
 			const after = profileSnapshot();
 			return {
 				commits: after.commits - before.commits,
 				commands: after.commands - before.commands,
 				bytes: after.bytes - before.bytes,
+				itemRenders: after.itemRenders - before.itemRenders,
+				...summarizeWire(harness.wireMessages.slice(wireStart)),
+				selfcheckMs: after.selfcheckMs - before.selfcheckMs,
+				dispatchMs: after.dispatchMs - before.dispatchMs,
+				validateMs: after.validateMs - before.validateMs,
+				prepareMs: after.prepareMs - before.prepareMs,
+				applyMs: after.applyMs - before.applyMs,
+				ackMs: after.ackMs - before.ackMs,
+				destroyRunExpandMs: after.destroyRunExpandMs - before.destroyRunExpandMs,
+				denseValidateMs: after.denseValidateMs - before.denseValidateMs,
+				eventDetachMs: after.eventDetachMs - before.eventDetachMs,
+				papiRemoveMs: after.papiRemoveMs - before.papiRemoveMs,
+				denseReleaseMs: after.denseReleaseMs - before.denseReleaseMs,
+				synthesizedCommands: after.synthesizedCommands - before.synthesizedCommands,
+				eventDetachCount: after.eventDetachCount - before.eventDetachCount,
+				papiRemoveCount: after.papiRemoveCount - before.papiRemoveCount,
+				denseReleaseHostCount: after.denseReleaseHostCount - before.denseReleaseHostCount,
 			};
 		};
 
@@ -409,6 +599,44 @@ export async function runTable(rows: number): Promise<TableRunResult> {
 			await until(harness, () => hasClass(rowViews(harness.papi)[2]!, 'danger'), 'select');
 		});
 
+		const rowsBeforeSwap = rowViews(harness.papi).slice();
+		const labelsBeforeSwap = rowsBeforeSwap.map(labelTextOf);
+		const swap = await measure(async () => {
+			await tapButton(harness, 'Swap Rows');
+			await until(
+				harness,
+				() => {
+					const current = rowViews(harness.papi);
+					return current[1] === rowsBeforeSwap[998] && current[998] === rowsBeforeSwap[1];
+				},
+				'swapped survivor identity',
+			);
+		});
+		const rowsAfterSwap = rowViews(harness.papi);
+		const expectedPermutation = rowsBeforeSwap.map((_, index) =>
+			index === 1 ? 998 : index === 998 ? 1 : index,
+		);
+		for (let index = 0; index < expectedPermutation.length; index++) {
+			const source = expectedPermutation[index]!;
+			if (
+				rowsAfterSwap[index] !== rowsBeforeSwap[source] ||
+				labelTextOf(rowsAfterSwap[index]!) !== labelsBeforeSwap[source]
+			) {
+				harness.diagnostics.push(
+					new Error(`swap changed survivor identity or final order at row ${index}.`),
+				);
+				break;
+			}
+		}
+		const swapIdentityChecksum = rowsAfterSwap.reduce(
+			(sum, row, index) => sum + (rowsBeforeSwap.indexOf(row) + 1) * (index + 1),
+			0,
+		);
+		const movedRow = rowsAfterSwap[1]!;
+		tap(harness, tapTokenOf(cellOf(movedRow, 'col-label')!)!);
+		await until(harness, () => hasClass(rowViews(harness.papi)[1]!, 'danger'), 'moved row event');
+		const swapEventSurvived = hasClass(rowViews(harness.papi)[1]!, 'danger');
+
 		const updateStorm = await measure(async () => {
 			await tapButton(harness, 'Update storm');
 			await until(
@@ -428,6 +656,9 @@ export async function runTable(rows: number): Promise<TableRunResult> {
 			create,
 			update10th,
 			select,
+			swap,
+			swapIdentityChecksum,
+			swapEventSurvived,
 			updateStorm,
 			selectStorm,
 			createdElements: harness.papi.createdElements,
@@ -435,6 +666,7 @@ export async function runTable(rows: number): Promise<TableRunResult> {
 		};
 	} finally {
 		await harness.dispose();
+		Math.random = previousRandom;
 	}
 }
 

@@ -1,12 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "formisch",
-  "roots": [
-    "packages/formisch/upstream/packages/core/src",
-    "packages/formisch/upstream/packages/methods/src",
-    "packages/formisch/tests/upstream/frameworks/react/src",
-    "packages/formisch/audit/resolver-canary"
-  ],
+  "roots": ["packages/formisch/audit", "packages/formisch/tests/upstream/frameworks/react/src"],
   "files": [
     "packages/formisch/tests/upstream/frameworks/react/src/components/Field/Field.test.tsrx",
     "packages/formisch/tests/upstream/frameworks/react/src/components/FieldArray/FieldArray.test.tsrx",

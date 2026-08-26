@@ -10,7 +10,7 @@
 
 import fs from 'node:fs';
 import { chromium } from 'playwright';
-import { deterministicCount, deterministicStatForJson } from '../lib/dom-nodes.mjs';
+import { censusDomNodes, deterministicCount, deterministicStatForJson } from '../lib/dom-nodes.mjs';
 import { collectPreciseCalls } from '../lib/precise-work.mjs';
 
 const TARGETS = [
@@ -74,14 +74,32 @@ const GATES = {
 		},
 	},
 	'octane-jsx': {
-		// The JSX dialect currently reaches the runtime de-opt renderer for the
-		// whole routed subtree (see the README): these ceilings stop that getting
-		// worse while it is being addressed.
+		// Conditional JSX returns now compile to template control flow, so the
+		// routed subtree's recursive Node never reaches the de-opt renderer
+		// (hostElementBody / deoptItemBody are held at ZERO). The remaining
+		// createElement/renderBlock headroom over the .tsrx twin is the
+		// single-return `_frag` wrapper ABI (one extra block + descriptor per
+		// component), which is the next lowering target.
 		nav_nested: {
-			max: { renderBlock: 260, unmountBlock: 260, createElement: 160, deoptItemBody: 80 },
+			max: {
+				renderBlock: 220,
+				unmountBlock: 220,
+				createElement: 60,
+				childSlot: 10,
+				hostElementBody: 0,
+				deoptItemBody: 0,
+				reconcileKeyed: 0,
+			},
 		},
 		nav_deep: {
-			max: { renderBlock: 7400, createElement: 4300, deoptItemBody: 2200 },
+			max: {
+				renderBlock: 6400,
+				createElement: 1200,
+				childSlot: 10,
+				hostElementBody: 0,
+				deoptItemBody: 0,
+				reconcileKeyed: 0,
+			},
 		},
 	},
 };
@@ -107,6 +125,50 @@ function validate(target, op, counts, failures) {
 	}
 }
 
+async function validateMarkerCensus(browser, target, failures) {
+	const context = await browser.newContext();
+	const page = await context.newPage();
+	try {
+		await page.goto(target.url, { waitUntil: 'load' });
+		await page.waitForFunction(() => globalThis.__ready === true, null, { timeout: 10_000 });
+		await page.evaluate(() => globalThis.__mount('a'));
+		const deep = await page.evaluate(censusDomNodes, '#main');
+		await page.evaluate(() => {
+			globalThis.__markerShell = document.querySelector('.shell');
+			globalThis.__markerOutlet = document.querySelector('.outlet');
+			globalThis.__navigate('a/x');
+		});
+		const nested = await page.evaluate(censusDomNodes, '#main');
+		const retained = await page.evaluate(() => ({
+			shell: globalThis.__markerShell === document.querySelector('.shell'),
+			outlet: globalThis.__markerOutlet === document.querySelector('.outlet'),
+			leaves: document.querySelectorAll('.leaf').length,
+		}));
+		if (deep.elements !== 2052 || deep.text !== 1025) {
+			failures.push(`${target.name}.deep: visible DOM changed to ${deep.elements}/${deep.text}`);
+		}
+		if (nested.elements !== 70 || nested.text !== 33 || retained.leaves !== 32) {
+			failures.push(
+				`${target.name}.nested: visible DOM changed to ${nested.elements}/${nested.text}/${retained.leaves}`,
+			);
+		}
+		if (!retained.shell || !retained.outlet) {
+			failures.push(`${target.name}.nested: navigation replaced its surviving shell or outlet`);
+		}
+		const deepCeiling = target.name === 'octane-tsrx' ? 1 : 0;
+		const nestedCeiling = target.name === 'octane-tsrx' ? 2 : 0;
+		if (deep.comments > deepCeiling) {
+			failures.push(`${target.name}.comments_deep: ${deep.comments} exceeds ${deepCeiling}`);
+		}
+		if (nested.comments > nestedCeiling) {
+			failures.push(`${target.name}.comments_nested: ${nested.comments} exceeds ${nestedCeiling}`);
+		}
+		return { deep, nested };
+	} finally {
+		await context.close();
+	}
+}
+
 (async () => {
 	const browser = await chromium.launch({
 		headless: true,
@@ -117,7 +179,7 @@ function validate(target, op, counts, failures) {
 	const byTarget = {};
 	try {
 		for (const target of TARGETS) {
-			byTarget[target.name] = {};
+			byTarget[target.name] = { dom: await validateMarkerCensus(browser, target, failures) };
 			for (const op of OPS) {
 				const counts = await collectPreciseCalls(browser, {
 					url: target.url,
@@ -132,6 +194,13 @@ function validate(target, op, counts, failures) {
 		}
 	} finally {
 		await browser.close();
+	}
+	console.log('\nProduction DOM census (deep elements/text/comments; nested comments):');
+	for (const target of TARGETS) {
+		const { deep, nested } = byTarget[target.name].dom;
+		console.log(
+			`  ${target.name}: ${deep.elements}/${deep.text}/${deep.comments}; nested ${nested.comments}`,
+		);
 	}
 
 	const W = 26;

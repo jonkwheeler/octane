@@ -182,7 +182,7 @@ export function verifyFormischUpstream(repoRoot, { integrity } = {}) {
 	if (coreFiles !== 18 || methodFiles !== 23 || upstreamReact.length !== 7 || reactCases !== 42) {
 		throw new Error('Formisch upstream runtime inventory changed; review the pinned release');
 	}
-	if (inventoryFiles.size !== 56 || inventoryCases !== 1099) {
+	if (inventoryFiles.size !== 57 || inventoryCases !== 1099) {
 		throw new Error('Formisch runtime execution inventories are incomplete or stale');
 	}
 	const actualIntegrity = formischUpstreamIntegrity(repoRoot);

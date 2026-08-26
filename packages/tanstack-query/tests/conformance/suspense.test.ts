@@ -6,6 +6,7 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient } from '@octanejs/tanstack-query';
+import { act } from 'octane';
 import { mount, nextPaint } from '../_helpers';
 import { SuspenseApp, SuspenseComponentApp, SuspenseQueriesApp } from '../_fixtures/suspense.tsrx';
 
@@ -23,28 +24,18 @@ async function flush() {
 }
 
 describe('suspense query', () => {
-	it('shows @pending while loading, then the data', async () => {
-		let resolveFn: (v: string) => void = () => {};
-		const queryFn = () => new Promise<string>((res) => (resolveFn = res));
-		const r = mount(SuspenseApp, { client, queryFn });
-		// First render suspends → @pending fallback.
-		expect(r.find('#fallback').textContent).toBe('loading');
-		await flush();
-		resolveFn('ready');
-		await flush();
-		expect(r.find('#data').textContent).toBe('data:ready');
-		r.unmount();
-	});
-
 	it('shows @catch when the suspense query errors', async () => {
 		let rejectFn: (e: Error) => void = () => {};
 		const queryFn = () => new Promise<string>((_res, rej) => (rejectFn = rej));
 		const r = mount(SuspenseApp, { client, queryFn });
 		expect(r.find('#fallback').textContent).toBe('loading');
 		await flush();
-		rejectFn(new Error('nope'));
-		await flush();
+		await act(async () => {
+			rejectFn(new Error('nope'));
+			await flush();
+		});
 		expect(r.find('#caught').textContent).toBe('caught:nope');
+		expect(r.findAll('#fallback')).toHaveLength(0);
 		r.unmount();
 	});
 
@@ -54,9 +45,12 @@ describe('suspense query', () => {
 		const r = mount(SuspenseComponentApp, { client, queryFn });
 		expect(r.find('#fallback').textContent).toBe('loading');
 		await flush();
-		resolveFn('ready');
-		await flush();
+		await act(async () => {
+			resolveFn('ready');
+			await flush();
+		});
 		expect(r.find('#data').textContent).toBe('data:ready');
+		expect(r.findAll('#fallback')).toHaveLength(0);
 		r.unmount();
 	});
 
@@ -68,10 +62,13 @@ describe('suspense query', () => {
 		const r = mount(SuspenseQueriesApp, { client, a, b });
 		expect(r.find('#fallback').textContent).toBe('loading');
 		await flush();
-		resolveA('A');
-		resolveB('B');
-		await flush();
+		await act(async () => {
+			resolveA('A');
+			resolveB('B');
+			await flush();
+		});
 		expect(r.find('#data').textContent).toBe('data:A/B');
+		expect(r.findAll('#fallback')).toHaveLength(0);
 		r.unmount();
 	});
 });

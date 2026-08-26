@@ -7,7 +7,7 @@
     "sourceRoot": "frameworks/react; packages/core; packages/methods",
     "testRoot": "the test artifacts colocated under those source roots",
     "license": "MIT",
-    "integrity": "sha256:8e1ccebb3a92c76e02f5ded91046dda71cdd106b813f91071b133e7147037b4f",
+    "integrity": "sha256:3f9c1c6da89473296033cc2701405080b2cb11478724bc7f045063ee618aaf57",
     "verification": "verified"
   },
   "upstreamSuites": {
@@ -16,24 +16,13 @@
   },
   "adaptedRoots": {
     "source": {
-      "roots": [
-        "packages/formisch/src"
-      ],
-      "include": [
-        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
-      ],
+      "roots": ["packages/formisch/src"],
+      "include": ["\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"],
       "exclude": []
     },
     "tests": {
-      "roots": [
-        "packages/formisch/upstream/packages/core/src",
-        "packages/formisch/upstream/packages/methods/src",
-        "packages/formisch/tests/upstream/frameworks/react/src",
-        "packages/formisch/audit/resolver-canary"
-      ],
-      "include": [
-        "\\.test\\.(?:ts|tsrx)$"
-      ],
+      "roots": ["packages/formisch/audit", "packages/formisch/tests/upstream/frameworks/react/src"],
+      "include": ["\\.test\\.(?:ts|tsrx)$"],
       "exclude": []
     }
   },
@@ -50,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "b769d0491d49e01e2a50f0fde8fa2d146bbd3c4617e3a2ce70c601e27a8f3e6f"
+      "lockfileSha256": "82b622c30e09d0b49229da148b42d7ad66556b3ebfceeaa4c6d94bfcb4d94c29"
     }
   },
   "lanes": [
@@ -80,17 +69,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -135,17 +124,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -190,17 +179,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -226,7 +215,7 @@
       "environment": "workspace-node",
       "project": "formisch-adapted-core-methods",
       "evidenceOrigin": "upstream-suite",
-      "notes": "Runs the unchanged 507-case framework-neutral suite against the Octane-selected core and methods sources.",
+      "notes": "Runs the unchanged 507-case framework-neutral suite through a distinct entrypoint against the Octane-selected core and methods sources.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/formisch/audit/adapted-runtime-core-methods.json"
@@ -235,7 +224,7 @@
         {
           "path": "packages/formisch/audit/adapted-runtime-core-methods.json",
           "role": "support",
-          "sha256": "b9d8429939efe0da95c85c76855909ad5a96e06927b1a696adf001f72f2be0c7"
+          "sha256": "126925066f15c13ec21cfd569a96a53724a4ba2bccbe9ce02d80dfc2b0edfc75"
         },
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
@@ -245,17 +234,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -271,6 +260,11 @@
           "path": "packages/formisch/upstream/frameworks/react/src/vitest/setup.ts",
           "role": "support",
           "sha256": "adab121a4bb7c7560fb8faf2ed46d9acbe3b7dbf474b584c90a2ebb46e605fb7"
+        },
+        {
+          "path": "packages/formisch/audit/adapted-core-methods.test.ts",
+          "role": "support",
+          "sha256": "a57857c773000e50fb111354b18bfc8ad1b6b476ade2f65711ad3d891cc939f5"
         }
       ]
     },
@@ -279,7 +273,7 @@
       "type": "adapted-octane",
       "oracle": "required",
       "environment": "workspace-node",
-      "project": "formisch-adapted-core-methods",
+      "project": "formisch-adapted-resolver-canary",
       "evidenceOrigin": "upstream-suite",
       "notes": "Proves the adapted core and methods resolver executes the Octane source tree rather than vendored upstream code.",
       "execution": {
@@ -290,7 +284,7 @@
         {
           "path": "packages/formisch/audit/adapted-runtime-resolver-canary.json",
           "role": "support",
-          "sha256": "eb828465e715612013d408de13bcbb6f32c4fdc9840ed6e131c836ed041e0c50"
+          "sha256": "f98072749f3ce6ff756ec45df50c426b89c805ade66011cbc3df962e2c877bd5"
         },
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
@@ -300,17 +294,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -345,7 +339,7 @@
         {
           "path": "packages/formisch/audit/adapted-runtime-react.json",
           "role": "support",
-          "sha256": "fca327f980beb4cdc9ae059746a0531085042b19ec3cf76909f04a8b95422bd7"
+          "sha256": "793913ddb21a4a58807383960a592d76f473d8f5cc0654238e4ad210335a9a5b"
         },
         {
           "path": "packages/formisch/audit/adapted-react-source-fingerprints.json",
@@ -355,17 +349,17 @@
         {
           "path": "scripts/react-parity/formisch-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "5685d08d61d9bbf4b715a7285fc834e1dfd3f55adaae8e4c01ba04550f4c5bf4"
+          "sha256": "069f142ce8620abe3075d1e615059aee60108067775f92fbf7a0fed0940b6ef9"
         },
         {
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
-          "sha256": "9735cc150f90567f18e59620514b568ff31786b37f2924d01ec16dec705c3835"
+          "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
+          "sha256": "5ebc33f249f59fdb25da676b2e02db68488d064c489c4ca7fafbd205b7a57c7e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -381,49 +375,6 @@
           "path": "packages/formisch/upstream/frameworks/react/src/vitest/setup.ts",
           "role": "support",
           "sha256": "adab121a4bb7c7560fb8faf2ed46d9acbe3b7dbf474b584c90a2ebb46e605fb7"
-        }
-      ]
-    },
-    {
-      "id": "formisch-differential",
-      "type": "differential",
-      "oracle": "required",
-      "environment": "workspace-node",
-      "project": "formisch-differential",
-      "evidenceOrigin": "repo-authored",
-      "notes": "The same Formisch field-update fixture runs through Octane and real @formisch/react via the shared differential rig.",
-      "files": [
-        {
-          "path": "packages/formisch/tests/differential/parity.test.ts",
-          "role": "test",
-          "sha256": "6ed01ee2a68dc8b6b24a366af4b8b9767c9112e3ce8bf75d11ed1d0742c627bd",
-          "cases": [
-            {
-              "id": "differential:field-update",
-              "testName": "field update: programmatic onChange renders byte-identical",
-              "fullName": "differential: @octanejs/formisch vs @formisch/react field update: programmatic onChange renders byte-identical"
-            }
-          ]
-        },
-        {
-          "path": "packages/formisch/tests/_fixtures/differential.tsrx",
-          "role": "support",
-          "sha256": "42e018d92e9ea0120f9ffd5969a9f85f42720eaaebde8b1f2961932940448c50"
-        },
-        {
-          "path": "packages/octane/tests/differential/_rig.ts",
-          "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "packages/formisch/tests/differential/_setup.ts",
-          "role": "support",
-          "sha256": "25a42f1f6a730f8eb5a8a8e7de0e6ea2f7b3fd6f2bd8e05843445e61a6b1b8d3"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "6c8173c69889d35725ea0fdee15762639daf538bf4fefd652daf9e8a30b0097b"
         }
       ]
     },
@@ -598,14 +549,50 @@
           "sha256": "ee82aa915902af6fd21def6305657a24b1f13b6fa346bd0e5d1706501cbbb093"
         }
       ]
+    },
+    {
+      "id": "formisch-differential",
+      "type": "differential",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "formisch-differential",
+      "evidenceOrigin": "repo-authored",
+      "notes": "The same fixture runs through Octane and real @formisch/react via the shared differential rig.",
+      "files": [
+        {
+          "path": "packages/formisch/tests/differential/parity.test.ts",
+          "role": "test",
+          "sha256": "6ed01ee2a68dc8b6b24a366af4b8b9767c9112e3ce8bf75d11ed1d0742c627bd",
+          "cases": [
+            {
+              "id": "differential:field-update",
+              "testName": "field update: programmatic onChange renders byte-identical",
+              "fullName": "differential: @octanejs/formisch vs @formisch/react field update: programmatic onChange renders byte-identical"
+            }
+          ]
+        },
+        {
+          "path": "packages/formisch/tests/_fixtures/differential.tsrx",
+          "role": "support",
+          "sha256": "42e018d92e9ea0120f9ffd5969a9f85f42720eaaebde8b1f2961932940448c50"
+        },
+        {
+          "path": "packages/octane/tests/differential/_rig.ts",
+          "role": "support",
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
+        },
+        {
+          "path": "packages/formisch/tests/differential/_setup.ts",
+          "role": "support",
+          "sha256": "25a42f1f6a730f8eb5a8a8e7de0e6ea2f7b3fd6f2bd8e05843445e61a6b1b8d3"
+        }
+      ]
     }
   ],
   "divergences": [
     {
       "id": "formisch-no-strictmode-replay",
-      "caseIds": [
-        "runtime:5457ff55c8742f8e"
-      ],
+      "caseIds": ["runtime:5457ff55c8742f8e"],
       "upstreamResult": "React StrictMode replays effects while retaining a live signal subscription.",
       "octaneResult": "Octane has no StrictMode development replay; a committed subscription remains live normally.",
       "rationale": "Octane intentionally does not implement StrictMode double invocation.",

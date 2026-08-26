@@ -57,6 +57,10 @@ export function FormAttrs(props) @{
 	</form>
 }
 
+export function AutoFocusSpread(props) @{
+	<input id="hydrated-autofocus-spread" {...props.attributes} />
+}
+
 export function NamespacedTags(props) @{
 	<div>
 		<svg class="s1" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
@@ -115,5 +119,23 @@ export function EnumeratedBooleans(props) @{
 		<div class="g2" hidden={props.on} inert={props.on} />
 		<input class="g3" autoComplete={props.on ? 'on' : 'off'} />
 		<ol class="g4" reversed={props.on} start={props.num} />
+	</div>
+}
+
+export function HydratedAttributeValues(props: {
+	text: string | null;
+	on: boolean;
+}) @{
+	<div>
+		<button
+			title={props.text}
+			data-label={props.text as string}
+			disabled={props.on}
+			aria-expanded={props.on}
+		>{'attributes'}</button>
+		<svg>
+			<use xlinkHref={props.text} xmlLang={props.text} />
+		</svg>
+		<octane-attribute-probe customName={props.text} hidden={props.on} />
 	</div>
 }

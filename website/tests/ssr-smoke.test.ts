@@ -14,7 +14,12 @@ import { beforeAll, describe, it, expect, inject } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { waitForReadyState } from './support/server-process.ts';
-import { FRAMEWORK_CARDS, OCTANE_CARDS, TARGET_CARDS } from '../src/content/benchmarks.ts';
+import {
+	FRAMEWORK_CARDS,
+	LYNX_CARDS,
+	OCTANE_CARDS,
+	TARGET_CARDS,
+} from '../src/content/benchmarks.ts';
 
 const origin = inject('productionOrigin');
 const outputDir = inject('productionOutputDir');
@@ -23,7 +28,7 @@ const outputDir = inject('productionOutputDir');
 // not queue behind it, so the origin is reserved but not yet answering when this
 // module loads. Everything below — HTTP and build-output alike — needs the build
 // finished, so wait once here rather than per case.
-beforeAll(() => waitForReadyState(inject('productionReadyFile'), 300_000));
+beforeAll(() => waitForReadyState(inject('productionReadyFile'), 460_000));
 const staticRoot = path.join(outputDir, 'static');
 const serverEntry = path.join(outputDir, 'functions/__server.func/index.mjs');
 
@@ -50,6 +55,23 @@ describe('built Start server', () => {
 	it('produced Nitro server and public asset output', () => {
 		expect(fs.existsSync(serverEntry)).toBe(true);
 		expect(fs.existsSync(path.join(staticRoot, 'playground-runtime.json'))).toBe(true);
+	});
+
+	it('serves the documented shadcn registry paths', async () => {
+		for (const registryPath of [
+			'/r/button.json',
+			'/r/styles/base-nova/button.json',
+			'/r/styles/radix-nova/button.json',
+			'/r/styles/aria-nova/button.json',
+		]) {
+			const { response, html } = await get(registryPath);
+			expect(response.status, registryPath).toBe(200);
+			expect(response.headers.get('content-type'), registryPath).toMatch(/^application\/json\b/);
+			expect(JSON.parse(html), registryPath).toMatchObject({
+				name: 'button',
+				type: 'registry:ui',
+			});
+		}
 	});
 
 	it('server-renders the home page with the hydration payload', async () => {
@@ -126,6 +148,10 @@ describe('built Start server', () => {
 		expect(classCount(html, 'shiki')).toBeGreaterThan(0);
 		expect(html).toContain('id="deferred-hydration"');
 		expect(html).toContain('Deferred hydration');
+		expect(html).toContain('id="behavior-only-roots"');
+		expect(html).toContain('Behavior-only roots and external ownership');
+		expect(html).toContain('attachBehaviorRoot');
+		expect(html).toContain('octane/behavior');
 	});
 
 	// This route deliberately renders every chart and accessible data table; give
@@ -133,7 +159,7 @@ describe('built Start server', () => {
 	// slower CI runners.
 	it('server-renders /benchmarks with complete bar charts and table data', async () => {
 		const { response, html } = await get('/benchmarks');
-		const cards = [...FRAMEWORK_CARDS, ...TARGET_CARDS, ...OCTANE_CARDS];
+		const cards = [...FRAMEWORK_CARDS, ...TARGET_CARDS, ...LYNX_CARDS, ...OCTANE_CARDS];
 		// Each card server-renders its default "overall" view: one geomean bar per
 		// series with a computable ratio vs the reference (rows where either side
 		// is missing or zero drop out); single-series cards chart every operation.
@@ -161,6 +187,7 @@ describe('built Start server', () => {
 		expect(classCount(html, 'benchpage')).toBeGreaterThan(0);
 		expect(html).toContain('aria-labelledby="bench-frameworks"');
 		expect(html).toContain('aria-labelledby="bench-targets"');
+		expect(html).toContain('aria-labelledby="bench-lynx"');
 		expect(html).toContain('aria-labelledby="bench-internal"');
 		// Every no-JS benchmark card ships both the real chart and its accessible table.
 		expect(classCount(html, 'bench-card')).toBe(cards.length);

@@ -40,7 +40,7 @@ const typeEvidence = (inventory, id, name, project) => [
 	evidence('scripts/react-parity/type-parity-lib.mjs'),
 ];
 const environment = 'workspace-node';
-const runtimeLane = ({ id, type, project, inventory, notes }) => ({
+const runtimeLane = ({ id, type, project, inventory, notes, support = [] }) => ({
 	id,
 	type,
 	oracle: 'required',
@@ -49,7 +49,7 @@ const runtimeLane = ({ id, type, project, inventory, notes }) => ({
 	evidenceOrigin: 'upstream-suite',
 	notes,
 	execution: { kind: 'vitest-full', inventory },
-	files: runtimeSupport(inventory),
+	files: [...runtimeSupport(inventory), ...support.map((path) => evidence(path))],
 });
 const typeLane = ({ id, type, project, compiler, inventory, caseId, testName, notes }) => ({
 	id,
@@ -79,7 +79,7 @@ const manifest = {
 		sourceRoot: 'frameworks/react; packages/core; packages/methods',
 		testRoot: 'the test artifacts colocated under those source roots',
 		license: 'MIT',
-		integrity: 'sha256:8e1ccebb3a92c76e02f5ded91046dda71cdd106b813f91071b133e7147037b4f',
+		integrity: 'sha256:3f9c1c6da89473296033cc2701405080b2cb11478724bc7f045063ee618aaf57',
 		verification: 'verified',
 	},
 	upstreamSuites: { runtime: 'present', types: 'present' },
@@ -90,12 +90,7 @@ const manifest = {
 			exclude: [],
 		},
 		tests: {
-			roots: [
-				'packages/formisch/upstream/packages/core/src',
-				'packages/formisch/upstream/packages/methods/src',
-				'packages/formisch/tests/upstream/frameworks/react/src',
-				'packages/formisch/audit/resolver-canary',
-			],
+			roots: ['packages/formisch/audit', 'packages/formisch/tests/upstream/frameworks/react/src'],
 			include: ['\\.test\\.(?:ts|tsrx)$'],
 			exclude: [],
 		},
@@ -139,12 +134,13 @@ const manifest = {
 			project: 'formisch-adapted-core-methods',
 			inventory: 'packages/formisch/audit/adapted-runtime-core-methods.json',
 			notes:
-				'Runs the unchanged 507-case framework-neutral suite against the Octane-selected core and methods sources.',
+				'Runs the unchanged 507-case framework-neutral suite through a distinct entrypoint against the Octane-selected core and methods sources.',
+			support: ['packages/formisch/audit/adapted-core-methods.test.ts'],
 		}),
 		runtimeLane({
 			id: 'formisch-adapted-resolver-canary',
 			type: 'adapted-octane',
-			project: 'formisch-adapted-core-methods',
+			project: 'formisch-adapted-resolver-canary',
 			inventory: 'packages/formisch/audit/adapted-runtime-resolver-canary.json',
 			notes:
 				'Proves the adapted core and methods resolver executes the Octane source tree rather than vendored upstream code.',
@@ -198,6 +194,29 @@ const manifest = {
 			caseId: 'types:adapted-core-exact',
 			testName: 'adapted Octane core type suite',
 		}),
+		{
+			id: 'formisch-differential',
+			type: 'differential',
+			oracle: 'required',
+			environment,
+			project: 'formisch-differential',
+			evidenceOrigin: 'repo-authored',
+			notes:
+				'The same fixture runs through Octane and real @formisch/react via the shared differential rig.',
+			files: [
+				evidence('packages/formisch/tests/differential/parity.test.ts', 'test', [
+					{
+						id: 'differential:field-update',
+						testName: 'field update: programmatic onChange renders byte-identical',
+						fullName:
+							'differential: @octanejs/formisch vs @formisch/react field update: programmatic onChange renders byte-identical',
+					},
+				]),
+				evidence('packages/formisch/tests/_fixtures/differential.tsrx'),
+				evidence('packages/octane/tests/differential/_rig.ts'),
+				evidence('packages/formisch/tests/differential/_setup.ts'),
+			],
+		},
 	],
 	divergences: [
 		{

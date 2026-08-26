@@ -1,5 +1,43 @@
 # @octanejs/mcp-server
 
+## 0.2.19
+
+### Patch Changes
+
+- 7535acd: Deduplicate binding hook sub-slot derivation behind Octane's shared helper while preserving each binding's slotless and symbol-identity behavior.
+
+## 0.2.18
+
+### Patch Changes
+
+- 1a99f1b: Add the deterministic React-library port workflow, preserve the previous skill-name alias, and update React rewrite classifications.
+- 409682b: Expose the Activity benchmark through the MCP benchmark tool.
+
+## 0.2.17
+
+### Patch Changes
+
+- 64c004a: Expose the hook-store-composition benchmark through the MCP benchmark tool.
+- 922b2d4: Expose the universal external-store benchmark through the MCP benchmark tool.
+- 489a886: Expose the hook-memo allocation benchmark through the MCP benchmark tool.
+
+## 0.2.16
+
+### Patch Changes
+
+- 371d9f9: Register `@octanejs/alien-signals` in the MCP binding catalogs.
+- b3537b4: Register `@octanejs/textarea-autosize` in the CLI and MCP migration mappings.
+- 87394b4: Register `@octanejs/pdf` in the MCP binding catalogs.
+- 89a3b1d: Register `@octanejs/popper` in the MCP binding catalogs.
+
+## 0.2.15
+
+### Patch Changes
+
+- 677182d: Expose the deterministic minimal-import bundle reachability benchmark through
+  the MCP server.
+- 9374c55: Expose the SPA navigation benchmark through the Octane benchmark MCP tool.
+
 ## 0.2.14
 
 ### Patch Changes
