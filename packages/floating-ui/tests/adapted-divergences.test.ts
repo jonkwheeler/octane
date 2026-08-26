@@ -108,10 +108,6 @@ it('locks divergence:react-context-fixture:03', () =>
 it('locks divergence:focus-scheduling:02', () =>
 	assertExecutableNegativeControl('divergence:focus-scheduling:02'));
 
-// @parity-case divergence:focus-scheduling:03
-it('locks divergence:focus-scheduling:03', () =>
-	assertExecutableNegativeControl('divergence:focus-scheduling:03'));
-
 // @parity-case divergence:render-count:01
 it('locks divergence:render-count:01', () =>
 	assertExecutableNegativeControl('divergence:render-count:01'));

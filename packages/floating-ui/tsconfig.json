@@ -6,6 +6,7 @@
     "jsx": "preserve",
     "jsxImportSource": "octane",
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "noEmitOnError": true,

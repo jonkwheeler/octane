@@ -225,9 +225,9 @@ const expectedFailureDocument = JSON.parse(
 const expectedFailureKeys = new Set(
 	expectedFailureDocument.tests.map((test) => `${test.file}\0${test.fullName}`),
 );
-if (expectedFailureKeys.size !== 30) {
+if (expectedFailureKeys.size !== 29) {
 	throw new Error(
-		`expected 30 distinct adapted negative controls, got ${expectedFailureKeys.size}`,
+		`expected 29 distinct adapted negative controls, got ${expectedFailureKeys.size}`,
 	);
 }
 
@@ -561,8 +561,8 @@ const manifest = {
 		},
 	},
 	adaptedRuntimeSummary: {
-		inventoryEntries: 31,
-		uniqueIdentities: 31,
+		inventoryEntries: 30,
+		uniqueIdentities: 30,
 		duplicateEntriesWithinLanes: 0,
 		identitiesSharedAcrossLanes: 0,
 	},
@@ -609,7 +609,7 @@ const manifest = {
 			project: 'floating-ui-adapted',
 			evidenceOrigin: 'upstream-suite',
 			notes:
-				'One-for-one adapted suite on the same Vitest 3.0.9 runner: 271 compatible passes plus 30 executable expected-failure negative controls, crosswalked to every pristine executed identity.',
+				'One-for-one adapted suite on the same Vitest 3.0.9 runner: 272 compatible passes plus 29 executable expected-failure negative controls, crosswalked to every pristine executed identity.',
 			execution: {
 				kind: 'vitest-full',
 				inventory: 'packages/floating-ui/audit/adapted-wrapper-runtime.json',
@@ -764,7 +764,7 @@ const manifest = {
 			caseIds: casesForDivergence('floating-ui-focus-scheduling'),
 			upstreamResult:
 				'Return-focus, aria-hiding, and non-modal tab order match React commit/focus timing.',
-			octaneResult: 'Three focus-order assertions remain expected failures.',
+			octaneResult: 'Two focus-order assertions remain expected failures.',
 			rationale: 'Octane native focus/event scheduling differs in these bounded paths.',
 			classification: 'known-behavior-gap',
 			consumerImpact:

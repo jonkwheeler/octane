@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 31,
-    "uniqueIdentities": 31,
+    "inventoryEntries": 30,
+    "uniqueIdentities": 30,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -106,7 +106,7 @@
       "environment": "workspace-node",
       "project": "floating-ui-adapted",
       "evidenceOrigin": "upstream-suite",
-      "notes": "One-for-one adapted suite on the same Vitest 3.0.9 runner: 271 compatible passes plus 30 executable expected-failure negative controls, crosswalked to every pristine executed identity.",
+      "notes": "One-for-one adapted suite on the same Vitest 3.0.9 runner: 272 compatible passes plus 29 executable expected-failure negative controls, crosswalked to every pristine executed identity.",
       "execution": {
         "kind": "vitest-full",
         "inventory": "packages/floating-ui/audit/adapted-wrapper-runtime.json"
@@ -115,22 +115,22 @@
         {
           "path": "packages/floating-ui/audit/adapted-wrapper-runtime.json",
           "role": "support",
-          "sha256": "273c0fcb001dfe2c58cf6d8eaf82c2026c13ea6e5719e94bc41f3bc259dac373"
+          "sha256": "5b88485ca71be7a1c09b0da82dbf89343c2a160223ea64c1ee83c5bdeb603b1d"
         },
         {
           "path": "packages/floating-ui/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "2afaf4b263c84f736f0d00a8867fe41db67755e2d3a6e9610af7f0a40ab96301"
+          "sha256": "c13559b3600f0e9f910b0892c1df4ac4ab6af352e266060518e094e849338465"
         },
         {
           "path": "packages/floating-ui/audit/runtime-crosswalk.json",
           "role": "support",
-          "sha256": "55127100f5ee592f9afb617ca269be2c5e24ba293b720512ea9e48548eed4e5c"
+          "sha256": "e8dfbecb865dc0459816b13b2eb839100750f8666717470f0cabb5c25efb0509"
         },
         {
           "path": "packages/floating-ui/audit/expected-failures.json",
           "role": "support",
-          "sha256": "4554d56be150715f672805d347b2f2c8429302c5cca9bb81b4a89e6ff82a6594"
+          "sha256": "727e66f3471eb60d960d820ccef9b9fd4baa63bc8c16153a3f7515c958a2c4b1"
         },
         {
           "path": "packages/floating-ui/audit/upstream-skips.json",
@@ -145,7 +145,7 @@
         {
           "path": "packages/floating-ui/tests/adapted-divergences.test.ts",
           "role": "test",
-          "sha256": "39852bc549d15f4bacebf6f586f46857f889e49cad2d5954fbc12ef943c5f812",
+          "sha256": "fccd2f65df87401a765bfa6f4e2267a06eb74d6483cbd7d1f304c76483812a7b",
           "cases": [
             {
               "id": "divergence:ref-scheduling:01",
@@ -221,11 +221,6 @@
               "id": "divergence:focus-scheduling:02",
               "testName": "locks divergence:focus-scheduling:02",
               "fullName": "locks divergence:focus-scheduling:02"
-            },
-            {
-              "id": "divergence:focus-scheduling:03",
-              "testName": "locks divergence:focus-scheduling:03",
-              "fullName": "locks divergence:focus-scheduling:03"
             },
             {
               "id": "divergence:render-count:01",
@@ -317,7 +312,7 @@
         {
           "path": "packages/floating-ui/scripts/generate-parity-evidence.mjs",
           "role": "support",
-          "sha256": "d3184d63d7c6c7cbe7c10aefeded68867ef7f69c5226d2c172afa692e40b7682"
+          "sha256": "7d89b59bdc72b266dfb51fab43c566a191d25b371a44adb5838ad9825e2824cf"
         },
         {
           "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/react-dom/index.test-d.tsx.patch",
@@ -337,7 +332,7 @@
         {
           "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/react/unit/FloatingFocusManager.test.tsx.patch",
           "role": "support",
-          "sha256": "742a93d3bd44d2270b01e03a71c16f6e80d4dad8862e8e80227c29570fe813e6"
+          "sha256": "a1a4a0c36ed40159ac4f6d1f24383bcb5c65b836d07542bc9b13f69a93a3fcd9"
         },
         {
           "path": "packages/floating-ui/audit/upstream-patches/tests/upstream/react/unit/NextFloatingDelayGroup.test.tsx.patch",
@@ -607,13 +602,9 @@
     },
     {
       "id": "floating-ui-focus-scheduling",
-      "caseIds": [
-        "divergence:focus-scheduling:01",
-        "divergence:focus-scheduling:02",
-        "divergence:focus-scheduling:03"
-      ],
+      "caseIds": ["divergence:focus-scheduling:01", "divergence:focus-scheduling:02"],
       "upstreamResult": "Return-focus, aria-hiding, and non-modal tab order match React commit/focus timing.",
-      "octaneResult": "Three focus-order assertions remain expected failures.",
+      "octaneResult": "Two focus-order assertions remain expected failures.",
       "rationale": "Octane native focus/event scheduling differs in these bounded paths.",
       "classification": "known-behavior-gap",
       "consumerImpact": "Complex non-modal or nested focus restoration can choose a different target/order.",

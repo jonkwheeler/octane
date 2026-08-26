@@ -112,12 +112,3 @@ diff --git a/tests/upstream/react/unit/FloatingFocusManager.test.tsx b/tests/ups
    render(<MenuVirtual />);
  
    await userEvent.click(screen.getByRole('combobox'));
-@@ -2389,7 +2394,7 @@ test('handles manual tabindex on dialog floating element', async () => {
-   expect(screen.getByTestId('floating')).toHaveFocus();
- });
- 
--test('standard tabbing back and forth of a non-modal floating element', async () => {
-+test.fails('standard tabbing back and forth of a non-modal floating element', async () => {
-   function App() {
-     const [isOpen, setIsOpen] = useState(false);
- 

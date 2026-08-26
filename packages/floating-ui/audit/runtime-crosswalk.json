@@ -4,8 +4,8 @@
   "adaptedInventory": "packages/floating-ui/audit/adapted-runtime.json",
   "summary": {
     "crosswalked": 301,
-    "compatible": 271,
-    "expectedFailureNegativeControls": 30
+    "compatible": 272,
+    "expectedFailureNegativeControls": 29
   },
   "tests": [
     {
@@ -716,9 +716,7 @@
       "fullName": "standard tabbing back and forth of a non-modal floating element",
       "pristineId": "runtime:727a342d5607e061",
       "adaptedId": "runtime:cc8c61cc5420726a",
-      "disposition": "expected-failure-negative-control",
-      "divergenceId": "floating-ui-focus-scheduling",
-      "divergenceCaseId": "divergence:focus-scheduling:03"
+      "disposition": "compatible"
     },
     {
       "id": "crosswalk:a879f1e4b988b795",

@@ -11,7 +11,7 @@ remain at zero. Zero pins does **not** imply complete upstream parity. Consult
 [`docs/bindings-status.md`](bindings-status.md) for each binding's supported
 surface and evidence.
 
-**30 active pin(s) across 96 binding package(s).**
+**29 active pin(s) across 96 binding package(s).**
 
 | Package | Active pins |
 | --- | ---: |
@@ -34,7 +34,7 @@ surface and evidence.
 | `@octanejs/dropzone` | 0 |
 | `@octanejs/electron` | 0 |
 | `@octanejs/embla-carousel` | 0 |
-| `@octanejs/floating-ui` | 30 |
+| `@octanejs/floating-ui` | 29 |
 | `@octanejs/formisch` | 0 |
 | `@octanejs/gsap` | 0 |
 | `@octanejs/hook-form` | 0 |
@@ -134,7 +134,6 @@ surface and evidence.
 - **closeOnFocusOut=false - does not close when tabbing out**
 - **returns focus when tabbing out then back to close button**
 - **aria-hidden is not applied on root combobox with virtual nested menu**
-- **standard tabbing back and forth of a non-modal floating element**
 
 ### packages/floating-ui/tests/upstream/react/unit/NextFloatingDelayGroup.test.tsx
 

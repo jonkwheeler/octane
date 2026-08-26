@@ -88,11 +88,6 @@
       "fullName": "locks divergence:focus-scheduling:02"
     },
     {
-      "id": "divergence:focus-scheduling:03",
-      "file": "packages/floating-ui/tests/adapted-divergences.test.ts",
-      "fullName": "locks divergence:focus-scheduling:03"
-    },
-    {
       "id": "divergence:iframe-realm:01",
       "file": "packages/floating-ui/tests/adapted-divergences.test.ts",
       "fullName": "locks divergence:iframe-realm:01"

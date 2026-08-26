@@ -535,7 +535,7 @@
       "id": "runtime:cc8c61cc5420726a",
       "file": "packages/floating-ui/tests/upstream/react/unit/FloatingFocusManager.test.tsx",
       "fullName": "standard tabbing back and forth of a non-modal floating element",
-      "classification": "expected-failure-negative-control"
+      "classification": "compatible"
     },
     {
       "id": "runtime:509433ea0120f0c9",
@@ -1837,7 +1837,7 @@
   "snapshots": 0,
   "summary": {
     "registered": 301,
-    "compatible": 271,
-    "expectedFailureNegativeControls": 30
+    "compatible": 272,
+    "expectedFailureNegativeControls": 29
   }
 }
