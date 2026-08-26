@@ -732,6 +732,13 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		name: 'tsrx-component-graph',
+		cwd: 'tsrx-component-graph',
+		servers: [],
+		iter: { normal: 8, quick: 4 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		// Development TSRX compiler scaling: distinct authored HTML-nesting
 		// diagnostics at two sizes, normalized per invalid site in one process.
 		name: 'tsrx-nesting-diagnostics',
