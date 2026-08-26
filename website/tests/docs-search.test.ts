@@ -5,7 +5,23 @@ import { cleanup, fireEvent, render, waitFor } from '@octanejs/testing-library';
 import { RouterProvider, createMemoryHistory } from '@octanejs/tanstack-router';
 import { getRouter } from '../src/router.ts';
 import { docs } from '../src/content/docs.ts';
-import { loadSearchIndex, searchDocs } from '../src/lib/docs-search.ts';
+import { headingsFor, loadSearchIndex, searchDocs } from '../src/lib/docs-search.ts';
+
+const rawDocs = import.meta.glob('../src/content/docs/*.mdx', {
+	query: '?raw',
+	import: 'default',
+	eager: true,
+}) as Record<string, string>;
+
+function rawDoc(slug: string): string {
+	const entry = Object.entries(rawDocs).find(([path]) => path.endsWith(`/${slug}.mdx`));
+	if (!entry) throw new Error(`missing raw doc for ${slug}`);
+	return entry[1];
+}
+
+function frontmatterTitle(source: string): string | undefined {
+	return source.match(/^---\s*$([\s\S]*?)^---\s*$/m)?.[1].match(/^title:\s*(.+)$/m)?.[1];
+}
 
 afterEach(cleanup);
 
@@ -20,6 +36,29 @@ async function renderRoute(url: string) {
 }
 
 describe('docs search index', () => {
+	it('keeps page and section metadata aligned with the authored headings', () => {
+		for (const doc of docs) {
+			const source = rawDoc(doc.slug);
+			const headings = headingsFor(source);
+
+			expect(frontmatterTitle(source), `${doc.slug} page title`).toBe(doc.title);
+			for (const section of doc.sections ?? []) {
+				const heading = headings.find((candidate) => candidate.id === section.id);
+				expect(heading, `${doc.slug}#${section.id}`).toEqual({
+					id: section.id,
+					title: section.title,
+					level: section.level ?? 2,
+				});
+			}
+
+			// Every top-level authored section belongs in the registry, in page order.
+			expect(
+				(doc.sections ?? []).filter((section) => (section.level ?? 2) === 2).map(({ id }) => id),
+				`${doc.slug} top-level sections`,
+			).toEqual(headings.filter(({ level }) => level === 2).map(({ id }) => id));
+		}
+	});
+
 	it('indexes every document, and every section anchor the registry advertises', async () => {
 		const index = await loadSearchIndex();
 
@@ -57,8 +96,10 @@ describe('docs search index', () => {
 		const snippets = result.lines.map((line) => line.parts.map((part) => part.text).join(''));
 
 		expect(result.slug).toBe('quick-start');
+		// Spans a sentence boundary on purpose: the prose has to come through
+		// whole, not cut at the first full stop inside the expression.
 		expect(snippets.join(' ')).toContain(
-			'requires Node.js 22 or newer. Octane is currently alpha software',
+			'You need Node.js 22.22.2 or newer. Octane is currently alpha software',
 		);
 		expect(snippets.join(' ')).not.toMatch(/[{}]/);
 	});
@@ -89,6 +130,44 @@ describe('docs search ranking', () => {
 		expect(top.id).toBe('deferred-hydration');
 	});
 
+	it('deep links behavior-root API and external-ownership searches to their guide', async () => {
+		const index = await loadSearchIndex();
+
+		for (const query of [
+			'attachBehaviorRoot',
+			'octane/behavior',
+			'registerExternalRange',
+			'external ownership',
+			'permanent static',
+		]) {
+			const [top] = searchDocs(index, query);
+
+			expect(top, query).toBeDefined();
+			expect(top.slug, query).toBe('core-apis');
+			expect(top.id, query).toBe('behavior-only-roots');
+		}
+	});
+
+	it('deep links Strong-mode searches to the build configuration guide', async () => {
+		const index = await loadSearchIndex();
+		const [top] = searchDocs(index, 'strong mode');
+
+		expect(top).toBeDefined();
+		expect(top.slug).toBe('build-tools');
+		expect(top.id).toBe('strong-mode');
+	});
+
+	it('finds browser support and deep links required DOM API searches', async () => {
+		const index = await loadSearchIndex();
+		const [guide] = searchDocs(index, 'browser support');
+		const [requiredApi] = searchDocs(index, 'replaceChildren');
+
+		expect(guide).toMatchObject({ slug: 'browser-support', docTitle: 'Browser support' });
+		expect(requiredApi).toMatchObject({ slug: 'browser-support', id: 'required-apis' });
+		const snippets = requiredApi.lines.map((line) => line.parts.map((part) => part.text).join(''));
+		expect(snippets.join(' ')).toContain('replaceChildren');
+	});
+
 	it('ranks a heading match above an incidental prose mention', async () => {
 		const index = await loadSearchIndex();
 		const [top] = searchDocs(index, 'install');
@@ -105,6 +184,28 @@ describe('docs search ranking', () => {
 		expect(top.slug).toBe('bindings');
 		expect(top.id).toBe('find-a-binding');
 		expect(snippets.join(' ')).toContain('@octanejs/dexie');
+	});
+
+	it('finds Astro in the framework integrations guide', async () => {
+		const index = await loadSearchIndex();
+		const [top] = searchDocs(index, '@octanejs/astro');
+
+		expect(top.slug).toBe('framework-integrations');
+		expect(top.id).toBe('astro');
+	});
+
+	it('deep links compact and spaced VS Code searches to the TSRX editor guidance', async () => {
+		const index = await loadSearchIndex();
+		const expected = [
+			{ query: 'vscode', slug: 'quick-start', id: 'tsrx-at-a-glance' },
+			{ query: 'vs code', slug: 'tsrx-vs-tsx', id: 'editor-support' },
+		];
+
+		for (const { query, slug, id } of expected) {
+			const [top] = searchDocs(index, query);
+			expect(top.slug, query).toBe(slug);
+			expect(top.id, query).toBe(id);
+		}
 	});
 
 	it('requires every term to match, and ignores queries shorter than two characters', async () => {

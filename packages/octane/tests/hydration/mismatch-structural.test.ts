@@ -1,11 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { compile } from 'octane/compiler';
-import * as ClientRT from '../../src/index.js';
 import { hydrateRoot, flushSync } from '../../src/index.js';
 import * as ServerRT from 'octane/server';
-import { hydrationMarkerSummary } from './_marker-summary.js';
+import { loadCompiledFixtureSource, loadServerFixture } from '../_server-fixture';
 
 // P3 — STRUCTURAL hydration mismatch: the server DOM's SHAPE differs from what the client
 // renders (a swapped @if/@switch branch, a changed tag, a different @for list length). The
@@ -22,41 +20,25 @@ const NESTEDSWAP = join(
 	process.cwd(),
 	'packages/octane/tests/hydration/_fixtures/nested-swap.tsrx',
 );
+const TERNARY = join(process.cwd(), 'packages/octane/tests/_fixtures/ternary-mixed-arms.tsrx');
 
 function serverModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'server' });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane\/server['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ServerRT, {});
+	return loadServerFixture(fixture, { id: file });
 }
 
 function devClientModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'client', dev: true });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ClientRT, {});
+	return loadCompiledFixtureSource(readFileSync(fixture, 'utf8'), {
+		id: file,
+		mode: 'client',
+		compileOptions: { dev: true },
+	});
 }
 
 // PROD-compiled client module (dev: false → no `loc` argument to clone(), no
 // `__oct_loc` stamps): the structural detection + rebuild must still run — only
 // the warning is dev-gated.
 function prodClientModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'client' });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ClientRT, {});
+	return loadCompiledFixtureSource(readFileSync(fixture, 'utf8'), { id: file, mode: 'client' });
 }
 
 describe('hydrateRoot — STRUCTURAL mismatch (detect + rebuild + cursor stays aligned)', () => {
@@ -206,36 +188,46 @@ describe('hydrateRoot — STRUCTURAL mismatch (detect + rebuild + cursor stays a
 		const { html } = await ServerRT.renderToString(server.Toggle, { on: true });
 		container.innerHTML = html;
 		const toggle = container.querySelector('#toggle')!;
-		const button = container.querySelector('#hit')!;
-		const before = hydrationMarkerSummary(toggle);
-		hydrateRoot(container, clientProd.Toggle, { on: true });
+		const button = container.querySelector('#hit') as HTMLButtonElement;
+		const root = hydrateRoot(container, clientProd.Toggle, { on: true });
 		flushSync(() => {});
 		expect(container.querySelector('#toggle')).toBe(toggle);
 		expect(container.querySelector('#hit')).toBe(button);
 		expect(button.textContent).toBe('on:0');
-		const after = hydrationMarkerSummary(toggle);
-		expect(after.logicalPairs).toBe(before.logicalPairs);
-		expect(after.physicalPairs).toBeLessThan(before.physicalPairs);
-		expect(after.countedPairs).toBe(1);
+		// A compact server range may already be minimal, so adoption cannot be
+		// identified by deleting comments; the adopted host must stay interactive.
+		flushSync(() => button.click());
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
+		root.render(clientProd.Toggle, { on: true });
+		flushSync(() => {});
+		expect(container.querySelector('#toggle')).toBe(toggle);
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
 		expect(warns()).toEqual([]);
+		root.unmount();
 	});
 
 	it('no warning + adopted hosts when the branch matches', async () => {
 		const { html } = await ServerRT.renderToString(server.Toggle, { on: true });
 		container.innerHTML = html;
 		const toggle = container.querySelector('#toggle')!;
-		const button = container.querySelector('#hit')!;
-		const before = hydrationMarkerSummary(toggle);
-		hydrateRoot(container, clientDev.Toggle, { on: true });
+		const button = container.querySelector('#hit') as HTMLButtonElement;
+		const root = hydrateRoot(container, clientDev.Toggle, { on: true });
 		flushSync(() => {});
 		expect(container.querySelector('#toggle')).toBe(toggle);
 		expect(container.querySelector('#hit')).toBe(button);
 		expect(button.textContent).toBe('on:0');
-		const after = hydrationMarkerSummary(toggle);
-		expect(after.logicalPairs).toBe(before.logicalPairs);
-		expect(after.physicalPairs).toBeLessThan(before.physicalPairs);
-		expect(after.countedPairs).toBe(1);
+		flushSync(() => button.click());
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
+		root.render(clientDev.Toggle, { on: true });
+		flushSync(() => {});
+		expect(container.querySelector('#toggle')).toBe(toggle);
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
 		expect(warns()).toEqual([]);
+		root.unmount();
 	});
 
 	it('@for list grow: server 2 items, client 3 → no crash, 3 items rendered, warns', async () => {
@@ -582,6 +574,102 @@ describe.each([
 			expect(recoveredAction.textContent?.trim()).toBe('inside:1');
 			flushSync(() => outsideAction.click());
 			expect(outsideAction.textContent?.trim()).toBe('outside:1');
+			expectDiagnostics();
+		} finally {
+			root.unmount();
+		}
+	});
+});
+
+// The server HTML below is a LEGACY shape for a sole-child mixed-arm-ternary hole:
+// an outer value pair wrapping one pair per keyed item. Today's client claims that
+// hole as an @if-lowered block whose branch hosts the keyed list, so every adopted
+// pair sits one nesting level off from where the client expects it. Recovery from
+// that misalignment must rebuild the subtree and never throw — stale server HTML
+// (an older octane version, a cached edge response) is exactly what the prod
+// recovery safety net exists for.
+describe.each([
+	{
+		name: 'development compile',
+		client: devClientModule(TERNARY, 'ternary-mixed-arms.tsrx'),
+		warns: true,
+	},
+	{
+		name: 'production compile',
+		client: prodClientModule(TERNARY, 'ternary-mixed-arms.tsrx'),
+		warns: false,
+	},
+])('hydrateRoot — recovery inside a misadopted range ($name)', ({ client, warns: shouldWarn }) => {
+	let container: HTMLElement;
+	let errSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeEach(() => {
+		container = document.createElement('div');
+		document.body.appendChild(container);
+		errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		container.remove();
+		errSpy.mockRestore();
+	});
+
+	function expectDiagnostics(): void {
+		const messages = errSpy.mock.calls
+			.map((call) => String(call[0]))
+			.filter((message) => message.includes('hydration mismatch'));
+		if (shouldWarn) expect(messages.length).toBeGreaterThanOrEqual(1);
+		else expect(messages).toEqual([]);
+	}
+
+	const LEGACY_HTML =
+		'<div><button class="next">next</button><div class="host">' +
+		'<!--[--><!--[--><i>x</i><!--]--><!--[--><i>y</i><!--]--><!--]-->' +
+		'</div></div>';
+
+	it('legacy nested-pair list shape: rebuilds the keyed list and stays interactive', () => {
+		container.innerHTML = LEGACY_HTML;
+		const root = hydrateRoot(container, client.ForArm);
+		flushSync(() => {});
+
+		try {
+			const itemTexts = () =>
+				Array.from(container.querySelectorAll('.host i'), (n) => n.textContent);
+			expect(itemTexts()).toEqual(['x', 'y']);
+
+			// The rebuilt block must leave a coherent slot boundary behind: flip to the
+			// component arm and back to the keyed list through the live click handler.
+			const next = container.querySelector<HTMLButtonElement>('.next')!;
+			flushSync(() => next.click());
+			expect(container.querySelector('.host i')).toBeNull();
+			expect(container.querySelector('.host em')?.textContent).toBe('chip');
+			flushSync(() => next.click());
+			expect(itemTexts()).toEqual(['x', 'y']);
+			expect(container.querySelector('.host em')).toBeNull();
+			expectDiagnostics();
+		} finally {
+			root.unmount();
+		}
+	});
+
+	// The inline-ternary form of the same shape (arm rendering itself is owned
+	// by the compiler's ternary suites). This case pins only what RECOVERY
+	// owns: no throw, the stale server list fully discarded (never leaked into
+	// later arms), and a slot boundary the swaps can keep using.
+	it('legacy nested-pair list shape under the inline ternary: discards, never throws or leaks', () => {
+		container.innerHTML = LEGACY_HTML;
+		const root = hydrateRoot(container, client.MapArm);
+		flushSync(() => {});
+
+		try {
+			const next = container.querySelector<HTMLButtonElement>('.next')!;
+			flushSync(() => next.click());
+			// Component arm on screen; no stale server <i> may survive alongside it.
+			expect(container.querySelector('.host i')).toBeNull();
+			expect(container.querySelector('.host em')?.textContent).toBe('chip');
+			flushSync(() => next.click());
+			// Back on the array arm: the chip must be gone through the same boundary.
+			expect(container.querySelector('.host em')).toBeNull();
 			expectDiagnostics();
 		} finally {
 			root.unmount();

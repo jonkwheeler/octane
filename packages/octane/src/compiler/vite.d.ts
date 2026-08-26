@@ -1,4 +1,7 @@
 import type { Plugin } from 'vite';
+import type { OctaneCssModuleConstants } from './index.js';
+
+export type { OctaneCssModuleConstants } from './index.js';
 
 export interface OctaneRendererRuleOptions {
 	/** Glob or globs matched against canonical project-relative module IDs. */
@@ -27,13 +30,15 @@ export type OctaneRendererRegistryEntry =
 	| string
 	| {
 			module: string;
-			target?: 'dom' | 'universal';
+			target?: 'dom' | 'universal' | 'valdi';
 			server?: 'render' | 'client-only' | 'unsupported';
 			intrinsics?: string;
 			text?: 'reject' | 'ignore' | 'host';
 			capabilities?: readonly string[];
 			/** Host event prop names/prefixes replaced by first-screen listener sentinels. */
 			firstScreenEvents?: readonly string[];
+			/** Optional cold module that owns compiler-emitted thread-function helpers. */
+			threadFunctionsModule?: string;
 			validation?: OctaneRendererValidationOptions;
 	  };
 
@@ -54,6 +59,16 @@ export interface OctaneRendererConfigOptions {
 	rules?: readonly OctaneRendererRuleOptions[];
 }
 
+/** The fully transformed module in one Vite build environment. */
+export interface OctaneCssModuleConstantModule {
+	/** Exact bundler-resolved identity, including virtual prefixes and queries. */
+	id: string;
+	/** Final JavaScript; no application module is evaluated to obtain it. */
+	code: string;
+	meta: Readonly<Record<string, unknown>>;
+	environment: 'client' | 'server';
+}
+
 export interface OctaneVitePluginOptions {
 	/** Override HMR code generation. It defaults to on while Vite is serving. */
 	hmr?: boolean;
@@ -65,6 +80,13 @@ export interface OctaneVitePluginOptions {
 	 * `@octanejs/vite-plugin`'s `devtools` option.
 	 */
 	profile?: boolean | 'auto';
+	/**
+	 * Reject state updates during render, synchronous effect state updates, and
+	 * render-time ref writes in application-owned modules. Individual modules
+	 * can opt in with a top-level `"use strong"` directive.
+	 * @default false
+	 */
+	strong?: boolean;
 	/**
 	 * Path fragments excluded from Octane's plain `.ts`/`.js` hook-slot pass.
 	 * Prefer package manifest `octane.hookSlots.manual` declarations for bindings.
@@ -82,6 +104,17 @@ export interface OctaneVitePluginOptions {
 	requireDirective?: boolean;
 	/** @experimental Declarative renderer selection for this compiler instance. */
 	renderers?: OctaneRendererConfigOptions;
+	/**
+	 * @experimental Authenticate immutable CSS-module exports supplied by a
+	 * trusted CSS provider. Used only in one-shot production builds, never serve
+	 * or watch. Values are checked against the exact final ESM; malformed or stale
+	 * assertions fail the build. Returning null/undefined supplies no additional
+	 * facts; built-in named-string proofs may still apply. This must not be used
+	 * to declare mutable default maps constant.
+	 */
+	cssModuleConstants?: (
+		module: OctaneCssModuleConstantModule,
+	) => OctaneCssModuleConstants | null | undefined;
 }
 
 /** The direct Octane compiler integration for Vite. */

@@ -1,4 +1,13 @@
-import { use, useState, useEffect, useMemo, useDeferredValue } from 'octane';
+import {
+	use,
+	useState,
+	useEffect,
+	useLayoutEffect,
+	useMemo,
+	useDeferredValue,
+	Suspense as ResourceSuspense,
+	ErrorBoundary as ResourceErrorBoundary,
+} from 'octane';
 
 // ---------------------------------------------------------------------------
 // Basic Suspense flow — try/pending/catch with a use(promise) inside try.
@@ -10,6 +19,57 @@ export function BasicSuspense(props) @{
 			<div class="resolved">{value as string}</div>
 		} @pending {
 			<div class="fallback">{'loading'}</div>
+		}
+	</>
+}
+
+interface ResourceReaderProps {
+	read: () => string;
+	log: string[];
+}
+
+function ResourceReader(props: ResourceReaderProps) @{
+	const value = props.read();
+	useLayoutEffect(() => {
+		props.log.push('mounted:' + value);
+		return () => {
+			props.log.push('cleanup:' + value);
+		};
+	}, [props.log, value]);
+	<div class="resolved">{value as string}</div>
+}
+
+export function ThrownResourceSuspense(props: ResourceReaderProps) @{
+	<>
+		@try {
+			<ResourceReader read={props.read} log={props.log} />
+		} @pending {
+			<div class="fallback">loading</div>
+		} @catch (err: unknown, _reset: () => void) {
+			<div class="error">{String(err)}</div>
+		}
+	</>
+}
+
+export function ThrownResourceJsxSuspense(props: ResourceReaderProps) @{
+	<ResourceErrorBoundary fallback={(err: unknown) => <div class="error">{String(err)}</div>}>
+		<ResourceSuspense fallback={<div class="fallback">loading</div>}>
+			<ResourceReader read={props.read} log={props.log} />
+		</ResourceSuspense>
+	</ResourceErrorBoundary>
+}
+
+export function PromiseThrownFromLayout(props: { promise: Promise<unknown> }) @{
+	<>
+		@try {
+			useLayoutEffect(() => {
+				throw props.promise;
+			}, [props.promise]);
+			<div class="resolved">content</div>
+		} @pending {
+			<div class="fallback">loading</div>
+		} @catch (err: unknown, _reset: () => void) {
+			<div class="error">{String(err)}</div>
 		}
 	</>
 }
@@ -310,4 +370,67 @@ export function ReplayChurnBody(props) @{
 			<div class="fallback">{'loading'}</div>
 		}
 	</>
+}
+
+// ---------------------------------------------------------------------------
+// Mount effects of siblings rendered BEFORE the suspending one.
+// ---------------------------------------------------------------------------
+// On the boundary's FIRST mount attempt these children render fully — their
+// effect slots stamp deps and enqueue — and then a LATER sibling suspends, so
+// the attempt is aborted and the subtree is hidden before anything committed.
+// When the promise resolves and the content is revealed, React fires every
+// mount effect in the subtree; these children have never run theirs.
+function PreSuspendChild(props) @{
+	useLayoutEffect(() => {
+		props.log('layout mount ' + props.id);
+		return () => props.log('layout cleanup ' + props.id);
+	}, []);
+	useEffect(() => {
+		props.log('passive mount ' + props.id);
+		return () => props.log('passive cleanup ' + props.id);
+	}, []);
+	<li class="item">{props.id as string}</li>
+}
+
+function SuspendingChild(props) @{
+	const v = use(props.promise);
+	<li class="resolved">{v as string}</li>
+}
+
+// Keyed @for items plus a plain element sibling, all ahead of the suspender.
+export function PreSuspendSiblingEffects(props) @{
+	<ul>
+		@try {
+			<>
+				@for (const id of props.ids; key id) {
+					<PreSuspendChild id={id} log={props.log} />
+				}
+				<PreSuspendChild id="plain" log={props.log} />
+				<SuspendingChild promise={props.promise} />
+			</>
+		} @pending {
+			<li class="fallback">{'loading'}</li>
+		}
+	</ul>
+}
+
+// Same shape, but the boundary COMMITS first and only suspends on a later
+// attempt that also introduces a new child. The already-committed children keep
+// their passive subscriptions across the hide (React's hidden-primary lifetime);
+// the newly rendered one never committed, so its mount effect still owes a run.
+export function CommittedThenNewSibling(props) @{
+	<ul>
+		@try {
+			<>
+				@for (const id of props.ids; key id) {
+					<PreSuspendChild id={id} log={props.log} />
+				}
+				@if (props.suspend) {
+					<SuspendingChild promise={props.promise} />
+				}
+			</>
+		} @pending {
+			<li class="fallback">{'loading'}</li>
+		}
+	</ul>
 }

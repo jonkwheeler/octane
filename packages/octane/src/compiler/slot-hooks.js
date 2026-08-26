@@ -1,10 +1,9 @@
 // Lightweight, surgical hook-slotting for plain `.ts`/`.js` modules.
 //
-// The full `compile()` path re-emits the whole module (esrap), which can't print
-// arbitrary TypeScript (index signatures, generic call signatures, type aliases) —
-// so it's reserved for `.tsrx`/`.tsx`. A custom hook can also live in a plain
-// module, though, and its base octane hooks still need a per-call-site slot key
-// or they throw "useState was called without a hook slot" at runtime.
+// A custom hook can live in a plain module, and its base octane hooks still
+// need per-call-site slots. The default path preserves arbitrary TypeScript
+// byte-for-byte. Production bundlers may additionally select the separate
+// whole-AST memo path, which preserves TypeScript and supplies a source map.
 //
 // This pass parses the module (for byte offsets), finds ONLY octane BASE hook
 // calls, and splices a trailing compiler slot into each — every other byte (all the
@@ -16,7 +15,9 @@
 
 import { parseModule } from '@tsrx/core';
 import { HOOK_NAMES, hookSlotHash } from './compile.js';
-import { annotateHookCalls } from './hook-deps.js';
+import { METHOD_DEP_IMPORT, annotateHookCalls } from './hook-deps.js';
+import { inlinePlainHookMemos } from './plain-hook-memo.js';
+import { assertStrongMode } from './strong-mode.js';
 
 // Build a cheap import-presence gate. Precise call identity is annotated by the
 // lexical scope analysis in analyzeHookDependencies below; this gate only avoids
@@ -26,6 +27,13 @@ function octaneHookLocals(ast) {
 	let importsHook = false;
 	let hasOctaneImport = false;
 	for (const node of ast.body || []) {
+		if (
+			(node.type === 'ExportNamedDeclaration' || node.type === 'ExportAllDeclaration') &&
+			node.source?.value === 'octane'
+		) {
+			hasOctaneImport = true;
+			continue;
+		}
 		if (node.type !== 'ImportDeclaration' || node.source?.value !== 'octane') continue;
 		hasOctaneImport = true;
 		for (const sp of node.specifiers || []) {
@@ -229,6 +237,7 @@ function collectVoidRootEdits(ast, st, isVoidComponentImport) {
 
 const STATE_GETTER_HELPERS = {
 	useState: '__useStateWithGetter',
+	useLinkedState: '__useLinkedStateWithGetter',
 	useReducer: '__useReducerWithGetter',
 };
 
@@ -938,9 +947,16 @@ function walk(node, owner, st) {
 				// The dependency callback is already the final user argument. Insert
 				// both the generated array and slot in one edit so equal-position edit
 				// ordering cannot reverse them. Dependency nodes retain original source
-				// offsets, preserving arbitrary TS syntax byte-for-byte.
+				// offsets, preserving arbitrary TS syntax byte-for-byte. Method-call
+				// dependencies are the one synthesized form: the helper call's root is
+				// a bare identifier and its name a JSON string, so no arbitrary TS
+				// syntax needs reprinting there either.
 				const deps = inferred.dependencies
-					.map((dependency) => st.source.slice(dependency.node.start, dependency.node.end))
+					.map((dependency) =>
+						dependency.method
+							? `${requireParallelHelper(st, METHOD_DEP_IMPORT)}(${dependency.method.root.name}, ${JSON.stringify(dependency.method.name)})`
+							: st.source.slice(dependency.node.start, dependency.node.end),
+					)
 					.join(', ');
 				st.edits.push({
 					pos: node.arguments[node.arguments.length - 1].end,
@@ -989,12 +1005,15 @@ function walk(node, owner, st) {
  *
  * @param {string} source raw module text
  * @param {string} id     module id (embedded in the stable Symbol.for key)
- * @param {{ environment?: 'client' | 'server', hmr?: boolean, profile?: boolean, profileFilename?: string, isVoidComponentImport?: (request: string, imported: string) => boolean }} [options] `hmr: true` (dev serve) emits
+ * @param {{ environment?: 'client' | 'server', strong?: boolean, hmr?: boolean, dev?: boolean, profile?: boolean, profileFilename?: string, inlineHookMemo?: boolean, manualSlots?: boolean, universalRuntime?: unknown, renderer?: { target?: string }, isVoidComponentImport?: (request: string, imported: string) => boolean }} [options] `hmr: true` (dev serve) emits
  *   `Symbol.for(stableKey)` so a re-imported module resolves the same hook
  *   slots (state survives HMR); off (ordinary prod builds and SSR) emits
  *   runtime-ranged Symbols. Profiling retains short described Symbols because
  *   hook metadata is keyed by Symbol identity.
- * @returns {{ code: string, map: null } | null}
+ *   `inlineHookMemo: true` enables the production-client whole-AST memo path;
+ *   the default remains surgical. `manualSlots: true` permits only that memo
+ *   rewrite and never injects or changes the module's authored slot policy.
+ * @returns {{ code: string, map: any } | null}
  */
 export function slotHooks(source, id, options) {
 	const environment = options?.environment ?? 'client';
@@ -1009,29 +1028,57 @@ export function slotHooks(source, id, options) {
 	} catch {
 		return null; // let the normal pipeline surface the parse error
 	}
+	assertStrongMode(ast, source, id, options);
 	const importInfo = octaneHookLocals(ast);
 	const canSpecializeRoot =
 		!options?.hmr &&
 		!options?.profile &&
 		typeof options?.isVoidComponentImport === 'function' &&
 		importInfo.hasOctaneImport;
-	if (!importInfo.importsHook && !canSpecializeRoot) return null;
+	if (!importInfo.importsHook && !canSpecializeRoot) {
+		return null;
+	}
 	// The parsed tree is never mutated: annotateHookCalls returns a COW-rebuilt
 	// module whose hook calls carry their `_octane*` props (start/end offsets are
 	// preserved, so the text edits below stay valid), with the dependency
 	// inference keyed by the rebuilt calls.
 	let inferred = new Map();
 	if (importInfo.importsHook) {
-		const annotated = annotateHookCalls(ast, { filename: id, onlyImported: true });
+		const annotated = annotateHookCalls(ast, {
+			filename: id,
+			onlyImported: true,
+			...(options?.manualSlots === true ? { inferDependencies: false } : null),
+		});
 		ast = annotated.ast;
 		inferred = annotated.inferred;
 	}
+	const getterCalls = importInfo.importsHook ? collectStateGetterCalls(ast) : new WeakSet();
+	if (
+		options?.inlineHookMemo === true &&
+		environment === 'client' &&
+		!options?.hmr &&
+		!options?.dev &&
+		!options?.profile &&
+		options?.universalRuntime == null &&
+		options?.renderer?.target !== 'universal' &&
+		!(canSpecializeRoot && collectVoidRootCandidates(ast).length > 0)
+	) {
+		const inlined = inlinePlainHookMemos(ast, source, id, {
+			manualSlots: options?.manualSlots === true,
+			hookNames: HOOK_NAMES,
+			inferred,
+			getterCalls,
+			stateGetterHelpers: STATE_GETTER_HELPERS,
+		});
+		if (inlined !== null) return inlined;
+	}
+	if (options?.manualSlots === true) return null;
 
 	const st = {
 		locals: importInfo.locals,
 		source,
 		inferred,
-		getterCalls: importInfo.importsHook ? collectStateGetterCalls(ast) : new WeakSet(),
+		getterCalls,
 		getterHelpers: new Map(),
 		filename: id,
 		profileFilename: (options && options.profileFilename) || id,
@@ -1062,8 +1109,11 @@ export function slotHooks(source, id, options) {
 	// Apply insertions right-to-left so earlier offsets stay valid.
 	st.edits.sort((a, b) => b.pos - a.pos);
 	let code = source;
-	for (const e of st.edits) {
-		code = code.slice(0, e.pos) + e.text + code.slice(e.end === undefined ? e.pos : e.end);
+	for (const edit of st.edits) {
+		code =
+			code.slice(0, edit.pos) +
+			edit.text +
+			code.slice(edit.end === undefined ? edit.pos : edit.end);
 	}
 
 	// APPEND the slot consts (rather than prepend) so every original line number

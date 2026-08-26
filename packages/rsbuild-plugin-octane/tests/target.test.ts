@@ -102,11 +102,11 @@ describe('Rsbuild build.target mapping', () => {
 		rmSync(root, { recursive: true, force: true });
 	});
 
-	it('applies an ES target to both client/server Rspack runtimes and only preserves generated import.meta', async () => {
+	it('builds targeted client/server runtimes with generated import.meta and client-only profiling', async () => {
 		writeApp(root, JSON.stringify('es5'));
 		const instance = await createRsbuild({
 			cwd: root,
-			rsbuildConfig: { plugins: [pluginOctane({ hmr: false })] },
+			rsbuildConfig: { plugins: [pluginOctane({ hmr: false, profile: true })] },
 		});
 		const configs = await instance.initConfigs({ action: 'build' });
 
@@ -124,7 +124,13 @@ describe('Rsbuild build.target mapping', () => {
 			expect.arrayContaining([expect.objectContaining({ parser: { importMeta: false } })]),
 		);
 		await instance.build();
-	});
+		const client = readJavaScript(join(root, 'dist/client'));
+		const server = readJavaScript(join(root, 'dist/server'));
+		for (const marker of ['__OCTANE_PROFILER__', 'octane.component', '/src/Page.tsrx#Page']) {
+			expect(client).toContain(marker);
+			expect(server).not.toContain(marker);
+		}
+	}, 30_000);
 
 	it('converts esbuild-style browser targets for SWC and Rspack runtime generation', async () => {
 		writeApp(root, JSON.stringify(['chrome100', 'firefox100']));
@@ -143,6 +149,39 @@ describe('Rsbuild build.target mapping', () => {
 				['web', 'browserslist:chrome >= 100,firefox >= 100'],
 				['node', 'browserslist:chrome >= 100,firefox >= 100'],
 			]),
+		);
+	});
+
+	it('targets Samsung Internet explicitly alongside its Chromium engine', async () => {
+		writeApp(root, JSON.stringify(['samsung24', 'chrome117']));
+		const instance = await createRsbuild({
+			cwd: root,
+			rsbuildConfig: { plugins: [pluginOctane({ hmr: false })] },
+		});
+		const inspected = await instance.inspectConfig();
+
+		expect(inspected.origin.environmentConfigs.web.output.overrideBrowserslist).toEqual([
+			'samsung >= 24',
+			'chrome >= 117',
+		]);
+		expect(inspected.origin.bundlerConfigs.map((config) => config.target)).toEqual(
+			expect.arrayContaining([
+				['web', 'browserslist:samsung >= 24,chrome >= 117'],
+				['node', 'browserslist:samsung >= 24,chrome >= 117'],
+			]),
+		);
+	});
+
+	it('includes the equivalent Samsung Internet release in the modules browser baseline', async () => {
+		writeApp(root, JSON.stringify('modules'));
+		const instance = await createRsbuild({
+			cwd: root,
+			rsbuildConfig: { plugins: [pluginOctane({ hmr: false })] },
+		});
+		const inspected = await instance.inspectConfig();
+
+		expect(inspected.origin.environmentConfigs.web.output.overrideBrowserslist).toEqual(
+			expect.arrayContaining(['chrome >= 87', 'samsung >= 14']),
 		);
 	});
 
@@ -221,22 +260,6 @@ describe('Rsbuild build.target mapping', () => {
 				: config.target === 'webworker',
 		)!;
 		expect(workerConfig.optimization?.minimize).toBe(minify);
-	});
-
-	it('emits profiling only in the client production bundle', async () => {
-		writeApp(root, JSON.stringify('es2022'));
-		const instance = await createRsbuild({
-			cwd: root,
-			rsbuildConfig: { plugins: [pluginOctane({ hmr: false, profile: true })] },
-		});
-		await instance.build();
-
-		const client = readJavaScript(join(root, 'dist/client'));
-		const server = readJavaScript(join(root, 'dist/server'));
-		for (const marker of ['__OCTANE_PROFILER__', 'octane.component', '/src/Page.tsrx#Page']) {
-			expect(client).toContain(marker);
-			expect(server).not.toContain(marker);
-		}
 	});
 
 	it.each([

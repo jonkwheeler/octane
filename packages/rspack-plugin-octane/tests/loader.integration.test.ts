@@ -87,8 +87,9 @@ describe('loader with the neutral compiler', () => {
 		const source = `export function App() @{ <button>ready</button> }\n`;
 		const result = transform({ root, resourcePath, source, hot: true });
 		const code = String(result.content);
-		expect(code).toContain('import.meta.webpackHot');
-		expect(code).toContain('import.meta.webpackHot.dispose');
+		expect(code).toContain('const _$webpackHot = import.meta.webpackHot;');
+		expect(code).toContain('_$webpackHot.dispose');
+		expect(code).not.toContain('import.meta.webpackHot.data');
 		expect(code).not.toContain('import.meta.hot');
 		expect(result.map).toMatchObject({ version: 3, sources: ['App.tsrx'] });
 		expect(result.module.buildInfo.octane).toEqual({
@@ -150,6 +151,86 @@ describe('loader with the neutral compiler', () => {
 		const moduleUrl = `data:text/javascript;base64,${Buffer.from(code).toString('base64')}`;
 		const generated = await import(moduleUrl);
 		expect(generated.App()).toBe('<p>server</p>');
+	});
+
+	it.each([
+		[
+			'render-phase state updates',
+			"import { useState } from 'octane';\nexport function App() @{ const [value, update] = useState(0); update(value); <p>ready</p> }\n",
+			/OCTANE_STRONG_RENDER_STATE_UPDATE/,
+		],
+		[
+			'effect-driven state updates',
+			"import { useEffect, useState } from 'octane';\nexport function App() @{ const [value, update] = useState(0); useEffect(() => update(value), [value]); <p>ready</p> }\n",
+			/OCTANE_STRONG_EFFECT_STATE_UPDATE/,
+		],
+		[
+			'render-phase ref writes',
+			"import { useRef } from 'octane';\nexport function App() @{ const value = useRef(0); value.current = 1; <p>ready</p> }\n",
+			/OCTANE_STRONG_RENDER_REF_WRITE/,
+		],
+	] as const)('enforces %s in client and server compilation', (_label, source, diagnostic) => {
+		const resourcePath = write(root, 'src/Strong.tsrx', source);
+		for (const target of ['web', 'node22']) {
+			expect(() =>
+				transform({ root, resourcePath, source, target, options: { strong: true } }),
+			).toThrow(diagnostic);
+		}
+
+		expect(() =>
+			transform({ root, resourcePath, source, options: { strong: false } }),
+		).not.toThrow();
+	});
+
+	it('enforces a module-level Strong directive without enabling the project globally', () => {
+		const source =
+			'"use strong";\n' +
+			"import { useState } from 'octane';\n" +
+			'export function App() @{ const [value, update] = useState(0); update(value); <p>ready</p> }\n';
+		const resourcePath = write(root, 'src/OptIn.tsrx', source);
+
+		expect(() => transform({ root, resourcePath, source, options: { strong: false } })).toThrow(
+			/OCTANE_STRONG_RENDER_STATE_UPDATE/,
+		);
+	});
+
+	it('enforces project Strong mode in plain custom-hook modules', () => {
+		const source =
+			"import { useState } from 'octane';\n" +
+			'export function useCounter() { const [value, update] = useState(0); update(value); return value; }\n';
+		const resourcePath = write(root, 'src/useCounter.ts', source);
+
+		expect(() => transform({ root, resourcePath, source, options: { strong: true } })).toThrow(
+			/OCTANE_STRONG_RENDER_STATE_UPDATE/,
+		);
+		expect(() =>
+			transform({ root, resourcePath, source, options: { strong: false } }),
+		).not.toThrow();
+	});
+
+	it('keeps dependency modules compatible unless they opt in themselves', () => {
+		const packageRoot = join(root, 'node_modules/@fixture/raw');
+		mkdirSync(packageRoot, { recursive: true });
+		writeFileSync(
+			join(packageRoot, 'package.json'),
+			'{"name":"@fixture/raw","dependencies":{"octane":"*"}}\n',
+		);
+		const body =
+			"import { useState } from 'octane';\n" +
+			'export function Dependency() @{ const [value, update] = useState(0); update(value); <p>ready</p> }\n';
+		const resourcePath = write(root, 'node_modules/@fixture/raw/index.tsrx', body);
+
+		expect(() =>
+			transform({ root, resourcePath, source: body, options: { strong: true } }),
+		).not.toThrow();
+
+		const optedIn = '"use strong";\n' + body;
+		writeFileSync(resourcePath, optedIn);
+		for (const strong of [true, false]) {
+			expect(() => transform({ root, resourcePath, source: optedIn, options: { strong } })).toThrow(
+				/OCTANE_STRONG_RENDER_STATE_UPDATE/,
+			);
+		}
 	});
 
 	it('attaches the same client-reference metadata to client code and its server stub', () => {

@@ -12,15 +12,21 @@ import {
 	type UniversalTransportCommitMessage,
 	type UniversalTransportEventMessage,
 	type UniversalTransportIdentity,
+	createContext,
 	createObjectContainer,
 	createObjectDriver,
 	createUniversalRoot,
 	defineUniversalComponent,
 	type UniversalRoot,
+	universalComponent,
+	universalContext,
+	universalFor,
 	universalPlan,
 	universalProps,
 	universalValue,
 	use,
+	useContext,
+	useEffect,
 	useLayoutEffect,
 	useState,
 } from '../src/universal.js';
@@ -835,6 +841,153 @@ describe('universal asynchronous transport', () => {
 		await root.unmountAsync();
 	});
 
+	it('clones plain object props built in another realm across the wire', async () => {
+		// A transported renderer can be handed values whose Object.prototype
+		// belongs to another realm (an engine main thread hosted in an iframe, an
+		// Electron process split, node:vm). Wire encoding must classify plain
+		// objects structurally, not by this realm's prototype identity, while
+		// still rejecting class instances from any realm.
+		const vm = await import('node:vm');
+		const foreign = vm.runInNewContext(
+			`({ style: { color: 'red' }, tags: ['row', 'danger'] })`,
+		) as { style: object; tags: readonly string[] };
+		expect(Object.getPrototypeOf(foreign)).not.toBe(Object.prototype);
+
+		const { container, loopback, root } = transportRoot(false);
+		const plan = universalPlan(RENDERER, { kind: 'host', type: 'node', propsSlot: 0 });
+		const Scene = defineUniversalComponent(RENDERER, (props: { payload: unknown }) =>
+			universalValue(plan, [universalProps([['set', 'payload', props.payload]])]),
+		);
+
+		await root.renderAsync(Scene, { payload: foreign });
+		const [node] = container.host.children;
+		expect(node?.props.payload).toEqual({ style: { color: 'red' }, tags: ['row', 'danger'] });
+		expect(loopback.sentBatches.length).toBeGreaterThan(0);
+
+		const foreignInstance = vm.runInNewContext(
+			`(() => { class Payload { constructor() { this.value = 1; } } return new Payload(); })()`,
+		);
+		await expect(root.renderAsync(Scene, { payload: foreignInstance })).rejects.toThrow(
+			/Serializable host values require plain objects/,
+		);
+		await root.unmountAsync();
+	});
+
+	it('emits update and event commands only for hosts whose wire value changed', async () => {
+		// Every render rebuilds the class arrays and handler closures from
+		// scratch, as compiled output does. The wire cost of a commit must scale
+		// with the values that changed, not with the number of hosts rendered:
+		// re-encoding a structurally identical prop or re-creating an equivalent
+		// closure is not a change a transported host can observe.
+		const { container, loopback, root } = transportRoot();
+		const plan = universalPlan(RENDERER, {
+			kind: 'host',
+			type: 'scene',
+			children: [
+				{ kind: 'host', type: 'row', propsSlot: 0 },
+				{ kind: 'host', type: 'row', propsSlot: 1 },
+				{ kind: 'host', type: 'row', propsSlot: 2 },
+			],
+		});
+		const Scene = defineUniversalComponent(RENDERER, (props: { selected: number }) =>
+			universalValue(plan, [
+				universalProps([
+					['set', 'class', ['row', props.selected === 0 && 'danger']],
+					['set', 'onFire', () => props.selected],
+				]),
+				universalProps([
+					['set', 'class', ['row', props.selected === 1 && 'danger']],
+					['set', 'onFire', () => props.selected],
+				]),
+				universalProps([
+					['set', 'class', ['row', props.selected === 2 && 'danger']],
+					['set', 'onFire', () => props.selected],
+				]),
+			]),
+		);
+
+		await root.renderAsync(Scene, { selected: 0 });
+		const mounted = loopback.receivedBatches.length;
+
+		await root.renderAsync(Scene, { selected: 1 });
+		const changed = loopback.receivedBatches.slice(mounted).flatMap((batch) => batch.commands);
+		// Exactly the two rows whose class value moved; no event re-binds for the
+		// three re-created (but equivalent) handler closures.
+		expect(changed.filter((command) => command.op === 'update')).toHaveLength(2);
+		expect(changed.filter((command) => command.op === 'event')).toHaveLength(0);
+		expect(container.host.children[0].children.map((child) => child.props.class)).toEqual([
+			['row', false],
+			['row', 'danger'],
+			['row', false],
+		]);
+
+		// A render whose output is value-identical crosses no host mutations.
+		const before = loopback.receivedBatches.length;
+		await root.renderAsync(Scene, { selected: 1 });
+		const unchanged = loopback.receivedBatches.slice(before).flatMap((batch) => batch.commands);
+		expect(
+			unchanged.filter(
+				(command) => command.op === 'update' || command.op === 'event' || command.op === 'recreate',
+			),
+		).toHaveLength(0);
+		await root.unmountAsync();
+	});
+
+	it('coalesces renders scheduled while a commit awaits acknowledgement into the latest state', async () => {
+		// One commit is in flight at a time; state updates arriving while the
+		// host is busy fold into a single follow-up commit that carries only the
+		// latest state. Intermediate states are droppable and must never cross
+		// the wire. This backpressure coalescing is what keeps a storm of ticks
+		// from queueing a commit per tick behind a slow host, and it is
+		// load-bearing for storm throughput — pinned here as an explicit
+		// contract rather than an accident of acknowledgement timing.
+		const { container, loopback, root } = transportRoot();
+		const plan = universalPlan(RENDERER, { kind: 'host', type: 'node', propsSlot: 0 });
+		const Scene = defineUniversalComponent(RENDERER, () => {
+			const [count, setCount] = useState(0, 'count');
+			return universalValue(plan, [
+				universalProps([
+					['set', 'count', count],
+					['set', 'onFire', (value: number) => setCount(value)],
+				]),
+			]);
+		});
+
+		await root.renderAsync(Scene, undefined);
+		const identity = loopback.acceptedIdentity();
+		const listener = loopback.listener('fire');
+		const tick = (value: number) =>
+			root.dispatchTransportEvent({
+				...identity,
+				type: 'event',
+				priority: 'discrete',
+				deliveries: [{ listener, payload: value }],
+			});
+
+		const held = loopback.holdNext();
+		tick(1);
+		await held;
+		// Two more ticks land while the count:1 commit is unacknowledged.
+		tick(2);
+		tick(3);
+		loopback.release();
+		await root.flushTransport();
+
+		expect(container.host.children[0].props.count).toBe(3);
+		const counts = loopback.receivedBatches.flatMap((batch) =>
+			batch.commands.flatMap((command) =>
+				(command.op === 'create' || command.op === 'update') &&
+				typeof command.props.count === 'number'
+					? [command.props.count]
+					: [],
+			),
+		);
+		// Mount, the in-flight commit, and one coalesced commit with the final
+		// state. Count 2 is an intermediate: it never crosses.
+		expect(counts).toEqual([0, 1, 3]);
+		await root.unmountAsync();
+	});
+
 	it('rejects the local host callback capability on async transports', () => {
 		const container: TransportContainer = {
 			renderer: RENDERER,
@@ -907,8 +1060,10 @@ describe('universal asynchronous transport', () => {
 		expect((current as PublicHandle | null)?.props.value).toBe(2);
 		expect(log).toEqual(['lifecycle:2', 'layout:2']);
 
+		// The listener ID is announced once and stays stable across re-renders;
+		// dispatching through it must still reach the newest render's closure.
 		const currentEvent = await loopback.sendEvent([
-			{ listener: loopback.listener('fire', 2), payload: 'new' },
+			{ listener: loopback.listener('fire'), payload: 'new' },
 		]);
 		expect(currentEvent.error).toBeUndefined();
 		expect(log.at(-1)).toBe('event:2');
@@ -1189,6 +1344,186 @@ describe('universal asynchronous transport', () => {
 		);
 		expect(protocol.error?.message).toMatch(/uses protocol 999/);
 		expect(log).toEqual([]);
+		await root.unmountAsync();
+	});
+});
+
+describe('transported retained component subtrees', () => {
+	interface SceneRow {
+		readonly id: number;
+		readonly label: string;
+	}
+
+	interface SceneCommand {
+		readonly select?: number;
+		readonly theme?: string;
+		readonly rotate?: boolean;
+		readonly relabel?: number;
+	}
+
+	const itemPlan = universalPlan(RENDERER, { kind: 'host', type: 'item', propsSlot: 0 });
+	const Theme = createContext('plain');
+
+	function createScene() {
+		const { container, loopback, root } = transportRoot();
+		const rendered: number[] = [];
+		const effects: string[] = [];
+		let command!: (payload: SceneCommand) => void;
+		const onCommand = (payload: unknown) => command(payload as SceneCommand);
+		const Item = defineUniversalComponent(
+			RENDERER,
+			(props: { row: SceneRow; selected: boolean; onCommand: (payload: unknown) => void }) => {
+				const theme = useContext(Theme);
+				rendered.push(props.row.id);
+				useEffect(
+					() => {
+						effects.push(`mount:${props.row.id}`);
+						return () => effects.push(`cleanup:${props.row.id}`);
+					},
+					[],
+					'mounted',
+				);
+				return universalValue(itemPlan, [
+					universalProps([
+						['set', 'label', props.row.label],
+						['set', 'theme', theme],
+						['set', 'selected', props.selected],
+						['set', 'onPoke', props.onCommand],
+					]),
+				]);
+			},
+		);
+		const Scene = defineUniversalComponent(RENDERER, () => {
+			const [rows, setRows] = useState<readonly SceneRow[]>(
+				[
+					{ id: 1, label: 'a' },
+					{ id: 2, label: 'b' },
+					{ id: 3, label: 'c' },
+				],
+				'rows',
+			);
+			const [selected, setSelected] = useState(0, 'selected');
+			const [theme, setTheme] = useState('plain', 'theme');
+			command = (payload) => {
+				if (payload.select !== undefined) setSelected(payload.select);
+				if (payload.theme !== undefined) setTheme(payload.theme);
+				if (payload.rotate === true) {
+					setRows((previous) => [previous[2]!, previous[0]!, previous[1]!]);
+				}
+				if (payload.relabel !== undefined) {
+					setRows((previous) =>
+						previous.map((row) =>
+							row.id === payload.relabel ? { id: row.id, label: `${row.label}!` } : row,
+						),
+					);
+				}
+			};
+			return universalContext(Theme, theme, () =>
+				universalFor(
+					rows,
+					(row) => row.id,
+					(row) =>
+						universalComponent(
+							RENDERER,
+							Item,
+							universalProps([
+								['set', 'row', row],
+								['set', 'selected', selected === row.id],
+								['set', 'onCommand', onCommand],
+							]),
+						),
+				),
+			);
+		});
+		const items = () => container.host.children;
+		const poke = async (occurrence: number, payload: SceneCommand) => {
+			const outcome = await loopback.sendEvent([
+				{ listener: loopback.listener('poke', occurrence), payload },
+			]);
+			expect(outcome.error).toBeUndefined();
+			await root.flushTransport();
+		};
+		return { root, Scene, rendered, effects, items, poke };
+	}
+
+	it('retains unchanged keyed children and their listeners across acknowledged updates', async () => {
+		const { root, Scene, rendered, effects, items, poke } = createScene();
+		await root.renderAsync(Scene, undefined);
+		await root.flushTransport();
+		const [first, second, third] = [...items()];
+		expect(items().map((item) => item.props.label)).toEqual(['a', 'b', 'c']);
+
+		rendered.length = 0;
+		await poke(0, { select: 2 });
+		expect(rendered).toContain(2);
+		expect(rendered).not.toContain(1);
+		expect(rendered).not.toContain(3);
+		expect(items()).toEqual([first, second, third]);
+		expect(items().map((item) => item.props.selected)).toEqual([false, true, false]);
+
+		// A listener announced before a retained commit must still dispatch after
+		// that commit advances the acknowledged root version.
+		rendered.length = 0;
+		await poke(2, { select: 3 });
+		expect(rendered).toContain(2);
+		expect(rendered).toContain(3);
+		expect(rendered).not.toContain(1);
+		expect(items().map((item) => item.props.selected)).toEqual([false, false, true]);
+
+		rendered.length = 0;
+		await poke(0, { relabel: 1 });
+		expect(rendered).toContain(1);
+		expect(rendered).not.toContain(2);
+		expect(rendered).not.toContain(3);
+		expect(items()[0]).toBe(first);
+		expect(items().map((item) => item.props.label)).toEqual(['a!', 'b', 'c']);
+		expect(effects).toEqual(['mount:1', 'mount:2', 'mount:3']);
+
+		await root.unmountAsync();
+		expect(effects.slice(3).toSorted()).toEqual(['cleanup:1', 'cleanup:2', 'cleanup:3']);
+	});
+
+	it('invalidates retained children when their consumed context changes', async () => {
+		const { root, Scene, rendered, items, poke } = createScene();
+		await root.renderAsync(Scene, undefined);
+		await root.flushTransport();
+		expect(items().map((item) => item.props.theme)).toEqual(['plain', 'plain', 'plain']);
+
+		rendered.length = 0;
+		await poke(0, { theme: 'dark' });
+		expect(rendered).toEqual(expect.arrayContaining([1, 2, 3]));
+		expect(items().map((item) => item.props.theme)).toEqual(['dark', 'dark', 'dark']);
+
+		rendered.length = 0;
+		await poke(0, { select: 2 });
+		expect(rendered).toContain(2);
+		expect(rendered).not.toContain(1);
+		expect(rendered).not.toContain(3);
+		expect(items().map((item) => item.props.theme)).toEqual(['dark', 'dark', 'dark']);
+		await root.unmountAsync();
+	});
+
+	it('reorders retained keyed children without changing their hosts, effects, or listeners', async () => {
+		const { root, Scene, rendered, effects, items, poke } = createScene();
+		await root.renderAsync(Scene, undefined);
+		await root.flushTransport();
+		const [first, second, third] = [...items()];
+
+		rendered.length = 0;
+		await poke(0, { rotate: true });
+		expect(rendered).not.toContain(1);
+		expect(rendered).not.toContain(2);
+		expect(rendered).not.toContain(3);
+		expect(items()).toEqual([third, first, second]);
+		expect(items().map((item) => item.props.label)).toEqual(['c', 'a', 'b']);
+		expect(effects).toEqual(['mount:1', 'mount:2', 'mount:3']);
+
+		rendered.length = 0;
+		await poke(1, { select: 2 });
+		expect(rendered).toContain(2);
+		expect(rendered).not.toContain(1);
+		expect(rendered).not.toContain(3);
+		expect(items().map((item) => item.props.selected)).toEqual([false, false, true]);
 		await root.unmountAsync();
 	});
 });

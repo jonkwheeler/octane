@@ -8,6 +8,11 @@
 // The fixture has no installed node_modules (it is not a workspace package);
 // the setup symlinks the workspace's octane / @octanejs/vite-plugin / vite in,
 // which is exactly what a pnpm install would produce.
+//
+// The build runs against a throwaway copy of the fixture, never the tracked
+// sources: `vite build` and the symlinked node_modules would otherwise leave
+// debris under `tests/_fixtures/app` whenever a run is interrupted, and two
+// concurrent runs would build into the same directory.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -16,11 +21,14 @@ import { EventEmitter, once } from 'node:events';
 import { createServer as createHttpServer, type IncomingMessage, type Server } from 'node:http';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { build, createServer, type ViteDevServer } from 'vite';
+import { createTempProject } from '../../octane/tests/_temp-project.js';
 import { createNodeServer } from '../../app-core/src/server/node-http.js';
 
-const fixtureRoot = fileURLToPath(new URL('./_fixtures/app', import.meta.url));
+const fixtureSource = fileURLToPath(new URL('./_fixtures/app', import.meta.url));
 const packageRoot = fileURLToPath(new URL('../', import.meta.url));
 const repoRoot = path.resolve(packageRoot, '../..');
+const project = createTempProject('octane-vite-prod');
+const fixtureRoot = project.root;
 const distDir = path.join(fixtureRoot, 'dist');
 const sceneFile = path.join(fixtureRoot, 'src/Scene.object.tsrx');
 const clientReferenceId = 'octane-client-reference-v1:object:/src/Scene.object.tsrx';
@@ -57,6 +65,13 @@ function listFiles(root: string, current = root): string[] {
 	});
 }
 
+function findBuiltAsset(root: string, extension: '.css' | '.js', contents: string) {
+	return listFiles(root).find(
+		(file) =>
+			file.endsWith(extension) && fs.readFileSync(path.join(root, file), 'utf8').includes(contents),
+	);
+}
+
 async function startBrowserProbeOrigin(): Promise<{ server: Server; origin: string }> {
 	const server = createHttpServer((_request, response) => {
 		response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
@@ -89,6 +104,7 @@ let hostileBrowserOrigin = '';
 const previousTrustedRpcOrigin = process.env.OCTANE_TEST_TRUSTED_RPC_ORIGIN;
 
 beforeAll(async () => {
+	fs.cpSync(fixtureSource, fixtureRoot, { recursive: true });
 	linkPackage('octane', path.join(repoRoot, 'packages/octane'));
 	linkPackage('@octanejs/vite-plugin', packageRoot);
 	linkPackage('vite', path.join(packageRoot, 'node_modules/vite'));
@@ -100,8 +116,6 @@ beforeAll(async () => {
 	hostileBrowserOriginServer = hostileProbe.server;
 	hostileBrowserOrigin = hostileProbe.origin;
 	process.env.OCTANE_TEST_TRUSTED_RPC_ORIGIN = trustedBrowserOrigin;
-
-	fs.rmSync(distDir, { recursive: true, force: true });
 
 	// The production build: client bundle, then (closeBundle) the server bundle.
 	await build({ root: fixtureRoot, logLevel: 'silent' });
@@ -139,8 +153,7 @@ afterAll(async () => {
 	} else {
 		process.env.OCTANE_TEST_TRUSTED_RPC_ORIGIN = previousTrustedRpcOrigin;
 	}
-	fs.rmSync(distDir, { recursive: true, force: true });
-	fs.rmSync(path.join(fixtureRoot, 'node_modules'), { recursive: true, force: true });
+	project.dispose();
 });
 
 // Dynamic-importing freshly built output legitimately exceeds vitest's 5s
@@ -283,6 +296,46 @@ describe('production SSR build', { timeout: 30_000 }, () => {
 				expect(bodyRegionOf(html)).not.toContain('<title>');
 				expect(bodyRegionOf(html)).not.toContain('fixture page description');
 			}
+		}
+	});
+
+	it('styles layout-owned deferred content before its JavaScript loads', async () => {
+		const { handler } = await import(pathToFileURL(path.join(distDir, 'server/entry.js')).href);
+		const clientRoot = path.join(distDir, 'client');
+		const stylesheet = findBuiltAsset(clientRoot, '.css', '.vite-layout-deferred-hydration-proof');
+		const javascript = findBuiltAsset(
+			clientRoot,
+			'.js',
+			'vite-layout-deferred-hydration-chunk-proof',
+		);
+		expect(stylesheet).toBeTruthy();
+		expect(javascript).toBeTruthy();
+
+		const response = await handler(new Request('http://localhost/layout-assets'));
+		const html = await response.text();
+		expect(response.status).toBe(200);
+		expect(html).toContain('vite-layout-deferred-hydration-chunk-proof: 0');
+		expect(html).toContain(`<link rel="stylesheet" href="/${stylesheet}">`);
+		expect(html).not.toContain(`src="/${javascript}"`);
+		expect(html).not.toContain(`<link rel="modulepreload" href="/${javascript}">`);
+
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({ headless: true });
+		try {
+			const context = await browser.newContext({ javaScriptEnabled: false });
+			const page = await context.newPage();
+			const requests: string[] = [];
+			page.on('request', (request) => requests.push(new URL(request.url()).pathname));
+			await page.goto(productionOrigin + '/layout-assets', { waitUntil: 'load' });
+			expect(
+				await page
+					.locator('.vite-layout-deferred-hydration-proof')
+					.evaluate((element) => getComputedStyle(element).color),
+			).toBe('rgb(0, 128, 128)');
+			expect(requests).not.toContain('/' + javascript);
+			await context.close();
+		} finally {
+			await browser.close();
 		}
 	});
 
@@ -567,6 +620,9 @@ describe('production SSR build', { timeout: 30_000 }, () => {
 		expect(response.status).toBe(200);
 		const prodHtml = await response.text();
 		expect(prodHtml).toContain('Fixture failed: Error: fixture root boundary');
+		const stylesheet = findBuiltAsset(path.join(distDir, 'client'), '.css', '.root-catch');
+		expect(stylesheet).toBeTruthy();
+		expect(prodHtml).toContain(`<link rel="stylesheet" href="/${stylesheet}">`);
 
 		const devResponse = await fetch(devOrigin + '/pages/error');
 		expect(devResponse.status).toBe(200);
@@ -627,6 +683,9 @@ describe('production SSR build', { timeout: 30_000 }, () => {
 		const html = await response.text();
 		expect(html).toContain('Loading fixture…');
 		expect(html).toContain('Fixture page pending');
+		const stylesheet = findBuiltAsset(path.join(distDir, 'client'), '.css', '.root-pending');
+		expect(stylesheet).toBeTruthy();
+		expect(html).toContain(`<link rel="stylesheet" href="/${stylesheet}">`);
 	});
 
 	it('bundles module-server exports and executes them through production RPC', async () => {

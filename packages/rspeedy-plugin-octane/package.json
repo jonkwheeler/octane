@@ -4,9 +4,12 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/main-thread-entry.js",
+    "./src/main-thread-ready.js"
+  ],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "Private Milestone 11 dual-thread Rspeedy integration and checksum-pinned macOS Explorer runner for Octane Lynx.",
   "repository": {
@@ -59,6 +62,7 @@
     "@lynx-js/qrcode-rsbuild-plugin": "catalog:lynx",
     "@lynx-js/rspeedy": "catalog:lynx",
     "@lynx-js/tasm": "catalog:lynx",
+    "@lynx-js/web-core": "catalog:lynx",
     "@octanejs/lynx": "workspace:*",
     "@octanejs/rspack-plugin": "workspace:*",
     "@rsbuild/core": "catalog:lynx",
@@ -66,6 +70,7 @@
     "@tsrx/typescript-plugin": "catalog:default",
     "@types/node": "catalog:default",
     "octane": "workspace:*",
+    "playwright": "catalog:default",
     "typescript": "catalog:lynx",
     "vitest": "catalog:default"
   }

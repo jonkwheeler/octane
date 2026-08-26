@@ -127,3 +127,83 @@ Every independent request starts before the first 50ms network wave settles;
 `owner` alone waits for `project.ownerId`. The remaining single mixed update
 signature is transition atomicity work rather than an async-discovery waterfall,
 and stays visible under its tightened one-state ceiling.
+
+## Atomic transitions (2026-07-29)
+
+The last mixed signature is gone. It was the held boundary replaying its body:
+`project`, `viewer`, and `badge` had arrived and patched their nodes, then
+`owner` suspended again behind its data dependency, leaving three v1 values
+beside five v0 ones.
+
+A suspended attempt now undoes its own binding writes, so the boundary holds
+whole. Both the waves and the exposed states are level with React:
+
+| target | update | waves (init / update) | calls (init / update) | observed mixed update states |
+| --- | ---: | ---: | ---: | ---: |
+| octane-tsrx | 2 waves | 2 / 2 | 8 / 8 | 0 |
+| React | 3 waves | 6 / 3 | 35 / 25 | 0 |
+
+The update ceiling is now zero, so any reintroduced tear fails the suite.
+
+## Transition-atomicity guard (2026-07-29)
+
+The dashboard carries a synchronous "board" inside the held boundary: keyed
+rows that reorder, drop one member and gain one every version, with per-version
+text, plus a controlled input. None of it fetches, so the wave and call
+ceilings are untouched — but all of it joins the dashboard signature, and the
+board validates as one atomic unit (whole-old or whole-new; anything else is a
+tear).
+
+This pins the hold-and-rollback machinery end to end in a real browser on
+production compiles: binding writes, controlled value projection, and keyed
+removals/insertions/moves all have to move with the fetched panels in one step.
+Disabling the runtime's transition journal makes the update gate fail with
+`mixedStates regressed to 1 (ceiling 0)`; React records zero as the reference.
+
+## Keyed asynchronous panels
+
+The Octane dashboard renders `ActivityPanel` and `InsightsPanel` from a private,
+two-entry keyed panel list. The rendered dashboard, its eight versioned request
+keys, and the dependent owner request are unchanged; the four independent panel
+requests must still start in the first wave.
+
+The compiler expands eligible child warm plans from a private, nonescaping list
+of at most 16 distinct string values. Expansion happens at compile time, so
+speculation does not iterate the list, evaluate its keys, or add hook slots. An
+unknown, mutable, or escaped list retains the ordinary rendering behavior.
+
+The existing browser gate requires all seven independent requests in the first
+wave, two waves per operation, and eight actual network starts. Its current
+factory-call ceilings are eight on both initialization and updates. Keyed board
+identity, controlled input state, fallback retention, and zero mixed transition
+states remain mandatory.
+
+## Held transition resource reuse
+
+After the first update wave settles, the dependent `owner` request begins the
+second wave. Transition promotion previously invoked five already-started
+resource creators again at that point, even though the application cache
+prevented duplicate network requests.
+
+The promoted warm plan now claims matching entries from the existing
+episode-agnostic resource harvest without consuming the real components'
+adoption rights. Each update therefore invokes exactly eight creators, down
+from 13, while preserving eight network starts, two request waves, the
+dependent-owner ordering, and zero mixed transition states.
+
+## Code-split module discovery
+
+The Octane dashboard includes a synchronous, dynamically imported child after
+its existing resource panels and keyed board. Its JavaScript stays in a
+separate production chunk and is not fetched before the dashboard mounts.
+
+The browser gate delays that real chunk by 35ms and requires its loader and
+network request to start before the independent `project` request settles. The
+module is loaded exactly once across the initial mount and subsequent transition;
+its rendered node must survive the update. All eight resource starts, eight
+creator calls, seven first-wave requests, two dependency waves, and zero mixed
+transition states remain mandatory.
+
+Only eligible lazy children in an already-reachable warm plan are prepared.
+Dormant deferred-hydration islands remain untouched until their own activation
+or explicitly configured prefetch strategy.

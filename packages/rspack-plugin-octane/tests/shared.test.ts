@@ -78,6 +78,43 @@ describe('declarative options', () => {
 		);
 	});
 
+	it('keeps CSS-module proof providers on the class-plugin API', () => {
+		const provider = () => ({ named: { root: 'mapped_root' } });
+		expect(normalizePluginOptions({ cssModuleConstants: true })).toEqual({
+			cssModuleConstants: true,
+		});
+		expect(normalizePluginOptions({ cssModuleConstants: false })).toEqual({
+			cssModuleConstants: false,
+		});
+		expect(normalizePluginOptions({ cssModuleConstants: provider }).cssModuleConstants).toBe(
+			provider,
+		);
+		expect(() => normalizeLoaderOptions({ cssModuleConstants: provider })).toThrow(
+			/unknown option `cssModuleConstants`/,
+		);
+		for (const value of [null, 'yes', {}, []]) {
+			expect(() => normalizePluginOptions({ cssModuleConstants: value })).toThrow(
+				/cssModuleConstants.*boolean or a provider function/,
+			);
+		}
+	});
+
+	it('copies and freezes plugin-only parallel compilation settings', () => {
+		const parallel = { maxWorkers: 2 };
+		const options = normalizePluginOptions({ parallel });
+		parallel.maxWorkers = 8;
+
+		expect(options.parallel).toEqual({ maxWorkers: 2 });
+		expect(Object.isFrozen(options.parallel)).toBe(true);
+		expect(normalizePluginOptions({ parallel: false })).toEqual({ parallel: false });
+		expect(() => normalizeLoaderOptions({ parallel: true })).toThrow(/unknown option `parallel`/);
+	});
+
+	it('preserves explicit Strong-mode choices for the plugin and standalone loader', () => {
+		expect(normalizePluginOptions({ strong: true })).toEqual({ strong: true });
+		expect(normalizeLoaderOptions({ strong: false })).toEqual({ strong: false });
+	});
+
 	it('normalizes compile-runtime metadata and a plugin-only runtime request', () => {
 		const universalRuntime = { runtime: 'lynx', thread: 'background' as const };
 		const options = normalizePluginOptions({
@@ -143,6 +180,7 @@ describe('declarative options', () => {
 	it.each([
 		[{ environment: 'worker' }, /environment/],
 		[{ hmr: 'webpack' }, /hmr/],
+		[{ strong: 'yes' }, /`strong` must be a boolean/],
 		[{ exclude: 'vendor' }, /exclude/],
 		[{ renderers: { default: 'missing' } }, /default references unknown renderer/],
 		[{ universalRuntime: { runtime: 'lynx', thread: 'worker' } }, /thread/],

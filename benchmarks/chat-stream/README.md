@@ -1,6 +1,6 @@
 # chat-stream benchmark
 
-The modern workload: a ChatGPT/Claude-style chat interface — conversation
+The modern workload: a streaming chat interface — conversation
 tabs, a keyed message list of role bubbles with mixed text/code segments, a
 CONTROLLED composer — streaming **predefined token sequences** into the UI.
 Seven frameworks implement the same DOM contract and state model; the harness
@@ -69,9 +69,10 @@ sample, so scaling is more conversation, not artificial repetition.
   state round-trip (the value prop reasserts from state).
 - `comments_conv` — comment-node DOM weight at steady state (marker tripwire).
 
-The `bundle-size` suite builds these apps too (`chat_*` ops) and the octane
-source is in the `codegen-size` corpus. React's column runs its dev-mode
-transform under the vite dev server (same caveat as every suite).
+The `bundle-size` suite builds these apps too (`chat_*` ops), and the Octane
+source is in the `codegen-size` corpus. The suite runner builds every framework
+in production mode before starting its preview server; React's production build
+also enables React Compiler.
 
 Native **Preact** (`:5262`) and runes-mode **Svelte 5** (`:5273`) fixtures use
 the same deterministic corpus and window contract. Their state is immutable at
@@ -83,3 +84,66 @@ the conversation/message boundary and timed commits finish before returning.
 node benchmarks/bench.mjs chat-stream       # via the suite runner (starts servers)
 node benchmarks/bench.mjs --quick chat-stream
 ```
+
+The separate, untimed production-work gate uses Chromium precise coverage to
+check that one token update in a 200-message history rerenders only the changed
+message. It also verifies unchanged message identity and content, the updated
+reply, and an unrelated controlled-composer update:
+
+```bash
+CHAT_STREAM_WORK=1 pnpm --filter octane-tsrx-chat-stream build
+pnpm --filter octane-tsrx-chat-stream preview
+pnpm --dir benchmarks/chat-stream bench:work
+```
+
+`TARGET_URL` overrides the preview address, and `WORK_JSON` saves the measured
+counts. The work build is deliberately unminified; the normal benchmark keeps
+its minified production bundle.
+
+## Runtime-descriptor streaming sidecar
+
+The compiled `.tsrx` fixture above does not exercise the generic host-tree
+renderer used by Markdown libraries. The sidecar projects the same eight
+`SCRIPTED_REPLIES` into one growing, multi-section document with headings,
+paragraphs, and code blocks. Each arrival creates fresh `createElement`
+descriptors, as a Markdown-to-JSX projection does. It deliberately excludes
+Markdown parsing, syntax highlighting, network pacing, and layout/paint: its
+metric is synchronous elapsed rendering and descriptor-projection time for the
+complete token stream in a production build.
+
+```bash
+pnpm --dir benchmarks/chat-stream bench:descriptors
+node benchmarks/chat-stream/descriptor-stream.mjs 16
+node benchmarks/chat-stream/descriptor-stream.mjs --build-only
+BENCH_JSON=/tmp/descriptor-stream.json node benchmarks/chat-stream/descriptor-stream.mjs 16
+```
+
+The runner builds a temporary production bundle, starts a loopback-only server
+on an available port, launches Chromium, and cleans both up. No separately
+running application or dependency installation is needed. Cases are:
+
+- `hosts_fine`: raw host descriptors in 8-token batches.
+- `hosts_coarse`: the same document in 64-token batches.
+- `components_fine`: the same document with a stateful component-backed Copy
+  button, exercising hosts whose descendants require reconciled Blocks.
+- `text_control`: the same visible text as a scalar return, bypassing generic
+  host-child reconciliation; host-tree optimizations should not help this case.
+
+Mount and the first batch are outside the timed window. An untimed pass verifies
+every subsequent chunk, checks surviving DOM identity, interacts with the Copy
+button and checks its state survives later arrivals, and verifies teardown.
+Three complete warmup streams precede the samples. Every timed sample then
+checks final content and survivor identity outside its timed window. The
+composer is left unchanged throughout. The JSON includes raw sample durations,
+shared benchmark statistics, semantic-content hashes, stream length, browser
+and Node versions, and source/fixture/corpus/compiler/lockfile/bundle hashes.
+
+`DESCRIPTOR_STREAM_ROOT` selects another checkout's Octane runtime source;
+`DESCRIPTOR_STREAM_EXTERNAL_ROOT` selects the checkout providing installed
+dependencies and the fixture's hook compiler. Both default to this runner's
+checkout. Use the same runner, corpus, dependencies, hook compiler, iteration
+count, and machine state for before/after measurements. Runtime source hashes
+include uncommitted changes; the Git commit alone is not the candidate identity.
+
+This sidecar measures Octane's generic descriptor renderer. It does not measure
+end-to-end application latency or the compiled `.tsrx` fixture's update path.

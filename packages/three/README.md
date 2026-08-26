@@ -137,6 +137,19 @@ root.render(Scene, { color: 'hotpink' });
 root.store.getState().advance(1 / 60);
 ```
 
+Compiled Three scene modules import and register only the built-in constructors
+used by their authored intrinsic tags, so direct roots do not retain the entire
+Three namespace. Both extension forms remain selective: `extend({ CustomMesh })`
+registers the named constructor, while `extend(CustomMesh)` returns a stable
+callable component without registering unrelated built-ins. An explicit
+extension always takes precedence over a compiler-registered constructor.
+
+`Canvas` registers the complete Three namespace when it first renders, retaining
+the familiar R3F-compatible catalogue for dynamic or otherwise uncompiled scene
+content. Code that constructs low-level universal host plans by hand instead
+of compiling a `.three.tsrx` scene must register each constructor itself before
+rendering, for example `extend({ Mesh })` for a manually authored `mesh` plan.
+
 Direct-root scheduling uses Octane's public `act` and `flushSync` semantics.
 Call `root.unmount()` directly, or use
 `unmountComponentAtNode(canvas, optionalCallback)` to remove the root registered
@@ -149,6 +162,13 @@ Tests can inject the WebGL-free deterministic harness from
 public `advance()` loop as an application. Its awaitable `fireEvent()` helper
 directly invokes the latest committed handler and settles scheduled work when
 raycasting itself is not under test.
+
+Renderer bindings that project opaque component children into an ordered host
+array can set `__octaneAutoAttachArray` on the parent host object to that array's
+property name. Unattached child host objects are then assigned to indexed slots
+in authored order. This is the universal-renderer equivalent of React bindings
+that clone opaque children to add `attach="passes-N"`; authored `attach` props
+still take precedence.
 
 `Canvas` installs the default web event manager. Use `eventSource` to subscribe
 through another element and `eventPrefix` (`offset`, `client`, `page`, `layer`,

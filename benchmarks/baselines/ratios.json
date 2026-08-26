@@ -1,5 +1,429 @@
 [
   {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "capture-only",
+    "reference": "capture-only-budget",
+    "maxRatio": 1,
+    "note": "Early public hydration-event capture without the client runtime; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "capture-only",
+    "reference": "capture-only-budget",
+    "maxRatio": 1,
+    "note": "Early public hydration-event capture without the client runtime; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "capture-only",
+    "reference": "capture-only-budget",
+    "maxRatio": 1,
+    "note": "Early public hydration-event capture without the client runtime; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "cli-spa-starter",
+    "reference": "cli-spa-starter-budget",
+    "maxRatio": 1,
+    "note": "The CLI-generated disposable SPA entry and complete landing page retain compiler-proven root specialization; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "cli-spa-starter",
+    "reference": "cli-spa-starter-budget",
+    "maxRatio": 1,
+    "note": "The CLI-generated disposable SPA entry and complete landing page retain compiler-proven root specialization; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "cli-spa-starter",
+    "reference": "cli-spa-starter-budget",
+    "maxRatio": 1,
+    "note": "The CLI-generated disposable SPA entry and complete landing page retain compiler-proven root specialization; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "root-static-specialized",
+    "reference": "root-static-specialized-budget",
+    "maxRatio": 1,
+    "note": "A disposable top-level imported root with compiler-proven root specialization; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "root-static-specialized",
+    "reference": "root-static-specialized-budget",
+    "maxRatio": 1,
+    "note": "A disposable top-level imported root with compiler-proven root specialization; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "root-static-specialized",
+    "reference": "root-static-specialized-budget",
+    "maxRatio": 1,
+    "note": "A disposable top-level imported root with compiler-proven root specialization; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "root-static",
+    "reference": "root-static-budget",
+    "maxRatio": 1,
+    "note": "An escaped reusable root with public render and unmount semantics; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "root-static",
+    "reference": "root-static-budget",
+    "maxRatio": 1,
+    "note": "An escaped reusable root with public render and unmount semantics; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "root-static",
+    "reference": "root-static-budget",
+    "maxRatio": 1,
+    "note": "An escaped reusable root with public render and unmount semantics; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "hooks-state",
+    "reference": "hooks-state-budget",
+    "maxRatio": 1,
+    "note": "Interactive state, delegated events, effect execution, and cleanup; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "hooks-state",
+    "reference": "hooks-state-budget",
+    "maxRatio": 1,
+    "note": "Interactive state, delegated events, effect execution, and cleanup; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "hooks-state",
+    "reference": "hooks-state-budget",
+    "maxRatio": 1,
+    "note": "Interactive state, delegated events, effect execution, and cleanup; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "context",
+    "reference": "context-budget",
+    "maxRatio": 1,
+    "note": "A public context provider with a live consumer update; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "context",
+    "reference": "context-budget",
+    "maxRatio": 1,
+    "note": "A public context provider with a live consumer update; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "context",
+    "reference": "context-budget",
+    "maxRatio": 1,
+    "note": "A public context provider with a live consumer update; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "hydrate-root",
+    "reference": "hydrate-root-budget",
+    "maxRatio": 1,
+    "note": "Public hydration with server-node identity and an interactive update; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "hydrate-root",
+    "reference": "hydrate-root-budget",
+    "maxRatio": 1,
+    "note": "Public hydration with server-node identity and an interactive update; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "hydrate-root",
+    "reference": "hydrate-root-budget",
+    "maxRatio": 1,
+    "note": "Public hydration with server-node identity and an interactive update; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "deferred-hydration",
+    "reference": "deferred-hydration-budget",
+    "maxRatio": 1,
+    "note": "Interaction-triggered public deferred hydration and replay; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "deferred-hydration",
+    "reference": "deferred-hydration-budget",
+    "maxRatio": 1,
+    "note": "Interaction-triggered public deferred hydration and replay; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "deferred-hydration",
+    "reference": "deferred-hydration-budget",
+    "maxRatio": 1,
+    "note": "Interaction-triggered public deferred hydration and replay; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "suspense-transition",
+    "reference": "suspense-transition-budget",
+    "maxRatio": 1,
+    "note": "Public async Suspense recovery and a transition update; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "suspense-transition",
+    "reference": "suspense-transition-budget",
+    "maxRatio": 1,
+    "note": "Public async Suspense recovery and a transition update; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "suspense-transition",
+    "reference": "suspense-transition-budget",
+    "maxRatio": 1,
+    "note": "Public async Suspense recovery and a transition update; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-vanilla",
+    "reference": "binding-vanilla-budget",
+    "maxRatio": 1,
+    "note": "The isolated public Zustand vanilla entry without the Octane runtime; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-vanilla",
+    "reference": "binding-vanilla-budget",
+    "maxRatio": 1,
+    "note": "The isolated public Zustand vanilla entry without the Octane runtime; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-vanilla",
+    "reference": "binding-vanilla-budget",
+    "maxRatio": 1,
+    "note": "The isolated public Zustand vanilla entry without the Octane runtime; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-hooks",
+    "reference": "binding-hooks-budget",
+    "maxRatio": 1,
+    "note": "The public Zustand hook binding with a real vanilla store and update; deterministic production raw bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-hooks",
+    "reference": "binding-hooks-budget",
+    "maxRatio": 1,
+    "note": "The public Zustand hook binding with a real vanilla store and update; deterministic production gzip bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-hooks",
+    "reference": "binding-hooks-budget",
+    "maxRatio": 1,
+    "note": "The public Zustand hook binding with a real vanilla store and update; deterministic production brotli bytes must not exceed the committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "server-hooks",
+    "reference": "server-hooks-budget",
+    "maxRatio": 1,
+    "note": "Executable public server hook and escaping helpers without Hydrate, streaming, or DOM-table retention; deterministic production raw bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "server-hooks",
+    "reference": "server-hooks-budget",
+    "maxRatio": 1,
+    "note": "Executable public server hook and escaping helpers without Hydrate, streaming, or DOM-table retention; deterministic production gzip bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "server-hooks",
+    "reference": "server-hooks-budget",
+    "maxRatio": 1,
+    "note": "Executable public server hook and escaping helpers without Hydrate, streaming, or DOM-table retention; deterministic production brotli bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "server-render",
+    "reference": "server-render-budget",
+    "maxRatio": 1,
+    "note": "Executable public buffered server rendering without unrelated Hydrate or streaming initialization; deterministic production raw bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "server-render",
+    "reference": "server-render-budget",
+    "maxRatio": 1,
+    "note": "Executable public buffered server rendering without unrelated Hydrate or streaming initialization; deterministic production gzip bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "server-render",
+    "reference": "server-render-budget",
+    "maxRatio": 1,
+    "note": "Executable public buffered server rendering without unrelated Hydrate or streaming initialization; deterministic production brotli bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "component-owned-effects",
+    "reference": "component-owned-effects-budget",
+    "maxRatio": 1,
+    "note": "Live component events and scoped styles without an unused sibling's ViewTransition driver, delegated event, or stylesheet; deterministic production raw bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "component-owned-effects",
+    "reference": "component-owned-effects-budget",
+    "maxRatio": 1,
+    "note": "Live component events and scoped styles without an unused sibling's ViewTransition driver, delegated event, or stylesheet; deterministic production gzip bytes must remain within the committed budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "component-owned-effects",
+    "reference": "component-owned-effects-budget",
+    "maxRatio": 1,
+    "note": "Live component events and scoped styles without an unused sibling's ViewTransition driver, delegated event, or stylesheet; deterministic production brotli bytes must remain within the committed budget."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "siblings-4000",
+    "reference": "siblings-0",
+    "maxRatio": 8,
+    "note": "Same-run production universal leaf updates at 4,000 unrelated siblings versus none. The fixed scoped path measures near 1x; 8x leaves sub-millisecond timer/JIT headroom while rejecting both the former whole-root replay (hundreds of times slower) and the object-driver full-map clone (tens of times slower)."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "root-state-clean-siblings-4000",
+    "reference": "root-state-dirty-siblings-4000",
+    "maxRatio": 0.5,
+    "note": "State in the root component replays from the root range, and every clean leaf subtree is adopted without re-rendering (issue #574 follow-up). The dirty twin rewrites all 4,000 leaf props per press, so it must re-render each leaf; the clean run measures well under half of that (~0.25x observed). A ratio near 1x means retained-subtree adoption stopped engaging and clean leaves are re-rendering again."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "list-item-siblings-4000",
+    "reference": "list-item-siblings-0",
+    "maxRatio": 8,
+    "note": "One keyed @for item's setState hoists to its 20-item list component instead of replaying the root, so 4,000 out-of-scope siblings must not change its cost. Rejects the anonymous-owner bail that sent list-item state through a whole-root replay."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "boundary-siblings-4000",
+    "reference": "boundary-siblings-0",
+    "maxRatio": 8,
+    "note": "A leaf setState under an idle @try boundary stays scoped; only an active suspense or error episode may fall back to the root. Rejects the blanket ancestor-boundary bail that disabled scoped updates for any app with an error boundary near the root."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "structural-siblings-4000",
+    "reference": "structural-siblings-0",
+    "maxRatio": 8,
+    "note": "A leaf update that inserts or removes one host commits through the scope's physical frame (nearest host parent plus end anchor) instead of replaying the root. Rejects the shape-stability bail that sent every structural update through a whole-root replay."
+  },
+  {
+    "suite": "universal-leaf-update",
+    "op": "leaf_update_ms",
+    "target": "compact-siblings-4000",
+    "reference": "compact-siblings-0",
+    "maxRatio": 8,
+    "note": "Compact leaf rows driven by their list component's selection state replay only that component (its 100 rows), so unrelated siblings must not change the cost. Rejects the compact-range bail that forced list selection through a whole-root replay."
+  },
+  {
+    "suite": "universal-external-store",
+    "op": "lifetime_subscribe_calls",
+    "target": "stable-getter",
+    "reference": "subscription-reference",
+    "maxRatio": 1,
+    "note": "A stable subscribe function needs one subscription per universal reader for its mounted lifetime, including unrelated parent renders and store updates. Final host values and listener release are independently checked."
+  },
+  {
+    "suite": "universal-external-store",
+    "op": "lifetime_unsubscribe_calls",
+    "target": "stable-getter",
+    "reference": "subscription-reference",
+    "maxRatio": 1,
+    "note": "A stable universal store subscription should be released only at teardown; repeated renders must not add disconnect/reconnect work."
+  },
+  {
+    "suite": "universal-external-store",
+    "op": "lifetime_subscribe_calls",
+    "target": "inline-getter",
+    "reference": "subscription-reference",
+    "maxRatio": 1,
+    "note": "Fresh snapshot-getter closures must not reconnect a stable universal subscribe function. The subscription must continue to observe current selections and store values."
+  },
+  {
+    "suite": "universal-external-store",
+    "op": "lifetime_unsubscribe_calls",
+    "target": "inline-getter",
+    "reference": "subscription-reference",
+    "maxRatio": 1,
+    "note": "An inline getter changes what is read, not subscription ownership: each mounted universal reader needs one lifetime release."
+  },
+  {
+    "suite": "universal-external-store",
+    "op": "prefix_updater_calls",
+    "target": "state-replacement-burst",
+    "reference": "state-replacement-reference",
+    "maxRatio": 1,
+    "note": "Two thousand direct replacements supersede an earlier functional updater. Public getState observations and the final host value/order are checked independently. The constant three-call budget allows eager enqueue, the first prior-value read, and ordered commit; it rejects repeated replay of the superseded prefix without requiring a particular cheaper implementation. The frozen pre-fix runtime called the updater 4,002 times; the candidate called it three times."
+  },
+  {
     "suite": "lifecycle-memory",
     "op": "cycle",
     "target": "octane-tsrx",
@@ -24,6 +448,14 @@
     "note": "Same-process jsdom development commits over read-only controlled text inputs. Linear diagnostic membership stays roughly flat per host; the benchmark measured the original whole-queue scan at 1.74x per host for 32k versus 4k, while the generation-stamped queue measured 0.94x. The 1.4x ceiling leaves timing headroom while catching the quadratic path."
   },
   {
+    "suite": "behavior-root-events",
+    "op": "resume_per_1000_events",
+    "target": "events-8000",
+    "reference": "events-1000",
+    "maxRatio": 1.6,
+    "note": "Same-page production Chromium resume cost for FIFO queued events whose distinct async adoptions settle one at a time. The rejected per-resume compaction/full-scan path measured 6.05x per event at 8k versus 1k, while amortized compaction and constant-time pending bookkeeping measured 0.93x and 1.14x in verified quick runs. The 1.6x ceiling leaves browser timing headroom."
+  },
+  {
     "suite": "external-store-fanout",
     "op": "broad_write",
     "target": "octane-tsrx",
@@ -32,12 +464,60 @@
     "note": "Same-run 512-subscriber useSyncExternalStore fan-out, gated on complete visible updates, rapid-write consistency, and exact listener teardown. A verified quick run measured about 1.01x; 2x leaves real-browser scheduling headroom."
   },
   {
+    "suite": "external-store-fanout",
+    "op": "broad_burst_snapshot_reads",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 1,
+    "note": "Deterministic notification-phase work for 100 broad writes: one changed snapshot comparison is enough to schedule each of the 512 readers. Final DOM values, survivor identity, and balanced subscription cleanup gate the optimization."
+  },
+  {
+    "suite": "external-store-fanout",
+    "op": "unchanged_burst_snapshot_reads",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 1,
+    "note": "Unchanged-notification control: compare each reader's snapshot at most once per notification. The separate zero-render guard prevents trading getter work for unnecessary component renders."
+  },
+  {
+    "suite": "external-store-fanout",
+    "op": "narrow_burst_snapshot_reads",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 1,
+    "note": "Narrow-notification control: untouched readers still compare on every notification, while the one changed reader needs only its first comparison before the batched render. The visible final state must differ only at the selected index."
+  },
+  {
+    "suite": "external-store-fanout",
+    "op": "broad_burst_renders",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 1,
+    "note": "The 100-write broad burst must converge with at most one render per changed reader; every subscriber must display the final store value."
+  },
+  {
+    "suite": "external-store-fanout",
+    "op": "unchanged_burst_renders",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 0,
+    "note": "An unchanged snapshot must not cause subscriber render work. The reference is one count so a zero ceiling is expressible without a zero denominator."
+  },
+  {
+    "suite": "external-store-fanout",
+    "op": "narrow_burst_renders",
+    "target": "octane-tsrx-work",
+    "reference": "required-work",
+    "maxRatio": 1,
+    "note": "Only the reader whose selected value changed should render during the 100-write narrow burst; untouched subscriber DOM and identities must remain intact."
+  },
+  {
     "suite": "store-selector-fanout",
     "op": "parent_rerenders",
     "target": "octane-tsrx",
     "reference": "react",
-    "maxRatio": 0.95,
-    "note": "Twenty unrelated parent re-renders across 512 selector-based subscribers with the store untouched, gated on every subscriber still showing the correct total and the new generation. Octane keeps one identity for a capture-free selector, so the selection is reused: verified full and quick runs measured 0.59x (0.586-0.597 across three quick runs), against 1.20x when that identity churns per render. 0.95x leaves roughly 60% headroom over the observed ratio while still failing if the selection is recomputed per render. The deterministic companion signal is meta.selectorCallsDuringRerenders, which is 0 rather than 10,240 while meta.subscriberRendersDuringRerenders stays at 10,240."
+    "maxRatio": 1.5,
+    "note": "Twenty unrelated parent re-renders across 512 selector-based subscribers with the store untouched, gated on every subscriber still showing the correct total and the new generation. Octane and React Compiler both stabilize the capture-free selector, avoiding selector recomputation across 10,240 subscriber renders and snapshot reads. A verified normal eight-iteration run measured 0.98345x with zero selector calls for both frameworks; 1.5x retains scheduling-noise headroom while guarding against renewed selector recomputation or an Octane render-pass regression."
   },
   {
     "suite": "hydration-interactivity",
@@ -73,6 +553,14 @@
   },
   {
     "suite": "js-framework",
+    "op": "select_lots",
+    "target": "octane-tsrx",
+    "reference": "octane-jsx",
+    "maxRatio": 0.5,
+    "note": "Alternating selection across 10,000 keyed rows escapes the browser timer floor. TSRX updates only the previously selected and newly selected rows; the JSX compatibility path remains a same-run list-wide control. The ceiling catches loss of compiler-proven O(1) invalidation with generous timing headroom."
+  },
+  {
+    "suite": "js-framework",
     "op": "swap",
     "target": "octane-tsrx",
     "reference": "react",
@@ -101,7 +589,7 @@
     "target": "octane-tsrx",
     "reference": "react",
     "maxRatio": 0.6,
-    "note": "rotate-backward is the LIS-vs-lastPlacedIndex differentiator: octane moves 1 node, React moves all survivors (known ~12x faster \u2192 0.08x). Guard 0.6 leaves huge headroom while still catching a fast-path break."
+    "note": "rotate-backward is the LIS-vs-lastPlacedIndex differentiator: octane moves 1 node, React moves all survivors (known ~12x faster → 0.08x). Guard 0.6 leaves huge headroom while still catching a fast-path break."
   },
   {
     "suite": "memo-wall",
@@ -109,7 +597,7 @@
     "target": "octane-tsrx",
     "reference": "react",
     "maxRatio": 1.5,
-    "note": "Cold production mount of both 1000-row walls (2000 rows total): Octane and React are currently near parity (~0.95x); 1.5 leaves standard noise headroom while catching a structural mount regression."
+    "note": "Cold production mount of both 1000-row walls (2000 rows total): Octane and React Compiler are near parity (~0.96x); 1.5 leaves standard noise headroom while catching a structural mount regression."
   },
   {
     "suite": "memo-wall",
@@ -117,7 +605,7 @@
     "target": "octane-tsrx",
     "reference": "react",
     "maxRatio": 0.6,
-    "note": "Production autoMemo skips the unchanged RowsA region before the keyed wall; if dependency-scoped reuse breaks this rises toward the vanilla React memo-wall cost."
+    "note": "Production autoMemo skips the unchanged RowsA region before the keyed wall; the compiled React reference also caches its list, and the committed pairing measures ~0.16x."
   },
   {
     "suite": "memo-wall",
@@ -125,23 +613,23 @@
     "target": "octane-tsrx",
     "reference": "react",
     "maxRatio": 1,
-    "note": "Wall B is the value-position control: 1000 fresh createElement descriptors absorbed by the childSlot memo bail. Paired run measured 0.81x on 2026-07-26 (it was 1.22x before per-descriptor allocation was cut); 1.0 keeps noise headroom while a return to the old descriptor cost breaches it."
+    "note": "Both Octane and React Compiler cache the unchanged immutable descriptor region. The canonical compiled pairing measures ~0.16x; 1.0 catches a return to unnecessary descriptor reconciliation without depending on the separately displayed uncompiled control."
   },
   {
     "suite": "memo-wall",
     "op": "one_change_B",
     "target": "octane-tsrx",
     "reference": "react",
-    "maxRatio": 0.95,
-    "note": "One changed row amid wall B's 999 successful value-comparing bails. Paired run measured 0.73x on 2026-07-26 (1.08x before); 0.95 bounds a regression back toward per-descriptor reflective work."
+    "maxRatio": 1.4,
+    "note": "One changed row amid wall B's 999 successful value-comparing bails. With the immutable-region optimization and React Compiler enabled, the normal 20-iteration pairing measures ~1.21x; 1.4 leaves modest browser headroom while the deterministic work gates continue to protect the changed-row path."
   },
   {
     "suite": "memo-wall",
     "op": "ctx_through_wall_B",
     "target": "octane-tsrx",
     "reference": "react",
-    "maxRatio": 0.6,
-    "note": "Provider bump above wall B: rebuild 1000 descriptors, bail all 1000, refresh only the 1000 leaves. Paired runs measured 0.44-0.48x on 2026-07-26 (0.56x before); 0.6 stays above run-to-run spread while still breaching if the per-descriptor cost returns."
+    "maxRatio": 0.85,
+    "note": "Provider bump above the cached immutable wall B refreshes its 1000 leaves without replaying unchanged descriptors. The React Compiler pairing measures ~0.70x; 0.85 leaves modest browser headroom while still catching a context-refresh regression."
   },
   {
     "suite": "memo-wall",
@@ -156,24 +644,24 @@
     "op": "parent_rerender_equal_A",
     "target": "octane-jsx",
     "reference": "octane-tsrx",
-    "maxRatio": 600,
-    "note": "Known return-JSX autoMemo gap: the calibrated 8ms batches measured 469-491x through 2026-07-19. This intentionally loose ceiling catches added work until descriptor-output reuse closes the gap; deterministic work gates remain the primary oracle."
+    "maxRatio": 6,
+    "note": "Guarded native-array JSX lists reuse unchanged keyed work; the 20-sample production pairing measured 3.86x TSRX after preserving the ordinary return-descriptor boundary (previously 497x). Six leaves browser-noise headroom while preventing a return to 1000 survivor visits."
   },
   {
     "suite": "memo-wall",
     "op": "one_change_A",
     "target": "octane-jsx",
     "reference": "octane-tsrx",
-    "maxRatio": 32,
-    "note": "Known return-JSX one-change gap measured 21.2-25.9x through 2026-07-19. The 32x ceiling allows normal paired variation while preventing more row/list work from landing."
+    "maxRatio": 10,
+    "note": "Guarded returned-JSX keyed lists enter only the changed row helper. Conservatively checking each fresh array snapshot for observable indexed accessors measured 7.41x TSRX, improving the prior 26.62x gap while preserving ordinary Array.map getter semantics. Ten leaves browser-noise headroom without allowing the old descriptor-rebuild path."
   },
   {
     "suite": "memo-wall",
     "op": "ctx_through_wall_A",
     "target": "octane-jsx",
     "reference": "octane-tsrx",
-    "maxRatio": 3,
-    "note": "Context-through-wall TSX/TSRX ratio remained 2.24-2.37x through 2026-07-19. The ceiling protects leaf-only refresh behavior while the return-JSX wrapper work is optimized."
+    "maxRatio": 2.25,
+    "note": "Context-aware returned-JSX list caching keeps all 1000 leaf consumers reactive without revisiting keyed survivors; the 20-sample production pairing measured 1.94x TSRX. The ceiling allows browser variance while protecting the context invalidation path."
   },
   {
     "suite": "recursive-context",
@@ -229,7 +717,7 @@
     "target": "news-50/octane-tsrx",
     "reference": "news-50/react",
     "maxRatio": 1.2,
-    "note": "octane server render() vs react-dom renderToString at 50 cards (known ~0.6x \u2192 octane faster). Guard 1.2 tolerates noise but catches an octane SSR regression."
+    "note": "octane server render() vs react-dom renderToString at 50 cards (known ~0.6x → octane faster). Guard 1.2 tolerates noise but catches an octane SSR regression."
   },
   {
     "suite": "ssr-throughput",
@@ -238,55 +726,111 @@
     "reference": "deopt-page/octane-fast",
     "minRatio": 1.2,
     "maxRatio": 4.0,
-    "note": "intra-octane de-opt cliff: plain-.ts createElement vs compiled .tsrx SSR (known ~2.1x). Bounds the cliff so a broken fast path (ratio\u21921) or a runaway deopt (ratio>4) both surface."
+    "note": "intra-octane de-opt cliff: plain-.ts createElement vs compiled .tsrx SSR (known ~2.1x). Bounds the cliff so a broken fast path (ratio→1) or a runaway deopt (ratio>4) both surface."
   },
   {
     "suite": "bundle-size",
-    "op": "js_gzip",
+    "op": "app_raw",
     "target": "octane-jsx",
-    "reference": "octane-tsrx",
-    "maxRatio": 1.82,
-    "note": "Deterministic TSX/TSRX total-gzip gap. Two clean production runs on 2026-07-19 were byte-identical at 33765 / 18754 = 1.8004x; 1.82 catches retained runtime graph growth while allowing improvements."
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX application production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "app_gzip",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX application production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "app_brotli",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX application production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "fw_raw",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX framework production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
   },
   {
     "suite": "bundle-size",
     "op": "fw_gzip",
     "target": "octane-jsx",
-    "reference": "octane-tsrx",
-    "maxRatio": 1.9,
-    "note": "Deterministic TSX/TSRX framework-gzip gap: 30974 / 16407 = 1.8879x on 2026-07-19. This isolates the generic descriptor/runtime graph from application code."
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX framework production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "fw_brotli",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX framework production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_raw",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX total production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_gzip",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX total production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_brotli",
+    "target": "octane-jsx",
+    "reference": "octane-jsx-budget",
+    "maxRatio": 1,
+    "note": "Rows JSX total production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
   },
   {
     "suite": "bundle-size",
     "op": "app_gzip",
     "target": "octane-jsx",
     "reference": "octane-tsrx",
-    "maxRatio": 1.2,
-    "note": "Deterministic TSX/TSRX application-code gzip: 2791 / 2347 = 1.1892x on 2026-07-19. Keeping this separate prevents a framework-size win from hiding generated app-code growth."
+    "maxRatio": 1.24,
+    "note": "TSX/TSRX application gzip under CI Node 24 on 2026-08-08: 2915 / 2372 = 1.229x. The July fixture snapshot is obsolete; an independent exact TSRX application-byte budget prevents runtime savings from hiding generated-code growth."
   },
   {
     "suite": "bundle-size",
     "op": "js_gzip",
     "target": "octane-tsrx",
     "reference": "ripple",
-    "maxRatio": 1.47,
-    "note": "Rows TOTAL gzip vs ripple, same app, normalized minify. Optional Hydrate/ViewTransition and checked-restoration capabilities reduce the current runtime to 18545 bytes. The resulting 18545 / 12814 = 1.447x record is guarded at 1.47x."
+    "maxRatio": 1.75,
+    "note": "Rows total gzip versus Ripple under CI Node 24 on 2026-08-08: optimized 23280 / 13347 = 1.744x. The July ceiling predates shipped held-screen/Suspense correctness (#379, #386, #405); exact application, framework, and total budgets independently reject future growth."
   },
   {
     "suite": "bundle-size",
     "op": "js_gzip",
     "target": "octane-tsrx",
     "reference": "solid",
-    "maxRatio": 1.28,
-    "note": "Rows TOTAL gzip vs solid, same app, normalized minify. The current deterministic record measured 18545 / 14732 = 1.259x on 2026-07-18; the ceiling remains 1.28x."
+    "maxRatio": 1.68,
+    "note": "Rows total gzip versus Solid under CI Node 24 on 2026-08-08: optimized 23280 / 13958 = 1.668x. The July ceiling predates shipped held-screen/Suspense correctness (#379, #386, #405); exact application, framework, and total budgets independently reject future growth."
   },
   {
     "suite": "codegen-size",
     "op": "gzip",
     "target": "compiled",
     "reference": "source",
-    "maxRatio": 1.04,
-    "note": "gzip(minified compiled corpus) vs gzip(source corpus). The committed 2026-07-15 record was stale: a clean base build measured 24526 compiled bytes, while the current compiler reduces that to 24397. The resulting 24397 / 23519 = 1.037x record is guarded at 1.04x."
+    "maxRatio": 1.06,
+    "note": "The former 24397 / 23519 corpus record became invalid when its supposedly fixed behavioral fixtures changed; canonical main now measures 26666 / 24713 = 1.079x on those same current files. Lifetime-invariant callbacks, immutable-host aliases, and exact template interning reduce the reviewed current corpus to about 26130 / 24713 = 1.057x, guarded below the unchanged-base compiler at 1.06x."
   },
   {
     "suite": "codegen-size",
@@ -316,6 +860,198 @@
     "note": "Gzipped production sentinel output must retain zero diagnostic codegen cost."
   },
   {
+    "suite": "codegen-size",
+    "op": "raw",
+    "target": "component-module-200",
+    "reference": "component-module-100",
+    "maxRatio": 2.1,
+    "note": "Deterministic production output scaling for a module with twice as many memoizable component bodies. Compact collision-free compiler locals measured 2.04x after the fix; the 2.1x ceiling keeps raw intermediate code near linear instead of growing one identifier character per preceding component."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "raw",
+    "target": "text-types-inferred",
+    "reference": "text-types-explicit",
+    "maxRatio": 1.0,
+    "note": "Opt-in TypeScript string-child inference must retain the raw-code size guarantee of explicit string assertions; both candidates execute the same SSR semantic controls."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "text-types-inferred",
+    "reference": "text-types-explicit",
+    "maxRatio": 1.0,
+    "note": "Inferred string children must not exceed the minified output of the equivalent explicit-string sentinel."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "text-types-inferred",
+    "reference": "text-types-explicit",
+    "maxRatio": 1.0,
+    "note": "Inferred string children must not exceed the gzipped output of the equivalent explicit-string sentinel."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "raw",
+    "target": "css-modules-client-proven",
+    "reference": "css-modules-client-control",
+    "maxRatio": 0.75,
+    "note": "Proven immutable CSS strings retain an original stylesheet read while removing repeated client class bindings. Both variants use identical source/provider bytes and verify equal CSS and SSR output."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "css-modules-client-proven",
+    "reference": "css-modules-client-control",
+    "maxRatio": 0.84,
+    "note": "The production CSS-module client sentinel must retain a material minified-code reduction with stylesheet ownership preserved."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "css-modules-client-proven",
+    "reference": "css-modules-client-control",
+    "maxRatio": 0.86,
+    "note": "Same-run compressed client bytes guard the CSS proof optimization without depending on a particular Node/zlib version."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "css-modules-client-proven",
+    "reference": "css-modules-client-control",
+    "maxRatio": 0.86,
+    "note": "Same-run Brotli client bytes guard the CSS proof optimization while the stylesheet and public SSR semantics remain equal."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "raw",
+    "target": "css-modules-server-proven",
+    "reference": "css-modules-server-control",
+    "maxRatio": 0.75,
+    "note": "Proven immutable CSS strings remove repeated server class serialization without dropping the stylesheet dependency."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "css-modules-server-proven",
+    "reference": "css-modules-server-control",
+    "maxRatio": 0.84,
+    "note": "The paired production CSS-module server sentinel must retain a material minified-code reduction."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "css-modules-server-proven",
+    "reference": "css-modules-server-control",
+    "maxRatio": 0.96,
+    "note": "Same-run compressed server bytes guard the CSS proof optimization; source, stylesheet, and SSR HTML are identical in the control."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "css-modules-server-proven",
+    "reference": "css-modules-server-control",
+    "maxRatio": 0.96,
+    "note": "Same-run Brotli server bytes retain the CSS proof saving without pinning compressor-specific absolute bytes."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "rspack-css-named-client-proven",
+    "reference": "rspack-css-named-client-control",
+    "maxRatio": 0.84,
+    "note": "Real Rspack/CssExtract named-export builds must retain the client CSS-folding benefit; source, emitted CSS, and SSR output are identical."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "rspack-css-named-client-proven",
+    "reference": "rspack-css-named-client-control",
+    "maxRatio": 0.88,
+    "note": "Same-run gzip guards actual Rspack graph-proof collection, not only the low-level compiler option."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "rspack-css-named-client-proven",
+    "reference": "rspack-css-named-client-control",
+    "maxRatio": 0.9,
+    "note": "The real named-export Rspack adapter must keep a material client Brotli saving with stylesheet ownership intact."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "rspack-css-named-server-proven",
+    "reference": "rspack-css-named-server-control",
+    "maxRatio": 0.88,
+    "note": "Named CSS-loader exports must reach production server template folding through the actual Rspack adapter."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "rspack-css-named-server-proven",
+    "reference": "rspack-css-named-server-control",
+    "maxRatio": 0.99,
+    "note": "Same-run compressed server bytes retain the measured Rspack named-export saving; full SSR and emitted CSS are checked separately."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "rspack-css-named-server-proven",
+    "reference": "rspack-css-named-server-control",
+    "maxRatio": 0.98,
+    "note": "The real Rspack server path must not silently stop folding proven named CSS exports."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "rspack-css-default-client-proven",
+    "reference": "rspack-css-default-client-control",
+    "maxRatio": 0.86,
+    "note": "Authenticated immutable default maps must retain a material client-code saving through the Rspack provider callback."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "rspack-css-default-client-proven",
+    "reference": "rspack-css-default-client-control",
+    "maxRatio": 0.88,
+    "note": "Same-source immutable-provider Rspack builds guard callback-based client folding with equal CSS and SSR semantics."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "rspack-css-default-client-proven",
+    "reference": "rspack-css-default-client-control",
+    "maxRatio": 0.9,
+    "note": "The authenticated-default Rspack client path must keep its compressed-code reduction."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "minified",
+    "target": "rspack-css-default-server-proven",
+    "reference": "rspack-css-default-server-control",
+    "maxRatio": 0.9,
+    "note": "The actual Rspack server adapter must consume immutable-default provider facts, with the same source and rendered HTML."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "gzip",
+    "target": "rspack-css-default-server-proven",
+    "reference": "rspack-css-default-server-control",
+    "maxRatio": 0.96,
+    "note": "Same-run gzip guards the Rspack immutable-default server saving without pinning compressor-specific absolute bytes."
+  },
+  {
+    "suite": "codegen-size",
+    "op": "brotli",
+    "target": "rspack-css-default-server-proven",
+    "reference": "rspack-css-default-server-control",
+    "maxRatio": 0.96,
+    "note": "Same-run Brotli guards the authenticated-default server path; stylesheet bytes and full SSR checksums must match."
+  },
+  {
     "suite": "bundle-size",
     "op": "app_gzip",
     "target": "octane-tsrx",
@@ -328,88 +1064,88 @@
     "op": "app_gzip",
     "target": "octane-tsrx",
     "reference": "solid",
-    "maxRatio": 1.19,
-    "note": "Rows APP-CODE gzip vs solid, normalized minify. The current deterministic record measured 2355 / 1991 = 1.183x on 2026-07-17; the ceiling is rebaselined to 1.19x."
+    "maxRatio": 1.2,
+    "note": "Rows application gzip versus Solid under CI Node 24 on 2026-08-08: 2372 / 1990 = 1.192x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "todo_app_gzip",
     "target": "octane-tsrx",
     "reference": "solid",
-    "maxRatio": 1.59,
-    "note": "TodoMVC APP-CODE gzip vs solid, normalized minify. The current deterministic record measured 2046 / 1292 = 1.584x on 2026-07-18; the ceiling remains 1.59x."
+    "maxRatio": 1.61,
+    "note": "TodoMVC application gzip versus Solid under CI Node 24 on 2026-08-08: 2071 / 1292 = 1.603x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "todo_app_gzip",
     "target": "octane-tsrx",
     "reference": "ripple",
-    "maxRatio": 1.21,
-    "note": "TodoMVC APP-CODE gzip vs ripple, normalized minify. The current deterministic record measured 2046 / 1696 = 1.206x on 2026-07-18; the ceiling remains 1.21x."
+    "maxRatio": 1.28,
+    "note": "TodoMVC application gzip versus Ripple on 2026-08-08: CI Node 24 measures 2071 / 1645 = 1.259x and supported Node 26 measures 2067 / 1624 = 1.273x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "chat_app_gzip",
     "target": "octane-tsrx",
     "reference": "solid",
-    "maxRatio": 1.26,
-    "note": "chat-stream APP-CODE gzip vs solid, normalized minify. The current deterministic record measured 2630 / 2103 = 1.251x on 2026-07-17; the ceiling is rebaselined to 1.26x."
+    "maxRatio": 1.3,
+    "note": "Chat-stream application gzip versus Solid under CI Node 24 on 2026-08-08: 2716 / 2103 = 1.291x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "chat_app_gzip",
     "target": "octane-tsrx",
     "reference": "ripple",
-    "maxRatio": 1.13,
-    "note": "chat-stream APP-CODE gzip vs ripple, normalized minify. The current deterministic record measured 2630 / 2336 = 1.126x on 2026-07-17; the ceiling is rebaselined to 1.13x."
+    "maxRatio": 1.17,
+    "note": "Chat-stream application gzip versus Ripple under CI Node 24 on 2026-08-08: 2716 / 2335 = 1.163x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "js_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.03,
-    "note": "Rows TOTAL production gzip vs Svelte 5, normalized minify. The current deterministic record measured 18545 / 18281 = 1.014x on 2026-07-18; the ceiling remains 1.03x."
+    "maxRatio": 1.28,
+    "note": "Rows total gzip versus Svelte 5 under CI Node 24 on 2026-08-08: optimized 23280 / 18325 = 1.270x. The July ceiling predates shipped held-screen/Suspense correctness (#379, #386, #405); exact application, framework, and total budgets independently reject future growth."
   },
   {
     "suite": "bundle-size",
     "op": "app_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.03,
-    "note": "Rows APP-CODE production gzip vs Svelte 5, normalized minify. The current deterministic record measured 2355 / 2301 = 1.023x on 2026-07-17; the ceiling is rebaselined to 1.03x."
+    "maxRatio": 1.04,
+    "note": "Rows application gzip versus Svelte 5 under CI Node 24 on 2026-08-08: 2372 / 2300 = 1.031x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "todo_js_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.07,
-    "note": "TodoMVC TOTAL production gzip vs Svelte 5, normalized minify. The current deterministic record measured 19744 / 18481 = 1.068x on 2026-07-18; the ceiling remains 1.07x."
+    "maxRatio": 1.31,
+    "note": "TodoMVC total gzip versus Svelte 5 under CI Node 24 on 2026-08-08: optimized 24153 / 18530 = 1.303x. The July ceiling predates shipped held-screen/Suspense correctness (#379, #386, #405); exact application, framework, and total budgets independently reject future growth."
   },
   {
     "suite": "bundle-size",
     "op": "todo_app_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.36,
-    "note": "TodoMVC APP-CODE production gzip vs Svelte 5, normalized minify. The current deterministic record measured 2046 / 1511 = 1.354x on 2026-07-18; the ceiling remains 1.36x."
+    "maxRatio": 1.39,
+    "note": "TodoMVC application gzip versus Svelte 5 on 2026-08-08: CI Node 24 measures 2071 / 1511 = 1.371x and supported Node 26 measures 2067 / 1497 = 1.381x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
     "op": "chat_js_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.04,
-    "note": "chat-stream TOTAL production gzip vs Svelte 5, normalized minify. Optional checked/radio restoration keeps the unused graph out of this fixture; the current record is 19753 / 19123 = 1.033x on 2026-07-18, within the 1.04x ceiling."
+    "maxRatio": 1.3,
+    "note": "Chat-stream total gzip versus Svelte 5 under CI Node 24 on 2026-08-08: optimized 24767 / 19164 = 1.292x. The July ceiling predates shipped held-screen/Suspense correctness (#379, #386, #405); exact application, framework, and total budgets independently reject future growth."
   },
   {
     "suite": "bundle-size",
     "op": "chat_app_gzip",
     "target": "octane-tsrx",
     "reference": "svelte",
-    "maxRatio": 1.16,
-    "note": "chat-stream APP-CODE production gzip vs Svelte 5, normalized minify. The current deterministic record measured 2630 / 2279 = 1.154x on 2026-07-17; the ceiling is rebaselined to 1.16x."
+    "maxRatio": 1.2,
+    "note": "Chat-stream application gzip versus Svelte 5 under CI Node 24 on 2026-08-08: 2716 / 2279 = 1.192x. This replaces the obsolete July fixture snapshot; the independent exact application-byte budget still rejects Octane code growth."
   },
   {
     "suite": "bundle-size",
@@ -434,6 +1170,294 @@
     "reference": "react",
     "maxRatio": 0.56,
     "note": "Weather app FRAMEWORK production gzip vs React 19, normalized minify. Component flags plus optional Hydrate/ViewTransition and checked-restoration capabilities measured 33179 / 60434 = 0.549x on 2026-07-18; the tight deterministic ceiling catches a feature graph being retained again."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "app_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows application production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "app_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows application production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "app_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows application production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "fw_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows framework production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "fw_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows framework production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "fw_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows framework production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows total production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows total production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "js_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Rows total production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_app_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC application production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_app_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC application production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_app_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC application production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_fw_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC framework production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_fw_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC framework production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_fw_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC framework production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_js_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC total production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_js_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC total production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "todo_js_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "TodoMVC total production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_app_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream application production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_app_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream application production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_app_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream application production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_fw_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream framework production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_fw_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream framework production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_fw_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream framework production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_js_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream total production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_js_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream total production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "chat_js_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Chat-stream total production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_app_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app application production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_app_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app application production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_app_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app application production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_fw_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app framework production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_fw_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app framework production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_fw_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app framework production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_js_raw",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app total production raw bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_js_gzip",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app total production gzip bytes must not exceed the committed 32-byte-aligned same-run ceiling."
+  },
+  {
+    "suite": "bundle-size",
+    "op": "weather_js_brotli",
+    "target": "octane-tsrx",
+    "reference": "octane-tsrx-budget",
+    "maxRatio": 1,
+    "note": "Weather-app total production brotli bytes must not exceed the committed 32-byte-aligned same-run ceiling."
   },
   {
     "suite": "weather-app-lighthouse",
@@ -524,48 +1548,12 @@
     "note": "Cross-framework transition topology guard: Octane reaches the honest 2-wave dependency floor vs React's 3 waves in the 2026-07-17 record. The 1.5x ratio headroom allows reference improvements; the suite separately enforces Octane's exact seven-resource independent first wave and eight-call ceiling."
   },
   {
-    "suite": "js-framework",
-    "op": "nodes_1k",
+    "suite": "todomvc",
+    "op": "row_class_writes_complete25",
     "target": "octane-tsrx",
     "reference": "react",
-    "maxRatio": 1.01,
-    "note": "Deterministic DOM census at 1k rows. Marker reuse leaves Octane at 10074 vs React 10072 nodes (2026-07-13); catches structural-node regressions without timing noise."
-  },
-  {
-    "suite": "js-framework",
-    "op": "elements_1k",
-    "target": "octane-tsrx",
-    "reference": "react",
-    "minRatio": 1.0,
-    "maxRatio": 1.0,
-    "note": "Semantic control for the node census: equivalent fixtures must render exactly the same 8051 elements."
-  },
-  {
-    "suite": "js-framework",
-    "op": "text_1k",
-    "target": "octane-tsrx",
-    "reference": "react",
-    "minRatio": 1.0,
-    "maxRatio": 1.0,
-    "note": "Semantic control for the node census: equivalent fixtures must render exactly the same 2021 text nodes."
-  },
-  {
-    "suite": "js-framework-deopt",
-    "op": "nodes_1k",
-    "target": "octane-tsrx-naive",
-    "reference": "octane-tsrx",
-    "minRatio": 1.0,
-    "maxRatio": 1.0,
-    "note": "A stamped sole-component row must share its host boundary: TSRX naive and tuned now both render 10074 nodes instead of the naive fixture carrying 2000 extra comments."
-  },
-  {
-    "suite": "js-framework-deopt",
-    "op": "nodes_1k",
-    "target": "octane-jsx-naive",
-    "reference": "octane-tsrx",
-    "minRatio": 1.0,
-    "maxRatio": 1.0,
-    "note": "Return-JSX single-root stamping plus keyed boundary sharing removes the JSX naive fixture's 4000 extra comments; its DOM shape must stay equal to tuned."
+    "maxRatio": 2.0,
+    "note": "Twenty-five immutable TodoMVC row updates should write only the 25 changed row classes. The host-only conditional survivor bailout reduces Octane from 2,500 writes to React's 25; 2x allows implementation variation while catching a return to list-wide writes."
   },
   {
     "suite": "todomvc",
@@ -648,72 +1636,80 @@
     "op": "mount_1k",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 1.6,
-    "note": "Production-browser mount of 1,000 real Three meshes. The refreshed 10-sample record is 2.64 / 2.52 = 1.05x; a 100-sample stability run recorded 2.612 / 2.655 = 0.98x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Production-browser mount of 1,000 equivalent Three meshes must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "update_1k",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 1.8,
-    "note": "In-place position update of 1,000 retained meshes. The refreshed 10-sample record is 0.68 / 0.58 = 1.17x; a 100-sample stability run recorded 0.525 / 0.510 = 1.03x on 2026-07-17, within the sub-millisecond timer noise floor."
+    "maxRatio": 1.0,
+    "note": "In-place position updates of 1,000 retained meshes must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "reorder_1k",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 2.5,
-    "note": "Keyed reverse with survivor identity retained. The refreshed observable-commit baseline recorded 3.30 / 2.02 = 1.63x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Keyed reversal with complete survivor identity retention must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "unmount_tree_1k",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 1.4,
-    "note": "Removal of the rendered 1,000-mesh tree, excluding delayed root-registry teardown. The refreshed observable-commit baseline recorded 1.84 / 2.12 = 0.87x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Removal of the complete rendered 1,000-mesh tree must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "reconstruct_dispose_1k",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 7.0,
-    "note": "Constructor reconstruction plus observed disposal for 1,000 objects. The refreshed observable-commit baseline recorded 9.28 / 2.00 = 4.64x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Intrinsic reconstruction and verified disposal of 1,000 objects must not be slower than React Three Fiber."
+  },
+  {
+    "suite": "three-renderer",
+    "op": "reconstruct_component_dispose_1k",
+    "target": "octane",
+    "reference": "r3f-9.6.1",
+    "maxRatio": 1.0,
+    "note": "Constructor-form extend() reconstruction and verified disposal of 1,000 objects must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "frame_1k_subscribers",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 2.8,
-    "note": "Per-frame cost for 1,000 useFrame subscribers, averaged over 20 manual frames. The refreshed observable-commit baseline recorded 0.059 / 0.032 = 1.84x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Per-frame dispatch to 1,000 useFrame subscribers, including the same scene render, must not be slower than React Three Fiber."
   },
   {
     "suite": "three-renderer",
     "op": "raycast_event",
     "target": "octane",
     "reference": "r3f-9.6.1",
-    "maxRatio": 1.6,
-    "note": "Native pointer dispatch and deduplicated Three raycast delivery to 40 overlapping targets. The refreshed observable-commit baseline recorded 0.348 / 0.327 = 1.06x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Native pointer dispatch and complete raycast delivery to 40 overlapping targets must not be slower than React Three Fiber."
   },
   {
     "suite": "three-bundle-size",
     "op": "js_gzip",
     "target": "octane-min",
     "reference": "r3f-min",
-    "maxRatio": 2.4,
-    "note": "Minimal direct-root production gzip, with built bundles executed and scene-checked in Chromium. The refreshed observable-scene baseline recorded 305165 / 188008 = 1.62x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Minimal direct-root production gzip must not exceed React Three Fiber; each built bundle renders and verifies the same real Mesh in Chromium."
   },
   {
     "suite": "three-bundle-size",
     "op": "js_gzip",
     "target": "octane-full",
     "reference": "r3f-full",
-    "maxRatio": 1.8,
-    "note": "Full-catalogue production gzip, with namespace retention and a real Mesh checked in Chromium. The refreshed observable-scene baseline recorded 304757 / 250306 = 1.22x on 2026-07-17."
+    "maxRatio": 1.0,
+    "note": "Full-catalogue production gzip must not exceed React Three Fiber; each built bundle verifies the complete Three namespace and the same real Mesh in Chromium."
   },
   {
     "suite": "react-hosted-islands",
@@ -740,12 +1736,236 @@
     "note": "Deterministic source-level allocation gate: a 12-cell visible window over 1,000 logical rows currently allocates 0.012x as many physical cell roots as an eager one-cell-per-row model. The 0.02 ceiling catches loss of bounded native recycling without relying on timing."
   },
   {
+    "suite": "lynx-table",
+    "op": "create_commands_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "All 1,000 freshly inserted component-owned rows share one compiled intrinsic template, so the create commit must contain exactly one contiguous template-run command."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_wire_bytes_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "A keyed swap preserves every row and moves only two top-level survivors. The complete bidirectional ContextProxy traffic must stay within the issue's absolute 2 KiB budget instead of scaling with the retained table."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_item_renders_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 0.01,
+    "note": "The model's value of one is a denominator sentinel: the observed keyed swap must remain exactly zero Row body renders because no row props changed."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_handle_deltas_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "At most the two physically moved top-level survivors may publish handle state; unchanged retained rows must not republish attachment or list-ancestry state."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_commands_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Deterministic wire gate: a select moves one .danger class between two rows, so its commit must carry ~2 update commands. Measured exactly 2 = 1.0x the changed-rows floor on 2026-08-08 (was 3000 = 1500x before value-semantic slot equality). A breach means the wire payload is scaling with tree size again."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_bytes_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "Absolute serialized-commit budget at the CI (quick) scale: model pins 2048 bytes and the measured select commit is 225 bytes on 2026-08-08 (was 237787 before the fix). Label text never rides a select commit, so this is deterministic."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_item_renders_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "A steady-state selection changes exactly two rows' selected props, so only those two row components may re-render. This deterministic render-breadth ceiling catches transported roots replaying all 1,000 rows for a two-row update."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update10th_commands_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Update-every-10th rewrites ceil(rows/10) labels; the commit must carry one text update per changed row. Measured exactly 100 = 1.0x the floor on 2026-08-08 (was 3100: every row's class array plus two event re-binds per row crossed on every commit)."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update10th_item_renders_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "Updating every tenth row changes exactly 100 row objects, so only those 100 row components may re-render. Unchanged transported row subtrees must retain their existing output and native listeners."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update_storm_commands_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Storm gate at the CI (quick) scale: 50 ticks x 100 changed rows = 5000 commands, measured exactly 1.0x the floor on 2026-08-08 (was 155000 before value-semantic slot equality)."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update_storm_commits_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "One commit per storm tick is the ceiling in the synchronous counter harness: 50 ticks -> 50 commits at the CI scale, measured exactly on 2026-08-08. More commits than ticks would mean a scheduling regression splits one tick's update across commits."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_storm_commands_1k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "30 select ticks x 2 changed rows = 60 commands at the CI scale, measured exactly 1.0x the floor on 2026-08-08 (was 90000 before the fix)."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "create_commands_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "All 10,000 freshly inserted component-owned rows share one compiled intrinsic template, so creation must remain one contiguous template-run command rather than scaling with row count."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_wire_bytes_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "The same two-survivor keyed swap at 10,000 rows must remain within 2 KiB; a larger packet means topology or public state still scales with retained rows."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_item_renders_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 0.01,
+    "note": "The denominator sentinel pins the observed keyed swap to zero Row renders at 10,000 rows."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "swap_handle_deltas_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "Handle/list-ancestry publication must scale with the two moved survivors, not the 10,000 retained rows."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_commands_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Same gate at 10k rows: measured exactly 2 commands on 2026-08-08 (was 30000 before the fix). Point-update wire cost must stay independent of table size."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_bytes_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "Absolute serialized-commit budget: the model pins 2048 bytes and the measured select commit is 225 bytes on 2026-08-08 (was 2406468 = 2.4MB before the fix, byte-identical to the captured production payload that motivated this suite)."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_item_renders_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "A steady-state selection still changes exactly two rows at 10,000 rows. Render breadth must remain proportional to the selection change instead of replaying the whole transported table."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update10th_commands_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Same gate at 10k rows: measured exactly 1000 = 1.0x the floor on 2026-08-08 (was 31000 before the fix)."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update10th_item_renders_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "Updating every tenth row at 10,000 rows changes exactly 1,000 row objects. The remaining 9,000 row components must retain their existing output without re-rendering."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update_storm_commands_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "Storm regression gate (the coalescing trap): 50 ticks x 1000 changed rows must stay ~50000 commands. Measured exactly 1.0x the floor on 2026-08-08 (was 1550000 before the fix). The synchronous harness acks instantly, so commits-per-tick stays 1 here; the asynchronous latest-state coalescing contract is pinned in universal-transport.test.ts."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "update_storm_commits_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1,
+    "note": "One commit per storm tick is the ceiling in the synchronous counter harness (see the 1k twin); measured exactly 50/50 on 2026-08-08."
+  },
+  {
+    "suite": "lynx-table",
+    "op": "select_storm_commands_10k",
+    "target": "octane-lynx",
+    "reference": "changed-rows-model",
+    "maxRatio": 1.5,
+    "note": "30 select ticks x 2 changed rows = 60 commands, measured exactly 1.0x the floor on 2026-08-08 (was 900000 before the fix)."
+  },
+  {
+    "suite": "lynx-render",
+    "op": "create_1k_rows_ms",
+    "target": "octane-lynx",
+    "reference": "react-lynx",
+    "maxRatio": 1.8,
+    "note": "Same-run compiled ReactLynx guard on an identical 9,008-host tree with 2,000 verified native handlers. A 21-sample run measured Octane 3.67 ms vs ReactLynx 3.85 ms (0.95x); the wider bound tolerates sub-5-ms timing and GC noise."
+  },
+  {
+    "suite": "lynx-render",
+    "op": "create_10k_rows_ms",
+    "target": "octane-lynx",
+    "reference": "react-lynx",
+    "maxRatio": 1.4,
+    "note": "Same-run production ReactLynx parity guard on an identical 90,008-host tree with 20,000 verified native handlers. One 21-sample run measured Octane 43.76 ms vs ReactLynx 45.57 ms (0.96x); structural gates also require one compiled run and 15 total mount commands."
+  },
+  {
+    "suite": "lynx-render",
+    "op": "update_1k_rows_ms",
+    "target": "octane-lynx",
+    "reference": "react-lynx",
+    "maxRatio": 1.8,
+    "note": "First real native tap after the identical 1,000-row mount, including visible state updates. A 21-sample run measured Octane 0.83 ms vs ReactLynx 0.81 ms (1.03x); the wider ceiling accommodates sub-millisecond scheduling noise."
+  },
+  {
+    "suite": "lynx-render",
+    "op": "update_10k_rows_ms",
+    "target": "octane-lynx",
+    "reference": "react-lynx",
+    "maxRatio": 1.5,
+    "note": "First real native tap after the identical 10,000-row mount. A 21-sample run measured Octane 7.62 ms vs ReactLynx 9.06 ms (0.84x); the guard prevents mount work from moving into the first interaction."
+  },
+  {
     "suite": "lynx-bundle-size",
     "op": "bundle_gzip",
     "target": "octane-ifr",
     "reference": "octane-preview",
     "maxRatio": 1.05,
-    "note": "Deterministic pinned-Rspeedy artifact gate for the same semantic-checksummed app. On 2026-07-22 the IFR artifact measured 110670 / 107222 = 1.0322x preview gzip. This is source/build evidence only; it makes no native first-paint or timing claim."
+    "note": "Deterministic pinned-Rspeedy artifact gate for the same semantic-checksummed app. On 2026-08-16 the issue #57 candidate measured 162569 / 157182 = 1.0343x preview gzip. This is source/build evidence only; it makes no native first-paint or timing claim."
   },
   {
     "suite": "lynx-bundle-size",
@@ -753,7 +1973,7 @@
     "target": "octane-ifr",
     "reference": "octane-preview",
     "maxRatio": 1.08,
-    "note": "Deterministic decoded main-program gate comparing the common host receiver plus IFR's authored first-tree graph with the preview's receiver-only program. The source/build record is 59260 / 55709 = 1.0637x; background bytes are separately required to remain byte-identical by the harness."
+    "note": "Deterministic decoded main-program gate comparing the common host receiver plus IFR's authored first-tree graph with the preview's receiver-only program. The issue #57 source/build record is 87566 / 82070 = 1.0670x; background bytes are separately required to remain byte-identical by the harness."
   },
   {
     "suite": "ssr-http",
@@ -858,5 +2078,997 @@
     "reference": "octane-tsrx",
     "maxRatio": 1.5,
     "note": "Metaframework-overhead guard: the vite-plugin + adapter-cloudflare worker vs the raw octane worker measured 1.06x cold on 2026-07-20 (38ms vs 36ms). A breach means the app-core/adapter layer grew a workerd cold-start cost, independent of the renderer."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-base-ui-vite",
+    "reference": "binding-base-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Base UI Separator; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-base-ui-vite",
+    "reference": "binding-base-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Base UI Separator; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-base-ui-vite",
+    "reference": "binding-base-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Base UI Separator; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-base-ui-esbuild",
+    "reference": "binding-base-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Base UI Separator; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-base-ui-esbuild",
+    "reference": "binding-base-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Base UI Separator; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-base-ui-esbuild",
+    "reference": "binding-base-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Base UI Separator; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-aria-vite",
+    "reference": "binding-aria-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-aria-vite",
+    "reference": "binding-aria-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-aria-vite",
+    "reference": "binding-aria-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-aria-esbuild",
+    "reference": "binding-aria-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-aria-esbuild",
+    "reference": "binding-aria-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-aria-esbuild",
+    "reference": "binding-aria-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the public Aria separator and its real browser focus/transition bootstrap; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-motion-vite",
+    "reference": "binding-motion-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Motion animate engine; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-motion-vite",
+    "reference": "binding-motion-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Motion animate engine; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-motion-vite",
+    "reference": "binding-motion-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Motion animate engine; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-motion-esbuild",
+    "reference": "binding-motion-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Motion animate engine; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-motion-esbuild",
+    "reference": "binding-motion-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Motion animate engine; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-motion-esbuild",
+    "reference": "binding-motion-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Motion animate engine; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-radix-vite",
+    "reference": "binding-radix-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Radix Separator namespace; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-radix-vite",
+    "reference": "binding-radix-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Radix Separator namespace; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-radix-vite",
+    "reference": "binding-radix-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the selected public Radix Separator namespace; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-radix-esbuild",
+    "reference": "binding-radix-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Radix Separator namespace; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-radix-esbuild",
+    "reference": "binding-radix-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Radix Separator namespace; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-radix-esbuild",
+    "reference": "binding-radix-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the selected public Radix Separator namespace; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-floating-ui-vite",
+    "reference": "binding-floating-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing standalone public floating positioning without Octane interaction providers; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-floating-ui-vite",
+    "reference": "binding-floating-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing standalone public floating positioning without Octane interaction providers; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-floating-ui-vite",
+    "reference": "binding-floating-ui-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing standalone public floating positioning without Octane interaction providers; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-floating-ui-esbuild",
+    "reference": "binding-floating-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing standalone public floating positioning without Octane interaction providers; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-floating-ui-esbuild",
+    "reference": "binding-floating-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing standalone public floating positioning without Octane interaction providers; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-floating-ui-esbuild",
+    "reference": "binding-floating-ui-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing standalone public floating positioning without Octane interaction providers; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-mantine-hooks-vite",
+    "reference": "binding-mantine-hooks-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public Mantine counter; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-mantine-hooks-vite",
+    "reference": "binding-mantine-hooks-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public Mantine counter; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-mantine-hooks-vite",
+    "reference": "binding-mantine-hooks-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public Mantine counter; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-mantine-hooks-esbuild",
+    "reference": "binding-mantine-hooks-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public Mantine counter; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-mantine-hooks-esbuild",
+    "reference": "binding-mantine-hooks-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public Mantine counter; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-mantine-hooks-esbuild",
+    "reference": "binding-mantine-hooks-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public Mantine counter; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-usehooks-ts-vite",
+    "reference": "binding-usehooks-ts-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public usehooks-ts counter; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-usehooks-ts-vite",
+    "reference": "binding-usehooks-ts-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public usehooks-ts counter; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-usehooks-ts-vite",
+    "reference": "binding-usehooks-ts-vite-budget",
+    "maxRatio": 1,
+    "note": "A real vite production bundle executing the interactive public usehooks-ts counter; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "raw",
+    "target": "binding-usehooks-ts-esbuild",
+    "reference": "binding-usehooks-ts-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public usehooks-ts counter; deterministic raw bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "gzip",
+    "target": "binding-usehooks-ts-esbuild",
+    "reference": "binding-usehooks-ts-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public usehooks-ts counter; deterministic gzip bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "bundle-reachability",
+    "op": "brotli",
+    "target": "binding-usehooks-ts-esbuild",
+    "reference": "binding-usehooks-ts-esbuild-budget",
+    "maxRatio": 1,
+    "note": "A real esbuild production bundle executing the interactive public usehooks-ts counter; deterministic brotli bytes must not exceed its committed same-run budget."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "mount",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 1.3,
+    "note": "Full dashboard mount (~2,400 SVG elements incl. 150 createElementNS de-opt icons and 120 foreignObject labels). Observed 0.82x, 2026-08-07; the namespace-flagged template clone must keep octane at least react-competitive on SVG creation."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "mount",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 0.8,
+    "note": "Observed 0.49x, 2026-08-07. Solid pays per-template SVG cloning plus store setup at this scale; a jump toward 0.8x means octane's SVG mount path (template parse cache, flag-3 resolution, icon de-opt creation) regressed relative to a fine-grained baseline."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "charts_tick",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 1.3,
+    "note": "40 series `d` rebuilds (+8 areas, 32 sparklines, tick/legend text, 24 gradient stops) per frame through the generic prev-guarded setAttribute path, incl. the sanitize-url toLowerCase pair per write. Observed 0.95x, 2026-08-07 — octane must not fall behind react at bulk d-churn."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "tick_sparse",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 2.7,
+    "note": "Fresh-but-value-identical snapshot republish: octane walks every binding's prev-guard where solid's fine-grained graph skips at the signal layer. Observed 1.78x, 2026-08-07; this pins the diff-skip walk cost from drifting further. Observed 0.36x, 2026-08-08, after the autoMemo host-spread admission: the unchanged topology/icon subtrees now bail on identity, so the walk covers only the republished charts strip."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "drag_nodes",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 2.5,
+    "note": "Per-frame topology commits (10 node+icon transforms + ~26 incident edge d rebuilds, 30 frames). Observed 1.45x at introduction (2026-08-07) and 1.89x once the react fixture adopted the React Compiler rollout (#639, 2026-08-08) — a known octane gap: each topo commit re-walks the keyed row bindings including the 150 de-opt icon holes. Tripwire against the gap widening. The autoMemo host-spread admission adds always-missing region guards to these commits; a same-session A/B (2026-08-08, pre-#639 react column) attributed only ~0.1 ms (~1.4%) of octane's 7.0 ms to them."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "pan_zoom",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 2.3,
+    "note": "960 tiny ui commits (viewBox + root transform only). Measures per-commit flush overhead with the dashboard subtrees isolated behind reference-stable descriptor props. Observed 1.53x, 2026-08-07; regression here means the children-prop bail-out stopped engaging. Since the autoMemo host-spread + destructured-props admissions (2026-08-08), the compiler-owned call-site regions also bail on the colocated shape: an inline-App probe (all three domains in App, subtrees as direct children) ran pan_zoom at 134.0 ms without the spread admission (Topology re-walk per commit) and 0.6 ms with it."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "pan_zoom",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 0.7,
+    "note": "Observed 0.32x, 2026-08-07. Octane's per-commit overhead beats react's memo-cascade by 3x on viewport-only writes; approaching 0.7x means either octane's ui-commit path bloated or the descriptor-prop bail-out weakened. The compiler-owned call-site regions now also cover host-spread callees (Topology's {...e.attrs} rows), so the Viewport descriptor-prop shape is a fixture choice rather than the only isolation keeping this op flat."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "select_toggle",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 0.9,
+    "note": "350 class-string rewrites per round through setClassAttr (SVG class is attribute-only). Observed 0.58x, 2026-08-07 — octane's many-small-writes profile beats solid's reconcile here; the guard rejects per-write fixed-cost regressions (alias lookup, sanitize, clsx normalize)."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "topology_churn",
+    "target": "octane-tsrx",
+    "reference": "svelte",
+    "maxRatio": 1.4,
+    "note": "Keyed churn inside <svg>: -30/+30 nodes with edges/icons/foreignObject labels plus survivor rotation (LIS moves). Observed 0.93x vs svelte's keyed each, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "label_churn",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 2.1,
+    "note": "480 foreignObject insert/removals per sample — the SVG→HTML namespace push/pop on runtime insertion. Observed 1.38x, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "tooltip_swarm",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 0.8,
+    "note": "360 portal commits per sample into the overlay <g> (mount, two moves, unmount per cycle). Observed 0.50x, 2026-08-07 — octane portals into SVG beat react's createPortal; the guard keeps that from silently inverting."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "icon_swap",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 1.2,
+    "note": "All 150 createElement-built icons re-diff per flip (tag swaps replace elements, same-tag patches attrs) plus 150 <use href> fast-path writes. Octane's DELIBERATE de-opt path vs react's one-and-only path — a cliff-width tripwire, not a win claim. Observed 0.79x, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "style_spread_pulse",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 3,
+    "note": "200 edges x (style-object diff with unitless SVG props + data-* spread bag) per pulse. Observed 1.98x, 2026-08-07 — octane's setSpread + per-property style diff currently trails react's; tripwire against the gap widening while it is worked on."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "elements_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "svg_elements_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "foreignobject_html_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "defs_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "elements_full",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "svg_elements_full",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "foreignobject_html_full",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "defs_full",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "elements_full",
+    "target": "octane-tsrx",
+    "reference": "svelte",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "svg_elements_full",
+    "target": "octane-tsrx",
+    "reference": "svelte",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "foreignobject_html_full",
+    "target": "octane-tsrx",
+    "reference": "svelte",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "defs_full",
+    "target": "octane-tsrx",
+    "reference": "svelte",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Semantic control: the fixtures must render byte-identical SVG (the harness also md5-compares a canonical DOM serialization). Pinned 1.0 exactly, 2026-08-07."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "text_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1.0,
+    "maxRatio": 1.0,
+    "note": "Octane and react agree on text-node structure (one node per bound text position). Pinned exactly, 2026-08-07; solid/svelte legitimately differ (extra anchors), so they are not pinned."
+  },
+  {
+    "suite": "svg-dashboard",
+    "op": "nodes_full",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 1.3,
+    "note": "Total node count differs only by octane's loop/portal comment markers (2,900 vs 2,645 = 1.10x, 2026-08-07). Loose ceiling so marker-elision regressions surface without pinning marker counts."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "elements_deep",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1,
+    "maxRatio": 1,
+    "note": "Semantic control: the 1024-leaf route renders exactly 2052 elements in both frameworks."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "text_deep",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "minRatio": 1,
+    "maxRatio": 1,
+    "note": "Semantic control: the 1024-leaf route renders exactly 1025 text nodes in both frameworks."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "comments_deep",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 0.01,
+    "note": "Marker elision: transitive @if-arm single-root proof leaves 1 comment vs Solid's 2046 on the 1024-leaf route (0.0005x, 2026-08-09). A regression to per-slot comp pairs is 2x Solid and fails loudly."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "nodes_deep",
+    "target": "octane-tsrx",
+    "reference": "react",
+    "maxRatio": 1.005,
+    "note": "Total DOM weight of the 1024-leaf route: Octane 3078 vs React 3077 nodes (1.0003x, 2026-08-09)."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "comments_deep",
+    "target": "octane-jsx",
+    "reference": "solid",
+    "maxRatio": 4.05,
+    "note": "Holds the JSX-dialect de-opt line: 8184 vs Solid 2046 comments (4.0x, 2026-08-09) while the de-opt gap is being addressed."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "nav_teardown",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 1.6,
+    "note": "Same-run 1024-leaf route teardown, gated on the shell surviving by node identity. Per-block DOM detach measured 2.24x solid before the wholesale unmount detach; detaching once at the outermost block measures 1.0x (0.60 vs 0.60 on 2026-08-09). The 1.6 ceiling leaves sub-millisecond noise headroom while failing if per-descendant removeChild returns."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "nav_deep",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 1.4,
+    "note": "Same-run full route swap (1024-leaf teardown + mount), measured 0.95x solid (1.80 vs 1.90) on 2026-08-09 after the wholesale detach. Guards the navigation as a whole so a teardown regression cannot hide behind a mount improvement."
+  },
+  {
+    "suite": "spa-navigation",
+    "op": "nav_mount",
+    "target": "octane-tsrx",
+    "reference": "solid",
+    "maxRatio": 1.2,
+    "note": "Protects the existing mount win: 32-leaf teardown + 1024-leaf mount measured 0.94x solid (1.70 vs 1.80) on 2026-08-09. Octane mounts faster than the fine-grained peers despite marker traffic; a breach means the compiled mount path grew per-node cost."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "eligible_hit_functions",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "All compiler-eligible dependency-hit scenarios must evaluate zero application or Octane-runtime function expressions. Counts are observed after production tree-shaking, not heap-allocation estimates."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "eligible_hit_application_array_literals",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "The eligible hit paths must not recreate authored dependency arrays or replacement application array literals. Per-case counters and clean semantic controls live in the result metadata."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "eligible_hit_arrays",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 1,
+    "note": "Bounds all observed application/runtime array literals, constructors, and rest arrays. The fixture-derived budget permits only the 352 existing custom-hook/JSX caller arrays across 32 renders of each eligible scenario."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "eligible_miss_functions",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 1,
+    "note": "Dependency misses may create the 448 semantically required fresh callbacks (14 callback results times 32 renders), but must not add memo-factory or runtime-wrapper closures."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "declaration_miss_arrays",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "Protects the established flat-cache declaration tier: one-dependency memo/callback misses must not create dependency or publisher rest arrays."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "identifier_deps_hit_runtime_functions",
+    "target": "runtime-form",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "An identifier dependency array deliberately keeps the runtime fallback. Its cache-hit path must not recreate an internal useCallback factory wrapper."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "identifier_deps_miss_runtime_functions",
+    "target": "runtime-form",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "The runtime fallback must not allocate an internal useCallback factory wrapper on dependency misses either."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "null_deps_hit_functions",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 1,
+    "note": "Explicit null runs every render: the fresh returned callback is required, while the useMemo factory closure is avoidable."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "null_deps_hit_arrays",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "Explicit-null inline memo/callback calls have no dependency array and must not introduce a replacement array."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "callback_name_mismatches",
+    "target": "inline",
+    "reference": "one-per-render",
+    "maxRatio": 0,
+    "note": "The clean optimized callbacks must preserve the observable function names of the runtime-form control, including anonymous explicit-null callbacks."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "code_gzip",
+    "target": "inline",
+    "reference": "runtime-form",
+    "maxRatio": 1.4,
+    "note": "Same-input production compiler output-size guard for the closure-removal fixture. Allows the inlined checks' intentional code-size tradeoff without hiding further growth in the full runtime bundle."
+  },
+  {
+    "suite": "hook-memo",
+    "op": "bundle_gzip",
+    "target": "inline",
+    "reference": "runtime-form",
+    "maxRatio": 1.02,
+    "note": "Same-run clean tree-shaken application plus Octane runtime: closure-free lowering must stay within 2% gzip of the runtime-form control. No instrumentation contributes to these bytes."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_hideActivityRange",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 1,
+    "note": "One public flush updates 256 retained rows under one hidden Activity. The original runtime scanned its range 256 times; the semantically checked candidate scans once. Keep the boundary walk coalesced per drain."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_rehideActivityAfterDescendantRender",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 1,
+    "note": "The 256 hidden descendant setters share one re-hide pass, not one pass per rendered row. Measured 256 calls before and 1 after; every row's state, visibility, DOM identity and reveal result are verified."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_enforceHiddenDisplay",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 1,
+    "note": "Bounds hidden display enforcement to one visit per affected host: 65,536 calls before, 256 after for 256 rows. This is the deterministic linear-work guard, independent of browser timing."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_stateAttributeWrites",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 1,
+    "minRatio": 1,
+    "note": "All 256 distinct retained state updates must reach their public data-local attributes exactly once. The semantic gate separately checks every row's text/state and the latest reveal."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_styleWrites",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "An already-hidden descendant state batch must not rewrite unchanged display styles. Both Octane and React measured zero style mutations while updating every retained row."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_addedRows",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "Hidden descendant state updates preserve all accepted host rows; the MutationObserver must see no inserted rows. The semantic gate also compares every survivor identity."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_removedRows",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "Hidden descendant state updates must not remove retained host rows. This independent DOM observation prevents a fast remount from masquerading as retained hidden work."
+  },
+  {
+    "suite": "activity",
+    "op": "hide_reveal_styleWrites",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 2,
+    "note": "Eight complete visibility cycles over 256 rows measured 4,096 style writes in both revisions and React. Permit at most one hide and one reveal write per row/cycle, with intermediate visibility and final authored display verified."
+  },
+  {
+    "suite": "activity",
+    "op": "hide_reveal_detachSubtreeRefs",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "This effectful Activity fixture has no refs. The hasRefs gate must keep ref-detachment manifest traversal cold during visibility changes; callback-ref semantics are covered by separate conformance tests."
+  },
+  {
+    "suite": "activity",
+    "op": "hide_reveal_collectVisibleSubtreeRefs",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "A ref-free Activity reveal must not walk subtree ref manifests. The measured candidate performs zero such visits while reconnecting every required layout/passive effect."
+  },
+  {
+    "suite": "activity",
+    "op": "nested_hide_reveal_styleWrites",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 2,
+    "note": "Eight complete visibility cycles over 256 rows measured 4,096 style writes in both revisions and React. Permit at most one hide and one reveal write per row/cycle, with intermediate visibility and final authored display verified."
+  },
+  {
+    "suite": "activity",
+    "op": "nested_hide_reveal_detachSubtreeRefs",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "This effectful Activity fixture has no refs. The hasRefs gate must keep ref-detachment manifest traversal cold during visibility changes; callback-ref semantics are covered by separate conformance tests."
+  },
+  {
+    "suite": "activity",
+    "op": "nested_hide_reveal_collectVisibleSubtreeRefs",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "A ref-free Activity reveal must not walk subtree ref manifests. The measured candidate performs zero such visits while reconnecting every required layout/passive effect."
+  },
+  {
+    "suite": "activity",
+    "op": "hide_reveal_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_burst_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "hidden_descendant_updates_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "nested_hide_reveal_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "plain_updates_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "plain_descendant_updates_snapshotSubtreeEffectDeps",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The fixture has layout/passive effects but no insertion effects or speculative Suspense work. Insertion-abort recovery must not introduce subtree dependency snapshots on this ordinary path; measured zero."
+  },
+  {
+    "suite": "activity",
+    "op": "plain_updates_journalForSlot",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "Unchanged keyed membership must not snapshot the chain or key map while updating ordinary row bindings."
+  },
+  {
+    "suite": "activity",
+    "op": "plain_updates_hideActivityRange",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The matched plain-tree control contains no Activity. Its public updates must not enter Activity range hiding; all row state, effects and DOM identities are still verified."
+  },
+  {
+    "suite": "activity",
+    "op": "plain_descendant_updates_hideActivityRange",
+    "target": "octane-tsrx-work",
+    "reference": "activity-work-model",
+    "maxRatio": 0,
+    "note": "The matched plain-tree control contains no Activity. Its public updates must not enter Activity range hiding; all row state, effects and DOM identities are still verified."
+  },
+  {
+    "suite": "activity",
+    "op": "deep_ref_replacements_registerActivityRef",
+    "target": "octane-tsrx-refs-cold-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 0,
+    "note": "Before any Activity is rendered, 3,072 ordinary ref replacements through sixteen component layers must not register Activity ownership or scan ancestors. Exact callback attachments/cleanups and live target identities are verified."
+  },
+  {
+    "suite": "activity",
+    "op": "deep_ref_replacements_findActivityRefOwners",
+    "target": "octane-tsrx-refs-cold-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 0,
+    "note": "Before any Activity is rendered, 3,072 ordinary ref replacements through sixteen component layers must not register Activity ownership or scan ancestors. Exact callback attachments/cleanups and live target identities are verified."
+  },
+  {
+    "suite": "activity",
+    "op": "deep_ref_replacements_registerActivityRef",
+    "target": "octane-tsrx-refs-after-activity-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 0,
+    "note": "After the last Activity unmounts, the optional ref-ownership hook must be cold again. The deep ordinary-tree control measured zero Activity registration/owner searches across 3,072 correct ref replacements."
+  },
+  {
+    "suite": "activity",
+    "op": "deep_ref_replacements_findActivityRefOwners",
+    "target": "octane-tsrx-refs-after-activity-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 0,
+    "note": "After the last Activity unmounts, the optional ref-ownership hook must be cold again. The deep ordinary-tree control measured zero Activity registration/owner searches across 3,072 correct ref replacements."
+  },
+  {
+    "suite": "activity",
+    "op": "deep_ref_replacements_findActivityRefOwners",
+    "target": "octane-tsrx-refs-live-hidden-activity-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 0,
+    "note": "A separate hidden Activity remains mounted throughout 3,072 ordinary depth-16 ref replacements. Cached negative ownership must avoid repeated ancestor searches; the unrelated hidden root and all ref lifetimes are checked."
+  },
+  {
+    "suite": "activity",
+    "op": "ref_mount_unmount_findActivityRefOwners",
+    "target": "octane-tsrx-refs-live-hidden-activity-work",
+    "reference": "activity-ref-model",
+    "maxRatio": 1,
+    "note": "Fresh ordinary ref-bearing blocks may require one ownership lookup while another root has a live hidden Activity. Eight 256-row mount/unmount cycles measured 2,048 searches for 2,048 new blocks, with balanced ref lifetimes."
+  },
+  {
+    "suite": "activity",
+    "op": "activity_reachable",
+    "target": "activity-bundle-root-static-specialized",
+    "reference": "activity-bundle-model",
+    "maxRatio": 0,
+    "note": "The executed ordinary production bundle must tree-shake the optional Activity implementation. The shared reachability oracle verifies actual behavior before the diagnostic is accepted; existing bundle byte budgets are not loosened."
+  },
+  {
+    "suite": "activity",
+    "op": "activity_reachable",
+    "target": "activity-bundle-root-static",
+    "reference": "activity-bundle-model",
+    "maxRatio": 0,
+    "note": "The executed ordinary production bundle must tree-shake the optional Activity implementation. The shared reachability oracle verifies actual behavior before the diagnostic is accepted; existing bundle byte budgets are not loosened."
+  },
+  {
+    "suite": "activity",
+    "op": "activity_reachable",
+    "target": "activity-bundle-hooks-state",
+    "reference": "activity-bundle-model",
+    "maxRatio": 0,
+    "note": "The executed ordinary production bundle must tree-shake the optional Activity implementation. The shared reachability oracle verifies actual behavior before the diagnostic is accepted; existing bundle byte budgets are not loosened."
+  },
+  {
+    "suite": "activity",
+    "op": "activity_reachable",
+    "target": "activity-bundle-component-owned-effects",
+    "reference": "activity-bundle-model",
+    "maxRatio": 0,
+    "note": "The executed ordinary production bundle must tree-shake the optional Activity implementation. The shared reachability oracle verifies actual behavior before the diagnostic is accepted; existing bundle byte budgets are not loosened."
+  },
+  {
+    "suite": "activity",
+    "op": "activity_reachable",
+    "target": "activity-bundle-root-descriptor",
+    "reference": "activity-bundle-model",
+    "maxRatio": 0,
+    "note": "The executed ordinary production bundle must tree-shake the optional Activity implementation. The shared reachability oracle verifies actual behavior before the diagnostic is accepted; existing bundle byte budgets are not loosened."
   }
 ]

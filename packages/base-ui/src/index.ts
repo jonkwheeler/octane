@@ -3,6 +3,7 @@
 // (`@octanejs/base-ui/separator`, `@octanejs/base-ui/use-render`, …). This barrel
 // re-exports the public surface for convenience as components land.
 export { Separator } from './separator';
+export { Accordion } from './accordion';
 export { AlertDialog } from './alert-dialog';
 export { Avatar } from './avatar';
 export { Button } from './button';
@@ -11,6 +12,7 @@ export { DirectionProvider, useDirection } from './direction-provider';
 export type { TextDirection } from './direction-provider';
 export { useMediaQuery } from './unstable-use-media-query';
 export { Checkbox } from './checkbox';
+export { Collapsible } from './collapsible';
 export { ContextMenu } from './context-menu';
 export { CheckboxGroup } from './checkbox-group';
 export { Dialog } from './dialog';
@@ -30,7 +32,9 @@ export { PreviewCard } from './preview-card';
 export { Tooltip } from './tooltip';
 export { Slider } from './slider';
 export { Switch } from './switch';
+export { Toast } from './toast';
 export { Toggle } from './toggle';
 export { ToggleGroup } from './toggle-group';
 export { useRender } from './use-render';
 export { mergeProps, mergePropsN, mergeClassNames } from './merge-props';
+// OCTANE DIVERGENCE[unported-internal-hover][differential:base-ui-tooltip-open]

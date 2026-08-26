@@ -8,21 +8,23 @@
 // effects run in order), so indexes line up with data indexes exactly like the
 // upstream element order did.
 import { createContext, useContext, useMemo, useState } from 'octane';
+import { shallowEqual } from '@octanejs/redux';
 import { splitSlot, subSlot } from '../internal';
+import type { Props as CellProps } from '../component/Cell';
 
 export interface CellRegistry {
-	register(token: object, props: unknown): void;
+	register(token: object, props: CellProps): void;
 	unregister(token: object): void;
 }
 
 /** The shape upstream's `cells[index].props` access expects. */
 export interface RegisteredCell {
-	props: unknown;
+	props: CellProps;
 }
 
 export const CellsContext = createContext<CellRegistry | null>(null);
 
-function toCellArray(map: Map<object, unknown>): RegisteredCell[] | undefined {
+function toCellArray(map: Map<object, CellProps>): RegisteredCell[] | undefined {
 	if (map.size === 0) {
 		return undefined;
 	}
@@ -45,7 +47,7 @@ export function useCellRegistry(...rest: any[]): [RegisteredCell[] | undefined, 
 	);
 	const registry = useMemo(
 		() => {
-			const entries = new Map<object, unknown>();
+			const entries = new Map<object, CellProps>();
 			let scheduled = false;
 			const publish = () => {
 				if (scheduled) return;
@@ -57,7 +59,18 @@ export function useCellRegistry(...rest: any[]): [RegisteredCell[] | undefined, 
 				});
 			};
 			return {
-				register(token: object, props: unknown) {
+				register(token: object, props: CellProps) {
+					const previousProps = entries.get(token);
+					if (
+						entries.has(token) &&
+						previousProps != null &&
+						props != null &&
+						typeof previousProps === 'object' &&
+						typeof props === 'object' &&
+						shallowEqual(previousProps, props)
+					) {
+						return;
+					}
 					entries.set(token, props);
 					publish();
 				},

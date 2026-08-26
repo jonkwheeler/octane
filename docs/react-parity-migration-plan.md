@@ -12,6 +12,11 @@
 > **[differences-from-react.md](./differences-from-react.md)**; keep that page
 > current when a divergence is added or closed.
 
+> This historical core migration plan is not the configuration guide for
+> binding-package parity jobs. Current manifest, Vitest project ownership, and
+> CI execution rules live in
+> **[React parity test execution](./react-parity-testing.md)**.
+
 > The 2026-07-16 residual audit assigns every discovered case a risk, owner,
 > workstream, and status: there are zero untriaged cases. A `planned` status still
 > means supported behavior needs executable evidence; it is not counted as ported.
@@ -650,13 +655,14 @@ while an Action is in flight.
   the documented per-swap model: a resume may discover another suspension while rendering
   the live tree, so global same-identity parent/sibling rollback remains outside this
   coordinator (#4).
-- **#5 reveal throttling — investigated and DISMISSED (octane matches default React).**
-  The provisional divergence used the wrong oracle (the `-test.internal.js` suite). The
-  public default-flags test `ReactUse-test.js:1096` reveals `A(Loading B...)` immediately
-  on a nested reveal — exactly octane's behavior — and the throttle assertions are gated
-  behind `alwaysThrottleRetries` (OFF by default). Implementing the throttle would DIVERGE
-  from default React (and break the correctly-ported `ReactUse:1096` test), so it's
-  intentionally not done. SUSPENSE_DIVERGENCE.md #5 reclassified from "open" to "dismissed".
+- **#5 reveal throttling — prior dismissal superseded (2026-08-21).** An
+  `act()`-driven immediate reveal is not a production-timing oracle: React
+  explicitly bypasses the retry delay in that scope. Retry-only commits use a
+  shared 300ms recent-fallback window, while already-visible transition content
+  is held without a timeout. See the corrected
+  [retry-timing audit](../packages/octane/audit/SUSPENSE_DIVERGENCE.md#5-retry-reveal-throttling--distinct-from-transition-shell-retention)
+  and the same-fixture React/Octane tests in
+  `packages/octane/tests/differential/suspense-timing.test.ts`.
 - **`ReactAsyncActions` + `Activity` deeper cases — ported.** `useOptimistic` rebasing
   (passthrough change mid-action), custom reducers, and repeated updates in one action all
   match React (`conformance/async-actions.test.ts`). `<Activity>` reveal-outer-without-inner

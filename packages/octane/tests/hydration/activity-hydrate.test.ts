@@ -2,12 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compile } from 'octane/compiler';
-import { flushSync, hydrateRoot } from '../../src/index.js';
+import { act, flushSync, hydrateRoot } from '../../src/index.js';
 import { flushEffects } from '../_helpers.js';
 import * as ServerRT from 'octane/server';
 import {
 	ActivityHydration,
 	ActivityIdHydration,
+	ActivitySuspenseHydration,
 	NestedActivityHydration,
 } from './_fixtures/activity.tsrx';
 
@@ -150,6 +151,46 @@ describe('hydrateRoot — <Activity>', () => {
 		expect(visible.id).toBe(serverId);
 		expect(hidden.id).not.toBe(serverId);
 		expect(hidden.style.display).toBe('none');
+		root.unmount();
+	});
+
+	it('re-hides try content freshly mounted by a hydration resume inside a hidden Activity', async () => {
+		const { html } = ServerRT.renderToString(server.ActivitySuspenseHydration, {
+			mode: 'visible',
+			suspend: false,
+			promise: Promise.resolve('unused'),
+		});
+		container.innerHTML = html;
+		const serverContent = container.querySelector('#activity-resumed-content');
+		expect(serverContent?.textContent).toBe('server');
+
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => (resolve = done));
+		const root = hydrateRoot(container, ActivitySuspenseHydration, {
+			mode: 'hidden',
+			suspend: true,
+			promise,
+		});
+		flushSync(() => {});
+
+		const pending = container.querySelector('#activity-resume-pending') as HTMLElement;
+		expect(container.querySelector('#activity-resumed-content')).toBeNull();
+		expect(pending.style.display).toBe('none');
+		await act(() => resolve('client'));
+
+		const resumed = container.querySelector('#activity-resumed-content') as HTMLElement;
+		expect(resumed).not.toBe(serverContent);
+		expect(resumed.textContent).toBe('client');
+		expect(resumed.style.display).toBe('none');
+
+		root.render(ActivitySuspenseHydration, {
+			mode: 'visible',
+			suspend: true,
+			promise,
+		});
+		flushSync(() => {});
+		expect(container.querySelector('#activity-resumed-content')).toBe(resumed);
+		expect(resumed.style.display).toBe('');
 		root.unmount();
 	});
 });

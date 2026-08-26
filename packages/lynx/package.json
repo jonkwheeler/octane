@@ -4,9 +4,12 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/core/worklets.ts",
+    "./src/main-worklets.ts"
+  ],
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.2"
   },
   "description": "Private Milestone 11 Octane Lynx renderer with a pinned macOS Explorer first-paint lane; native release gates remain blocked.",
   "author": {
@@ -40,6 +43,7 @@
     },
     "./renderer": "./src/renderer.ts",
     "./main-renderer": "./src/main-renderer.ts",
+    "./main-worklets": "./src/main-worklets.ts",
     "./first-screen": "./src/first-screen.ts",
     "./intrinsics": "./src/intrinsics.ts",
     "./intrinsics/jsx-runtime": "./src/intrinsics.ts",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mount, act } from './_helpers';
+import { mount, act, nextPaint } from './_helpers';
 import {
 	BasicSuspense,
 	CatchRejection,
@@ -18,6 +18,11 @@ import {
 	WaterfallBody,
 	ReplayChurnBody,
 	PendingPropSwap,
+	PreSuspendSiblingEffects,
+	CommittedThenNewSibling,
+	ThrownResourceSuspense,
+	ThrownResourceJsxSuspense,
+	PromiseThrownFromLayout,
 } from './_fixtures/suspense.tsrx';
 
 interface Deferred<T> {
@@ -32,6 +37,26 @@ function deferred<T>(): Deferred<T> {
 		reject = rej;
 	});
 	return { promise, resolve, reject };
+}
+
+function resourceReader<T>(promise: Promise<T>, wakeable: PromiseLike<T> = promise): () => T {
+	let result:
+		| { status: 'pending' }
+		| { status: 'fulfilled'; value: T }
+		| { status: 'rejected'; reason: unknown } = { status: 'pending' };
+	promise.then(
+		(value) => {
+			result = { status: 'fulfilled', value };
+		},
+		(reason: unknown) => {
+			result = { status: 'rejected', reason };
+		},
+	);
+	return () => {
+		if (result.status === 'pending') throw wakeable;
+		if (result.status === 'rejected') throw result.reason;
+		return result.value;
+	};
 }
 
 describe('Suspense — basic', () => {
@@ -83,6 +108,81 @@ describe('Suspense — basic', () => {
 		expect(r.find('.resolved').textContent).toBe('current');
 		r.unmount();
 	});
+});
+
+describe.each([
+	['template', ThrownResourceSuspense],
+	['JSX', ThrownResourceJsxSuspense],
+] as const)('Suspense — thrown resources through %s boundaries', (_name, App) => {
+	it.each(['promise', 'thenable'] as const)(
+		'suspends on a resource-thrown %s and commits its lifecycle on reveal',
+		async (kind) => {
+			// React resource readers may throw a wakeable directly instead of calling
+			// use(): ReactFiberThrow.js routes these to the nearest Suspense boundary.
+			const pending = deferred<string>();
+			const wakeable: PromiseLike<string> =
+				kind === 'promise'
+					? pending.promise
+					: { then: (resolve, reject) => pending.promise.then(resolve, reject) };
+			const log: string[] = [];
+			const r = mount(App, { read: resourceReader(pending.promise, wakeable), log });
+			expect(r.find('.fallback').textContent).toBe('loading');
+			expect(r.findAll('.error')).toHaveLength(0);
+			expect(log).toEqual([]);
+			await act(() => pending.resolve('ready'));
+			expect(r.find('.resolved').textContent).toBe('ready');
+			expect(r.findAll('.fallback')).toHaveLength(0);
+			expect(log).toEqual(['mounted:ready']);
+			r.unmount();
+			expect(log).toEqual(['mounted:ready', 'cleanup:ready']);
+		},
+	);
+
+	it('routes a rejected resource to catch after its pending promise settles', async () => {
+		const pending = deferred<string>();
+		const log: string[] = [];
+		const r = mount(App, { read: resourceReader(pending.promise), log });
+		expect(r.find('.fallback').textContent).toBe('loading');
+		await act(() => pending.reject(new Error('resource failed')));
+		expect(r.find('.error').textContent).toBe('Error: resource failed');
+		expect(r.findAll('.fallback')).toHaveLength(0);
+		expect(log).toEqual([]);
+		r.unmount();
+	});
+
+	it('ignores a superseded resource wakeable when older data arrives first', async () => {
+		const older = deferred<string>();
+		const newer = deferred<string>();
+		const log: string[] = [];
+		const r = mount(App, { read: resourceReader(older.promise), log });
+		r.update(App, { read: resourceReader(newer.promise), log });
+		await act(() => older.resolve('stale'));
+		expect(r.find('.fallback').textContent).toBe('loading');
+		expect(log).toEqual([]);
+		await act(() => newer.resolve('current'));
+		expect(r.find('.resolved').textContent).toBe('current');
+		expect(log).toEqual(['mounted:current']);
+		r.unmount();
+	});
+
+	it('does not mount a resource reader after its pending boundary unmounts', async () => {
+		const pending = deferred<string>();
+		const log: string[] = [];
+		const r = mount(App, { read: resourceReader(pending.promise), log });
+		expect(r.find('.fallback').textContent).toBe('loading');
+		r.unmount();
+		await act(() => pending.resolve('too late'));
+		expect(r.container.innerHTML).toBe('');
+		expect(log).toEqual([]);
+	});
+});
+
+it('treats a promise thrown by a layout effect as an error, not a render suspension', () => {
+	const pending = deferred<string>();
+	const r = mount(PromiseThrownFromLayout, { promise: pending.promise });
+	expect(r.find('.error').textContent).toBe('[object Promise]');
+	expect(r.findAll('.fallback')).toHaveLength(0);
+	r.unmount();
 });
 
 describe('Suspense — catch on rejection', () => {
@@ -515,6 +615,82 @@ describe('Suspense — useDeferredValue (React 18 stale-data pattern)', () => {
 		});
 		expect(r.find('.data').textContent).toBe('second-data');
 		expect(r.find('.data').className).toBe('data fresh');
+		r.unmount();
+	});
+});
+
+describe('Suspense — effects of siblings rendered before the suspend', () => {
+	it('fires mount effects for pre-suspend siblings once the first mount reveals', async () => {
+		const d = deferred<string>();
+		const log: string[] = [];
+		const r = mount(PreSuspendSiblingEffects, {
+			ids: ['a', 'b'],
+			log: (m: string) => log.push(m),
+			promise: d.promise,
+		});
+		// Nothing committed: the boundary suspended before any of it landed.
+		expect(r.find('.fallback').textContent).toBe('loading');
+		expect(log).toEqual([]);
+
+		await act(() => {
+			d.resolve('R');
+		});
+		expect(r.find('.resolved').textContent).toBe('R');
+		expect(r.findAll('.item').map((n) => n.textContent)).toEqual(['a', 'b', 'plain']);
+		// React parity: a suspended initial mount fires every mount effect in the
+		// subtree when it finally commits.
+		expect(log).toEqual([
+			'layout mount a',
+			'layout mount b',
+			'layout mount plain',
+			'passive mount a',
+			'passive mount b',
+			'passive mount plain',
+		]);
+
+		// The mount effects really connected, so unmount tears them down: layout
+		// cleanups synchronously, passive ones deferred (see effect-timing).
+		log.length = 0;
+		r.unmount();
+		expect(log).toEqual(['layout cleanup a', 'layout cleanup b', 'layout cleanup plain']);
+		await nextPaint();
+		expect(log).toEqual([
+			'layout cleanup a',
+			'layout cleanup b',
+			'layout cleanup plain',
+			'passive cleanup a',
+			'passive cleanup b',
+			'passive cleanup plain',
+		]);
+	});
+
+	it('spares committed passive subscriptions but still mounts a new sibling', async () => {
+		const log: string[] = [];
+		const push = (m: string) => log.push(m);
+		const r = mount(CommittedThenNewSibling, { ids: ['a'], log: push, suspend: false });
+		await nextPaint();
+		expect(log).toEqual(['layout mount a', 'passive mount a']);
+
+		// Second attempt adds child 'b' AND suspends. 'a' is already committed.
+		const d = deferred<string>();
+		log.length = 0;
+		r.update(CommittedThenNewSibling, {
+			ids: ['a', 'b'],
+			log: push,
+			suspend: true,
+			promise: d.promise,
+		});
+		expect(r.find('.fallback').textContent).toBe('loading');
+		expect(log).toEqual(['layout cleanup a']);
+
+		log.length = 0;
+		await act(() => {
+			d.resolve('R');
+		});
+		expect(r.find('.resolved').textContent).toBe('R');
+		// 'a' kept its passive subscription across the hide, so only its layout
+		// effect recycles. 'b' never committed, so both of its mounts still owe a run.
+		expect(log).toEqual(['layout mount a', 'layout mount b', 'passive mount b']);
 		r.unmount();
 	});
 });

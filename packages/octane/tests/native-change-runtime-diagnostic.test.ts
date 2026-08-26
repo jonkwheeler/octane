@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { flushSync, hydrateRoot } from '../src/index.js';
 import * as ServerRuntime from 'octane/server';
-import { mount } from './_helpers.js';
+import { act, mount } from './_helpers.js';
 import { loadServerFixture } from './_server-fixture.js';
 import {
 	DiagnosticBatch,
@@ -180,6 +180,35 @@ describe('native text change development diagnostic', () => {
 					items.map((item) => item.type),
 				);
 			}
+		} finally {
+			result.unmount();
+		}
+	});
+
+	it('requeues every host after a large suspended render rolls back', async () => {
+		const items = Array.from({ length: 32 }, (_, index) => ({
+			id: `rollback-diagnostic-${index}`,
+			type: 'text',
+		}));
+		let resolve!: (value: string) => void;
+		const promise = new Promise<string>((done) => {
+			resolve = done;
+		});
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+		const result = mount(DiagnosticBatch, { items, hostProps: { onInput: noop } });
+		try {
+			result.update(DiagnosticBatch, {
+				items,
+				hostProps: { onChange: noop },
+				promise,
+			});
+			expect(diagnosticCalls(error)).toHaveLength(0);
+
+			await act(async () => {
+				resolve('ready');
+				await promise;
+			});
+			expect(diagnosticCalls(error)).toHaveLength(PROD_COMPILE ? 0 : items.length);
 		} finally {
 			result.unmount();
 		}
