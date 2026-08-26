@@ -336,6 +336,15 @@ const SUITES = [
 		],
 	})),
 	{
+		// Node/jsdom development-runtime scaling: the same controlled-value commit
+		// at 4k and 32k hosts, normalized per host for a same-process ratio guard.
+		name: 'dev-form-diagnostics',
+		cwd: 'dev-form-diagnostics',
+		servers: [],
+		iter: { normal: 8, quick: 2 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		// Headless-Chromium production scaling for late behavior events whose
 		// distinct asynchronous adoptions settle one at a time.
 		name: 'behavior-root-events',
@@ -720,6 +729,22 @@ const SUITES = [
 		cwd: 'compiler-throughput',
 		servers: [],
 		iter: { normal: 5, quick: 2 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		name: 'tsrx-component-graph',
+		cwd: 'tsrx-component-graph',
+		servers: [],
+		iter: { normal: 8, quick: 4 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
+		// Development TSRX compiler scaling: distinct authored HTML-nesting
+		// diagnostics at two sizes, normalized per invalid site in one process.
+		name: 'tsrx-nesting-diagnostics',
+		cwd: 'tsrx-nesting-diagnostics',
+		servers: [],
+		iter: { normal: 9, quick: 3 },
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{

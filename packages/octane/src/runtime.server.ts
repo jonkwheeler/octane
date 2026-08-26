@@ -2361,6 +2361,7 @@ export function ssrAttrs(
 		string,
 		readonly [name: string, value: unknown, firstOrder: number, lastOrder: number]
 	>();
+	let needsWinningOrderSort = false;
 	for (const writer of props.values()) {
 		const { rawName, value, firstOrder, lastOrder } = writer;
 		if (
@@ -2385,20 +2386,25 @@ export function ssrAttrs(
 		// SVG/MathML retain their case-sensitive qualified names.
 		const identity = namespace === 'html' ? name.toLowerCase() : name;
 		const previous = resolved.get(identity);
-		if (previous === undefined || previous[3] < lastOrder) {
-			resolved.set(identity, [
-				process.env.NODE_ENV !== 'production' && (rawName === 'tabIndex' || rawName === 'htmlFor')
-					? rawName
-					: name,
-				value,
-				firstOrder,
-				lastOrder,
-			]);
+		if (previous !== undefined) {
+			if (previous[3] >= lastOrder) continue;
+			// Map order already matches firstOrder unless a later raw alias replaces
+			// an earlier normalized identity without moving its Map entry.
+			needsWinningOrderSort = true;
 		}
+		resolved.set(identity, [
+			process.env.NODE_ENV !== 'production' && (rawName === 'tabIndex' || rawName === 'htmlFor')
+				? rawName
+				: name,
+			value,
+			firstOrder,
+			lastOrder,
+		]);
 	}
 
 	let out = '';
-	const ordered = [...resolved.values()].sort((a, b) => a[2] - b[2]);
+	const ordered = [...resolved.values()];
+	if (needsWinningOrderSort) ordered.sort((a, b) => a[2] - b[2]);
 	if (process.env.NODE_ENV !== 'production') {
 		devValidateSsrAriaProps(
 			ordered.map(([name]) => name),
@@ -6782,6 +6788,8 @@ interface StreamBoundary {
 
 interface StreamState {
 	boundaries: Map<string, StreamBoundary>;
+	/** Conservative index of registered boundary owners; stale entries only cost a scan. */
+	boundaryOwnerKeys: Set<string>;
 	nextId: number;
 	token: string;
 	/** Boundary positions reached by the active full-tree pass, when tracked. */
@@ -6844,6 +6852,10 @@ function rewindStreamBoundaryReplay(stream: StreamState, checkpoint: number): vo
 	}
 }
 
+function recordStreamBoundaryOwners(stream: StreamState, owners: string[]): void {
+	for (const owner of owners) stream.boundaryOwnerKeys.add(owner);
+}
+
 // Every boundary id includes a render-unique token. The counter proves
 // uniqueness for every stream produced by this module instance; the realm salt
 // prevents a second bundled copy/server isolate from restarting at the same
@@ -6884,6 +6896,9 @@ function pruneUnrepresentedStreamDescendants(
 	ownerKey: string,
 	ownerHtml: string,
 ): void {
+	// Independent siblings are the common case. Without this guard every
+	// completed sibling scans every other registered sibling in the wave.
+	if (!stream.boundaryOwnerKeys.has(ownerKey)) return;
 	let removed = true;
 	while (removed) {
 		removed = false;
@@ -6978,6 +6993,7 @@ export function ssrTry(
 		entry = stream.boundaries.get(key);
 		if (entry !== undefined) {
 			recordStreamBoundaryMutation(stream, key);
+			if (ownerKeys.length !== 0) recordStreamBoundaryOwners(stream, ownerKeys);
 			entry.namespace = namespace;
 		}
 		if (entry !== undefined && entry.state === 'pending') {
@@ -7209,6 +7225,7 @@ export function ssrTry(
 						};
 						recordStreamBoundaryMutation(stream, key);
 						stream.boundaries.set(key, entry);
+						if (ownerKeys.length !== 0) recordStreamBoundaryOwners(stream, ownerKeys);
 						enterBoundaryIds(pendingIdOffset);
 					} else {
 						ID_COUNTER = entry.pendingIdOffset;
@@ -7273,6 +7290,7 @@ export function ssrTry(
 					};
 					recordStreamBoundaryMutation(stream, key);
 					stream.boundaries.set(key, entry);
+					if (ownerKeys.length !== 0) recordStreamBoundaryOwners(stream, ownerKeys);
 					enterBoundaryIds(pendingIdOffset);
 				} else if (entry.state === 'pending') {
 					entry.state = 'errored';
@@ -7613,6 +7631,7 @@ async function runStream(
 	const resolved: ResolvedMap = newResolvedMap();
 	const stream: StreamState = {
 		boundaries: new Map(),
+		boundaryOwnerKeys: new Set(),
 		nextId: 0,
 		token: createStreamToken(),
 		activePassBoundaryKeys: null,

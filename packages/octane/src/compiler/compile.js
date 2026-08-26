@@ -3193,7 +3193,8 @@ const AST_WALK_SKIP_KEYS = new Set(['type', 'loc', 'start', 'end', 'range', 'met
 // user scopes, so both top-level duplicates and nested shadowing are unsafe.
 // Seed the allocator from lexical Identifier nodes (not raw source text, which
 // would spuriously treat comments/strings as bindings), then reserve each name
-// as it is emitted.
+// as it is emitted. Repeated bases keep a numeric suffix cursor: appending one
+// character per collision makes output size quadratic in component count.
 function collectIdentifierNames(root) {
 	const names = new Set();
 	const walk = (node) => {
@@ -3214,7 +3215,15 @@ function collectIdentifierNames(root) {
 
 function allocCompilerName(ctx, preferred) {
 	let name = preferred;
-	while (ctx.usedCompilerNames.has(name)) name += '$';
+	if (ctx.usedCompilerNames.has(name)) {
+		const suffixes = (ctx.compilerNameSuffixes ??= new Map());
+		let suffix = suffixes.get(preferred) ?? 1;
+		do {
+			name = suffix === 1 ? `${preferred}$` : `${preferred}$${suffix}`;
+			suffix++;
+		} while (ctx.usedCompilerNames.has(name));
+		suffixes.set(preferred, suffix);
+	}
 	ctx.usedCompilerNames.add(name);
 	return name;
 }
@@ -8277,6 +8286,7 @@ function compileInternal(
 	const ctx = {
 		filename,
 		usedCompilerNames: collectIdentifierNames(ast),
+		compilerNameSuffixes: null,
 		profileFilename: (options && options.profileFilename) || filename,
 		mode,
 		nativeChangeClassifications: nativeChangeAnalysis.classifications,
@@ -8881,37 +8891,84 @@ function compileInternal(
 			}
 		}
 	}
-	// Pull live imported captures through the safe same-module call graph. This
-	// is a second fixed point because A -> B -> C chains and pure recursion may
-	// be declared in any order.
-	let autoMemoCapturesChanged = true;
-	while (autoMemoCapturesChanged) {
-		autoMemoCapturesChanged = false;
-		for (const [, info] of ctx.componentInfo) {
-			if (!info.autoMemoSafe) continue;
-			const captures = new Set(info.autoMemoCaptures);
-			const importedComponents = new Set(info.autoMemoImportedComponents);
-			let mayReadContext = info.autoMemoMayReadContext;
-			for (const name of info.autoMemoComponentDeps) {
-				const child = ctx.componentInfo.get(name);
-				if (!child?.autoMemoSafe) continue;
-				for (const capture of child.autoMemoCaptures) captures.add(capture);
-				for (const component of child.autoMemoImportedComponents) {
-					importedComponents.add(component);
-				}
-				if (child.autoMemoMayReadContext) mayReadContext = true;
-			}
-			if (
-				captures.size !== info.autoMemoCaptures.length ||
-				importedComponents.size !== info.autoMemoImportedComponents.length ||
-				mayReadContext !== info.autoMemoMayReadContext
-			) {
-				info.autoMemoCaptures = [...captures].sort();
-				info.autoMemoImportedComponents = [...importedComponents].sort();
-				info.autoMemoMayReadContext = mayReadContext;
-				autoMemoCapturesChanged = true;
-			}
+	// Pull live imported captures through the safe same-module call graph. Work
+	// flows from a dependency to its dependents, so declaration order cannot turn
+	// an A -> B -> C chain into one whole-module scan per edge. Pending deltas also
+	// let recursive components converge without repeatedly copying settled sets.
+	const autoMemoDependents = new Map();
+	const autoMemoPropagation = new Map();
+	const autoMemoQueue = [];
+	const enqueueAutoMemo = (name, state) => {
+		if (state.queued) return;
+		state.queued = true;
+		autoMemoQueue.push(name);
+	};
+	for (const [name, info] of ctx.componentInfo) {
+		if (!info.autoMemoSafe) continue;
+		const state = {
+			captures: new Set(info.autoMemoCaptures),
+			importedComponents: new Set(info.autoMemoImportedComponents),
+			mayReadContext: info.autoMemoMayReadContext,
+			pendingCaptures: [...info.autoMemoCaptures],
+			pendingImportedComponents: [...info.autoMemoImportedComponents],
+			pendingContext: info.autoMemoMayReadContext,
+			queued: false,
+		};
+		autoMemoPropagation.set(name, state);
+		if (
+			state.pendingCaptures.length > 0 ||
+			state.pendingImportedComponents.length > 0 ||
+			state.pendingContext
+		) {
+			enqueueAutoMemo(name, state);
 		}
+		for (const dependency of info.autoMemoComponentDeps) {
+			if (ctx.componentInfo.get(dependency)?.autoMemoSafe !== true) continue;
+			let dependents = autoMemoDependents.get(dependency);
+			if (dependents === undefined) {
+				autoMemoDependents.set(dependency, (dependents = []));
+			}
+			dependents.push(name);
+		}
+	}
+	for (let index = 0; index < autoMemoQueue.length; index++) {
+		const name = autoMemoQueue[index];
+		const state = autoMemoPropagation.get(name);
+		state.queued = false;
+		const pendingCaptures = state.pendingCaptures;
+		const pendingImportedComponents = state.pendingImportedComponents;
+		const pendingContext = state.pendingContext;
+		state.pendingCaptures = [];
+		state.pendingImportedComponents = [];
+		state.pendingContext = false;
+		for (const dependent of autoMemoDependents.get(name) ?? []) {
+			const dependentState = autoMemoPropagation.get(dependent);
+			let changed = false;
+			for (const capture of pendingCaptures) {
+				if (dependentState.captures.has(capture)) continue;
+				dependentState.captures.add(capture);
+				dependentState.pendingCaptures.push(capture);
+				changed = true;
+			}
+			for (const component of pendingImportedComponents) {
+				if (dependentState.importedComponents.has(component)) continue;
+				dependentState.importedComponents.add(component);
+				dependentState.pendingImportedComponents.push(component);
+				changed = true;
+			}
+			if (pendingContext && !dependentState.mayReadContext) {
+				dependentState.mayReadContext = true;
+				dependentState.pendingContext = true;
+				changed = true;
+			}
+			if (changed) enqueueAutoMemo(dependent, dependentState);
+		}
+	}
+	for (const [name, state] of autoMemoPropagation) {
+		const info = ctx.componentInfo.get(name);
+		info.autoMemoCaptures = [...state.captures].sort();
+		info.autoMemoImportedComponents = [...state.importedComponents].sort();
+		info.autoMemoMayReadContext = state.mayReadContext;
 	}
 	if (ctx.autoMemo) {
 		classifyStableHookfulChildCalls(ast.body, ctx);
@@ -9522,6 +9579,7 @@ function compileServer(
 	const ctx = {
 		filename,
 		usedCompilerNames: collectIdentifierNames(ast),
+		compilerNameSuffixes: null,
 		mode: 'server',
 		hmr: false, // SSR never hot-swaps in place; client/server production slot shapes stay aligned
 		dev: !!(options && options.dev),
@@ -13878,12 +13936,15 @@ function transformUniversalParallelUse(ast, ctx, metadata) {
 	);
 	const transformed = new WeakSet();
 	const components = new Map();
-	for (const entry of metadata.components || []) {
+	const componentEntries = metadata.components || [];
+	// Reverse each name bucket while building it so pop() consumes source order.
+	for (let index = componentEntries.length - 1; index >= 0; index--) {
+		const entry = componentEntries[index];
 		const queue = components.get(entry.name) || [];
 		queue.push(entry);
 		components.set(entry.name, queue);
 	}
-	const takeComponent = (name) => components.get(name)?.shift() || null;
+	const takeComponent = (name) => components.get(name)?.pop() || null;
 	let regionIndex = 0;
 
 	const calleeName = (node) =>
@@ -13970,7 +14031,9 @@ function transformUniversalParallelUse(ast, ctx, metadata) {
 	const annotateAuthoredHooks = (fn, component, componentName) => {
 		if (!ctx.profile || !component?.hooks?.length) return;
 		const queues = new Map();
-		for (const hook of component.hooks) {
+		// Preserve authored order with constant-time drains and no cursor objects.
+		for (let index = component.hooks.length - 1; index >= 0; index--) {
+			const hook = component.hooks[index];
 			const queue = queues.get(hook.name) || [];
 			queue.push(hook);
 			queues.set(hook.name, queue);
@@ -14002,7 +14065,7 @@ function transformUniversalParallelUse(ast, ctx, metadata) {
 				) {
 					hookName = node.callee.property.name;
 				}
-				const hook = queues.get(hookName)?.shift();
+				const hook = queues.get(hookName)?.pop();
 				if (hook !== undefined) {
 					// Identity-keyed ctx side channels (see profileSourceLoc and
 					// annotateProfileHookOwners) — the walked tree is never written to.
@@ -20772,6 +20835,7 @@ function planJsx(
 	const previousNestingWarnings = ctx._clientNestingWarnings;
 	ctx._elemLocs = ctx.dev ? new Map() : null;
 	ctx._clientNestingWarnings = ctx.dev ? [] : null;
+	const nestingWarningIdentities = ctx.dev ? new Set() : null;
 	// NESTED HeadHoists lifted out of host-element children during the walk (see
 	// emitNodeHtml's element case) join this plan's head list, so client mounts
 	// match the server's any-depth hoisting. Saved/restored per plan: an @if
@@ -20890,7 +20954,12 @@ function planJsx(
 		const node = jsxNodes[rootI];
 		const nodeIsComp = node.type === 'Element' && isComponentTag(node);
 		if (ctx.dev && node.type === 'Element' && !nodeIsComp) {
-			collectClientHtmlNestingWarnings(node, ctx, parentNs === 'opaque' ? 'html' : parentNs);
+			collectClientHtmlNestingWarnings(
+				node,
+				ctx,
+				parentNs === 'opaque' ? 'html' : parentNs,
+				nestingWarningIdentities,
+			);
 		}
 		// Single non-comp Element: path=[] (lives at _root directly).
 		// Otherwise (wrapped in <octane-frag>): path=[htmlIdx] when HTML-contributing.
@@ -23810,7 +23879,7 @@ function emitNodeHtml(
 	return createTemplateIr();
 }
 
-function collectClientHtmlNestingWarnings(root, ctx, inheritedNamespace) {
+function collectClientHtmlNestingWarnings(root, ctx, inheritedNamespace, identities) {
 	const sourceLocation = (node) => {
 		const loc = node?.loc?.start;
 		return loc ? `${ctx.mapSourceName}:${loc.line}:${loc.column}` : undefined;
@@ -23818,7 +23887,8 @@ function collectClientHtmlNestingWarnings(root, ctx, inheritedNamespace) {
 	const append = (message) => {
 		if (message === null) return;
 		const identity = JSON.stringify(message);
-		if (!ctx._clientNestingWarnings.some((existing) => JSON.stringify(existing) === identity)) {
+		if (!identities.has(identity)) {
+			identities.add(identity);
 			ctx._clientNestingWarnings.push(message);
 		}
 	};
