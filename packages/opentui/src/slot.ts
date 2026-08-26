@@ -294,6 +294,7 @@ const SlotImplementation = defineUniversalComponent<OctaneSlotProps<any, any, an
 		if (entries.length === 0) return props.children;
 		if (props.mode === 'single_winner') return renderEntry(entries[0], props.children);
 		if (props.mode === 'replace') {
+			if (entries.length === 1) return renderEntry(entries[0], props.children);
 			const rendered = entries.map((entry) => renderEntry(entry));
 			return rendered.some((value) => !isEmptyRenderable(value)) ? rendered : props.children;
 		}

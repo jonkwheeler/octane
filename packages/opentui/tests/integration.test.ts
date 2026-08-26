@@ -240,7 +240,7 @@ describe('@octanejs/opentui root and hooks', () => {
 			},
 		});
 
-		await act(() => root.render(SlotApp, { registry }));
+		await act(() => root.render(SlotApp, { registry, mode: 'replace' }));
 		await setup.renderOnce();
 		expect(setup.captureCharFrame()).toContain('fallback:sam');
 		expect(onPluginError).toHaveBeenCalledWith(

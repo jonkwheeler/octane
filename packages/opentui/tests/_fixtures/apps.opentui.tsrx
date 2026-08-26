@@ -3,6 +3,7 @@ import type {
 	PluginContext,
 	RootRenderable,
 	SelectOption,
+	SlotMode,
 	SlotRegistry,
 } from '@opentui/core';
 import type { UniversalRenderable } from 'octane/universal';
@@ -72,10 +73,11 @@ export type StatusSlots = { statusbar: { user: string } };
 
 interface SlotAppProps {
 	registry: SlotRegistry<UniversalRenderable, StatusSlots, PluginContext>;
+	mode?: SlotMode;
 }
 
 export function SlotApp(props: SlotAppProps) @{
-	<Slot registry={props.registry} name="statusbar" user="sam">
+	<Slot registry={props.registry} name="statusbar" mode={props.mode} user="sam">
 		<text id="fallback-status-text">fallback:sam</text>
 	</Slot>
 }
