@@ -114,6 +114,14 @@ function componentModuleSize(count) {
 			if (exports !== count) {
 				throw new Error(`component-module-${count} emitted ${exports}/${count} exports`);
 			}
+			const expectedRegions = count - 1;
+			const caches = code.match(/let __memoCache[\w$]* =/g)?.length ?? 0;
+			const commits = code.match(/const __memoCommitted[\w$]* =/g)?.length ?? 0;
+			if (caches !== expectedRegions || commits !== expectedRegions) {
+				throw new Error(
+					`component-module-${count} emitted ${caches}/${commits}/${expectedRegions} cache/commit/expected memo regions`,
+				);
+			}
 		},
 	);
 }
