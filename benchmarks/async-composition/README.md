@@ -159,3 +159,51 @@ production compiles: binding writes, controlled value projection, and keyed
 removals/insertions/moves all have to move with the fetched panels in one step.
 Disabling the runtime's transition journal makes the update gate fail with
 `mixedStates regressed to 1 (ceiling 0)`; React records zero as the reference.
+
+## Keyed asynchronous panels
+
+The Octane dashboard renders `ActivityPanel` and `InsightsPanel` from a private,
+two-entry keyed panel list. The rendered dashboard, its eight versioned request
+keys, and the dependent owner request are unchanged; the four independent panel
+requests must still start in the first wave.
+
+The compiler expands eligible child warm plans from a private, nonescaping list
+of at most 16 distinct string values. Expansion happens at compile time, so
+speculation does not iterate the list, evaluate its keys, or add hook slots. An
+unknown, mutable, or escaped list retains the ordinary rendering behavior.
+
+The existing browser gate requires all seven independent requests in the first
+wave, two waves per operation, and eight actual network starts. Its current
+factory-call ceilings are eight on both initialization and updates. Keyed board
+identity, controlled input state, fallback retention, and zero mixed transition
+states remain mandatory.
+
+## Held transition resource reuse
+
+After the first update wave settles, the dependent `owner` request begins the
+second wave. Transition promotion previously invoked five already-started
+resource creators again at that point, even though the application cache
+prevented duplicate network requests.
+
+The promoted warm plan now claims matching entries from the existing
+episode-agnostic resource harvest without consuming the real components'
+adoption rights. Each update therefore invokes exactly eight creators, down
+from 13, while preserving eight network starts, two request waves, the
+dependent-owner ordering, and zero mixed transition states.
+
+## Code-split module discovery
+
+The Octane dashboard includes a synchronous, dynamically imported child after
+its existing resource panels and keyed board. Its JavaScript stays in a
+separate production chunk and is not fetched before the dashboard mounts.
+
+The browser gate delays that real chunk by 35ms and requires its loader and
+network request to start before the independent `project` request settles. The
+module is loaded exactly once across the initial mount and subsequent transition;
+its rendered node must survive the update. All eight resource starts, eight
+creator calls, seven first-wave requests, two dependency waves, and zero mixed
+transition states remain mandatory.
+
+Only eligible lazy children in an already-reachable warm plan are prepared.
+Dormant deferred-hydration islands remain untouched until their own activation
+or explicitly configured prefetch strategy.

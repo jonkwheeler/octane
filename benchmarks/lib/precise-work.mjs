@@ -5,13 +5,17 @@
 // the emitted production bundle instead. Callers should launch Chromium with
 // `--jitless` so optimized/inlined functions cannot disappear from coverage.
 
+// A hook is either a bare `window.__name` string or `{ name, arg }` for the
+// suites whose hooks are parameterized (spa-navigation drives one `__navigate`
+// with a route rather than one hook per destination).
 async function invokeHook(page, hook) {
-	await page.evaluate(async (name) => {
+	const call = typeof hook === 'string' ? { name: hook, arg: undefined } : hook;
+	await page.evaluate(async ({ name, arg }) => {
 		const fn = window[name];
 		if (typeof fn !== 'function') throw new Error(`missing ${name}`);
-		const result = fn();
+		const result = fn(arg);
 		if (result && typeof result.then === 'function') await result;
-	}, hook);
+	}, call);
 }
 
 function countNamedFunctions(coverage, metrics) {
@@ -35,11 +39,24 @@ function countNamedFunctions(coverage, metrics) {
 /**
  * Count named production-bundle calls for one operation after a fresh page.
  * `before` establishes committed state outside the observed coverage window.
+ * `after` verifies the resulting state after the coverage snapshot, so semantic
+ * probes (for example, dispatching an event) cannot inflate the work counts.
+ * Verification hooks must throw or reject on failure; their return values are
+ * ignored. Unhandled page errors and console errors also fail the sample. The
+ * browser context is closed even when a hook fails.
  */
-export async function collectPreciseCalls(browser, { url, before = [], operation, metrics }) {
+export async function collectPreciseCalls(
+	browser,
+	{ url, before = [], operation, after = [], metrics },
+) {
 	const context = await browser.newContext();
 	const page = await context.newPage();
 	const cdp = await context.newCDPSession(page);
+	const browserErrors = [];
+	page.on('pageerror', (error) => browserErrors.push(error.message));
+	page.on('console', (message) => {
+		if (message.type() === 'error') browserErrors.push(message.text());
+	});
 	let profiling = false;
 	try {
 		await cdp.send('Profiler.enable');
@@ -59,7 +76,12 @@ export async function collectPreciseCalls(browser, { url, before = [], operation
 
 		await invokeHook(page, operation);
 		const coverage = await cdp.send('Profiler.takePreciseCoverage');
-		return countNamedFunctions(coverage, metrics);
+		const counts = countNamedFunctions(coverage, metrics);
+		for (const hook of after) await invokeHook(page, hook);
+		if (browserErrors.length > 0) {
+			throw new Error(`production browser errors: ${browserErrors.join('; ')}`);
+		}
+		return counts;
 	} finally {
 		if (profiling) {
 			await cdp.send('Profiler.stopPreciseCoverage').catch(() => {});

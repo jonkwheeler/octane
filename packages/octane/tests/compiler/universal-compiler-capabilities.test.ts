@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
-import { lynxRenderer } from '../../../lynx/src/config.js';
+import { lynxMainThreadRenderer, lynxRenderer } from '../../../lynx/src/config.js';
 import { compile } from '../../src/compiler/compile.js';
 
 const { parseModule } = createRequire(import.meta.url)('@tsrx/core') as {
@@ -14,6 +14,7 @@ const baseRenderer = {
 } as const;
 
 const resolvedLynxRenderer = { id: 'lynx', ...lynxRenderer } as const;
+const resolvedLynxMainThreadRenderer = { id: 'lynx', ...lynxMainThreadRenderer } as const;
 
 const threeRenderer = {
 	id: 'three',
@@ -73,6 +74,18 @@ function compiledUniversalForArguments(source: string, options: Record<string, a
 }
 
 describe('universal compiler renderer capabilities', () => {
+	it('passes a sole component expression child with value semantics', () => {
+		const output = compile(
+			`function Consumer({ children }) @{ children('payload'); null; }
+			 export function Scene({ render }) @{ <Consumer>{render}</Consumer> }`,
+			'/src/RenderProp.object.tsrx',
+			{ renderer: { ...baseRenderer, text: 'host' }, hmr: false },
+		).code;
+
+		expect(output).toContain('__octaneUniversalProps([], render)');
+		expect(output).not.toContain("__octaneUniversalChildren('object'");
+	});
+
 	it('requires an explicit policy for authored host text', () => {
 		expect(() =>
 			compile(
@@ -197,6 +210,112 @@ describe('universal compiler renderer capabilities', () => {
 		).toThrow(
 			/scoped <style> requires a renderer style\/assets capability\. at \/src\/Scene\.object\.tsrx:/,
 		);
+	});
+});
+
+describe('component-owned Lynx template rows', () => {
+	const source = `
+		function Row({ row, selected, onSelect }) @{
+			<view class={['row', selected && 'selected']}>
+				<text bindtap={() => onSelect(row.id)}>{row.label}</text>
+			</view>
+		}
+		export function Scene({ rows, selected, onSelect }) @{
+			@for (const row of rows; key row.id) {
+				<Row row={row} selected={selected === row.id} onSelect={onSelect} />
+			}
+		}
+	`;
+
+	it('preserves the real component while proving its ordinary keyed loop scope redundant', () => {
+		const args = compiledUniversalForArguments(source, { renderer: resolvedLynxRenderer });
+
+		expect(args[9]).toMatchObject({ type: 'Literal', value: true });
+		expect(args[2].body).toMatchObject({ type: 'CallExpression' });
+		expect(args[2].body.arguments[2]).toMatchObject({
+			type: 'CallExpression',
+			arguments: [
+				{
+					type: 'ObjectExpression',
+					properties: [
+						{ key: { value: 'row' } },
+						{ key: { value: 'selected' } },
+						{ key: { value: 'onSelect' } },
+					],
+				},
+				{ type: 'UnaryExpression', operator: 'void' },
+				{ type: 'Literal', value: false },
+				{ type: 'Literal', value: true },
+			],
+		});
+	});
+
+	it('proves the same component scope for the Lynx main-thread renderer', () => {
+		const args = compiledUniversalForArguments(source, {
+			renderer: resolvedLynxMainThreadRenderer,
+		});
+
+		expect(args[9]).toMatchObject({ type: 'Literal', value: true });
+		expect(args[2].body).toMatchObject({ type: 'CallExpression' });
+		expect(args[2].body.arguments[2]).toMatchObject({
+			type: 'CallExpression',
+			arguments: [
+				{
+					type: 'ObjectExpression',
+					properties: [
+						{ key: { value: 'row' } },
+						{ key: { value: 'selected' } },
+						{ key: { value: 'onSelect' } },
+					],
+				},
+				{ type: 'UnaryExpression', operator: 'void' },
+				{ type: 'Literal', value: false },
+				{ type: 'Literal', value: true },
+			],
+		});
+	});
+
+	it('does not grant host template programs to the narrow main-thread capability', () => {
+		const args = compiledUniversalForArguments(
+			`export function Scene({ items, select }) @{
+				@for (const item of items; key item.id) {
+					<view id={item.id}>
+						<text bindtap={() => select(item.id)}>{item.label}</text>
+					</view>
+				}
+			}`,
+			{ renderer: resolvedLynxMainThreadRenderer },
+		);
+
+		expect(args).toHaveLength(3);
+	});
+
+	it.each([
+		['HMR', source, { hmr: true }],
+		[
+			'an unsupported renderer',
+			source,
+			{ renderer: { ...resolvedLynxRenderer, capabilities: [] } },
+		],
+		['an explicit key', source.replace('row={row}', 'key={row.id} row={row}'), {}],
+		['a ref', source.replace('row={row}', 'ref={onSelect} row={row}'), {}],
+		['a spread', source.replace('row={row}', '{...row}'), {}],
+		['a prototype-sensitive prop', source.replace('row={row}', '__proto__={row} row={row}'), {}],
+		['a duplicate prop', source.replace('row={row}', 'row={row} row={row}'), {}],
+		[
+			'an arbitrary authored call',
+			source.replace('selected={selected === row.id}', 'selected={onSelect(row.id)}'),
+			{},
+		],
+	])('keeps the original loop owner for %s', (_label, candidate, options) => {
+		for (const renderer of [resolvedLynxRenderer, resolvedLynxMainThreadRenderer]) {
+			const args = compiledUniversalForArguments(candidate, {
+				renderer,
+				...options,
+			});
+
+			expect(args[9]).toBeUndefined();
+		}
 	});
 });
 
@@ -367,5 +486,224 @@ describe('compact intrinsic host loops', () => {
 
 		expect(args).toHaveLength(3);
 		expect(args[2].body.type).toBe('BlockStatement');
+	});
+});
+
+describe('tree-shakable Three intrinsic registration', () => {
+	function compiledModule(source: string, options: Record<string, any> = {}): any {
+		return parseModule(
+			compile(source, '/src/Scene.three.tsrx', {
+				renderer: threeRenderer,
+				hmr: false,
+				...options,
+			}).code,
+			'/dist/Scene.three.js',
+		);
+	}
+
+	function namedThreeImports(ast: any): string[] {
+		return ast.body
+			.filter((statement: any) => statement.type === 'ImportDeclaration')
+			.filter((statement: any) => statement.source.value === 'three')
+			.flatMap((statement: any) =>
+				(statement.specifiers ?? [])
+					.filter((specifier: any) => specifier.type === 'ImportSpecifier')
+					.map((specifier: any) => specifier.imported.name ?? specifier.imported.value),
+			);
+	}
+
+	it('imports and registers only the built-in constructors actually authored', () => {
+		const ast = compiledModule(`
+			export function Scene() @{
+				<group>
+					<mesh><boxGeometry /><meshBasicMaterial /></mesh>
+					<mesh />
+				</group>
+			}
+		`);
+
+		expect(namedThreeImports(ast).sort()).toEqual(
+			['Group', 'Mesh', 'BoxGeometry', 'MeshBasicMaterial'].sort(),
+		);
+		const rendererImport = ast.body.find(
+			(statement: any) =>
+				statement.type === 'ImportDeclaration' &&
+				statement.source.value === '@octanejs/three/renderer',
+		);
+		const registration = rendererImport.specifiers.find(
+			(specifier: any) =>
+				(specifier.imported?.name ?? specifier.imported?.value) === 'registerThreeIntrinsic',
+		);
+		expect(registration).toBeDefined();
+		const registrations = ast.body.filter(
+			(statement: any) =>
+				statement.type === 'ExpressionStatement' &&
+				statement.expression.type === 'CallExpression' &&
+				statement.expression.callee.name === registration.local.name,
+		);
+		expect(
+			registrations.map((statement: any) => statement.expression.arguments[0].value).sort(),
+		).toEqual(['Group', 'Mesh', 'BoxGeometry', 'MeshBasicMaterial'].sort());
+	});
+
+	it('keeps custom and primitive host names on their explicit registration path', () => {
+		const ast = compiledModule(`
+			export function Scene({ object }) @{
+				<group><customObject /><primitive object={object} /></group>
+			}
+		`);
+
+		expect(namedThreeImports(ast)).toEqual(['Group']);
+	});
+
+	it.each([
+		['ordinary object key', 'register({ BatchedMesh: Polyfill })'],
+		['quoted object key', 'register({ "BatchedMesh": Polyfill })'],
+		['statically computed object key', 'register({ ["BatchedMesh"]: Polyfill })'],
+		['shorthand object key', 'register({ BatchedMesh })'],
+	])('keeps older-Three polyfills with an explicitly registered %s', (_label, registration) => {
+		const ast = compiledModule(`
+			import { extend as register } from '@octanejs/three';
+			class Polyfill {}
+			const BatchedMesh = Polyfill;
+			${registration};
+			export function Scene() @{ <group><batchedMesh /></group> }
+		`);
+
+		expect(namedThreeImports(ast)).toEqual(['Group']);
+	});
+
+	it('does not mistake a shadowed or conditional extension for a registered built-in', () => {
+		const ast = compiledModule(`
+			import { extend as register } from '@octanejs/three';
+			class Polyfill {}
+			function later(register) { register({ BatchedMesh: Polyfill }); }
+			if (globalThis.installPolyfill) register({ Matrix2: Polyfill });
+			export function Scene() @{ <group><batchedMesh /><matrix2 /></group> }
+		`);
+
+		expect(namedThreeImports(ast).sort()).toEqual(['Group', 'BatchedMesh', 'Matrix2'].sort());
+	});
+
+	it('registers built-ins before authored extensions so custom overrides remain authoritative', () => {
+		const ast = compiledModule(`
+			import { Mesh as ExternalMesh } from 'three';
+			import { extend } from '@octanejs/three';
+			const externalExtensions = { Mesh: ExternalMesh };
+			extend(externalExtensions);
+			export function Scene() @{ <mesh /> }
+		`);
+		const rendererImport = ast.body.find(
+			(statement: any) =>
+				statement.type === 'ImportDeclaration' &&
+				statement.source.value === '@octanejs/three/renderer',
+		);
+		const registration = rendererImport.specifiers.find(
+			(specifier: any) =>
+				(specifier.imported?.name ?? specifier.imported?.value) === 'registerThreeIntrinsic',
+		);
+		const registrationIndex = ast.body.findIndex(
+			(statement: any) =>
+				statement.type === 'ExpressionStatement' &&
+				statement.expression.callee?.name === registration.local.name,
+		);
+		const extensionIndex = ast.body.findIndex(
+			(statement: any) =>
+				statement.type === 'ExpressionStatement' && statement.expression.callee?.name === 'extend',
+		);
+
+		expect(registrationIndex).toBeGreaterThanOrEqual(0);
+		expect(extensionIndex).toBeGreaterThan(registrationIndex);
+	});
+
+	it('recognizes built-ins available across the advertised minimum and current Three releases', () => {
+		const ast = compiledModule(`
+			export function Scene() @{
+				<group><ambientLightProbe /><batchedMesh /><matrix2 /><webXRController /></group>
+			}
+		`);
+
+		expect(namedThreeImports(ast).sort()).toEqual(
+			['Group', 'AmbientLightProbe', 'BatchedMesh', 'Matrix2', 'WebXRController'].sort(),
+		);
+	});
+
+	it('resolves historical Three JSX aliases without importing nonexistent named exports', () => {
+		const ast = compiledModule(`
+			export function Scene() @{
+				<group><threeAudio /><threeLine /><threePath /><threeSource /></group>
+			}
+		`);
+
+		expect(namedThreeImports(ast).sort()).toEqual(
+			['Group', 'Audio', 'Line', 'Path', 'Source'].sort(),
+		);
+	});
+
+	it.each([
+		['development', { dev: true }],
+		['Vite HMR', { hmr: true }],
+		['Webpack HMR', { hmr: 'webpack' }],
+		['profiling', { profile: true }],
+	])('keeps ordinary Three intrinsics available during %s', (_label, options) => {
+		const ast = compiledModule('export function Scene() @{ <mesh /> }', options);
+
+		expect(namedThreeImports(ast)).toEqual(['Mesh']);
+	});
+
+	it.each([
+		['Vite', true],
+		['Webpack', 'webpack'],
+	])('registers built-ins before %s HMR host plans are evaluated', (_dialect, hmr) => {
+		const ast = compiledModule('export function Scene() @{ <mesh /> }', { hmr });
+		const rendererImport = ast.body.find(
+			(statement: any) =>
+				statement.type === 'ImportDeclaration' &&
+				statement.source.value === '@octanejs/three/renderer',
+		);
+		const registration = rendererImport.specifiers.find(
+			(specifier: any) =>
+				(specifier.imported?.name ?? specifier.imported?.value) === 'registerThreeIntrinsic',
+		);
+		const plan = rendererImport.specifiers.find(
+			(specifier: any) =>
+				(specifier.imported?.name ?? specifier.imported?.value) === 'universalPlan',
+		);
+		const registrationIndex = ast.body.findIndex(
+			(statement: any) =>
+				statement.type === 'ExpressionStatement' &&
+				statement.expression.callee?.name === registration.local.name,
+		);
+		const planIndex = ast.body.findIndex(
+			(statement: any) =>
+				statement.type === 'VariableDeclaration' &&
+				statement.declarations.some(
+					(declaration: any) => declaration.init?.callee?.name === plan.local.name,
+				),
+		);
+
+		expect(registrationIndex).toBeGreaterThanOrEqual(0);
+		expect(planIndex).toBeGreaterThan(registrationIndex);
+	});
+
+	it('does not add a Three dependency to other universal renderers', () => {
+		const ast = compiledModule('export function Scene() @{ <mesh /> }', {
+			renderer: { ...baseRenderer, text: 'ignore' },
+		});
+
+		expect(namedThreeImports(ast)).toEqual([]);
+	});
+
+	it('keeps component-only and unknown-host modules free of implicit Three imports', () => {
+		const component = compiledModule(`
+			import { extend } from '@octanejs/three';
+			import { Mesh } from 'three';
+			const MeshNode = extend(Mesh);
+			export function Scene() @{ <MeshNode /> }
+		`);
+		const unknown = compiledModule('export function Scene() @{ <customObject /> }');
+
+		expect(namedThreeImports(component)).toEqual(['Mesh']);
+		expect(namedThreeImports(unknown)).toEqual([]);
 	});
 });

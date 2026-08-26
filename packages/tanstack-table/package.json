@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/tanstack-table",
-  "version": "0.1.29",
+  "version": "0.1.44",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -46,6 +46,7 @@
   "devDependencies": {
     "@tanstack/react-table": "9.0.0-beta.58",
     "@tsrx/react": "catalog:default",
+    "@types/react": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",

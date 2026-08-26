@@ -1,7 +1,6 @@
 import {
 	Activity as ActivitySentinel,
 	createContext,
-	normalizeClass,
 	type OctaneNode,
 	startTransition,
 	use,
@@ -112,8 +111,8 @@ export function setExternal(v: string) {
 // A render-time call through a MEMBER callee defeats the survivor short-circuit
 // entirely: `item.read()` reads mutable state through a STABLE item ref (the
 // TanStack Table header pattern — `header.column.getIsSorted()` flips while the
-// header object stays memoized), so the body must re-run on every parent render,
-// React-parity. Contrast DepPureList below: a bare module-var READ stays
+// header object stays memoized), so compatibility mode re-runs the body on parent
+// renders, like ordinary React without its compiler. Contrast DepPureList: a bare module-var READ stays
 // eligible (documented at-your-own-risk), and so does a call through a plain
 // identifier callee (PlainCalleeList) — the receiver is what carries the hazard.
 const callItems = [
@@ -271,6 +270,32 @@ export function KeyedSelectionList(props: {
 				class={selected === row.id ? 'selected' : ''}
 				data-prefix={prefix}
 			>{row.label as string}</li>
+		}
+	</ul>
+}
+
+export function KeyedSelectionControlledList(props: {
+	items: SelectionRow[];
+	selected: number | null;
+}) @{
+	const selected = props.selected;
+	<ul id="keyed-selection-controlled-list">
+		@for (const row of props.items; key row.id) {
+			<li class={selected === row.id ? 'selected' : ''}>
+				<input value={row.label} readOnly={true} />
+			</li>
+		}
+	</ul>
+}
+
+export function KeyedSelectionRenderableList(props: {
+	items: Array<{ id: number; content: OctaneNode }>;
+	selected: number | null;
+}) @{
+	const selected = props.selected;
+	<ul id="keyed-selection-renderable-list">
+		@for (const row of props.items; key row.id) {
+			<li class={selected === row.id ? 'selected' : ''}>{row.content}</li>
 		}
 	</ul>
 }
@@ -573,124 +598,6 @@ export function NestedConditionalTransition(props: {
 	</div>
 }
 
-interface NestedProjectedSegment {
-	id: number;
-	label: string;
-	code: boolean;
-}
-
-interface NestedProjectedGroup {
-	id: number;
-	label: string;
-	segments: NestedProjectedSegment[];
-}
-
-export function NestedProjectedHostList(props: {
-	groups: NestedProjectedGroup[];
-	prefix: string;
-	onPick: (groupId: number, segmentId: number, prefix: string) => void;
-}) @{
-	const prefix = props.prefix;
-	const onPick = props.onPick;
-	<section id="nested-projected-list">
-		@for (const group of props.groups; key group.id) {
-			<article class="nested-projected-group" data-projected-group={'' + group.id}>
-				<h3>{prefix + ':' + group.label}</h3>
-				<ul>
-					@for (const segment of group.segments; key segment.id) {
-						@if (segment.code) {
-							<li class="nested-projected-code" data-projected-segment={'' + segment.id}>
-								<button onClick={() => onPick(group.id, segment.id, prefix)}>
-									{prefix + ':' + normalizeClass(segment.label)}
-								</button>
-								<input class="nested-projected-input" defaultValue={segment.label} />
-							</li>
-						} @else {
-							<li class="nested-projected-text" data-projected-segment={'' + segment.id}>
-								<button onClick={() => onPick(group.id, segment.id, prefix)}>
-									{prefix + ':' + normalizeClass(segment.label)}
-								</button>
-							</li>
-						}
-					} @empty {
-						<li class="nested-projected-empty">{prefix + ':' + group.label + ':empty'}</li>
-					}
-				</ul>
-			</article>
-		}
-	</section>
-}
-
-export function NestedProjectedHostBoundary(props: {
-	groups: NestedProjectedGroup[];
-	prefix: string;
-	onPick: (groupId: number, segmentId: number, prefix: string) => void;
-}) @{
-	@try {
-		<NestedProjectedHostList groups={props.groups} prefix={props.prefix} onPick={props.onPick} />
-	} @pending {
-		<span id="nested-projected-pending">{'loading'}</span>
-	} @catch (error, reset) {
-		<button
-			id="nested-projected-retry"
-			onClick={reset}
-		>{(error as Error).message as string}</button>
-	}
-}
-
-export function NestedProjectedMethodList(props: {
-	groups: Array<{ id: number; segments: Array<{ id: number; read: () => string }> }>;
-	prefix: string;
-}) @{
-	const prefix = props.prefix;
-	<section id="nested-projected-method-list">
-		@for (const group of props.groups; key group.id) {
-			<article>
-				@for (const segment of group.segments; key segment.id) {
-					@if (segment.id > 0) {
-						<span class="nested-projected-method">{prefix + ':' + segment.read()}</span>
-					}
-				}
-			</article>
-		}
-	</section>
-}
-
-function NestedProjectedContextProbe(props: {
-	label: string;
-	onRef: (element: HTMLSpanElement | null) => void;
-}) @{
-	const value = use(FastRowContext);
-	<span class="nested-projected-context" ref={props.onRef}>{value + ':' + props.label}</span>
-}
-
-export function NestedProjectedOpaqueList(props: {
-	groups: NestedProjectedGroup[];
-	value: string;
-	visible: boolean;
-	onRef: (element: HTMLSpanElement | null) => void;
-}) @{
-	const visible = props.visible;
-	const onRef = props.onRef;
-	<FastRowContext.Provider value={props.value}>
-		<section id="nested-projected-opaque-list">
-			@for (const group of props.groups; key group.id) {
-				<article>
-					@for (const segment of group.segments; key segment.id) {
-						@if (visible) {
-							<Activity mode={readNestedConditionalActivityMode()}>
-								<NestedProjectedContextProbe label={normalizeClass(segment.label)} onRef={onRef} />
-							</Activity>
-						} @else {
-							<span class="nested-projected-opaque-placeholder">{'hidden'}</span>
-						}
-					}
-				</article>
-			}
-		</section>
-	</FastRowContext.Provider>
-}
-
 interface NestedReorderGroup {
 	id: number;
 	label: string;
@@ -776,4 +683,70 @@ export function NestedKeyedReorderTransition(props: {
 			<span id="nested-reorder-transition-pending">{'loading'}</span>
 		}
 	</div>
+}
+
+interface HostBindingRow {
+	id: number;
+	className: string | string[];
+	title: string;
+	data: string;
+	aria: string;
+	hidden: boolean;
+	only: OctaneNode;
+	mixed: OctaneNode;
+}
+
+interface HostBindingListProps {
+	items: HostBindingRow[];
+	version: number;
+	context: string;
+}
+
+export function HostBindingList(props: HostBindingListProps) @{
+	const version = props.version;
+	<FastRowContext.Provider value={props.context}>
+		<ul>
+			@for (const row of props.items; key row.id) {
+				<li
+					class={row.className}
+					title={row.title}
+					data-value={row.data as string}
+					aria-label={row.aria}
+					hidden={row.hidden}
+					data-version={version}
+				>
+					<span data-kind="only">{row.only}</span>
+					<span data-kind="mixed">
+						<i>before</i>
+						{row.mixed}
+						<i>after</i>
+					</span>
+				</li>
+			}
+		</ul>
+	</FastRowContext.Provider>
+}
+
+export function HostMappedBindingList(props: HostBindingListProps) @{
+	const version = props.version;
+	<FastRowContext.Provider value={props.context}>
+		<ul>{props.items.map(
+			(row) => <li
+				key={row.id}
+				class={row.className}
+				title={row.title}
+				data-value={row.data as string}
+				aria-label={row.aria}
+				hidden={row.hidden}
+				data-version={version}
+			>
+				<span data-kind="only">{row.only}</span>
+				<span data-kind="mixed">
+					<i>before</i>
+					{row.mixed}
+					<i>after</i>
+				</span>
+			</li>,
+		)}</ul>
+	</FastRowContext.Provider>
 }

@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { chromium, type Browser, type Page } from 'playwright';
+import type { Browser, Page } from 'playwright';
+import { launchBrowser } from '../../../../../test-utils/playwright-browser.js';
 import { createServer, type Plugin, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 import * as ServerRuntime from 'octane/server';
@@ -66,13 +67,7 @@ beforeAll(async () => {
 	const address = server.httpServer!.address();
 	if (!address || typeof address === 'string') throw new Error('Vite did not expose a TCP port');
 	baseUrl = `http://127.0.0.1:${address.port}`;
-	try {
-		browser = await chromium.launch({ headless: true });
-	} catch (error) {
-		throw new Error(
-			`Chromium is required for Suspense/hydration evidence (run \`pnpm --filter octane exec playwright install chromium\`): ${String(error)}`,
-		);
-	}
+	browser = await launchBrowser({ headless: true });
 });
 
 afterEach(async () => {
@@ -121,6 +116,10 @@ async function waitForFallback(): Promise<void> {
 	await page!.waitForFunction(() => window.__suspenseHydration.snapshot().fallbackCount === 1);
 }
 
+async function waitForHiddenPrimaryBlur(): Promise<void> {
+	await page!.waitForFunction(() => window.__suspenseHydration.snapshot().activeId === '');
+}
+
 async function waitForReveal(): Promise<void> {
 	await page!.waitForFunction(() => {
 		const state = window.__suspenseHydration.snapshot();
@@ -151,6 +150,7 @@ async function expectUrgentPreservation(shape: 'same' | 'swap'): Promise<void> {
 
 	await page!.evaluate(() => window.__suspenseHydration.urgent!());
 	await waitForFallback();
+	await waitForHiddenPrimaryBlur();
 	state = await snapshot();
 	expectPreservedInput(state);
 	expect(state.panelVisible).toBe(false);
@@ -176,6 +176,150 @@ async function expectUrgentPreservation(shape: 'same' | 'swap'): Promise<void> {
 }
 
 describe.sequential('real-browser Suspense and async hydration evidence', () => {
+	it.each(['component', 'branch', 'root', 'keyed', 'empty'] as const)(
+		'keeps native focus undisturbed when %s replacement suspends without a boundary',
+		async (shape) => {
+			for (const implementation of ['react', 'octane']) {
+				await openCase(`case=root-suspension&shape=${shape}&implementation=${implementation}`);
+				await page!.locator('#root-suspension-input').fill('browser-owned draft');
+				const before = await page!.evaluate(() => window.__suspenseHydration.prepareInput!());
+				expect(before).toMatchObject({
+					activeId: 'root-suspension-input',
+					inputValue: 'browser-owned draft',
+					selectionStart: 2,
+					selectionEnd: 9,
+					nativeEvents: [],
+					lifecycle: ['input:mount'],
+				});
+
+				// Invoke the update without a click that would legitimately move focus.
+				// A browser frame also observes native events emitted before DOM rollback.
+				await page!.evaluate(async () => {
+					window.__suspenseHydration.urgent!();
+					await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+				});
+				const held = await snapshot();
+				expect(held.nativeEvents, `${implementation}/${shape}`).toEqual([]);
+				expect(held).toMatchObject({
+					inputSame: true,
+					inputConnected: true,
+					activeId: 'root-suspension-input',
+					inputValue: 'browser-owned draft',
+					selectionStart: 2,
+					selectionEnd: 9,
+					keepSame: true,
+					emptyCount: 0,
+					value: 'A',
+					replacementCount: 0,
+					lifecycle: ['input:mount'],
+					globalFailures: [],
+				});
+
+				await page!.evaluate(() => window.__suspenseHydration.resolve());
+				await page!.waitForFunction(() => window.__suspenseHydration.snapshot().value === 'B');
+				const committed = await snapshot();
+				expect(committed).toMatchObject({
+					inputSame: false,
+					inputConnected: false,
+					keepSame: shape !== 'empty',
+					emptyCount: shape === 'empty' ? 1 : 0,
+					replacementCount: shape === 'keyed' || shape === 'empty' ? 0 : 1,
+					lifecycle: ['input:mount', 'input:cleanup'],
+					globalFailures: [],
+				});
+				await page!.evaluate(() => window.__suspenseHydration.unmount());
+				expect((await snapshot()).lifecycle).toEqual(['input:mount', 'input:cleanup']);
+				await page!.close();
+				page = undefined;
+			}
+		},
+	);
+
+	it('restores focused input and its selected text after a keyed DOM reorder', async () => {
+		await openCase('case=focus-restoration');
+		const before = await snapshot();
+		expect(before.activeValue).toBe('selected browser value');
+		expect([before.selectionStart, before.selectionEnd]).toEqual([2, 9]);
+		expect(before.scrollTop).toBe(7);
+
+		await page!.evaluate(() => window.__suspenseHydration.urgent!());
+		const after = await snapshot();
+		expect(after.values).toEqual([
+			'fourth field',
+			'third field',
+			'selected browser value',
+			'first field',
+		]);
+		expect(after.inputSame).toBe(true);
+		expect(after.inputConnected).toBe(true);
+		expect(after.activeValue).toBe('selected browser value');
+		expect([after.selectionStart, after.selectionEnd]).toEqual([2, 9]);
+		expect(after.scrollTop).toBe(7);
+		expect(after.globalFailures).toEqual([]);
+	});
+
+	it.each([
+		{
+			selection: 'backward',
+			anchorNode: 'text:last',
+			anchorOffset: 4,
+			focusNode: 'text:first',
+			focusOffset: 2,
+			anchorPosition: 27,
+			focusPosition: 2,
+			direction: 'backward',
+			selectedText: 'pha beta middle words ome',
+		},
+		{
+			selection: 'boundary',
+			anchorNode: 'element:first',
+			anchorOffset: 1,
+			focusNode: 'element:editable',
+			focusOffset: 2,
+			anchorPosition: 5,
+			focusPosition: 23,
+			direction: 'forward',
+			selectedText: ' beta middle words',
+		},
+	])(
+		'preserves nested $selection editable selection across a keyed reorder like React',
+		async ({ selection, ...initial }) => {
+			await openCase(`case=editable-focus-restoration&implementation=react&selection=${selection}`);
+			const reactBefore = await snapshot();
+			expect(reactBefore).toMatchObject({
+				...initial,
+				editableSame: true,
+				editableConnected: true,
+				activeId: 'focus-editable-2',
+				rows: [1, 2, 3, 4],
+				globalFailures: [],
+			});
+
+			await page!.evaluate(() => window.__suspenseHydration.urgent!());
+			const reactAfter = await snapshot();
+			expect(reactAfter).toMatchObject({
+				editableSame: true,
+				editableConnected: true,
+				activeId: 'focus-editable-2',
+				anchorPosition: initial.anchorPosition,
+				focusPosition: initial.focusPosition,
+				direction: initial.direction,
+				selectedText: initial.selectedText,
+				rows: [4, 3, 2, 1],
+				globalFailures: [],
+			});
+			await page!.close();
+			page = undefined;
+
+			await openCase(
+				`case=editable-focus-restoration&implementation=octane&selection=${selection}`,
+			);
+			expect(await snapshot()).toEqual(reactBefore);
+			await page!.evaluate(() => window.__suspenseHydration.urgent!());
+			expect(await snapshot()).toEqual(reactAfter);
+		},
+	);
+
 	it('contains async hydration recovery and preserves an interactive outside sibling', async () => {
 		const page = await openCase('case=hydration');
 		let state = await snapshot();
@@ -186,7 +330,10 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 		await page.locator('#hydration-outside').click();
 		expect((await snapshot()).outsideText).toBe('outside:1');
 		await page.evaluate(() => window.__suspenseHydration.resolve());
-		await page.waitForFunction(() => window.__suspenseHydration.snapshot().headings.length === 1);
+		await page.waitForFunction(() => {
+			const current = window.__suspenseHydration.snapshot();
+			return current.headings.length === 1 && current.fallbackCount === 0;
+		});
 
 		state = await snapshot();
 		expect(state.boundarySame).toBe(true);
@@ -223,7 +370,8 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 		state = await snapshot();
 		expect(state.inputSame).toBe(true);
 		expect(state.inputVisible).toBe(true);
-		// Chromium normalizes focus to <body> before the async reveal completes.
+		// Chromium normalizes focus to <body> before the async
+		// reveal completes on this React baseline path.
 		expect(state.activeId).toBe('');
 		expect(state.globalFailures).toEqual([]);
 	});
@@ -290,6 +438,7 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 			window.__suspenseHydration.transition!();
 		});
 		await waitForFallback();
+		await waitForHiddenPrimaryBlur();
 		let state = await snapshot();
 		expectPreservedInput(state);
 		expect(state.panelVisible).toBe(false);
@@ -332,7 +481,14 @@ describe.sequential('real-browser Suspense and async hydration evidence', () => 
 declare global {
 	interface Window {
 		__suspenseHydration: {
-			kind: 'hydration' | 'suspense' | 'react-baseline' | 'direct-ref-unmount';
+			kind:
+				| 'hydration'
+				| 'suspense'
+				| 'root-suspension'
+				| 'react-baseline'
+				| 'direct-ref-unmount'
+				| 'focus-restoration'
+				| 'editable-focus-restoration';
 			prepareInput?: () => any;
 			prepareRange?: () => any;
 			urgent?: () => void;

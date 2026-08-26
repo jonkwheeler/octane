@@ -9,6 +9,7 @@ import { flushEffects, mount, nextPaint } from '../_helpers';
 import {
 	BarChartApp,
 	CartesianChartsApp,
+	CartesianAxisRefApp,
 	ErrorBarAnimationOriginApp,
 	FunnelAnimationStabilityApp,
 	FunnelLegendApp,
@@ -16,6 +17,7 @@ import {
 	HiddenPieTooltipApp,
 	HierarchyChartsApp,
 	LineChartApp,
+	MissingRadialGeometryApp,
 	OverlayChartApp,
 	PolarAnimationStabilityApp,
 	PolarCellsApp,
@@ -38,14 +40,67 @@ async function settle() {
 	}
 }
 
-async function restoreAnimationFrameGlobals() {
-	// Unmounting charts can enqueue one final store notification. Keep the
-	// animation-frame globals alive until that callback has had a timer turn.
-	await new Promise((resolve) => setTimeout(resolve, 0));
-	vi.unstubAllGlobals();
+function controlAnimationFrames() {
+	let frameTime = performance.now();
+	let nextHandle = 1;
+	const pending = new Map<number, FrameRequestCallback>();
+	vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+		const handle = nextHandle++;
+		pending.set(handle, callback);
+		return handle;
+	});
+	vi.stubGlobal('cancelAnimationFrame', (handle: number) => pending.delete(handle));
+
+	async function flush() {
+		for (let frame = 0; frame < 100; frame++) {
+			await nextPaint();
+			const callbacks = Array.from(pending.values());
+			pending.clear();
+			if (callbacks.length === 0) return;
+			frameTime = Math.max(frameTime, performance.now()) + 16;
+			for (const callback of callbacks) callback(frameTime);
+		}
+		throw new Error('chart animation did not settle within 100 controlled frames');
+	}
+
+	return {
+		flush,
+		async restore() {
+			try {
+				// Redux Toolkit can batch one final store notification during chart
+				// unmount. Let that queued frame cancel its fallback timer before the
+				// animation-frame globals disappear.
+				await flush();
+			} finally {
+				pending.clear();
+				vi.unstubAllGlobals();
+			}
+		},
+	};
 }
 
 describe('Phase 1 chart pipeline (octane side)', () => {
+	it('keeps the CartesianAxis imperative ref off native hosts', async () => {
+		const received: unknown[] = [];
+		const r = mount(CartesianAxisRefApp, {
+			axisRef: (value: unknown) => {
+				received.push(value);
+			},
+		});
+		try {
+			await settle();
+			expect(r.container.querySelector('.recharts-cartesian-axis-line')).not.toBeNull();
+			const handles = received.filter((value) => value !== null);
+			expect(handles.length).toBeGreaterThan(0);
+			for (const handle of handles) {
+				expect(handle).toEqual({ getCalculatedWidth: expect.any(Function) });
+			}
+		} finally {
+			r.unmount();
+		}
+		expect(received.at(-1)).toBeNull();
+	});
+
 	it('BarChart renders bars and axes', async () => {
 		const r = mount(BarChartApp);
 		await settle();
@@ -222,33 +277,29 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 	});
 
 	it('forwards Scatter animation lifecycle callbacks', async () => {
-		let frameTime = performance.now();
-		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
-			setTimeout(() => callback((frameTime += 16)), 0),
-		);
-		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const animationFrames = controlAnimationFrames();
 		const starts: string[] = [];
 		const ends: string[] = [];
+		let result: ReturnType<typeof mount> | undefined;
 		try {
-			const result = mount(ScatterAnimationCallbacksApp, {
+			result = mount(ScatterAnimationCallbacksApp, {
 				onAnimationStart: () => starts.push('start'),
 				onAnimationEnd: () => ends.push('end'),
 			});
-			await settle();
+			await animationFrames.flush();
 			expect(starts).toEqual(['start']);
 			expect(ends).toEqual(['end']);
-			result.unmount();
 		} finally {
-			await restoreAnimationFrameGlobals();
+			try {
+				result?.unmount();
+			} finally {
+				await animationFrames.restore();
+			}
 		}
 	});
 
 	it('does not restart Funnel animation for equivalent props but propagates presentation changes', async () => {
-		let frameTime = performance.now();
-		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
-			setTimeout(() => callback((frameTime += 16)), 0),
-		);
-		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const animationFrames = controlAnimationFrames();
 		const starts: string[] = [];
 		const ends: string[] = [];
 		const props = {
@@ -256,27 +307,31 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 			onAnimationStart: () => starts.push('start'),
 			onAnimationEnd: () => ends.push('end'),
 		};
+		let result: ReturnType<typeof mount> | undefined;
 		try {
-			const result = mount(FunnelAnimationStabilityApp, props);
-			await settle();
+			result = mount(FunnelAnimationStabilityApp, props);
+			await animationFrames.flush();
 			expect(starts).toEqual(['start']);
 			expect(ends).toEqual(['end']);
 
 			result.update(FunnelAnimationStabilityApp, { ...props });
-			await settle();
+			await animationFrames.flush();
 			expect(starts).toEqual(['start']);
 			expect(ends).toEqual(['end']);
 
 			result.update(FunnelAnimationStabilityApp, { ...props, fill: '#82ca9d' });
-			await settle();
+			await animationFrames.flush();
 			expect(starts).toEqual(['start', 'start']);
 			expect(ends).toEqual(['end', 'end']);
 			expect(
 				result.container.querySelector('.recharts-funnel-trapezoid path')?.getAttribute('fill'),
 			).toBe('#82ca9d');
-			result.unmount();
 		} finally {
-			await restoreAnimationFrameGlobals();
+			try {
+				result?.unmount();
+			} finally {
+				await animationFrames.restore();
+			}
 		}
 	});
 
@@ -290,6 +345,59 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 		expect(result.container.querySelector('.recharts-polar-angle-axis')).toBeTruthy();
 		expect(result.container.querySelector('.recharts-polar-radius-axis')).toBeTruthy();
 		result.unmount();
+	});
+
+	it('keeps a Pie Cell ref on its sector instead of forwarding it to labels', async () => {
+		const received: Array<SVGElement | null> = [];
+		const result = mount(PolarCellsApp, {
+			pieRef: (node: SVGElement | null) => {
+				received.push(node);
+			},
+			label: true,
+		});
+		try {
+			await settle();
+			expect(result.container.querySelector('.recharts-pie-label-text')).not.toBeNull();
+			const sector = result.container.querySelector('.recharts-pie-sector .recharts-sector');
+			expect(sector).not.toBeNull();
+			const attached = received.filter((node) => node !== null);
+			expect(attached.length).toBeGreaterThan(0);
+			for (const node of attached) expect(node).toBe(sector);
+		} finally {
+			result.unmount();
+		}
+		expect(received.at(-1)).toBeNull();
+	});
+
+	it('uses Sector defaults for missing radial geometry without shifting data indices', async () => {
+		const latest = new Map<
+			number,
+			{
+				payload: { name: string };
+				innerRadius: number;
+				outerRadius: number;
+				startAngle: number;
+				endAngle: number;
+			}
+		>();
+		const result = mount(MissingRadialGeometryApp, {
+			observe: (props: { index: number } & NonNullable<ReturnType<typeof latest.get>>) => {
+				latest.set(props.index, props);
+			},
+		});
+		try {
+			await settle();
+			expect(latest.get(0)?.payload.name).toBe('missing');
+			expect(latest.get(1)?.payload.name).toBe('present');
+			for (const item of latest.values()) {
+				for (const key of ['innerRadius', 'outerRadius', 'startAngle', 'endAngle'] as const) {
+					expect(Number.isFinite(item[key])).toBe(true);
+				}
+			}
+			expect(latest.get(0)?.outerRadius).toBe(0);
+		} finally {
+			result.unmount();
+		}
 	});
 
 	it('applies registered Cell presentation props to polar sectors', async () => {
@@ -307,11 +415,7 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 	});
 
 	it('restarts polar animations only when their geometry changes', async () => {
-		let frameTime = performance.now();
-		vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
-			setTimeout(() => callback((frameTime += 16)), 0),
-		);
-		vi.stubGlobal('cancelAnimationFrame', (handle: number) => clearTimeout(handle));
+		const animationFrames = controlAnimationFrames();
 		const starts: string[] = [];
 		const ends: string[] = [];
 		const props = {
@@ -319,24 +423,28 @@ describe('Phase 1 chart pipeline (octane side)', () => {
 			onAnimationStart: () => starts.push('start'),
 			onAnimationEnd: () => ends.push('end'),
 		};
+		let result: ReturnType<typeof mount> | undefined;
 		try {
-			const result = mount(PolarAnimationStabilityApp, props);
-			await settle();
+			result = mount(PolarAnimationStabilityApp, props);
+			await animationFrames.flush();
 			expect(starts).toHaveLength(3);
 			expect(ends).toHaveLength(3);
 
 			result.update(PolarAnimationStabilityApp, { ...props });
-			await settle();
+			await animationFrames.flush();
 			expect(starts).toHaveLength(3);
 			expect(ends).toHaveLength(3);
 
 			result.update(PolarAnimationStabilityApp, { ...props, changed: true });
-			await settle();
+			await animationFrames.flush();
 			expect(starts).toHaveLength(6);
 			expect(ends).toHaveLength(6);
-			result.unmount();
 		} finally {
-			await restoreAnimationFrameGlobals();
+			try {
+				result?.unmount();
+			} finally {
+				await animationFrames.restore();
+			}
 		}
 	});
 

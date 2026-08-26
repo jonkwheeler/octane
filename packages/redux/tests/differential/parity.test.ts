@@ -7,12 +7,18 @@
  */
 import { describe, it } from 'vitest';
 import { resolve } from 'node:path';
-import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import {
+	mountDifferential,
+	preloadDifferentialFixture,
+} from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/counter.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
 
+await Promise.all([preloadDifferentialFixture(FIXTURE, CACHE)]);
+
 describe('differential: @octanejs/redux vs real react-redux', () => {
+	// @parity-case differential:redux-counter
 	it('counter: mount → increment ×2 → decrement renders byte-identical', async () => {
 		const d = await mountDifferential(FIXTURE, 'CounterApp', undefined, CACHE);
 		await d.step('mount', () => {});
