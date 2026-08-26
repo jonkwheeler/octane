@@ -4063,6 +4063,7 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'heavy-browser' },
 				test: {
 					name: 'floating-ui-browser',
 					include: ['packages/floating-ui/tests/browser/**/*.test.ts'],
