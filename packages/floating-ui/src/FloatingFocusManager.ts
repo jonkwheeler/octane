@@ -171,7 +171,7 @@ function applyAttributeToOthers(
 		}
 	};
 }
-function markOthers(avoidElements: any[], ariaHidden = false, inert = false): () => void {
+export function markOthers(avoidElements: any[], ariaHidden = false, inert = false): () => void {
 	const body = getDocument(avoidElements[0]).body;
 	return applyAttributeToOthers(
 		avoidElements.concat(Array.from(body.querySelectorAll('[aria-live],[role="status"],output'))),

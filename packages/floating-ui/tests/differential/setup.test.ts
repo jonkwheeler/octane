@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { compileFixture } from './fixture-compiler.mjs';
+import { DIFFERENTIAL_FIXTURE_FILENAMES } from './fixtures';
 
-function dependencies(compile) {
+function dependencies(
+	compile: (source: string, sourcePath: string) => { code: string; errors?: unknown[] },
+) {
 	return {
 		readFile: vi.fn(() => 'fixture source'),
 		compile: vi.fn(compile),
@@ -11,6 +14,10 @@ function dependencies(compile) {
 }
 
 describe('Floating UI differential setup', () => {
+	it('declares the exact fixture consumed by the parity test', () => {
+		expect(DIFFERENTIAL_FIXTURE_FILENAMES).toEqual(['tooltip.tsx']);
+	});
+
 	it('fails closed when the TSRX compiler reports errors', () => {
 		const deps = dependencies(() => ({ code: '', errors: [{ message: 'invalid fixture' }] }));
 		expect(() => compileFixture('/fixtures/broken.tsrx', '/cache', deps)).toThrow(

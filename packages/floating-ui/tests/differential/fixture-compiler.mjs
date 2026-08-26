@@ -1,5 +1,13 @@
 import { basename, join } from 'node:path';
 
+/**
+ * @typedef {object} FixtureCompilerDependencies
+ * @property {(path: string, encoding: 'utf8') => string} readFile
+ * @property {(source: string, sourcePath: string) => {code: string, errors?: unknown[]}} compile
+ * @property {(code: string, options: import('esbuild').TransformOptions) => {code: string}} transform
+ * @property {(path: string, source: string) => void} writeFile
+ */
+
 function hashString(value) {
 	let hash = 5381;
 	for (let index = 0; index < value.length; index++)
@@ -7,6 +15,11 @@ function hashString(value) {
 	return Math.abs(hash).toString(36);
 }
 
+/**
+ * @param {string} sourcePath
+ * @param {string} cacheDirectory
+ * @param {FixtureCompilerDependencies} dependencies
+ */
 export function compileFixture(sourcePath, cacheDirectory, dependencies) {
 	const compiled = dependencies.compile(dependencies.readFile(sourcePath, 'utf8'), sourcePath);
 	if (compiled.errors?.length)
