@@ -72,5 +72,7 @@ Recorded before changing the source implementation:
 The unmodified materialized-handle curve scaled by **81.34×**, reproducing the
 unrelated-Map-scan penalty. The inverse compact-range curve scaled by **1.04×**,
 confirming that its mostly unmaterialized IDs were not being walked. The direct
-post-change comparison target is `handles-65536`; it must improve by at least
-1.5× while both same-run large/small scaling ratios remain at or below 1.5.
+`handles-65536` pre/post result is recorded acceptance evidence and must improve
+by at least 1.5× in this environment. It is not a portable ratio guard. The two
+same-run large/small scaling ratios are the committed guards and must remain at
+or below 1.5.

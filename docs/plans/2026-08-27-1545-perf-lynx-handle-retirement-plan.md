@@ -67,7 +67,7 @@ Compact runs may contain many hosts but only a few lazily materialized handle en
 
 - With a fixed small retired range, normalized preparation cost at the large live-handle scale is no more than 1.5 times the small-scale control.
 - With a fixed small materialized-handle count, normalized preparation cost at the large retired-range scale is no more than 1.5 times the small-scale control.
-- On the large live-handle target workload, the final median preparation cost is at least 1.5 times faster than the recorded pre-change median; otherwise abandon this candidate.
+- As recorded acceptance evidence, the large live-handle target's final median preparation cost is at least 1.5 times faster than the pre-change median; otherwise abandon this candidate. This historical comparison is not a portable CI ratio guard.
 - The benchmark records the pre-change scaling result before source edits and the final same-run result after self-review.
 - Focused Lynx protocol tests, the Lynx package typecheck, formatting, and the registered benchmark ratio gates pass.
 
@@ -178,7 +178,7 @@ Compact runs may contain many hosts but only a few lazily materialized handle en
   - `benchmarks/baselines/local/lynx-handle-retirement.json`
   - `.changeset/lynx-handle-retirement.md`
 - **Approach:**
-  1. Add the two 1.5 scaling ceilings and the 1.5-times direct target speedup floor with notes that report the observed pre-change and final results.
+  1. Add the two portable 1.5 scaling ceilings, and record the direct target's pre-change and final results as acceptance evidence.
   2. Record the final local benchmark payload after self-review and remeasurement.
   3. Add a patch changeset that states the bounded acknowledgement improvement without claiming native rendering gains.
 - **Patterns to follow:** Existing timing-ratio notes in `benchmarks/baselines/ratios.json` and existing `@octanejs/lynx` performance changesets.
@@ -195,11 +195,12 @@ Compact runs may contain many hosts but only a few lazily materialized handle en
 | --- | --- | --- |
 | Focused protocol behavior | `./node_modules/.bin/vitest run packages/lynx/tests/protocol.test.ts --reporter=verbose` | Exact, fallback, apply, rollback, and reuse cases pass. |
 | Lynx types | `pnpm --dir packages/lynx typecheck` | Source, testing, and typetest projects report no errors. |
-| Performance ratios | `node benchmarks/bench.mjs --quick --ratios lynx-handle-retirement` | Both scaling ceilings, the direct pre/post target speedup floor, and all semantic checks pass. |
+| Performance ratios | `node benchmarks/bench.mjs --quick --ratios lynx-handle-retirement` | Both portable same-run scaling ceilings and all semantic checks pass. |
+| Recorded direct speedup | Main and final eight-iteration evidence in `benchmarks/lynx-handle-retirement/README.md` | The large live-handle target improves by at least 1.5 times; this one-time acceptance comparison is not represented as a CI ratio gate. |
 | Formatting | `pnpm format:files:check -- packages/lynx/src/core/client-driver.ts packages/lynx/tests/protocol.test.ts benchmarks/lynx-handle-retirement benchmarks/bench.mjs benchmarks/baselines/ratios.json benchmarks/baselines/local/lynx-handle-retirement.json .changeset/lynx-handle-retirement.md` | Every changed file matches repository formatting. |
 | Changeset | `pnpm changeset:check` | The Lynx patch changeset is valid. |
 
-The performance exit criterion is both dimensional and absolute: the fixed-range curve must stop scaling with unrelated live handles, the fixed-materialized curve must remain bounded as compact range size grows, and the large live-handle target must improve by at least 1.5 times against its recorded pre-change median.
+The performance exit criterion is both dimensional and absolute: the fixed-range curve must stop scaling with unrelated live handles, the fixed-materialized curve must remain bounded as compact range size grows, and the recorded large live-handle target must improve by at least 1.5 times against its pre-change median. The two dimensional checks remain portable ratio guards; the absolute pre/post result is acceptance evidence from the recorded environment.
 Remeasure after self-review so the reported ratios describe the final diff.
 
 ---

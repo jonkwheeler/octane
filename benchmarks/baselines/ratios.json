@@ -3518,7 +3518,7 @@
     "target": "handles-65536",
     "reference": "handles-1024",
     "maxRatio": 1.5,
-    "note": "Same-process exact remove-run acknowledgement preparation retires eight hosts with 65,536 versus 1,024 materialized public handles. The untouched-source baseline at 69a56855c on Node v26.7.0 measured 786.132 versus 9.665 ms/1k (81.34x); final eight-iteration evidence measured 0.246 versus 0.235 ms/1k (1.05x), making the large target 3190.54x faster than untouched source. The 1.5x ceiling leaves timing headroom while rejecting a return to scanning unrelated materialized handles."
+    "note": "Same-process exact remove-run acknowledgement preparation retires eight hosts with 65,536 versus 1,024 materialized public handles. The untouched-source baseline at 69a56855c on Node v26.7.0 measured 786.132 versus 9.665 ms/1k (81.34x); final eight-iteration evidence measured 0.246 versus 0.235 ms/1k (1.05x), making the large target 3190.54x faster than untouched source. That pre/post figure is recorded acceptance evidence, not a portable ratio guard. The 1.5x same-run ceiling leaves timing headroom while rejecting a return to scanning unrelated materialized handles."
   },
   {
     "suite": "lynx-handle-retirement",
