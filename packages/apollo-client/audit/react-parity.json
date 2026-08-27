@@ -8,7 +8,7 @@
     "sourceRoot": "src/react and src/testing/react",
     "testRoot": "src/react/**/__tests__ and src/testing/react/__tests__",
     "license": "MIT",
-    "integrity": "sha256:042025ab55bc5221b761cadd9d264c9d519390bffa6cd3f4f5b451a43b0a6649",
+    "integrity": "sha256:d2f17af8384c1f572cb3133153fe292546f4bb2768afcf30cc02091990ee057f",
     "verification": "recorded-unverified"
   },
   "upstreamSuites": {
@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
+      "lockfileSha256": "2ef7ce16e89bbd2fa352ef68540e49fce29d2a874303aba00201d69ce7f2bb11"
     }
   },
   "lanes": [
@@ -88,12 +88,12 @@
           "sha256": "b68f4c69e528c4659a7111b07d1ee021116fa27e0a37a5a7164dcbd4f958e327"
         },
         {
-          "path": "packages/apollo-client/upstream/SHA256SUMS",
+          "path": "packages/apollo-client/audit/upstream.lock.json",
           "role": "support",
-          "sha256": "042025ab55bc5221b761cadd9d264c9d519390bffa6cd3f4f5b451a43b0a6649"
+          "sha256": "738cc8626f56e2987d60dd4825e394f2a2697f9f0b3c3fb0498799de120f26c9"
         },
         {
-          "path": "packages/apollo-client/upstream/LICENSE",
+          "path": "packages/apollo-client/LICENSE.upstream",
           "role": "support",
           "sha256": "6d4568f2adac9fd90e85a2802a1e8ae25f707af9243cd5a8843402399b92b3c4"
         },
@@ -108,14 +108,9 @@
           "sha256": "1f551a680b6cc19b91ecc2fc01ad561ac5ffe3db5663f6a93d32e1f57bb749b8"
         },
         {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
-        },
-        {
           "path": "packages/apollo-client/audit/test-classifications.json",
           "role": "support",
-          "sha256": "61a7e95b273ad8f7eb7d53bfeb8ce66f2dd0fa03157ce60364847bd2eca5fb6b"
+          "sha256": "118ca56781ad444a1782e54090deeb3ec3e6543641a564e626f79df9d55bde16"
         }
       ]
     },
@@ -131,7 +126,7 @@
         {
           "path": "packages/apollo-client/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "7cdab8fb95c4c889f659cd47e1d22cff832fa7d65cf409fa87133dce6133a397",
+          "sha256": "4d80ed1922b0cd7a2d545825765027a279ac190a7da539cc662da423c046cbac",
           "cases": [
             {
               "id": "differential:apollo-cache-query",

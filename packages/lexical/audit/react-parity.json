@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
+      "lockfileSha256": "2ef7ce16e89bbd2fa352ef68540e49fce29d2a874303aba00201d69ce7f2bb11"
     }
   },
   "lanes": [
@@ -56,7 +56,7 @@
         {
           "path": "packages/lexical/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "9b49bfc5c4b6f1e8b143dfecf7fc1ce3cd854b9bf7e6d5c750ada8fd71b6a2b0",
+          "sha256": "2b257cf28ce77e8f39882f1feae8aade9fc69da59a238e6b663b39e47d1cf425",
           "cases": [
             {
               "id": "differential:lexical-rich-text",
@@ -93,12 +93,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         }
       ]
     }

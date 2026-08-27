@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
+      "lockfileSha256": "2ef7ce16e89bbd2fa352ef68540e49fce29d2a874303aba00201d69ce7f2bb11"
     }
   },
   "lanes": [
@@ -71,11 +71,6 @@
           "path": "packages/inertia/tests/_fixtures/page-provider.tsrx",
           "role": "support",
           "sha256": "29f535ea46ee9bbdf505ecb9d712ed2181bf4f4eac651ad5ccbbd6d60f972c7f"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
         }
       ]
     },
@@ -91,7 +86,7 @@
         {
           "path": "packages/inertia/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "79e02b9aa2a1531332f6fbfaa9af82266da47892f02d3526d72a96eb8fc2e2e1",
+          "sha256": "1111ae35b6ee73ee78726c3cf646c7ba7cbdb2ce735872e97fef0abe36aa5680",
           "cases": [
             {
               "id": "differential:use-page",
@@ -108,17 +103,12 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         },
         {
           "path": "packages/inertia/tests/differential/_setup.ts",
           "role": "support",
           "sha256": "cac818480214c96c8f15a1fa0e2d18a4d8c16569fe7244930e5c3415adefeca9"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
         }
       ]
     },

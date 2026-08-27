@@ -38,17 +38,18 @@ describe('spread-supplied ref (React 19 parity with ref={})', () => {
 		r.unmount();
 	});
 
-	it('array ref via spread attaches every member (no .current corruption)', () => {
+	it('array ref via spread ignores empty entries and attaches every nested ref', () => {
 		const objRef: { current: any } = { current: null };
 		const cbHits: any[] = [];
 		const r = mount(SpreadDirect, {
-			attrs: { id: 'target', ref: [objRef, (el: any) => cbHits.push(el)] },
+			attrs: { id: 'target', ref: [undefined, [objRef, null], (el: any) => cbHits.push(el)] },
 		});
-		expect(objRef.current).toBeInstanceOf(HTMLElement);
-		expect(cbHits).toHaveLength(1);
-		expect(cbHits[0]).toBeInstanceOf(HTMLElement);
+		const node = r.find('#target');
+		expect(objRef.current).toBe(node);
+		expect(cbHits).toEqual([node]);
 		r.unmount();
 		expect(objRef.current).toBe(null);
+		expect(cbHits).toEqual([node, null]);
 	});
 
 	it('changing the spread ref across renders detaches old before attaching new', () => {
@@ -99,6 +100,51 @@ describe('spread-supplied ref (React 19 parity with ref={})', () => {
 		expect(log).toEqual(['A:attach', 'A:cleanup']);
 		r.unmount();
 		expect(log).toEqual(['A:attach', 'A:cleanup']);
+	});
+
+	it('detaches the latest committed spread ref after multiple replacements and removals', () => {
+		const log: string[] = [];
+		const trackedRef = (name: string) => (element: Element | null) => {
+			if (element !== null) log.push(`${name}:attach`);
+			return () => log.push(`${name}:cleanup`);
+		};
+		const first = trackedRef('first');
+		const second = trackedRef('second');
+		const third = trackedRef('third');
+		const root = mount(SpreadDirect, { attrs: { id: 'target', ref: first } });
+		const host = root.find('#target');
+
+		root.update(SpreadDirect, { attrs: { id: 'target', ref: second } });
+		root.update(SpreadDirect, { attrs: { id: 'target' } });
+		root.update(SpreadDirect, { attrs: { id: 'target', ref: third } });
+		expect(root.find('#target')).toBe(host);
+		expect(log).toEqual([
+			'first:attach',
+			'first:cleanup',
+			'second:attach',
+			'second:cleanup',
+			'third:attach',
+		]);
+
+		root.unmount();
+		expect(log.at(-1)).toBe('third:cleanup');
+	});
+
+	it('does not attach or detach inherited or non-enumerable spread refs', () => {
+		const calls: Array<Element | null> = [];
+		const observe = (element: Element | null) => calls.push(element);
+		const inherited: Record<string, unknown> = Object.create({ ref: observe });
+		inherited.id = 'target';
+		const hidden: Record<string, unknown> = { id: 'target' };
+		Object.defineProperty(hidden, 'ref', { value: observe, enumerable: false });
+
+		for (const attrs of [inherited, hidden]) {
+			const root = mount(SpreadDirect, { attrs });
+			expect(root.find('#target')).toBeInstanceOf(HTMLElement);
+			expect(calls).toEqual([]);
+			root.unmount();
+			expect(calls).toEqual([]);
+		}
 	});
 
 	it('preserves one host across changing spread refs, attributes, events, and conditional children', () => {

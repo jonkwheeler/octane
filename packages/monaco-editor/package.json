@@ -1,6 +1,6 @@
 {
   "name": "@octanejs/monaco-editor",
-  "version": "0.0.2",
+  "version": "0.0.16",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -27,14 +27,16 @@
     "src",
     "LICENSE",
     "README.md",
-    "UPSTREAM.md"
+    "UPSTREAM.md",
+    "LICENSE.upstream"
   ],
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
     "test": "vitest run --root ../.. --project monaco-editor",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json",
+    "parity:generate": "node ./scripts/generate-parity-manifest.mjs"
   },
   "dependencies": {
     "@monaco-editor/loader": "catalog:default"
@@ -47,8 +49,18 @@
     "@monaco-editor/react": "catalog:default",
     "@octanejs/testing-library": "workspace:*",
     "@testing-library/jest-dom": "catalog:default",
+    "@testing-library/react": "16.3.2",
+    "@tsrx/react": "catalog:default",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "catalog:default",
+    "esbuild": "catalog:default",
     "monaco-editor": "catalog:default",
     "octane": "workspace:*",
+    "playwright": "catalog:default",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "vite": "catalog:default",
     "vitest": "catalog:default"
   }
 }

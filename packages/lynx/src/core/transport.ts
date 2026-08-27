@@ -5,7 +5,6 @@ import {
 	type UniversalHostBatch,
 	type UniversalRoot,
 	type UniversalTransportAcknowledgement,
-	type UniversalTransportCommitMessage,
 	type UniversalEventPriority,
 	type UniversalTransportEventDelivery,
 	type UniversalTransportIdentity,
@@ -16,15 +15,21 @@ import {
 	applyLynxHostAttachments,
 	invalidateLynxClientContainer,
 	isLynxClientEventTarget,
+	prepareLynxCompactHandleDeltas,
 	prepareLynxHandleDeltas,
+	setLynxClientCapabilities,
 	type LynxClientContainer,
 } from './client-driver.js';
 import {
 	LYNX_BACKGROUND_TO_MAIN_EVENT,
+	LYNX_COMPACT_ACKNOWLEDGEMENT,
+	LYNX_LAZY_PUBLIC_INSTANCES,
+	LYNX_TEARDOWN_RUN_READY_REQUEST_BASE,
 	LYNX_MAIN_TO_BACKGROUND_EVENT,
 	LYNX_READY_ANNOUNCEMENT_REQUEST,
 	LYNX_TRANSPORT_PROTOCOL_VERSION,
 	LYNX_TRANSPORT_RENDERER,
+	countLynxCompactAcknowledgementHosts,
 	sameLynxTransportIdentity,
 	selfCheckLynxBackgroundOutboundMessage,
 	validateLynxBackgroundInboundMessage,
@@ -42,7 +47,9 @@ import {
 	type LynxHostFaultMessage,
 	type LynxMainReadyReply,
 	type LynxMainReadyRequest,
+	type LynxMainThreadCapabilities,
 	type LynxMainThreadWorkletWireDescriptor,
+	type LynxTransportCommitMessage,
 	type LynxTransportAcknowledgement,
 } from './protocol.js';
 import type { LynxBackgroundNativeEventDelivery } from './native-event-receiver.js';
@@ -146,6 +153,9 @@ interface PendingCommit {
 	readonly deferred: Deferred<void>;
 	readonly token: PreparedTokenState;
 	state: 'waiting-ready' | 'sent' | 'acknowledged';
+	compactRequested: boolean;
+	incrementalCompactRequested: boolean;
+	compactHostCount: number | null;
 	abortRequested: boolean;
 	deferredResponse: CommitSettlement | null;
 }
@@ -249,7 +259,10 @@ export function createLynxBackgroundTransport(
 	const pending = new Map<number, PendingCommit>();
 	const pendingMainCalls = new Map<number, PendingMainThreadCall>();
 	const runningBackgroundCalls = new Map<number, RunningBackgroundCall>();
-	const readyRequest = NEXT_READY_REQUEST++;
+	const readyRequest = LYNX_TEARDOWN_RUN_READY_REQUEST_BASE + NEXT_READY_REQUEST++;
+	if (!Number.isSafeInteger(readyRequest)) {
+		throw new Error('Octane Lynx capability-ready request identities are exhausted.');
+	}
 	const readinessRequest: LynxMainReadyRequest = Object.freeze({
 		protocol: LYNX_TRANSPORT_PROTOCOL_VERSION,
 		renderer: LYNX_TRANSPORT_RENDERER,
@@ -264,6 +277,10 @@ export function createLynxBackgroundTransport(
 	let closedError: Error | null = null;
 	let transportRoot: number | null = null;
 	let readyReceived = false;
+	let compactAcknowledgements = false;
+	let lazyPublicInstances = false;
+	let postFirstTreeLazyPublicInstances = false;
+	let deferredFirstTreeCapabilities: LynxMainThreadCapabilities | undefined;
 	let readinessRetrySent = false;
 	let disposeDeferred: Deferred<void> | null = null;
 	let disposeIdentity: UniversalTransportIdentity | null = null;
@@ -735,6 +752,18 @@ export function createLynxBackgroundTransport(
 		if (readyReceived || readyDeferred.settled) {
 			return;
 		}
+		const adoptingFirstTree = message.firstTree !== undefined;
+		const capabilities = adoptingFirstTree ? undefined : message.capabilities;
+		// The first background batch must preserve main's exact first-screen IDs.
+		// New peers can advertise future intrinsic programs on the same correlated
+		// reply; older peers never advertised templateProgram alongside firstTree.
+		deferredFirstTreeCapabilities =
+			adoptingFirstTree && message.capabilities?.templateProgram === 1
+				? message.capabilities
+				: undefined;
+		compactAcknowledgements = capabilities?.compactAck === 1;
+		lazyPublicInstances = capabilities?.lazyPublicInstances === 1;
+		setLynxClientCapabilities(container, capabilities);
 		readyReceived = true;
 		readyDeferred.resolve(undefined);
 	};
@@ -753,7 +782,25 @@ export function createLynxBackgroundTransport(
 		let handles;
 		const previousAccepted = accepted;
 		try {
-			handles = prepareLynxHandleDeltas(container, entry.batch, message.handles, message);
+			if (message.encoding === LYNX_COMPACT_ACKNOWLEDGEMENT) {
+				if (
+					!compactAcknowledgements ||
+					!entry.compactRequested ||
+					(previousAccepted !== null && !entry.incrementalCompactRequested)
+				) {
+					throw new Error('Octane Lynx received an unnegotiated compact acknowledgement.');
+				}
+				handles = prepareLynxCompactHandleDeltas(
+					container,
+					entry.batch,
+					message.count,
+					message,
+					entry.compactHostCount ?? undefined,
+					entry.incrementalCompactRequested,
+				);
+			} else {
+				handles = prepareLynxHandleDeltas(container, entry.batch, message.handles, message);
+			}
 			// Applying handle deltas and acceptance callbacks can invoke user code.
 			// Queue any resulting calls until all older pre-acceptance IDs can drain.
 			publishingAcknowledgement = true;
@@ -786,6 +833,20 @@ export function createLynxBackgroundTransport(
 				);
 				return;
 			}
+		}
+		if (
+			(message.adoption === 'adopted' || message.adoption === 'repaired') &&
+			deferredFirstTreeCapabilities !== undefined
+		) {
+			// Main releases the adopted journal synchronously while handling
+			// adoption-ready; repaired journals are disposed before their ACK.
+			// The first adopted batch remains legacy. A later safe run can reuse
+			// compact-v1 only after this identity-correlated handoff completes.
+			setLynxClientCapabilities(container, deferredFirstTreeCapabilities);
+			compactAcknowledgements = deferredFirstTreeCapabilities.compactAck === 1;
+			lazyPublicInstances = deferredFirstTreeCapabilities.lazyPublicInstances === 1;
+			postFirstTreeLazyPublicInstances = deferredFirstTreeCapabilities.lazyPublicInstances === 1;
+			deferredFirstTreeCapabilities = undefined;
 		}
 		publishAcknowledgementMainCalls(message);
 		// The acknowledgement just published this batch's hosts, which is what a
@@ -1399,7 +1460,7 @@ export function createLynxBackgroundTransport(
 				});
 			}
 			const preparedBatch = options.prepareWorkletBatch?.(batch) ?? batch;
-			const commit: UniversalTransportCommitMessage = {
+			const commit: LynxTransportCommitMessage = {
 				...identity,
 				type: 'commit',
 				batch: preparedBatch,
@@ -1441,6 +1502,9 @@ export function createLynxBackgroundTransport(
 						deferred: createDeferred<void>(),
 						token,
 						state: 'waiting-ready',
+						compactRequested: false,
+						incrementalCompactRequested: false,
+						compactHostCount: null,
 						abortRequested: false,
 						deferredResponse: null,
 					};
@@ -1450,10 +1514,47 @@ export function createLynxBackgroundTransport(
 						() => {
 							if (pending.get(identity.version) !== entry) return;
 							entry.state = 'sent';
+							const count = compactAcknowledgements
+								? countLynxCompactAcknowledgementHosts(preparedBatch)
+								: null;
+							const compact = count !== null;
+							entry.compactRequested = compact;
+							entry.compactHostCount = count;
+							const incrementalRun =
+								preparedBatch.commands.length === 1 ? preparedBatch.commands[0] : undefined;
+							entry.incrementalCompactRequested =
+								compact &&
+								accepted !== null &&
+								postFirstTreeLazyPublicInstances &&
+								incrementalRun?.op === 'mount-template-run' &&
+								Object.isFrozen(incrementalRun) &&
+								Object.isFrozen(incrementalRun.program) &&
+								Object.isFrozen(incrementalRun.values);
+							const deferPublicInstances =
+								compact &&
+								lazyPublicInstances &&
+								(accepted === null ||
+									(postFirstTreeLazyPublicInstances &&
+										preparedBatch.commands.every(
+											(command) =>
+												command.op === 'mount-template-range' ||
+												command.op === 'mount-template-run',
+										))) &&
+								preparedBatch.commands.some(
+									(command) =>
+										command.op === 'mount-template-range' || command.op === 'mount-template-run',
+								);
+							const outboundCommit: LynxTransportCommitMessage = compact
+								? {
+										...commit,
+										ack: LYNX_COMPACT_ACKNOWLEDGEMENT,
+										...(deferPublicInstances ? { instances: LYNX_LAZY_PUBLIC_INSTANCES } : null),
+									}
+								: commit;
 							let dispatchError: Error | null = null;
 							dispatchingCommit = entry;
 							try {
-								dispatch(commit);
+								dispatch(outboundCommit);
 							} catch (error) {
 								dispatchError = report(
 									error,

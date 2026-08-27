@@ -35,7 +35,7 @@ const sources = collectCompilerFiles().map((path) => ({
 }));
 
 describe('compiler AST emit architecture', () => {
-	it('keeps final JavaScript printing at the two owning emit boundaries', () => {
+	it('keeps final Program printing at the owning emit boundaries', () => {
 		const printSites: string[] = [];
 		for (const { code, path } of sources) {
 			for (const _match of code.matchAll(/\besrapPrint\s*\(/g)) {
@@ -44,9 +44,13 @@ describe('compiler AST emit architecture', () => {
 		}
 
 		// Volar delegates its one Program print to @tsrx/core's transform() with
-		// boundaryTokens enabled. The main compiler and client-only stub are the
-		// only compiler-owned Program printers.
-		expect(printSites.sort()).toEqual(['client-only-server.js', 'compile.js']);
+		// boundaryTokens enabled. Plain-hook memo lowering owns a TS-preserving
+		// whole-Program print; its surgical fallback never prints fragments.
+		expect(printSites.sort()).toEqual([
+			'client-only-server.js',
+			'compile.js',
+			'plain-hook-memo.js',
+		]);
 	});
 
 	it('only parses authored module inputs', () => {
@@ -85,10 +89,11 @@ describe('compiler AST emit architecture', () => {
 		expect(violations).toEqual([]);
 	});
 
-	it('has no retired generated-text or source-map compatibility layer', () => {
+	it('has no retired AST emit compatibility layer', () => {
 		const retiredNames = [
 			'addSourceMapNeedles',
 			'applyMappedReplacements',
+			'buildSourceMap',
 			'composeSourceMaps',
 			'expandDomRendererRegions',
 			'generatedText',
@@ -97,6 +102,11 @@ describe('compiler AST emit architecture', () => {
 			'retargetRuntimeImport',
 			'sourceMapFromOrigins',
 		];
+		const retiredDefinitionsByFile = new Map([
+			// Renderer-boundary and hydrate transforms still own live walkers with
+			// this name. Universal lowering has no copy-on-write rewrite pass left.
+			['compile-universal.js', ['mapAstCow']],
+		]);
 		const retiredProperties = [
 			'__styleRemap',
 			'__universalValidationRemap',
@@ -107,9 +117,17 @@ describe('compiler AST emit architecture', () => {
 		const violations: string[] = [];
 
 		for (const { code, path } of sources) {
+			const relativePath = displayPath(path);
 			for (const name of retiredNames) {
 				violations.push(
 					...locations(path, code, new RegExp(`\\b${name}\\s*\\(`, 'g')).map(
+						(location) => `${location}: ${name}`,
+					),
+				);
+			}
+			for (const name of retiredDefinitionsByFile.get(relativePath) ?? []) {
+				violations.push(
+					...locations(path, code, new RegExp(`\\bfunction\\s+${name}\\s*\\(`, 'g')).map(
 						(location) => `${location}: ${name}`,
 					),
 				);

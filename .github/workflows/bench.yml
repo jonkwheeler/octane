@@ -22,7 +22,7 @@ on:
 
 jobs:
   bench:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
       - name: Checkout code
@@ -37,8 +37,14 @@ jobs:
           node-version: 24
           cache: "pnpm"
 
+      - name: Test benchmark work collector
+        run: node --test benchmarks/lib/precise-work.test.mjs
+
       - name: Install dependencies
         run: pnpm install --prod false --frozen-lockfile
+
+      - name: Test UIbench measurement failures
+        run: node --test benchmarks/uibench/run.test.mjs
 
       - name: Install Playwright Chromium
         run: pnpm --filter octane-js-framework-benchmarks exec playwright install --with-deps chromium

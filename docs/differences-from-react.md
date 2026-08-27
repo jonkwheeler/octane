@@ -179,8 +179,9 @@ hook calls inside a custom hook; it only declines to modify calls to wrappers.
 
 ## Automatic memoization and calls in templates
 
-Production builds automatically memoize component regions under the same
-pure-render, immutable-snapshot contract assumed by React Compiler:
+Production builds automatically memoize component regions. The default
+compatibility mode is conservative about calls whose receivers can hide mutable
+state:
 
 ```tsx
 {formatPrice(cents)} // May memoize: formatPrice is imported.
@@ -196,7 +197,7 @@ A call keeps its surrounding region memoizable only when the callee is an
 imported binding or an unreassigned same-module function whose body is itself a
 value projection. Arguments must satisfy the same rule.
 
-Member calls fail closed because the receiver may be a live object:
+In compatibility mode, member calls fail closed because the receiver may be a live object:
 `header.getIsSorted()` can return a new answer while `header` retains the same
 identity. A module helper that merely wraps that method has the same hazard and
 does not qualify. Component-local callees, hooks (including `unstable_use*`),
@@ -210,12 +211,163 @@ boundary, so an imported helper is taken at its word — that is the one place
 this analysis trusts rather than proves, and it matches React Compiler's own
 assumption.
 
+This preserves ordinary React rendering for live receivers; it is not a promise
+to reproduce every React Compiler optimization. React Compiler also identifies
+APIs with interior mutability, including TanStack Table v8, as
+[incompatible with memoization](https://react.dev/reference/eslint-plugin-react-hooks/lints/incompatible-library).
+Stable function or object identity alone does not prove a result is unchanged.
+React Compiler lint classifications and option-sensitive output are useful
+comparison evidence, not Octane configuration: changing JSX outlining, adding a
+debug hook, or using React's `"use memo"` directives does not alter Octane's
+compatibility/Strong boundary.
+
+### Strong mode and render calls
+
+A module that opts into [`"use strong"`](#optional-strong-mode) asserts a stricter
+contract: rendering is a referentially transparent projection of props, state,
+context, and immutable snapshots. Every user-authored call evaluated for render
+output must return the same value for the same witnessed inputs and must not
+perform application-visible work. That assertion covers local and imported
+functions, static and computed methods, call-produced callees, constructors,
+tagged templates, and synchronously invoked callbacks.
+
+Production client builds can therefore condition eligible regions on their
+witnessed inputs without using `use*` spelling as a purity oracle. An ordinary
+function named `useFormat` is no less memoizable than `format`; Strong does not
+reintroduce React's Rules of Hooks through a naming heuristic. Actual hooks keep
+their compiler-owned setup semantics. The compiler recognizes built-in hooks by
+import provenance, including optional calls, and resolves same-module
+custom-hook declarations and function-valued module bindings by lexical binding.
+Transitive and cyclic paths reach a fixed point, while reassigned module bindings
+stay on the conservative setup path. Their context subscriptions, state cells,
+suspension points, and effect lifecycles remain outside ordinary projection
+caches.
+
+For an eligible operation, the cache guard witnesses the callable and its
+receiver as well as explicit arguments. A derived receiver such as
+`factory().read(input)` is represented by the factory, its receiver, and its
+arguments rather than by a transient returned-object identity. Witnesses use
+`Object.is` equality at component and ordinary-list projection boundaries, so
+repeated `NaN` is stable while `0` and `-0` invalidate separately. A certified
+keyed-selection operand retains the authored strict-equality semantics while
+other list captures still use `Object.is`. Hiding hook state, a state getter,
+`ref.current`, a clock or random
+value, mutable module state, or an external live store behind a render call
+violates the assertion because the result can change without a witnessed input
+changing.
+
+Compiler diagnostics catch a useful subset of violations, but they are not a
+whole-program proof and unknown call shapes do not fall back to compatibility
+behavior. Calling imported code from a Strong module asserts that the particular
+render use is snapshot-safe; it does not make the library's live objects
+immutable. Keep a consumer of live accessors in compatibility mode, or read an
+actual reactive snapshot and pass it into a separate Strong component.
+
+Compatibility keeps a member call live only while the render scope containing
+that call actually executes. It does not create a subscription and cannot make a
+stable live object safe across `memo`, an unchanged child boundary, or Strong
+memoization. The supported migration is to subscribe and select in compatibility
+code, then cross the Strong boundary with the selected value:
+
+```tsx
+// SelectionBridge.tsrx — compatibility mode
+function SelectionBridge({ table, row }) @{
+  <table.Subscribe
+    source={table.atoms.rowSelection}
+    selector={(selection) => !!selection[row.id]}
+  >
+    {(selected) => <StrongSelectionRow label={row.original.name} selected={selected} />}
+  </table.Subscribe>
+}
+```
+
+```tsx
+// StrongSelectionRow.tsrx
+"use strong";
+
+function StrongSelectionRow({ label, selected }) @{
+  <li data-selected={selected ? '1' : '0'}>{label}</li>
+}
+```
+
+Passing only `row`, shallow-copying an object that still contains its live
+methods, or forcing an unrelated render without selecting `selected` does not
+create a snapshot witness.
+
+### Keyed rows and logging
+
+A key preserves a surviving row's DOM identity; it does not promise that its
+JavaScript body runs only once. In Strong production builds, diagnostic calls
+such as `console.log('row', item.id)` do not disqualify an otherwise eligible
+row from reuse. Do not rely on logging, metrics, mutation, allocation, or any
+other render-time call count: evaluation can differ in production, development,
+HMR, profiling, server rendering, hydration, retries, and aborted work.
+
+A changed captured value still invalidates a row, including captures inside its
+event handlers:
+
+```tsx
+onClick={() => setItems(items.filter((entry) => entry.id !== item.id))}
+```
+
+Appending changes `items`, so surviving rows must receive a handler for the new
+snapshot. Skipping that update could make removing an original row also discard
+the appended item. If removal should use the latest state, a functional update
+does not capture the parent array:
+
+```tsx
+onClick={() => setItems((current) => current.filter((entry) => entry.id !== item.id))}
+```
+
+The first form remains correct and supported. Strong mode does not change its
+closure semantics or promise to skip its reevaluation.
+
+### Local mutation and retained rows
+
+Mutation of fresh render-local data is supported when it finishes before that
+data escapes. A plain JavaScript loop has normal sequential JavaScript semantics:
+
+```tsx
+function Labels({ items }) @{
+  const labels = [];
+  for (const item of items) labels.push(item.label);
+  <p>{labels.join(', ')}</p>
+}
+```
+
+A keyed `@for` body is different: every surviving key owns a retained render
+scope that may be evaluated independently. Writing a binding declared outside
+the row would make its output depend on which other rows happened to run and in
+what order. Strong reports that shape as
+`OCTANE_STRONG_RETAINED_ROW_MUTATION`:
+
+```tsx
+let position = 0;
+@for (const item of items; key item.id) {
+  position++; // Strong compile error: shared across retained rows.
+  <li>{String(position)}</li>
+}
+```
+
+Use setup to build a complete value before it escapes, keep mutable scratch data
+inside one row, or use the directive's index binding when position is the desired
+input:
+
+```tsx
+@for (const item of items; index position; key item.id) {
+  <li>{String(position + 1)}</li>
+}
+```
+
+Compatibility mode accepts a cross-row write but does not promise a retained
+row evaluation order, so it must not determine rendered output there either.
+
 ## Derived values are cached at their declaration
 
 ```tsx
 const labels = formatRows(rows); // Cached on [rows]: imported projection.
 const items = virtualizer.getVirtualItems(); // Not cached: member call.
-const visible = todos.filter((todo) => !todo.completed); // Not cached.
+const visible = todos.filter((todo) => !todo.completed); // Cached only for proven state snapshots.
 let freshLabels = formatRows(rows); // Not cached: `let` is an escape hatch.
 ```
 
@@ -223,18 +375,32 @@ An eligible `const` keeps the same identity until its tracked component-local
 inputs change. This lets a region key on the identity of a derived value instead
 of seeing a new array or object on every render.
 
-The same callee rule governs declaration caching. The virtualizer call must stay
+The same callee rule governs declaration caching. In compatibility mode, the virtualizer call must stay
 live because its window can move while the virtualizer object keeps the same
-identity. The `filter` call is a genuine optimization miss—the compiler cannot
-yet distinguish it from the live-object case—so both fail closed. Use an
-explicit `useMemo` when the identity matters.
+identity. Most member calls, including arbitrary `items.filter(...)` calls,
+therefore remain uncached.
 
-Also never cached:
+The production `.tsrx` compiler admits one narrow exception: a native `filter`
+projection over a state value created by a genuine `useState([])` call when every
+setter use remains private and produces a fresh, provably ordinary array
+snapshot. The predicate must only inspect an own data property, and a runtime
+guard verifies the array's dense entries, item properties, native methods,
+constructor, and species before reusing an unchanged snapshot. Unknown aliases,
+mutable receivers, getters, proxies, sparse arrays, overridden methods, custom
+species, and unproven predicates retain the existing live path. Use an explicit
+`useMemo` when an otherwise unsupported identity needs caching.
 
-- **Hook calls.** `const s = useThing()` and `const s = unstable_useThing()`
-  keep their hook cells and subscriptions. Hooks are recognised by naming
-  convention — the same signal React and React Compiler use — so a hook named
-  outside that convention is the one shape this cannot protect.
+Within the same proven component, a single-token class object driven by primitive
+state can reuse its existing per-binding change guard. Controlled `value` and
+`checked` bindings still reassert their values on every commit.
+
+Also never cached in compatibility mode:
+
+- **Hook-shaped calls.** `const s = useThing()` and
+  `const s = unstable_useThing()` conservatively keep their setup live. Strong
+  instead recognizes actual built-in hooks by import provenance and same-module
+  function or function-valued custom-hook setup by lexical call-graph analysis;
+  an unrelated `useFormat()` remains an ordinary pure-call assertion.
 - **Values the render tree never reads.** A calculation used only by an event
   handler pays nothing.
 
@@ -305,8 +471,9 @@ The tuple also supports the same optional latest-value getter as `useState`.
 
 ## Optional Strong mode
 
-Strong mode adds compile-time checks for patterns that make rendering harder to
-reason about. Opt into one module with a directive before its imports:
+Strong mode opts into the immutable render-snapshot contract above and adds
+compile-time checks for detectable violations. Opt into one module with a
+directive before its imports:
 
 ```tsx
 "use strong";
@@ -318,11 +485,32 @@ Alternatively, enable it across application-owned modules with
 `compiler: { strong: true }` in `octane.config.ts`. Installed dependencies stay
 in compatibility mode unless their own source opts in.
 
-A Strong module cannot call a state updater during render or directly while
-setting up an effect, and it cannot assign to `ref.current` during render.
-Event handlers, effects that synchronize an external system, and normal DOM or
-timer refs remain supported. Replace prop-driven state resets with
-`useLinkedState` instead of calling a setter during render.
+A Strong module cannot call a state updater during render or synchronously while
+setting up an effect, and it cannot assign to `ref.current` during render. The
+checks follow provable synchronous calls through `useCallback`, `useEffectEvent`,
+and functions returned by analyzable `useMemo` factories. Calling a statically
+known Effect Event during render or including it in an explicit hook dependency
+list is also a compile error. The hooks themselves remain supported, and other
+explicit dependency lists retain their existing meaning.
+
+The compiler also rejects render-time writes through a provable state snapshot
+(`OCTANE_STRONG_RENDER_SNAPSHOT_MUTATION`) and direct calls to known
+non-idempotent globals such as `Date.now()` and `Math.random()`
+(`OCTANE_STRONG_RENDER_IMPURE_CALL`). These checks follow supported aliases and
+synchronous helpers; they do not prove arbitrary method bodies or imported code
+pure. Lazy state initialization may obtain an initial timestamp or random value.
+
+The directive is also an author assertion for production memoization, not just a
+request for diagnostics. Render output must not observe changing data through a
+stable ref, state getter, module variable, external store object, or hidden hook.
+All user-authored render calls and synchronously invoked callbacks must be pure
+for their witnessed inputs. Function names—including `use*` names—do not change
+that contract or disable the optimization.
+
+Event handlers, genuinely deferred callbacks, effect cleanup, effects that
+synchronize an external system, and normal DOM or timer refs remain supported.
+Replace prop-driven state resets with `useLinkedState` instead of calling a
+setter during render.
 
 ## JSX values follow the represented render scope
 
@@ -535,6 +723,110 @@ Strings, numbers, arrays, objects, and nesting compose at every client and SSR
 apply site with byte-identical results. A nullish or `false` result removes the
 attribute; an empty string writes `class=""`.
 
+## Context: callable provider object, no Consumer
+
+`createContext` returns a context that is itself the provider component —
+React 19's `<MyContext value={…}>` form is the native shape, and
+`MyContext.Provider` is retained as an identity alias for React-18-shaped
+libraries. The render-prop `<MyContext.Consumer>` does not exist and will not
+be added: Octane's slot-keyed hooks make `use(MyContext)`/`useContext` legal
+behind any condition, which is the pattern Consumer existed to work around.
+Read the context in the child (or an inline component) instead.
+
+In development, accessing `.Consumer` logs a one-time migration diagnostic and
+still returns `undefined`, so feature probes (`MyContext.Consumer || fallback`)
+behave exactly as in production. The upstream Consumer test scenarios that
+protect observable behavior (defaults, propagation, bailout, hidden subtrees,
+suspended boundaries) are ported with `useContext`-reading components; the
+scenarios that exist only to exercise the render-prop API surface are recorded
+as non-goals in the parity ledger.
+
+## Document metadata and Float resources
+
+Hoisted `<title>`/`<meta>`/`<link>` follow React 19's model with two
+differences:
+
+- **Ownership is per compile site, not per content.** Each authored element
+  owns one head element; two components (or two renders of one component list
+  item) each rendering `<meta name="description">` produce two tags, where
+  React dedupes links by href and treats `<title>` as a singleton. An
+  element's tag updates reactively and is removed when its owning scope
+  unmounts.
+- **`<title>` accepts any children Octane can stringify** — multiple children
+  and expressions concatenate. React 19 errors on non-string title children.
+
+Metadata and resources hoist from ANY depth, matching React: an element
+nested inside a host partitions out of the body on both the client and the
+server, and a hoist inside an `@if` arm registers only while that arm renders.
+Two more Fizz-parity behaviors on the server: `<meta charSet>` and
+`<meta name="viewport">` serialize at the FRONT of the head (charset first —
+parsers only honor it within the first 1024 bytes — then viewport, then
+everything else in discovery order), and hoistables authored inside a pending
+boundary's fallback are dropped transitively (a completed boundary nested in a
+fallback is still fallback territory; the streamed head would outlive the
+fallback it came from).
+
+React Float **resources** are supported with React's semantics:
+
+- `<link rel="stylesheet" href precedence>` (no `onLoad`/`onError`) is a
+  global resource: deduped by href across the page, hoisted into
+  `document.head` with a `data-precedence` attribute, grouped by precedence in
+  first-encounter order (later same-precedence sheets append to their group),
+  and retained after unmount. First encounter follows tree discovery order —
+  parent before child, suspended arms at reveal — so client mounts, SSR, and
+  React agree on group order. First instance wins; later differing props do
+  not retarget a live sheet.
+- `<script async src>` (no children/handlers) hoists and dedupes by src, and
+  is likewise never removed.
+- `<style href precedence>` is a STYLE RESOURCE: its plain CSS ships by href
+  identity, sharing the stylesheet dedupe namespace and precedence-group
+  ordering with link resources (`data-precedence`/`data-href` mark the tags).
+  The CSS is NOT scoped — every other `<style>` in a component still belongs
+  to Octane's scoped-CSS system. Two adaptations: Octane emits one `<style>`
+  tag per resource rather than merging same-precedence rules into a single tag
+  (grouping and order are preserved), and CSS containing `</style` fails
+  closed in SSR with a development diagnostic (raw-text serialization cannot
+  escape it; the client inserts via `textContent`, which is always safe).
+- `preloadModule`/`preinitModule` join `preload`/`preinit`/`preconnect`/
+  `prefetchDNS`.
+- Classification is static: a spread-carried `precedence`/`async` keeps the
+  ordinary element path, matching the compile-time head-hoist model.
+- React's hoist EXCLUSIONS apply: `itemProp`-bearing `<meta>`/`<link>` stay
+  with their `itemScope` host; metadata/resources that are direct children
+  of `<noscript>` stay in the fallback content (one nesting level today —
+  metadata wrapped in a further host INSIDE `<noscript>` still hoists; a
+  documented bound, not a contract); and nothing hoists from an SVG lexical
+  scope (`foreignObject` children re-enter the HTML rules). One template-model
+  bound: `<meta>` inside `<svg>` on a pure client mount is relocated by the
+  HTML parser's foreign-content breakout rules — it still never becomes
+  document metadata, but it cannot be kept inside the `<svg>` the way React's
+  imperative element construction keeps it. SSR serializes it inline correctly.
+
+Out of scope, deliberately: **suspensey commits** (React's
+suspend-until-the-stylesheet-loads behavior; Octane inserts the sheet and
+continues).
+
+Resource hints share the Float identity model — including React's option
+semantics: font preloads always emit `crossorigin=""` (anonymous) regardless of
+the caller's value; connection/integrity options seeded by a `preload` carry
+onto the matching `preinit`'s real tag (and the server coalesces the redundant
+preload out of the head fold); `preconnect` identity includes the CORS mode;
+responsive image preloads (`imageSrcSet`) omit the fallback `href`; unknown
+option keys are dropped; non-string hrefs warn in development and no-op; and a
+module src is ONE executable identity across `preinitModule` and
+`<script async type="module" src>` on both the server pass and the hydrating
+client. In detail: `preinit(href, {as: 'style'})`
+IS a stylesheet resource (it honors a `precedence` option, default
+`"default"`, joins the precedence groups, and dedupes against
+`<link rel="stylesheet" precedence>`), `preinit(as: 'script')` dedupes against
+`<script async src>`, and a `preload`/`preloadModule` issued after the
+matching init is a no-op (the upgrade is one-way: preload-then-init keeps both
+tags). Image preloads carrying `imageSrcSet` key on the srcset+sizes pair
+rather than the fallback href. Malformed calls (missing/invalid `as`, empty
+href) warn in development and stay no-ops. Options serialize through their
+canonical attributes (`fetchPriority`, `imageSrcSet`, `imageSizes`, `media`,
+`integrity`, …); unknown option keys are dropped, matching React.
+
 ## Reconciler: LIS moves, identical results
 
 The keyed reconciler minimizes DOM moves (LIS) instead of React's
@@ -553,6 +845,19 @@ setPage(next); // If it suspends, show the pending fallback.
 startTransition(() => setPage(next)); // Keep the previous content while pending.
 ```
 
+Already-visible Suspense content stays visible without a timeout during a
+transition, matching React's
+[shell-retention contract](https://github.com/facebook/react/blob/6117d7cca4906492c51fe6a03381e35adfd86e7d/packages/react-reconciler/src/ReactFiberWorkLoop.js#L1356-L1369).
+`isPending` stays true until the transition completes or is superseded. Initial
+boundaries and newly added nested boundaries may show their fallbacks: there is
+no previously visible content for those boundaries to preserve.
+
+`setTransitionFallbackTimeout(ms)` is an Octane extension for applications that
+want a finite deadline. After that deadline, the pending fallback replaces the
+visible primary while `isPending` remains true. `getTransitionFallbackTimeout()`
+returns `Infinity` by default; setting `Infinity` restores the no-timeout policy
+for subsequent holds.
+
 `flushSync` drains both priorities but leaves passive effects asynchronous:
 
 ```tsx
@@ -569,6 +874,32 @@ Other consequences:
   general commit deferral.
 - Fallback-visible boundaries whose retries fully stage reveal together,
   including refs and layout effects.
+- Retry-only Suspense reveals follow React's shared 300ms fallback window.
+  Showing or filling a fallback advances the window, and retries wait if more
+  than 10ms remains. Urgent updates and active `act()` scopes bypass this delay.
+  A committed fallback inside hidden Activity contributes to the window;
+  toggling Activity visibility alone does not.
+  This is separate from the indefinite transition hold above; see
+  [Suspense retry timing](../packages/octane/audit/SUSPENSE_DIVERGENCE.md#5-retry-reveal-throttling--distinct-from-transition-shell-retention).
+- Resource readers can suspend by throwing a thenable during render, on the
+  client and during SSR; `use()` is not required. Pending and error fallback
+  renders can also suspend through an enclosing pending boundary. A catch-only
+  error boundary does not own suspension; promises thrown by effects remain
+  application errors.
+- Without an enclosing Suspense/`@pending` boundary, the client root retains its
+  committed screen, or stays empty on an initial mount, and retries when the
+  thenable settles. Urgent and transition updates retry the latest inputs;
+  superseding requests and unmounts cannot reveal stale work. Initially suspended
+  hydration retains the server DOM until it can adopt it, attach refs, and run
+  layout/passive effects. Actual rejections follow normal
+  error-boundary/root-error routing.
+  See [root suspension coverage](../packages/octane/audit/SUSPENSE_DIVERGENCE.md#10-client-suspension-without-a-boundary--root-hold-and-retry)
+  for the fix to [issue #821](https://github.com/octanejs/octane/issues/821).
+- Incomplete descriptor and memoized subtrees retry before Suspense reveals
+  them, preserving mounted state and DOM identity. Completed siblings whose
+  speculative commit work was discarded are revisited; unaffected memo and
+  identity bailouts remain eligible. See
+  [descriptor retry coverage](../packages/octane/audit/SUSPENSE_DIVERGENCE.md#11-incomplete-descriptor-retry-bailouts).
 - Same-identity synchronous rendering remains per-swap rather than using a
   global React-style work-in-progress tree. See
   [Suspense divergence #4](../packages/octane/audit/SUSPENSE_DIVERGENCE.md).
@@ -577,6 +908,16 @@ Other consequences:
 - `useSyncExternalStore` skips React's commit-time getSnapshot re-read for
   unchanged values (the concurrent-interleaving window it guards doesn't exist
   here).
+- A hidden `<Activity>` subtree renders synchronously in the same pass — there
+  is no offscreen/idle lane deprioritizing hidden work. Compatible state and DOM
+  are preserved; refs and layout/passive effects disconnect while hidden and
+  reconnect on reveal. Insertion effects stay connected. Hidden suspension is
+  contained by the Activity, but general structural-deletion atomicity still has
+  the per-swap limitation above. See the [Activity audit](./activity-audit.md).
+- `useId` generates `:<prefix>in-<n>:` identifiers (React 19.2 uses
+  `_r_<n>_`). Both are opaque; only the format differs.
+- `version` reports Octane's own package version (`0.x`), not a React version —
+  ported code gating on `version >= '19'` must not rely on it.
 
 ## Parallel `use()`: no suspense waterfalls
 
@@ -700,6 +1041,13 @@ const Chart = lazy(() =>
 );
 ```
 
+Creating a lazy wrapper does not call its loader. When an independently
+reachable sibling suspends, Octane may start the lazy module's existing loader
+early so its code loads alongside the pending work. The loader still runs only
+once per wrapper, and its resolved component and default-export getter are not
+evaluated until that component actually renders. Discovery does not cross a
+dormant deferred-hydration boundary.
+
 Nested lazy wrappers are rejected.
 
 React's Suspense and ViewTransition values are exotic element types and React
@@ -720,8 +1068,27 @@ behavior.
 `@catch (error, reset)` and the JSX `<ErrorBoundary>` replace class
 error-boundary lifecycles. Catch fallbacks mount fresh nodes (like React's
 `forceUnmountCurrentAndReconcile`); deletion-phase and ref-detach errors route
-to the enclosing boundary. Uncaught errors surface through `console.error`
-rather than `onUncaughtError`.
+to the enclosing boundary.
+
+React 19's root error-callback options are supported on `createRoot` and
+`hydrateRoot`: `onCaughtError` (a boundary claimed an error from the render,
+passive-effect, or ref-attach channel), `onUncaughtError` (no boundary claimed
+it — providing the callback replaces the default report, which otherwise
+rethrows render errors out of the flush and `console.error`s effect-channel
+errors; the failed root's tree still unmounts), and `onRecoverableError`
+(hydration recovered from a structural mismatch — see the hydration section).
+Each callback receives only the error: there is no `errorInfo`/`componentStack`
+second argument, matching the documented SSR `onError` shape (owner stacks are
+not part of Octane's API). Deletion-phase teardown errors (effect cleanups and
+ref detaches thrown while a subtree unmounts) keep their existing boundary
+routing and report through the same callbacks: boundary-claimed →
+`onCaughtError`, unclaimed → `onUncaughtError` (else the default
+`console.error`).
+
+In non-suspending renders, first-mount and parent-driven catches report the
+original error once after the fallback commits, including its refs and layout
+effects. Inline reports retained by Suspense or Activity wait for reveal, and
+are discarded if their catch is abandoned before that commit.
 
 ## Refs are props
 
@@ -804,9 +1171,20 @@ Suspense like Fizz, with these differences:
   during hydration.
 
 Octane leaves document and transport orchestration to the surrounding server.
-It has no Fizz bootstrap-script/module/import-map, doctype/preamble, `onHeaders`,
-or header-construction options. One `nonce` covers every inline style and script
-Octane emits rather than exposing separate script and style channels.
+It has no Fizz bootstrap-script/module/import-map options, no doctype/preamble
+*options* (streaming a `<html>`-rooted document still emits `<!DOCTYPE html>`
+automatically), and no `onHeaders` or header-construction options. One `nonce`
+covers every inline style and script Octane emits rather than exposing separate
+script and style channels. `progressiveChunkSize` does not exist — Octane
+flushes per resolution wave, not by byte thresholds — and `namespaceURI` is
+inferred from the rendered root rather than accepted as an option.
+
+React 19.2's partial pre-rendering — `resume`, `resumeToPipeableStream`,
+`resumeAndPrerender`, and the postpone/prelude protocol — is a non-goal: that
+request protocol is not part of Octane's public SSR surface. Relatedly,
+`prerender` resolves `{ html, css }` (a complete buffered document), not
+React's `{ prelude: ReadableStream }`; `prerenderToNodeStream` is planned but
+not yet implemented.
 
 A readable stream's `allReady` settles after all boundary bytes have been
 accepted under consumer backpressure, so consumers should read the stream while
@@ -818,6 +1196,18 @@ React digests or React's `errorInfo` shape.
 Attribute mismatches recover to the **client** value; React keeps the server
 value. Octane warns and rebuilds a mismatched subtree in place rather than
 throwing.
+
+`hydrateRoot`'s `onRecoverableError` option fires (dev AND prod) after a
+STRUCTURAL recovery — a rebuilt subtree or a discarded stale server range —
+coalesced to one report per root per microtask burst. Octane recovers per site
+rather than client-rendering a whole boundary, so attribute-level value patches
+do not report: production React does not detect those at all, and reporting
+Octane's extra detection would make the channel incomparable.
+
+`hydrateRoot` has no `formState` option: resuming `useActionState` from an MPA
+form POST requires React's server-action state serialization, which is part of
+the RSC model Octane does not implement (the matching `useActionState`
+`permalink` argument is accepted for signature parity and ignored).
 
 Production structural validation has the same depth as React: it checks an
 adopted root's node type and tag. Tag and text mismatches still recover, but
@@ -876,12 +1266,21 @@ is a known limitation, not a supported edit.
 Octane does not implement:
 
 - class components or legacy `ReactDOM.render` roots;
-- Server Components/RSC;
+- Server Components/RSC, including `cache()`, `cacheSignal()`, and
+  `hydrateRoot`'s `formState` option;
 - `StrictMode` double-invoke;
-- `Profiler`, `SuspenseList`, `forwardRef`, `createRef`, or `cache()`.
+- `Profiler`, `SuspenseList`, `forwardRef`, or `createRef`;
+- `captureOwnerStack` and development owner-stack collection (diagnostics
+  dedupe per rendering block instead);
+- `unstable_batchedUpdates` (renders are microtask-batched by default);
+- partial pre-rendering (`resume`/`resumeAndPrerender` and the
+  postpone/prelude protocol — see SSR and streaming);
+- gesture View Transitions (`useSwipeTransition` /
+  `unstable_startGestureTransition`), deferred until React stabilizes them.
 
 `useDebugValue` is accepted as a no-op. Resource hints are supported
-(`preload`, `preinit`, `preconnect`, and `prefetchDNS`).
+(`preload`, `preinit`, `preloadModule`, `preinitModule`, `preconnect`, and
+`prefetchDNS`).
 
 React 19 custom-element listener semantics are also supported: a
 function-valued lowercase `on*` prop on a custom element attaches a real

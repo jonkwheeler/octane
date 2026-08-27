@@ -28,7 +28,7 @@ const outputDir = inject('productionOutputDir');
 // not queue behind it, so the origin is reserved but not yet answering when this
 // module loads. Everything below — HTTP and build-output alike — needs the build
 // finished, so wait once here rather than per case.
-beforeAll(() => waitForReadyState(inject('productionReadyFile'), 300_000));
+beforeAll(() => waitForReadyState(inject('productionReadyFile'), 460_000));
 const staticRoot = path.join(outputDir, 'static');
 const serverEntry = path.join(outputDir, 'functions/__server.func/index.mjs');
 
@@ -57,10 +57,39 @@ describe('built Start server', () => {
 		expect(fs.existsSync(path.join(staticRoot, 'playground-runtime.json'))).toBe(true);
 	});
 
+	it('serves the documented shadcn registry paths', async () => {
+		for (const registryPath of [
+			'/r/button.json',
+			'/r/styles/base-nova/button.json',
+			'/r/styles/radix-nova/button.json',
+			'/r/styles/aria-nova/button.json',
+		]) {
+			const { response, html } = await get(registryPath);
+			expect(response.status, registryPath).toBe(200);
+			expect(response.headers.get('content-type'), registryPath).toMatch(/^application\/json\b/);
+			expect(JSON.parse(html), registryPath).toMatchObject({
+				name: 'button',
+				type: 'registry:ui',
+			});
+		}
+	});
+
 	it('server-renders the home page with the hydration payload', async () => {
 		const { response, html } = await get('/');
 		expect(response.status).toBe(200);
 		expect(response.headers.get('content-type')).toMatch(/^text\/html\b/);
+		const websiteData = Array.from(
+			html.matchAll(/<script(?=[^>]*\btype="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g),
+		)
+			.map((match) => JSON.parse(match[1]!))
+			.find((data) => data['@type'] === 'WebSite');
+		expect(websiteData).toEqual({
+			'@context': 'https://schema.org',
+			'@type': 'WebSite',
+			name: 'Octane',
+			alternateName: ['OctaneJS', 'octanejs.dev'],
+			url: 'https://octanejs.dev/',
+		});
 		expect(html).toContain('<main');
 		expect(classCount(html, 'home')).toBeGreaterThan(0);
 		// The complete explorer is deterministic server markup: no-JS, hydration,

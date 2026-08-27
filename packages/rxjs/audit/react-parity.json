@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "8ccfe35b9ff943ca065e5afbf4148c1bf04e3e617c8392e1db8a33071bc38724"
+      "lockfileSha256": "2ef7ce16e89bbd2fa352ef68540e49fce29d2a874303aba00201d69ce7f2bb11"
     }
   },
   "lanes": [
@@ -51,12 +51,12 @@
       "environment": "workspace-node",
       "project": "rxjs-differential",
       "evidenceOrigin": "repo-authored",
-      "notes": "One shared fixture compares bind snapshots and later emissions with real @react-rxjs/core. Outside testExecution until provenance is verified so ordinary CI executes the lane.",
+      "notes": "One shared fixture compares bind snapshots and later emissions with real @react-rxjs/core. The required lane is owned by react-parity and its exact file and test identities are checked against the live project.",
       "files": [
         {
           "path": "packages/rxjs/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "96b3aaef47867106259d95fbd325aa5ad4d68a9440717c68150e141251366152",
+          "sha256": "90c18be1422abc0dea251dc734970c4b02cda8b65b0f58196bf4a03f3b841dff",
           "cases": [
             {
               "id": "differential:bound-value",
@@ -78,12 +78,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "71322239cd6340c192e8d1f5fce047b317c489f03fdff2cc885b21c057ec8a5e"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         }
       ]
     }
