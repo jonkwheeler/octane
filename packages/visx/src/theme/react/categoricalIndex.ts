@@ -12,7 +12,7 @@ export default function createCategoricalIndex<Domain extends readonly string[]>
 	const indexes = new Map<string, number>();
 	for (let index = 0; index < domain.length; index++) {
 		const key = domain[index];
-		if (!indexes.has(key)) {
+		if (indexes.get(key) === undefined) {
 			indexes.set(key, index);
 		}
 	}
