@@ -1,4 +1,17 @@
-import { generate, parse, walk, type Atrule, type Declaration, type Rule } from 'css-tree';
+import {
+	generate,
+	List,
+	parse,
+	walk,
+	type Atrule,
+	type CssNode,
+	type Declaration,
+	type Dimension,
+	type FunctionNode,
+	type NumberNode,
+	type Percentage,
+	type Rule,
+} from 'css-tree';
 import { compile } from 'tailwindcss';
 import { collectTailwindBoundaries, type TailwindBoundaryOptions } from './context.ts';
 
@@ -88,11 +101,12 @@ async function compileStyles(
 					const value = declaration as Declaration;
 					if (!value.property.startsWith('--')) {
 						const important = value.important ? ' !important' : '';
-						declarations += `${value.property}:${generate(value.value)}${important};`;
+						const resolvedValue = resolveCssVariables(generate(value.value), customProperties);
+						declarations += `${value.property}:${sanitizeOklchColors(resolvedValue, 'value')}${important};`;
 					}
 				},
 			});
-			if (declarations) inline.set(className, resolveCssVariables(declarations, customProperties));
+			if (declarations) inline.set(className, declarations);
 			list?.remove(item);
 		},
 	});
@@ -100,7 +114,9 @@ async function compileStyles(
 	if (ast.type !== 'StyleSheet') throw new Error('Tailwind generated an invalid stylesheet.');
 	for (const node of ast.children) nonInlineNodes.push(node as Rule | Atrule);
 	const nonInline =
-		nonInlineNodes.length > 0 ? resolveCssVariables(generate(ast), customProperties) : '';
+		nonInlineNodes.length > 0
+			? sanitizeOklchColors(resolveCssVariables(generate(ast), customProperties), 'stylesheet')
+			: '';
 	return { inline, nonInline };
 }
 
@@ -123,6 +139,11 @@ function inlineFragment(html: string, styles: ReadonlyMap<string, string>): stri
 			if (!generated) return tag;
 			const existing = /\bstyle=["']([^"']*)["']/.exec(`${before}${after}`);
 			if (existing) return tag.replace(existing[0], `style="${generated}${existing[1]}"`);
+			const selfClosing = /(\s*\/\s*)$/.exec(after);
+			if (selfClosing) {
+				const attributes = after.slice(0, selfClosing.index);
+				return `<${before}class="${names}"${attributes} style="${generated}"${selfClosing[1]}>`;
+			}
 			return `<${before}class="${names}"${after} style="${generated}">`;
 		},
 	);
@@ -152,4 +173,103 @@ function resolveCssVariables(value: string, variables: ReadonlyMap<string, strin
 		);
 	}
 	return resolved;
+}
+
+const OKLAB_TO_LMS = {
+	l: [0.3963377773761749, 0.2158037573099136],
+	m: [-0.1055613458156586, -0.0638541728258133],
+	s: [-0.0894841775298119, -1.2914855480194092],
+} as const;
+
+const LMS_TO_RGB = {
+	r: [4.076741636075958, -3.307711539258063, 0.2309699031821043],
+	g: [-1.2684379732850315, 2.609757349287688, -0.341319376002657],
+	b: [-0.0041960761386756, -0.7034186179359362, 1.7076146940746117],
+} as const;
+
+function sanitizeOklchColors(value: string, context: 'stylesheet' | 'value'): string {
+	if (!/oklch\(/i.test(value)) return value;
+	const ast = parse(value, { context });
+	walk(ast, {
+		visit: 'Function',
+		enter(node, item) {
+			const color = node as FunctionNode;
+			if (color.name.toLowerCase() !== 'oklch') return;
+			item.data = oklchToRgbNode(color);
+		},
+	});
+	return generate(ast);
+}
+
+function oklchToRgbNode(color: FunctionNode): FunctionNode {
+	let lightness: number | undefined;
+	let chroma: number | undefined;
+	let hue: number | undefined;
+	let alpha: number | undefined;
+
+	for (const child of color.children) {
+		if (child.type === 'Number') {
+			const value = Number.parseFloat((child as NumberNode).value);
+			if (lightness === undefined) lightness = value;
+			else if (chroma === undefined) chroma = value;
+			else if (hue === undefined) hue = value;
+			else if (alpha === undefined) alpha = value;
+		} else if (child.type === 'Dimension') {
+			const value = child as Dimension;
+			if (hue === undefined && value.unit.toLowerCase() === 'deg') {
+				hue = Number.parseFloat(value.value);
+			}
+		} else if (child.type === 'Percentage') {
+			const value = Number.parseFloat((child as Percentage).value) / 100;
+			if (lightness === undefined) lightness = value;
+			else if (alpha === undefined) alpha = value;
+		}
+	}
+
+	if (lightness === undefined || chroma === undefined || hue === undefined) {
+		throw new Error(`Could not convert unsupported color ${generate(color)} to rgb().`);
+	}
+
+	const hueRadians = (hue / 180) * Math.PI;
+	const a = chroma * Math.cos(hueRadians);
+	const b = chroma * Math.sin(hueRadians);
+	const l = (lightness + OKLAB_TO_LMS.l[0] * a + OKLAB_TO_LMS.l[1] * b) ** 3;
+	const m = (lightness + OKLAB_TO_LMS.m[0] * a + OKLAB_TO_LMS.m[1] * b) ** 3;
+	const s = (lightness + OKLAB_TO_LMS.s[0] * a + OKLAB_TO_LMS.s[1] * b) ** 3;
+	const red = clampRgb(
+		255 * linearRgbToRgb(LMS_TO_RGB.r[0] * l + LMS_TO_RGB.r[1] * m + LMS_TO_RGB.r[2] * s),
+	);
+	const green = clampRgb(
+		255 * linearRgbToRgb(LMS_TO_RGB.g[0] * l + LMS_TO_RGB.g[1] * m + LMS_TO_RGB.g[2] * s),
+	);
+	const blue = clampRgb(
+		255 * linearRgbToRgb(LMS_TO_RGB.b[0] * l + LMS_TO_RGB.b[1] * m + LMS_TO_RGB.b[2] * s),
+	);
+	const children: CssNode[] = [
+		rgbNumber(red),
+		rgbComma(),
+		rgbNumber(green),
+		rgbComma(),
+		rgbNumber(blue),
+	];
+	if (alpha !== undefined && alpha !== 1) children.push(rgbComma(), rgbNumber(alpha, false));
+	return { type: 'Function', name: 'rgb', children: new List<CssNode>().fromArray(children) };
+}
+
+function linearRgbToRgb(value: number): number {
+	const absolute = Math.abs(value);
+	const sign = value < 0 ? -1 : 1;
+	return absolute > 0.0031308 ? sign * (absolute ** (1 / 2.4) * 1.055 - 0.055) : value * 12.92;
+}
+
+function clampRgb(value: number): number {
+	return Math.min(Math.max(value, 0), 255);
+}
+
+function rgbNumber(value: number, round = true): NumberNode {
+	return { type: 'Number', value: round ? value.toFixed(0) : value.toString() };
+}
+
+function rgbComma(): CssNode {
+	return { type: 'Operator', value: ',' };
 }

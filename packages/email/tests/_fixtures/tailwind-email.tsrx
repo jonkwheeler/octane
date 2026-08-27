@@ -6,6 +6,7 @@ export function TailwindEmail() @{
 		<Tailwind config={{ presets: [pixelBasedPreset] }}>
 			<Head />
 			<Body>
+				<img className="p-2" alt="Spacer" src="spacer.png" />
 				<Text
 					className="bg-blue-500 p-4 !p-8 text-sm hover:text-red-500 md:text-lg"
 					style={{ color: 'rebeccapurple', paddingTop: '99px' }}

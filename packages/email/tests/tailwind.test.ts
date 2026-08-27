@@ -23,6 +23,19 @@ describe('Tailwind email styling', () => {
 		expect(html).toMatch(/<style[^>]*>[\s\S]*@media[\s\S]*hover\\:text-red-500/);
 	});
 
+	it('converts modern Tailwind colors to email-safe rgb values', async () => {
+		const html = await render(TailwindEmail);
+		expect(html).toMatch(/style="[^"]*background-color:rgb\(43,127,255\)/);
+		expect(html).toMatch(/<style[^>]*>[\s\S]*color:rgb\(251,44,54\)/);
+		expect(html).not.toContain('oklch(');
+	});
+
+	it('keeps Tailwind styles inside self-closing void elements', async () => {
+		const html = await render(TailwindEmail);
+		expect(html).toMatch(/<img\b[^>]*\bstyle="padding:8px;"\/>/);
+		expect(html).not.toContain('/ style=');
+	});
+
 	it('isolates multiple Tailwind boundaries in one async render', async () => {
 		const html = await render(TwoTailwindBoundaries);
 		expect(html).toContain('padding:8px');

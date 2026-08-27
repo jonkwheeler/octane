@@ -1582,7 +1582,10 @@ export default defineConfig({
 				},
 			},
 			{
-				testExecution: { group: 'react-parity' },
+				testExecution: {
+					group: 'react-parity',
+					include: ['packages/email/tests/differential/parity.test.ts'],
+				},
 				test: {
 					name: 'email-differential',
 					include: ['packages/email/tests/differential/**/*.test.ts'],

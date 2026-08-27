@@ -79,7 +79,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -134,7 +134,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -189,7 +189,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -244,7 +244,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -304,7 +304,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -359,7 +359,7 @@
         {
           "path": "vitest.config.js",
           "role": "support",
-          "sha256": "3b93c3bbdac73254def825ec46c6f6c4def99332000f34a51fd639557f49d80b"
+          "sha256": "75fcdc6a720210b41bb598db6a0bb5c975a1580cf8e398bf4198ac15a842987e"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
