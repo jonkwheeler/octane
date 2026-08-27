@@ -28081,7 +28081,7 @@ function collectDisqualifyingComponentUses(moduleBody) {
 
 // One short-lived analysis record belongs to one module pass. Its expensive
 // facts initialize only after a candidate reaches the gate that needs them.
-export function createJsxReturnBranchModuleAnalysis() {
+function createJsxReturnBranchModuleAnalysis() {
 	return { moduleBindings: null, disqualifyingComponentUses: null };
 }
 
@@ -28155,8 +28155,14 @@ function lowerJsxReturnBranchesOf(node, moduleBody, moduleAnalysis = null) {
 }
 
 /** Bundler mirror of the compile-time lowering decision (no transform). */
-export function hasLowerableJsxReturnBranches(node, moduleBody, moduleAnalysis = null) {
-	return lowerJsxReturnBranchesOf(node, moduleBody, moduleAnalysis) !== null;
+export function hasLowerableJsxReturnBranches(node, moduleBody) {
+	return lowerJsxReturnBranchesOf(node, moduleBody) !== null;
+}
+
+/** Bundler classifier that shares one lazy analysis across a module. */
+export function createJsxReturnBranchClassifier(moduleBody) {
+	const moduleAnalysis = createJsxReturnBranchModuleAnalysis();
+	return (node) => lowerJsxReturnBranchesOf(node, moduleBody, moduleAnalysis) !== null;
 }
 
 function lowerJsxReturnBranchComponents(ast) {
