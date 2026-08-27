@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4e028f8a6a1875c2eff1c7846c3a993171973ebf6bd2b997d3098d33a31f26b8"
+      "lockfileSha256": "acd4f5756c7b4b87a2a3419e599d49ce3773830ed800bae173c7a462081f4a01"
     }
   },
   "lanes": [
@@ -150,7 +150,7 @@
         {
           "path": "scripts/react-parity/intersection-observer-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "405e1507c5b693e7c18bc647c0530520d00a07d2e0d54ea2416dd38db6b9116c"
+          "sha256": "23693a2796f25953de5b805812ec503551d4bbf1fecce645a0aa9c3b809ca465"
         },
         {
           "path": "scripts/react-parity/intersection-observer-upstream-lib.mjs",
@@ -245,7 +245,7 @@
         {
           "path": "scripts/react-parity/intersection-observer-runtime-inventory.mjs",
           "role": "support",
-          "sha256": "405e1507c5b693e7c18bc647c0530520d00a07d2e0d54ea2416dd38db6b9116c"
+          "sha256": "23693a2796f25953de5b805812ec503551d4bbf1fecce645a0aa9c3b809ca465"
         },
         {
           "path": "packages/intersection-observer/audit/upstream.lock.json",

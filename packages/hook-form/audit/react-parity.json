@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4e028f8a6a1875c2eff1c7846c3a993171973ebf6bd2b997d3098d33a31f26b8"
+      "lockfileSha256": "acd4f5756c7b4b87a2a3419e599d49ce3773830ed800bae173c7a462081f4a01"
     }
   },
   "lanes": [
@@ -97,7 +97,7 @@
         {
           "path": "scripts/react-parity/hook-form-upstream-lib.mjs",
           "role": "support",
-          "sha256": "037d1cd3bfe6e91a1ed479c977e525a484d308d68109181705b71e658fd9a77d"
+          "sha256": "2db8c3a241c70135c362fa16405621e9a9fc4fafba3c1b20be78f8f2e44fc5c5"
         },
         {
           "path": "packages/hook-form/audit/upstream-patches/tests/upstream/__snapshots__/useFieldArray.test.tsx.snap.patch",
