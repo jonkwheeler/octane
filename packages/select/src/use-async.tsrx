@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'octane';
+import { useCallback, useEffect, useLinkedState, useRef, useState } from 'octane';
 
 import type { GroupBase, InputActionMeta, OptionsOrGroups } from './types';
 import type { StateManagerProps } from './use-state-manager.tsrx';
@@ -44,9 +44,13 @@ export function useAsync<
 	const { inputValue: propsInputValue } = restSelectProps;
 	const lastRequest = useRef<unknown>(undefined);
 	const mounted = useRef(false);
-	const [defaultOptions, setDefaultOptions] = useState<
-		OptionsOrGroups<Option, Group> | boolean | undefined
-	>(Array.isArray(propsDefaultOptions) ? propsDefaultOptions : undefined);
+	const [defaultOptions, setDefaultOptions] = useLinkedState<
+		OptionsOrGroups<Option, Group> | boolean,
+		OptionsOrGroups<Option, Group> | undefined
+	>(
+		propsDefaultOptions,
+		(nextDefaultOptions) => Array.isArray(nextDefaultOptions) ? nextDefaultOptions : undefined,
+	);
 	const [stateInputValue, setStateInputValue] = useState(
 		typeof propsInputValue !== 'undefined' ? propsInputValue as string : '',
 	);
@@ -54,22 +58,13 @@ export function useAsync<
 	const [loadedInputValue, setLoadedInputValue] = useState<string | undefined>(undefined);
 	const [loadedOptions, setLoadedOptions] = useState<OptionsOrGroups<Option, Group>>([]);
 	const [passEmptyOptions, setPassEmptyOptions] = useState(false);
-	const [optionsCache, setOptionsCache] = useState<
+	const [optionsCache, setOptionsCache] = useLinkedState<
+		unknown,
 		Record<string, OptionsOrGroups<Option, Group>>
-	>({});
-	const [prevDefaultOptions, setPrevDefaultOptions] = useState<
-		OptionsOrGroups<Option, Group> | boolean | undefined
-	>(undefined);
-	const [prevCacheOptions, setPrevCacheOptions] = useState<unknown>(undefined);
-
-	if (cacheOptions !== prevCacheOptions) {
-		setOptionsCache({});
-		setPrevCacheOptions(cacheOptions);
-	}
-	if (propsDefaultOptions !== prevDefaultOptions) {
-		setDefaultOptions(Array.isArray(propsDefaultOptions) ? propsDefaultOptions : undefined);
-		setPrevDefaultOptions(propsDefaultOptions);
-	}
+	>(cacheOptions, () => ({}), {
+		// Preserve upstream's strict-equality cache-token comparison.
+		sourceEqual: (previous, next) => previous === next,
+	});
 
 	useEffect(() => {
 		mounted.current = true;
