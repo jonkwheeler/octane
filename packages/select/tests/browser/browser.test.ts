@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createServer, type ViteDevServer } from 'vite';
 import { octane } from 'octane/compiler/vite';
 
-const browserRoot = resolve(dirname(fileURLToPath(import.meta.url)), 'browser');
+const browserRoot = dirname(fileURLToPath(import.meta.url));
 
 function getFreePort(): Promise<number> {
 	return new Promise((resolvePort, reject) => {

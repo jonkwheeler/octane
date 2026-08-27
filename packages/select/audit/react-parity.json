@@ -133,7 +133,7 @@
         {
           "path": "packages/select/audit/test-classifications.json",
           "role": "support",
-          "sha256": "5eed22aafa865cc32b41d81c0978497d8891835c05e7bf8e7114905aabd2ef8f"
+          "sha256": "b8ffa919db2d0735b96c2bca2e4885b9a09cb4ee3efa4ba762fd4d2e41d3ad79"
         },
         {
           "path": "scripts/react-parity/react-select-runtime-inventory.mjs",

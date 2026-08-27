@@ -5890,9 +5890,8 @@ export default defineConfig({
 				},
 			},
 			{
-				// Octane-only SSR/browser/verifier/crosswalk coverage stays in the
-				// ordinary shards. Adapted upstream and React-oracle differential
-				// suites belong to dedicated react-parity projects.
+				// Octane-only SSR/verifier/crosswalk coverage stays in the ordinary
+				// shards. Browser and React-parity suites use their dedicated lanes.
 				testExecution: {
 					group: 'react-parity',
 					include: ['packages/select/tests/upstream/**/*.test.ts'],
@@ -5902,6 +5901,7 @@ export default defineConfig({
 					include: [
 						'packages/select/tests/**/*.test.ts',
 						'packages/select/tests/**/*.test.mjs',
+						'!packages/select/tests/browser/**/*.test.ts',
 						'!packages/select/tests/async.test.ts',
 						'!packages/select/tests/creatable.test.ts',
 						'!packages/select/tests/default-styles.test.ts',
@@ -5933,6 +5933,18 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/transition-group/src/index.ts'),
 						},
 					],
+				},
+			},
+			{
+				testExecution: { group: 'heavy-browser' },
+				test: {
+					name: 'select-browser',
+					include: ['packages/select/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					fileParallelism: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
 				},
 			},
 			{
