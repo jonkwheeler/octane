@@ -14,6 +14,7 @@ import { renderToString as reactRenderToString, renderToPipeableStream } from 'r
 import { PassThrough } from 'node:stream';
 import { join } from 'node:path';
 import { OctaneCompat } from 'octane/react';
+import { act as octaneAct } from 'octane';
 import { OctaneCompat as OctaneCompatServer } from 'octane/react/server';
 import { loadServerFixture } from '../_server-fixture.js';
 import { createLog } from '../_helpers.js';
@@ -256,9 +257,11 @@ describe('octane/react/server — buffered SSR + client hydration (§9.3)', () =
 		const mounted = await hydratePage(serverPage, clientPage);
 		expect(mounted.serverHtml).toContain('local pending');
 
-		await reactAct(async () => {
-			clientResource.resolve('client-data');
-			await clientResource.promise;
+		await octaneAct(async () => {
+			await reactAct(async () => {
+				clientResource.resolve('client-data');
+				await clientResource.promise;
+			});
 		});
 		expect(mounted.host().querySelector('.ssr-inner')?.textContent).toBe('value:client-data');
 		await mounted.unmount();
@@ -522,15 +525,19 @@ describe('octane/react/server — buffered SSR + client hydration (§9.3)', () =
 		expect(html).toContain('rgb(1, 2, 3)');
 	});
 
-	it('rejects hoisted head content from islands (§9.2 v1) — at server COMPILE time', () => {
-		// The server compiler already refuses body-hoisted <title>/<meta>/<link>,
-		// so the case cannot reach the hosted renderer; the runtime head guard in
-		// octane/react/server stays as defense in depth.
+	it('rejects hoisted head content from islands (§9.2 v1) — at hosted-render time', () => {
+		// Head hoisting (from any depth) is a supported server feature now, so the
+		// compiler accepts the fixture; the §9.2 v1 policy is enforced by
+		// octane/react/server's runtime guard when an island's head channel is
+		// non-empty during React SSR.
+		const hoister = loadServerFixture(
+			join(process.cwd(), 'packages/octane/tests/react-hosted/_fixtures/ssr-head-hoister.tsrx'),
+		) as Record<string, any>;
 		expect(() =>
-			loadServerFixture(
-				join(process.cwd(), 'packages/octane/tests/react-hosted/_fixtures/ssr-head-hoister.tsrx'),
+			reactRenderToString(
+				h('main', null, h(OctaneCompatServer, null, h(hoister.SsrHeadHoister, null))) as any,
 			),
-		).toThrow(/does not support node type HeadHoist/);
+		).toThrow(/cannot hoist <title>\/<meta>\/<link>/);
 	});
 });
 

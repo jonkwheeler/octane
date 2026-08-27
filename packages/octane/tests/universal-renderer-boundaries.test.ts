@@ -1,5 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createRoot, flushSync, type ComponentBody } from '../src/index.js';
+import {
+	act,
+	createElement,
+	createRoot,
+	flushSync,
+	useContext as useDomContext,
+	type ComponentBody,
+} from '../src/index.js';
+import { createContext as createNativeContext } from '../src/universal-native.js';
+import * as UniversalRuntime from '../src/universal.js';
 import {
 	createObjectContainer,
 	createObjectDriver,
@@ -154,6 +163,64 @@ async function flushBridgeWork(): Promise<void> {
 }
 
 describe('compiler-owned renderer child regions', () => {
+	it('renders renderer-local context providers through DOM owners without replacing their children', () => {
+		const Theme = createNativeContext('default');
+		const Reader = () =>
+			createElement('span', { className: 'renderer-local-theme' }, useDomContext(Theme as any));
+		const Provider = ({ theme }: { theme: string }) =>
+			createElement(Theme.Provider as any, { value: theme }, createElement(Reader, null));
+		const mounted = mount(Provider as unknown as ComponentBody<{ theme: string }>, {
+			theme: 'dark',
+		});
+
+		try {
+			const label = mounted.find('.renderer-local-theme');
+			expect(label.textContent).toBe('dark');
+			mounted.update(Provider as unknown as ComponentBody<{ theme: string }>, {
+				theme: 'light',
+			});
+			expect(mounted.find('.renderer-local-theme')).toBe(label);
+			expect(label.textContent).toBe('light');
+		} finally {
+			mounted.unmount();
+		}
+	});
+
+	it('settles DOM-owned universal work using the active host scheduler automatically', () => {
+		const bridged = objectRoot();
+		const plan = universalPlan('object', {
+			kind: 'host',
+			type: 'bridged',
+			bindings: [['version', 0]],
+		});
+		let setDomVersion!: (value: number) => void;
+		const BridgedScene = defineUniversalComponent('object', (props: { version: number }) =>
+			universalValue(plan, [props.version]),
+		);
+		const mounted = mount(UniversalSchedulerBridgeApp, {
+			root: bridged.root,
+			component: BridgedScene,
+			captureUpdate(update: (value: number) => void) {
+				setDomVersion = update;
+			},
+			onUniversalLayout() {},
+		});
+
+		try {
+			const hostRuntime = UniversalRuntime as typeof UniversalRuntime & {
+				getUniversalHostFlusher?: () => typeof flushSync | undefined;
+			};
+			const result = flushUniversalSync(() => {
+				setDomVersion(1);
+				return 'settled';
+			}, hostRuntime.getUniversalHostFlusher?.());
+			expect(result).toBe('settled');
+			expect(bridged.container.children[0].props.version).toBe(1);
+		} finally {
+			mounted.unmount();
+		}
+	});
+
 	it('settles direct and DOM-owned universal cascades in one host scheduler boundary', () => {
 		const direct = objectRoot();
 		const bridged = objectRoot();
@@ -351,9 +418,10 @@ describe('compiler-owned renderer child regions', () => {
 		expect(mounted.find('.projected-pending').textContent).toBe('pending');
 		expect(bridged.container.children[0].props).toMatchObject({ value: 'first', count: 0 });
 
-		second.resolve('second');
-		await flushBridgeWork();
-		flushSync(() => {});
+		await act(async () => {
+			second.resolve('second');
+			await flushBridgeWork();
+		});
 		expect(mounted.container.querySelector('.projected-pending')).toBeNull();
 		expect(bridged.container.children[0].props).toMatchObject({ value: 'second', count: 1 });
 
@@ -424,6 +492,48 @@ describe('compiler-owned renderer child regions', () => {
 		expect(container.children).toEqual([]);
 	});
 
+	it.each(['commit', 'unmount'] as const)(
+		'keeps a projected retry private until its delayed %s',
+		async (outcome) => {
+			vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
+			const { container, root } = objectRoot();
+			const resource = deferred<string>();
+			let mounted: ReturnType<typeof mount> | undefined;
+			try {
+				mounted = mount(ProjectedBoundaryApp, { root, resource: resource.promise });
+				await vi.advanceTimersByTimeAsync(100);
+				resource.resolve('staged scene');
+				await resource.promise;
+				await flushBridgeWork();
+				expect(mounted.find('.projected-pending').textContent).toBe('pending');
+				expect(container.children).toEqual([]);
+
+				if (outcome === 'unmount') {
+					mounted.unmount();
+					mounted = undefined;
+					await vi.advanceTimersByTimeAsync(200);
+					expect(container.children).toEqual([]);
+					// A discarded first attempt must release its bridge without
+					// consuming the still-uncommitted universal root's lifetime.
+					mounted = mount(ProjectedBoundaryApp, { root, resource: fulfilled('new owner') });
+					expect(container.children).toHaveLength(1);
+					expect(container.children[0].props.value).toBe('new owner');
+				} else {
+					await vi.advanceTimersByTimeAsync(199);
+					expect(mounted.find('.projected-pending').textContent).toBe('pending');
+					expect(container.children).toEqual([]);
+					await vi.advanceTimersByTimeAsync(1);
+					expect(mounted.container.querySelector('.projected-pending')).toBeNull();
+					expect(container.children).toHaveLength(1);
+					expect(container.children[0].props.value).toBe('staged scene');
+				}
+			} finally {
+				mounted?.unmount();
+				vi.useRealTimers();
+			}
+		},
+	);
+
 	it('keeps the DOM fallback visible across sequential projected suspensions', async () => {
 		const { container, root } = objectRoot();
 		let resolveFirst!: (value: string) => void;
@@ -440,16 +550,20 @@ describe('compiler-owned renderer child regions', () => {
 		expect(mounted.find('.projected-pending').textContent).toBe('pending');
 		expect(container.children).toEqual([]);
 
-		resolveFirst('asset-key');
-		await first;
-		await flushBridgeWork();
+		await act(async () => {
+			resolveFirst('asset-key');
+			await first;
+			await flushBridgeWork();
+		});
 		expect(secondFor).toHaveBeenCalledWith('asset-key');
 		expect(mounted.find('.projected-pending').textContent).toBe('pending');
 		expect(container.children).toEqual([]);
 
-		resolveSecond('sequential asset ready');
-		await second;
-		await flushBridgeWork();
+		await act(async () => {
+			resolveSecond('sequential asset ready');
+			await second;
+			await flushBridgeWork();
+		});
 		expect(mounted.container.querySelector('.projected-pending')).toBeNull();
 		expect(container.children).toHaveLength(1);
 		expect(container.children[0].props.value).toBe('sequential asset ready');
@@ -474,9 +588,11 @@ describe('compiler-owned renderer child regions', () => {
 		expect(container.children).toEqual([]);
 		await flushBridgeWork();
 
-		resolve('sibling ready');
-		await resource;
-		await flushBridgeWork();
+		await act(async () => {
+			resolve('sibling ready');
+			await resource;
+			await flushBridgeWork();
+		});
 		expect(mounted.container.querySelector('.projected-pending')).toBeNull();
 		expect(mounted.find('.projected-sibling').textContent).toBe('sibling ready');
 		expect(container.children).toHaveLength(1);

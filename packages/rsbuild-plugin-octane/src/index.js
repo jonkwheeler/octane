@@ -67,6 +67,7 @@ const MODULE_BROWSER_TARGETS = [
 	'firefox >= 78',
 	'ios_saf >= 14',
 	'safari >= 14',
+	'samsung >= 14',
 ];
 
 /** @param {string} target */
@@ -79,12 +80,11 @@ function esTargetRank(target) {
 
 /** @param {string} target */
 function toBrowserslistTarget(target) {
-	const match = /^(android|chrome|edge|firefox|ie|ios|opera|safari|node)(\d+(?:\.\d+)*)$/.exec(
-		target,
-	);
+	const match =
+		/^(android|chrome|edge|firefox|ie|ios|opera|safari|samsung|node)(\d+(?:\.\d+)*)$/.exec(target);
 	if (!match) {
 		throw new Error(
-			`[@octanejs/rsbuild-plugin] Unsupported build.target ${JSON.stringify(target)}. Use an ES target, "modules", or an esbuild-style browser target such as "chrome100".`,
+			`[@octanejs/rsbuild-plugin] Unsupported build.target ${JSON.stringify(target)}. Use an ES target, "modules", or a browser target such as "chrome100" or "samsung24".`,
 		);
 	}
 	const browser = match[1] === 'ios' ? 'ios_saf' : match[1];
@@ -233,6 +233,8 @@ function assertRootPublicPaths(config, clientEnvironment) {
  *
  * @param {{
  *   hmr?: boolean,
+ *   parallel?: boolean | { maxWorkers?: number },
+ *   cssModuleConstants?: import('@octanejs/rspack-plugin').OctaneRspackPluginOptions['cssModuleConstants'],
  *   profile?: boolean,
  *   strong?: boolean,
  *   exclude?: string[],
@@ -546,6 +548,10 @@ export function pluginOctane(inlineOptions = {}) {
 						root,
 						environment,
 						transpile: false,
+						...(inlineOptions.parallel === undefined ? null : { parallel: inlineOptions.parallel }),
+						...(inlineOptions.cssModuleConstants === undefined
+							? null
+							: { cssModuleConstants: inlineOptions.cssModuleConstants }),
 						...(strong === undefined ? null : { strong }),
 						...(inlineOptions.hmr === undefined ? null : { hmr: inlineOptions.hmr }),
 						...(inlineOptions.profile === undefined

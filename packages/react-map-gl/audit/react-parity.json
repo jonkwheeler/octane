@@ -8,7 +8,7 @@
     "sourceRoot": "modules/react-mapbox/src",
     "testRoot": "modules/react-mapbox/test",
     "license": "MIT",
-    "integrity": "sha256:3a2b9b8de9120db2e7f595e4c7e0c0d74ff76a9a41864464207f4e45f632bf8a",
+    "integrity": "sha256:ddc546dd19395818001f51431a8fc33a91915c13dbe2dc66b4299b4816feaf7a",
     "verification": "verified"
   },
   "upstreamSuites": {
@@ -43,7 +43,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4a48d3ad294b893861a3605432322a5d7cb3ae9f852be1384764efe1f253a0ca"
+      "lockfileSha256": "08b918be6cb7b4108945e17469ad9f488890649a26d63ef7ac42374a61eeb5fc"
     }
   },
   "lanes": [
@@ -103,6 +103,11 @@
           ]
         },
         {
+          "path": "packages/react-map-gl/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "587fe6f21f40cc74760669fb34d744f316c2857f115a315dcedd2ad34481181d"
+        },
+        {
           "path": "packages/react-map-gl/upstream/test/utils/apply-react-style.spec.js",
           "role": "support",
           "sha256": "77d8089345bf68c21f8969996f38d793b8bde0277011f07102bc0a4dc572348c"
@@ -131,11 +136,6 @@
           "path": "packages/react-map-gl/tests/_harness/tape-adapter.ts",
           "role": "support",
           "sha256": "05d5c503ae4aa05b0bee8de5795c256b8eae4b5bd0097f1ed427c73067e4ff39"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
         }
       ]
     },
@@ -195,6 +195,11 @@
           ]
         },
         {
+          "path": "packages/react-map-gl/audit/upstream.lock.json",
+          "role": "support",
+          "sha256": "587fe6f21f40cc74760669fb34d744f316c2857f115a315dcedd2ad34481181d"
+        },
+        {
           "path": "packages/react-map-gl/upstream/test/utils/apply-react-style.spec.js",
           "role": "support",
           "sha256": "77d8089345bf68c21f8969996f38d793b8bde0277011f07102bc0a4dc572348c"
@@ -223,11 +228,6 @@
           "path": "packages/react-map-gl/tests/_harness/tape-adapter.ts",
           "role": "support",
           "sha256": "05d5c503ae4aa05b0bee8de5795c256b8eae4b5bd0097f1ed427c73067e4ff39"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
         }
       ]
     },
@@ -425,11 +425,6 @@
           "path": "packages/react-map-gl/tests/_fixtures/upstream-apps.tsrx",
           "role": "support",
           "sha256": "0370152e58bb2e0de81a639cbaf337b03a9fd8ab8e451c75e9ccae521484a9fc"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
         }
       ]
     },
@@ -527,7 +522,7 @@
         {
           "path": "packages/react-map-gl/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "2a60bf2dca6c3a5a49b592a073461cc72fd4bf53e0647ae4040166d9f04136a5",
+          "sha256": "2b23b967ca83fa2bc314bf973730e7e65913c1491550b9bb93b056432609f0a4",
           "cases": [
             {
               "id": "differential:1",
@@ -600,11 +595,6 @@
           "path": "packages/react-map-gl/tests/_mocks/mapbox-gl.ts",
           "role": "support",
           "sha256": "ba922849c42f4756360689ba772e6d9c484971e61c00ef65d4a3bd0f188dc509"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
         }
       ]
     }

@@ -14,13 +14,22 @@ import { describe, it } from 'vitest';
 import { resolve } from 'node:path';
 import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical';
 import { $createListItemNode, $createListNode } from '@lexical/list';
-import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import {
+	mountDifferential,
+	preloadDifferentialFixture,
+} from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/basic-editor.tsrx');
 const LIST_FIXTURE = resolve(__dirname, '../_fixtures/list-editor.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
 
+await Promise.all([
+	preloadDifferentialFixture(FIXTURE, CACHE),
+	preloadDifferentialFixture(LIST_FIXTURE, CACHE),
+]);
+
 describe('differential: @octanejs/lexical vs real @lexical/react', () => {
+	// @parity-case differential:lexical-rich-text
 	it('a rich-text editor renders byte-identical DOM on mount and after an edit', async () => {
 		const editors: any[] = [];
 		const d = await mountDifferential(
@@ -50,6 +59,7 @@ describe('differential: @octanejs/lexical vs real @lexical/react', () => {
 		d.unmount();
 	});
 
+	// @parity-case differential:lexical-list
 	it('a bullet list renders byte-identical via ListPlugin', async () => {
 		const editors: any[] = [];
 		const d = await mountDifferential(

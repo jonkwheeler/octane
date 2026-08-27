@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "4a48d3ad294b893861a3605432322a5d7cb3ae9f852be1384764efe1f253a0ca"
+      "lockfileSha256": "08b918be6cb7b4108945e17469ad9f488890649a26d63ef7ac42374a61eeb5fc"
     }
   },
   "lanes": [
@@ -138,7 +138,7 @@
         {
           "path": "packages/gsap/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "1fd860d6c2f08631e3059bceb7920dcfafa24d8bb9efe81a9b76dad91d35aed1",
+          "sha256": "5a7a77cbc9465317e596798068d4dadcfaaeccc611e6d29d235470a8ab1c4ca8",
           "cases": [
             {
               "id": "differential:revert-on-update",
@@ -175,12 +175,7 @@
         {
           "path": "packages/octane/tests/differential/_rig.ts",
           "role": "support",
-          "sha256": "7a2814f3a7c262033c70e8e82919a7eedd51ab2ebad7b9aaf1ee35559a0cf40b"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "86dd4e5dfcc67e1495f6da4e84a0f209fc9ab42947c5133c33a2a178e35a58fa"
+          "sha256": "364c0595b08b26343fa3cd9ff7ddbdaa5fd227cfcd390437aa67ae9a173ebe1b"
         }
       ]
     }

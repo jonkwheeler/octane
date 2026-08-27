@@ -1,11 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { compile } from 'octane/compiler';
-import * as ClientRT from '../../src/index.js';
 import { hydrateRoot, flushSync } from '../../src/index.js';
 import * as ServerRT from 'octane/server';
-import { hydrationMarkerSummary } from './_marker-summary.js';
+import { loadCompiledFixtureSource, loadServerFixture } from '../_server-fixture';
 
 // P3 — STRUCTURAL hydration mismatch: the server DOM's SHAPE differs from what the client
 // renders (a swapped @if/@switch branch, a changed tag, a different @for list length). The
@@ -25,39 +23,22 @@ const NESTEDSWAP = join(
 const TERNARY = join(process.cwd(), 'packages/octane/tests/_fixtures/ternary-mixed-arms.tsrx');
 
 function serverModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'server' });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane\/server['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ServerRT, {});
+	return loadServerFixture(fixture, { id: file });
 }
 
 function devClientModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'client', dev: true });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ClientRT, {});
+	return loadCompiledFixtureSource(readFileSync(fixture, 'utf8'), {
+		id: file,
+		mode: 'client',
+		compileOptions: { dev: true },
+	});
 }
 
 // PROD-compiled client module (dev: false → no `loc` argument to clone(), no
 // `__oct_loc` stamps): the structural detection + rebuild must still run — only
 // the warning is dev-gated.
 function prodClientModule(fixture: string, file: string): Record<string, any> {
-	let { code } = compile(readFileSync(fixture, 'utf8'), file, { mode: 'client' });
-	code = code.replace(
-		/import\s*\{([^}]*)\}\s*from\s*['"]octane['"];?/g,
-		(_m: string, names: string) => `const {${names.replace(/ as /g, ': ')}} = __rt;`,
-	);
-	code = code.replace(/export const (\w+) =/g, 'const $1 = __exports.$1 =');
-	code = code.replace(/export function (\w+)/g, '__exports.$1 = function $1');
-	return new Function('__rt', '__exports', code + '\nreturn __exports;')(ClientRT, {});
+	return loadCompiledFixtureSource(readFileSync(fixture, 'utf8'), { id: file, mode: 'client' });
 }
 
 describe('hydrateRoot — STRUCTURAL mismatch (detect + rebuild + cursor stays aligned)', () => {
@@ -207,36 +188,46 @@ describe('hydrateRoot — STRUCTURAL mismatch (detect + rebuild + cursor stays a
 		const { html } = await ServerRT.renderToString(server.Toggle, { on: true });
 		container.innerHTML = html;
 		const toggle = container.querySelector('#toggle')!;
-		const button = container.querySelector('#hit')!;
-		const before = hydrationMarkerSummary(toggle);
-		hydrateRoot(container, clientProd.Toggle, { on: true });
+		const button = container.querySelector('#hit') as HTMLButtonElement;
+		const root = hydrateRoot(container, clientProd.Toggle, { on: true });
 		flushSync(() => {});
 		expect(container.querySelector('#toggle')).toBe(toggle);
 		expect(container.querySelector('#hit')).toBe(button);
 		expect(button.textContent).toBe('on:0');
-		const after = hydrationMarkerSummary(toggle);
-		expect(after.logicalPairs).toBe(before.logicalPairs);
-		expect(after.physicalPairs).toBeLessThan(before.physicalPairs);
-		expect(after.countedPairs).toBe(1);
+		// A compact server range may already be minimal, so adoption cannot be
+		// identified by deleting comments; the adopted host must stay interactive.
+		flushSync(() => button.click());
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
+		root.render(clientProd.Toggle, { on: true });
+		flushSync(() => {});
+		expect(container.querySelector('#toggle')).toBe(toggle);
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
 		expect(warns()).toEqual([]);
+		root.unmount();
 	});
 
 	it('no warning + adopted hosts when the branch matches', async () => {
 		const { html } = await ServerRT.renderToString(server.Toggle, { on: true });
 		container.innerHTML = html;
 		const toggle = container.querySelector('#toggle')!;
-		const button = container.querySelector('#hit')!;
-		const before = hydrationMarkerSummary(toggle);
-		hydrateRoot(container, clientDev.Toggle, { on: true });
+		const button = container.querySelector('#hit') as HTMLButtonElement;
+		const root = hydrateRoot(container, clientDev.Toggle, { on: true });
 		flushSync(() => {});
 		expect(container.querySelector('#toggle')).toBe(toggle);
 		expect(container.querySelector('#hit')).toBe(button);
 		expect(button.textContent).toBe('on:0');
-		const after = hydrationMarkerSummary(toggle);
-		expect(after.logicalPairs).toBe(before.logicalPairs);
-		expect(after.physicalPairs).toBeLessThan(before.physicalPairs);
-		expect(after.countedPairs).toBe(1);
+		flushSync(() => button.click());
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
+		root.render(clientDev.Toggle, { on: true });
+		flushSync(() => {});
+		expect(container.querySelector('#toggle')).toBe(toggle);
+		expect(container.querySelector('#hit')).toBe(button);
+		expect(button.textContent).toBe('on:1');
 		expect(warns()).toEqual([]);
+		root.unmount();
 	});
 
 	it('@for list grow: server 2 items, client 3 → no crash, 3 items rendered, warns', async () => {

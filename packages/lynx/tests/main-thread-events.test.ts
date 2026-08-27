@@ -9,6 +9,7 @@ import {
 	type UniversalHostCommand,
 } from 'octane/universal/native';
 import { afterEach, describe, expect, it } from 'vitest';
+import '../src/main-worklets.js';
 import { createLynxRoot, type LynxPublicHandle, type LynxRoot } from '../src/index.js';
 import { installLynxMainThread, type LynxMainThreadController } from '../src/main-thread.js';
 import {
@@ -675,7 +676,7 @@ describe.sequential('Lynx main-thread native event bridge', () => {
 		expect(log).toEqual(['scroll']);
 	});
 
-	it('retains an Activity host while disconnecting its native event without ref churn', async () => {
+	it('retains an Activity host while disconnecting its native event and public ref', async () => {
 		const { dom, main, registrations } = installEnvironment();
 		const log: string[] = [];
 		const refs: Array<LynxPublicHandle | null> = [];
@@ -698,7 +699,7 @@ describe.sequential('Lynx main-thread native event bridge', () => {
 		await backgroundRoot.flushTransport();
 		expect(dom.window.document.querySelector('#event-target')).toBe(element);
 		expect(element?.hasAttribute('hidden')).toBe(true);
-		expect(refs).toEqual([handle]);
+		expect(refs).toEqual([handle, null]);
 		expect(handle?.active).toBe(true);
 		main.dispatchNativeEvent(token, nativePayload('tap'));
 		expect(log).toEqual(['tap']);
@@ -708,13 +709,13 @@ describe.sequential('Lynx main-thread native event bridge', () => {
 		await backgroundRoot.flushTransport();
 		expect(dom.window.document.querySelector('#event-target')).toBe(element);
 		expect(element?.hasAttribute('hidden')).toBe(false);
-		expect(refs).toEqual([handle]);
+		expect(refs).toEqual([handle, null, handle]);
 		main.dispatchNativeEvent(token, nativePayload('tap'));
 		expect(log).toEqual(['tap', 'tap']);
 
 		await backgroundRoot.unmount();
 		backgroundRoot = null;
-		expect(refs).toEqual([handle, null]);
+		expect(refs).toEqual([handle, null, handle, null]);
 		expect(handle?.active).toBe(false);
 	});
 

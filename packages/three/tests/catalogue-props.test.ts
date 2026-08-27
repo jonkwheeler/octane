@@ -5,6 +5,7 @@ import { createThreeTestRenderer } from '@octanejs/three/testing';
 import { defineUniversalComponent, universalComponent, universalProps } from 'octane/universal';
 import {
 	createThreeObject,
+	registerThreeIntrinsic,
 	registerThreeNamespace,
 	validateThreeInstance,
 } from '../src/core/catalogue.js';
@@ -12,6 +13,30 @@ import { attachString, detachAttachment, getEffectiveAttachment } from '../src/c
 import { applyThreeProps } from '../src/core/props.js';
 
 describe('@octanejs/three catalogue', () => {
+	it('registers built-in constructors selectively without replacing explicit extensions', () => {
+		class SelectiveMesh extends THREE.Mesh {}
+		class OverriddenMesh extends THREE.Mesh {}
+
+		registerThreeIntrinsic('SelectiveMesh', SelectiveMesh);
+		registerThreeIntrinsic('SelectiveMesh', THREE.Mesh);
+		expect(createThreeObject('selectiveMesh', {}).object).toBeInstanceOf(SelectiveMesh);
+
+		extend({ SelectiveMesh: OverriddenMesh });
+		registerThreeIntrinsic('SelectiveMesh', SelectiveMesh);
+		expect(createThreeObject('selectiveMesh', {}).object).toBeInstanceOf(OverriddenMesh);
+	});
+
+	it('retains explicit built-in overrides when the full Canvas catalogue is registered later', () => {
+		class OverriddenMesh extends THREE.Mesh {}
+		extend({ Mesh: OverriddenMesh });
+		try {
+			registerThreeNamespace();
+			expect(createThreeObject('mesh', {}).object).toBeInstanceOf(OverriddenMesh);
+		} finally {
+			extend({ Mesh: THREE.Mesh });
+		}
+	});
+
 	it('validates built-ins and preserves primitive identity and ownership', () => {
 		registerThreeNamespace();
 
@@ -116,6 +141,8 @@ describe('@octanejs/three catalogue', () => {
 });
 
 describe('@octanejs/three host observations', () => {
+	// OCTANE DIVERGENCE[pierced-prop-reset-target][adapted:three-pierced-reset]
+	// @parity-case adapted:three-pierced-reset
 	it('applies Three math, color, pierced, and ordinary properties without leaking renderer props', () => {
 		const material = new THREE.MeshBasicMaterial();
 		const mesh = new THREE.Mesh(new THREE.BoxGeometry(), material);
