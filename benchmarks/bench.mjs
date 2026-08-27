@@ -407,6 +407,15 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		// Node-only repeated categorical lookup through the production Visx
+		// helper and the prior linear scan at small and large domain sizes.
+		name: 'visx-categorical-scale',
+		cwd: 'visx-categorical-scale',
+		servers: [],
+		iter: { normal: 8, quick: 3 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		// Shared-compiler watched-path invalidation after nearest-package
 		// decisions have been cached for small and large source trees.
 		name: 'manifest-cache-invalidation',
