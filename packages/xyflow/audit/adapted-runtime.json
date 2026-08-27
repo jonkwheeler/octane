@@ -10,9 +10,29 @@
   ],
   "tests": [
     {
-      "id": "runtime:013b3f8038dba5f8",
+      "id": "runtime:606c7503a21606ac",
       "file": "packages/xyflow/tests/conformance/connection-slots.test.ts",
-      "fullName": "@octanejs/xyflow — connection hook slots keeps repeated connection hook calls independent"
+      "fullName": "@octanejs/xyflow — manual hook slots combines general and viewport helpers in useReactFlow"
+    },
+    {
+      "id": "runtime:e7a43d130a00df47",
+      "file": "packages/xyflow/tests/conformance/connection-slots.test.ts",
+      "fullName": "@octanejs/xyflow — manual hook slots keeps node and edge state callbacks independent"
+    },
+    {
+      "id": "runtime:e01e7c42a3c6901d",
+      "file": "packages/xyflow/tests/conformance/connection-slots.test.ts",
+      "fullName": "@octanejs/xyflow — manual hook slots keeps repeated connection hook calls independent"
+    },
+    {
+      "id": "runtime:20348207a6d2078a",
+      "file": "packages/xyflow/tests/conformance/connection-slots.test.ts",
+      "fullName": "@octanejs/xyflow — manual hook slots registers every viewport change phase"
+    },
+    {
+      "id": "runtime:13bb8844839a65a4",
+      "file": "packages/xyflow/tests/conformance/connection-slots.test.ts",
+      "fullName": "@octanejs/xyflow — manual hook slots registers node and edge change middleware independently"
     },
     {
       "id": "runtime:7f5773c75a52d719",

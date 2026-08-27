@@ -28,8 +28,8 @@
     }
   },
   "adaptedRuntimeSummary": {
-    "inventoryEntries": 4,
-    "uniqueIdentities": 4,
+    "inventoryEntries": 8,
+    "uniqueIdentities": 8,
     "duplicateEntriesWithinLanes": 0,
     "identitiesSharedAcrossLanes": 0
   },
@@ -60,17 +60,17 @@
         {
           "path": "packages/xyflow/audit/adapted-runtime.json",
           "role": "support",
-          "sha256": "5abc001a3cef4f2688ef70bcf4564517b640eebf23f7585f7752682c8e8087ae"
+          "sha256": "780ae2b1ae93a494226338af031a85206024e7a023c061245fa0300585680a6d"
         },
         {
           "path": "packages/xyflow/tests/conformance/connection-slots.test.ts",
           "role": "support",
-          "sha256": "2fb613106976ebc8b33429e724225b063e2a4b2149b456460a8eecde195849f7"
+          "sha256": "185fbc3b243f72816627ef2e2166e721038a27239727acdf66a9c7cb91679793"
         },
         {
           "path": "packages/xyflow/tests/_fixtures/connection-slots.tsrx",
           "role": "support",
-          "sha256": "bb6fbd8326b9da8cc373a2df87b8c9f60a960a266947784decf9992e7d978062"
+          "sha256": "b311e245eb5a3b7b2c76f96ca05350e95f99bc230b2ed40b1bde2f498103c27d"
         },
         {
           "path": "vitest.config.js",
