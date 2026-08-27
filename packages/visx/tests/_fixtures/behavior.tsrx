@@ -233,10 +233,9 @@ function CategoricalScaleProbe({ domain, keys, range }) {
 	/>;
 }
 
-export function CategoricalScaleFixture({ domain, keys, range, theme = 'light' }) {
-	return <ThemeProvider theme={theme}>
-		<CategoricalScaleProbe domain={domain} keys={keys} range={range} />
-	</ThemeProvider>;
+export function CategoricalScaleFixture({ domain, keys, range, theme }) {
+	const probe = <CategoricalScaleProbe domain={domain} keys={keys} range={range} />;
+	return theme === undefined ? probe : <ThemeProvider theme={theme}>{probe}</ThemeProvider>;
 }
 
 export function HookFamiliesFixture() {

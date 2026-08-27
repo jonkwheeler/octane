@@ -69,22 +69,49 @@ describe('@octanejs/visx stateful behavior', () => {
 			domain: ['alpha', 'beta'],
 			keys: ['beta'],
 			range: ['red', 'green'],
-			theme: 'light',
 		});
 		const probe = view.find('#categorical-scale-probe');
-		const lightCategorical = probe.getAttribute('data-categorical');
+		const initialCategorical = probe.getAttribute('data-categorical');
 
 		expect(probe.getAttribute('data-color')).toBe('green');
 
 		view.update(CategoricalScaleFixture, {
 			domain: ['beta', 'alpha'],
 			keys: ['beta'],
+			range: ['red', 'green'],
+		});
+
+		expect(probe.getAttribute('data-color')).toBe('red');
+		expect(probe.getAttribute('data-categorical')).not.toBe(initialCategorical);
+		const domainCategorical = probe.getAttribute('data-categorical');
+
+		view.update(CategoricalScaleFixture, {
+			domain: ['beta', 'alpha'],
+			keys: ['beta'],
 			range: ['blue', 'orange'],
-			theme: 'dark',
 		});
 
 		expect(probe.getAttribute('data-color')).toBe('blue');
-		expect(probe.getAttribute('data-categorical')).not.toBe(lightCategorical);
+		expect(probe.getAttribute('data-categorical')).toBe(domainCategorical);
+
+		const themedView = render(CategoricalScaleFixture, {
+			domain: ['alpha', 'beta'],
+			keys: ['beta'],
+			range: ['red', 'green'],
+			theme: 'light',
+		});
+		const themedProbe = themedView.find('#categorical-scale-probe');
+		const lightCategorical = themedProbe.getAttribute('data-categorical');
+
+		themedView.update(CategoricalScaleFixture, {
+			domain: ['alpha', 'beta'],
+			keys: ['beta'],
+			range: ['red', 'green'],
+			theme: 'dark',
+		});
+
+		expect(themedProbe.getAttribute('data-color')).toBe('green');
+		expect(themedProbe.getAttribute('data-categorical')).not.toBe(lightCategorical);
 	});
 
 	it('attaches native wheel and pointer listeners for Zoom', () => {

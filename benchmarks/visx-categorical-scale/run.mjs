@@ -54,18 +54,19 @@ function runLookups(target) {
 for (const scenario of scenarios) {
 	const scan = targets.find((target) => target.name === `scan-${scenario.size}`);
 	const indexed = targets.find((target) => target.name === `indexed-${scenario.size}`);
+	const scanIndex = scan.createIndex(scenario.domain);
+	const indexedIndex = indexed.createIndex(scenario.domain);
+	for (const key of scenario.keys) {
+		assert.equal(indexedIndex(key), scanIndex(key), `${scenario.size}-key lookup drifted`);
+	}
+	assert.equal(scanIndex(scenario.domain[0]), 0, 'scan lost first match');
+	assert.equal(indexedIndex(scenario.domain[0]), 0, 'index lost first match');
+	assert.equal(scanIndex('missing'), -1, 'scan lost missing sentinel');
+	assert.equal(indexedIndex('missing'), -1, 'index lost missing sentinel');
 	const scanWarmup = runLookups(scan);
 	const indexedWarmup = runLookups(indexed);
 	assert.equal(indexedWarmup.checksum, scanWarmup.checksum, `${scenario.size}-key warmup drifted`);
 	expectedChecksums.set(scenario.size, scanWarmup.checksum);
-	assert.equal(scan.createIndex(scenario.domain)(scenario.domain[0]), 0, 'scan lost first match');
-	assert.equal(
-		indexed.createIndex(scenario.domain)(scenario.domain[0]),
-		0,
-		'index lost first match',
-	);
-	assert.equal(scan.createIndex(scenario.domain)('missing'), -1, 'scan lost missing sentinel');
-	assert.equal(indexed.createIndex(scenario.domain)('missing'), -1, 'index lost missing sentinel');
 }
 
 for (let iteration = 0; iteration < iterations; iteration++) {
