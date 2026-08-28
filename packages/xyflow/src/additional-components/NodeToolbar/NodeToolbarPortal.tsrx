@@ -7,11 +7,11 @@ import { useStore } from '../../hooks/useStore';
 const selector = (state: ReactFlowState) => state.domNode?.querySelector('.react-flow__renderer');
 
 export function NodeToolbarPortal({ children }: { children: OctaneNode }) {
-  const wrapperRef = useStore(selector);
+	const wrapperRef = useStore(selector);
 
-  if (!wrapperRef) {
-    return null;
-  }
+	if (!wrapperRef) {
+		return null;
+	}
 
-  return createPortal(children, wrapperRef);
+	return createPortal(children, wrapperRef);
 }

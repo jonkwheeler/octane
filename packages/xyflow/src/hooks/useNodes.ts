@@ -25,9 +25,9 @@ const nodesSelector = (state: ReactFlowState) => state.nodes;
  *}
  *```
  */
-export function useNodes<NodeType extends Node = Node>(...rest: [slot?: symbol]): NodeType[]  {
-  const slot = resolveHookSlot(rest);
-  const nodes = useStore(nodesSelector, shallow, slot) as NodeType[];
+export function useNodes<NodeType extends Node = Node>(...rest: [slot?: symbol]): NodeType[] {
+	const slot = resolveHookSlot(rest);
+	const nodes = useStore(nodesSelector, shallow, slot) as NodeType[];
 
-  return nodes;
+	return nodes;
 }

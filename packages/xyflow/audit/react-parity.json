@@ -40,7 +40,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "08b918be6cb7b4108945e17469ad9f488890649a26d63ef7ac42374a61eeb5fc"
+      "lockfileSha256": "b2ab89e8c1a70c3ec3d617bc1c002a928060b3645429a1381d67da1ff8f70383"
     }
   },
   "lanes": [
@@ -71,11 +71,6 @@
           "path": "packages/xyflow/tests/_fixtures/connection-slots.tsrx",
           "role": "support",
           "sha256": "b311e245eb5a3b7b2c76f96ca05350e95f99bc230b2ed40b1bde2f498103c27d"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "bede5173f56b48472b652a70800332b5706c5739495588e72212e7fd1af44929"
         }
       ]
     },
@@ -169,7 +164,7 @@
         {
           "path": "packages/xyflow/tests/differential/parity.test.ts",
           "role": "test",
-          "sha256": "f91630e9dd415caf17d3d72b6042283665a6c48576f572c84224cf443a2b5df5",
+          "sha256": "ec1adc6f6e551eba90f1cdb8e3231e31b8293818ad583aaeab83359175ccb7be",
           "cases": [
             {
               "id": "differential:initial-mount",
@@ -181,7 +176,7 @@
         {
           "path": "packages/xyflow/tests/_fixtures/xyflow-diff.tsrx",
           "role": "support",
-          "sha256": "5cff6c57d694237a735d4037e27b3f0bb75afd477ddd5df1c951c8b4c3d26e3b"
+          "sha256": "cb8cdece56eb19d755add9163c3697da264e579eb930e0e74fecef17498e0e39"
         },
         {
           "path": "packages/octane/tests/differential/_rig.ts",
@@ -192,11 +187,6 @@
           "path": "packages/xyflow/tests/differential/_setup.ts",
           "role": "support",
           "sha256": "897efdd4751f2397fe53003c131f24975710209d886cc64406149b9763432c62"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "bede5173f56b48472b652a70800332b5706c5739495588e72212e7fd1af44929"
         }
       ]
     }

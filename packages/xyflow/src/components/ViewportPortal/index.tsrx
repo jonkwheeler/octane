@@ -32,11 +32,11 @@ const selector = (s: ReactFlowState) => s.domNode?.querySelector('.react-flow__v
  *```
  */
 export function ViewportPortal({ children }: { children: OctaneNode }) {
-  const viewPortalDiv = useStore(selector);
+	const viewPortalDiv = useStore(selector);
 
-  if (!viewPortalDiv) {
-    return null;
-  }
+	if (!viewPortalDiv) {
+		return null;
+	}
 
-  return createPortal(children, viewPortalDiv);
+	return createPortal(children, viewPortalDiv);
 }

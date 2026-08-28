@@ -24,9 +24,9 @@ const edgesSelector = (state: ReactFlowState) => state.edges;
  *}
  *```
  */
-export function useEdges<EdgeType extends Edge = Edge>(...rest: [slot?: symbol]): EdgeType[]  {
-  const slot = resolveHookSlot(rest);
-  const edges = useStore(edgesSelector, shallow, slot) as EdgeType[];
+export function useEdges<EdgeType extends Edge = Edge>(...rest: [slot?: symbol]): EdgeType[] {
+	const slot = resolveHookSlot(rest);
+	const edges = useStore(edgesSelector, shallow, slot) as EdgeType[];
 
-  return edges;
+	return edges;
 }

@@ -3,10 +3,15 @@
  */
 import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { resolve } from 'node:path';
-import { mountDifferential } from '../../../octane/tests/differential/_rig.js';
+import {
+	mountDifferential,
+	preloadDifferentialFixture,
+} from '../../../octane/tests/differential/_rig.js';
 
 const FIXTURE = resolve(__dirname, '../_fixtures/xyflow-diff.tsrx');
 const CACHE = resolve(__dirname, '.react-cache');
+
+await Promise.all([preloadDifferentialFixture(FIXTURE, CACHE)]);
 
 // @xyflow/react constructs ResizeObserver unguarded (jsdom has none).
 beforeAll(function stubResizeObserver() {

@@ -14,16 +14,20 @@ const selector = (state: ReactFlowState) => state.panZoom?.syncViewport;
  * @param viewport
  */
 export function useViewportSync(viewport?: Viewport, ...rest: [slot?: symbol]) {
-  const slot = resolveHookSlot(rest);
-  const syncViewport = useStore(selector, undefined, slot);
-  const store = useStoreApi(slot);
+	const slot = resolveHookSlot(rest);
+	const syncViewport = useStore(selector, undefined, slot);
+	const store = useStoreApi(slot);
 
-  useEffect(function syncViewportEffect() {
-    if (viewport) {
-      syncViewport?.(viewport);
-      store.setState({ transform: [viewport.x, viewport.y, viewport.zoom] });
-    }
-  }, [viewport, syncViewport], slot);
+	useEffect(
+		function syncViewportEffect() {
+			if (viewport) {
+				syncViewport?.(viewport);
+				store.setState({ transform: [viewport.x, viewport.y, viewport.zoom] });
+			}
+		},
+		[viewport, syncViewport],
+		slot,
+	);
 
-  return null;
+	return null;
 }

@@ -5,26 +5,26 @@ import { useStore } from './useStore';
 import type { ReactFlowState } from '../types';
 
 export type UseNodesInitializedOptions = {
-  /** @default false */
-  includeHiddenNodes?: boolean;
+	/** @default false */
+	includeHiddenNodes?: boolean;
 };
 
 const selector = (options: UseNodesInitializedOptions) => (s: ReactFlowState) => {
-  if (!options.includeHiddenNodes) {
-    return s.nodesInitialized;
-  }
+	if (!options.includeHiddenNodes) {
+		return s.nodesInitialized;
+	}
 
-  if (s.nodeLookup.size === 0) {
-    return false;
-  }
+	if (s.nodeLookup.size === 0) {
+		return false;
+	}
 
-  for (const [, { internals }] of s.nodeLookup) {
-    if (internals.handleBounds === undefined || !nodeHasDimensions(internals.userNode)) {
-      return false;
-    }
-  }
+	for (const [, { internals }] of s.nodeLookup) {
+		if (internals.handleBounds === undefined || !nodeHasDimensions(internals.userNode)) {
+			return false;
+		}
+	}
 
-  return true;
+	return true;
 };
 
 /**
@@ -61,13 +61,14 @@ const selector = (options: UseNodesInitializedOptions) => (s: ReactFlowState) =>
  *```
  */
 export function useNodesInitialized(
-  options: UseNodesInitializedOptions | symbol = {
-    includeHiddenNodes: false,
-  }
-, ...rest: [slot?: symbol]): boolean  {
-  let slot = resolveHookSlot(rest);
-  const resolved = withoutSlot(options) ?? { includeHiddenNodes: false };
-  const initialized = useStore(selector(resolved), undefined, slot);
+	options: UseNodesInitializedOptions | symbol = {
+		includeHiddenNodes: false,
+	},
+	...rest: [slot?: symbol]
+): boolean {
+	let slot = resolveHookSlot(rest);
+	const resolved = withoutSlot(options) ?? { includeHiddenNodes: false };
+	const initialized = useStore(selector(resolved), undefined, slot);
 
-  return initialized;
+	return initialized;
 }

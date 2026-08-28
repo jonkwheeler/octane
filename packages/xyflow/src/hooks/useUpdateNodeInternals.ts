@@ -49,23 +49,25 @@ import { useStoreApi } from '../hooks/useStore';
  * @remarks This hook can only be used in a component that is a child of a
  *{@link ReactFlowProvider} or a {@link ReactFlow} component.
  */
-export function useUpdateNodeInternals(...rest: [slot?: symbol]): UpdateNodeInternals  {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
+export function useUpdateNodeInternals(...rest: [slot?: symbol]): UpdateNodeInternals {
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
 
-  return useCallback<UpdateNodeInternals>((id: string | string[]) => {
-    const { domNode, updateNodeInternals } = store.getState();
-    const updateIds = Array.isArray(id) ? id : [id];
-    const updates = new Map<string, InternalNodeUpdate>();
+	return useCallback<UpdateNodeInternals>((id: string | string[]) => {
+		const { domNode, updateNodeInternals } = store.getState();
+		const updateIds = Array.isArray(id) ? id : [id];
+		const updates = new Map<string, InternalNodeUpdate>();
 
-    updateIds.forEach((updateId) => {
-      const nodeElement = domNode?.querySelector(`.react-flow__node[data-id="${updateId}"]`) as HTMLDivElement;
+		updateIds.forEach((updateId) => {
+			const nodeElement = domNode?.querySelector(
+				`.react-flow__node[data-id="${updateId}"]`,
+			) as HTMLDivElement;
 
-      if (nodeElement) {
-        updates.set(updateId, { id: updateId, nodeElement, force: true });
-      }
-    });
+			if (nodeElement) {
+				updates.set(updateId, { id: updateId, nodeElement, force: true });
+			}
+		});
 
-    requestAnimationFrame(() => updateNodeInternals(updates, { triggerFitView: false }));
-  }, []);
+		requestAnimationFrame(() => updateNodeInternals(updates, { triggerFitView: false }));
+	}, []);
 }

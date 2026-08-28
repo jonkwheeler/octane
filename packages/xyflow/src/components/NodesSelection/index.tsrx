@@ -15,90 +15,89 @@ import { arrowKeyDiffs } from '../NodeWrapper/utils.tsrx';
 import type { Node, ReactFlowState } from '../../types';
 
 export type NodesSelectionProps<NodeType> = {
-  onSelectionContextMenu?: (event: MouseEvent, nodes: NodeType[]) => void;
-  noPanClassName?: string;
-  disableKeyboardA11y: boolean;
+	onSelectionContextMenu?: (event: MouseEvent, nodes: NodeType[]) => void;
+	noPanClassName?: string;
+	disableKeyboardA11y: boolean;
 };
 
 const selector = (s: ReactFlowState) => {
-  const { width, height, x, y } = getInternalNodesBounds(s.nodeLookup, {
-    filter: (node) => !!node.selected,
-  });
+	const { width, height, x, y } = getInternalNodesBounds(s.nodeLookup, {
+		filter: (node) => !!node.selected,
+	});
 
-  return {
-    width: isNumeric(width) ? width : null,
-    height: isNumeric(height) ? height : null,
-    userSelectionActive: s.userSelectionActive,
-    transformString: `translate(${s.transform[0]}px,${s.transform[1]}px) scale(${s.transform[2]}) translate(${x}px,${y}px)`,
-  };
+	return {
+		width: isNumeric(width) ? width : null,
+		height: isNumeric(height) ? height : null,
+		userSelectionActive: s.userSelectionActive,
+		transformString: `translate(${s.transform[0]}px,${s.transform[1]}px) scale(${s.transform[2]}) translate(${x}px,${y}px)`,
+	};
 };
 
 export function NodesSelection<NodeType extends Node>({
-  onSelectionContextMenu,
-  noPanClassName,
-  disableKeyboardA11y,
+	onSelectionContextMenu,
+	noPanClassName,
+	disableKeyboardA11y,
 }: NodesSelectionProps<NodeType>) {
-  const store = useStoreApi<NodeType>();
-  const { width, height, transformString, userSelectionActive } = useStore(selector, shallow);
-  const moveSelectedNodes = useMoveSelectedNodes();
+	const store = useStoreApi<NodeType>();
+	const { width, height, transformString, userSelectionActive } = useStore(selector, shallow);
+	const moveSelectedNodes = useMoveSelectedNodes();
 
-  const nodeRef = useRef<HTMLDivElement | null>(null);
+	const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!disableKeyboardA11y) {
-      nodeRef.current?.focus({
-        preventScroll: true,
-      });
-    }
-  }, [disableKeyboardA11y]);
+	useEffect(() => {
+		if (!disableKeyboardA11y) {
+			nodeRef.current?.focus({
+				preventScroll: true,
+			});
+		}
+	}, [disableKeyboardA11y]);
 
-  const shouldRender = !userSelectionActive && width !== null && height !== null;
+	const shouldRender = !userSelectionActive && width !== null && height !== null;
 
-  useDrag({
-    nodeRef,
-    disabled: !shouldRender,
-  });
+	useDrag({
+		nodeRef,
+		disabled: !shouldRender,
+	});
 
-  if (!shouldRender) {
-    return null;
-  }
+	if (!shouldRender) {
+		return null;
+	}
 
-  const onContextMenu = onSelectionContextMenu
-    ? (event: MouseEvent) => {
-        const selectedNodes = store.getState().nodes.filter((n) => n.selected);
-        onSelectionContextMenu(event, selectedNodes);
-      }
-    : undefined;
+	const onContextMenu =
+		onSelectionContextMenu
+			? (event: MouseEvent) => {
+					const selectedNodes = store.getState().nodes.filter((n) => n.selected);
+					onSelectionContextMenu(event, selectedNodes);
+				}
+			: undefined;
 
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (Object.prototype.hasOwnProperty.call(arrowKeyDiffs, event.key)) {
-      event.preventDefault();
+	const onKeyDown = (event: KeyboardEvent) => {
+		if (Object.prototype.hasOwnProperty.call(arrowKeyDiffs, event.key)) {
+			event.preventDefault();
 
-      moveSelectedNodes({
-        direction: arrowKeyDiffs[event.key],
-        factor: event.shiftKey ? 4 : 1,
-      });
-    }
-  };
+			moveSelectedNodes({
+				direction: arrowKeyDiffs[event.key],
+				factor: event.shiftKey ? 4 : 1,
+			});
+		}
+	};
 
-  return (
-    <div
-      className={cc(['react-flow__nodesselection', 'react-flow__container', noPanClassName])}
-      style={{
-        transform: transformString,
-      }}
-    >
-      <div
-        ref={nodeRef}
-        className="react-flow__nodesselection-rect"
-        onContextMenu={onContextMenu}
-        tabIndex={disableKeyboardA11y ? undefined : -1}
-        onKeyDown={disableKeyboardA11y ? undefined : onKeyDown}
-        style={{
-          width,
-          height,
-        }}
-      />
-    </div>
-  );
+	return <div
+		className={cc(['react-flow__nodesselection', 'react-flow__container', noPanClassName])}
+		style={{
+			transform: transformString,
+		}}
+	>
+		<div
+			ref={nodeRef}
+			className="react-flow__nodesselection-rect"
+			onContextMenu={onContextMenu}
+			tabIndex={disableKeyboardA11y ? undefined : -1}
+			onKeyDown={disableKeyboardA11y ? undefined : onKeyDown}
+			style={{
+				width,
+				height,
+			}}
+		/>
+	</div>;
 }

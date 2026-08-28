@@ -11,34 +11,35 @@ import type { ReactFlowState } from '../../types';
  * 2. the on drag start handler when node is draggable and selectNodesOnDrag = true
  */
 export function handleNodeClick({
-  id,
-  store,
-  unselect = false,
-  nodeRef,
+	id,
+	store,
+	unselect = false,
+	nodeRef,
 }: {
-  id: string;
-  store: {
-    getState: StoreApi<ReactFlowState>['getState'];
-    setState: StoreApi<ReactFlowState>['setState'];
-  };
-  unselect?: boolean;
-  nodeRef?: RefObject<HTMLDivElement>;
+	id: string;
+	store: {
+		getState: StoreApi<ReactFlowState>['getState'];
+		setState: StoreApi<ReactFlowState>['setState'];
+	};
+	unselect?: boolean;
+	nodeRef?: RefObject<HTMLDivElement>;
 }) {
-  const { addSelectedNodes, unselectNodesAndEdges, multiSelectionActive, nodeLookup, onError } = store.getState();
-  const node = nodeLookup.get(id);
+	const { addSelectedNodes, unselectNodesAndEdges, multiSelectionActive, nodeLookup, onError } =
+		store.getState();
+	const node = nodeLookup.get(id);
 
-  if (!node) {
-    onError?.('012', errorMessages['error012'](id));
-    return;
-  }
+	if (!node) {
+		onError?.('012', errorMessages['error012'](id));
+		return;
+	}
 
-  store.setState({ nodesSelectionActive: false });
+	store.setState({ nodesSelectionActive: false });
 
-  if (!node.selected) {
-    addSelectedNodes([id]);
-  } else if (unselect || (node.selected && multiSelectionActive)) {
-    unselectNodesAndEdges({ nodes: [node], edges: [] });
+	if (!node.selected) {
+		addSelectedNodes([id]);
+	} else if (unselect || (node.selected && multiSelectionActive)) {
+		unselectNodesAndEdges({ nodes: [node], edges: [] });
 
-    requestAnimationFrame(() => nodeRef?.current?.blur());
-  }
+		requestAnimationFrame(() => nodeRef?.current?.blur());
+	}
 }

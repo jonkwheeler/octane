@@ -1,5 +1,17 @@
-import type { CSSProperties, MouseEvent as ReactMouseEvent, AriaRole, HTMLAttributes, DOMAttributes } from '../react-shim.js';
-import type { CoordinateExtent, NodeBase, OnError, NodeProps as NodePropsBase, InternalNodeBase } from '@xyflow/system';
+import type {
+	CSSProperties,
+	MouseEvent as ReactMouseEvent,
+	AriaRole,
+	HTMLAttributes,
+	DOMAttributes,
+} from '../react-shim.js';
+import type {
+	CoordinateExtent,
+	NodeBase,
+	OnError,
+	NodeProps as NodePropsBase,
+	InternalNodeBase,
+} from '@xyflow/system';
 
 import { NodeTypes } from './general';
 
@@ -11,34 +23,34 @@ import { NodeTypes } from './general';
  * @public
  */
 export type Node<
-  NodeData extends Record<string, unknown> = Record<string, unknown>,
-  NodeType extends string | undefined = string | undefined
+	NodeData extends Record<string, unknown> = Record<string, unknown>,
+	NodeType extends string | undefined = string | undefined,
 > = NodeBase<NodeData, NodeType> & {
-  style?: CSSProperties;
-  className?: string;
-  resizing?: boolean;
-  focusable?: boolean;
-  /**
-   * The ARIA role attribute for the node element, used for accessibility.
-   * @default "group"
-   */
-  ariaRole?: AriaRole;
+	style?: CSSProperties;
+	className?: string;
+	resizing?: boolean;
+	focusable?: boolean;
+	/**
+	 * The ARIA role attribute for the node element, used for accessibility.
+	 * @default "group"
+	 */
+	ariaRole?: AriaRole;
 
-  /**
-   * General escape hatch for adding custom attributes to the node's DOM element.
-   */
-  domAttributes?: Omit<
-    HTMLAttributes<HTMLDivElement>,
-    | 'id'
-    | 'style'
-    | 'className'
-    | 'draggable'
-    | 'role'
-    | 'aria-label'
-    | 'defaultValue'
-    | 'dangerouslySetInnerHTML'
-    | keyof DOMAttributes<HTMLDivElement>
-  >;
+	/**
+	 * General escape hatch for adding custom attributes to the node's DOM element.
+	 */
+	domAttributes?: Omit<
+		HTMLAttributes<HTMLDivElement>,
+		| 'id'
+		| 'style'
+		| 'className'
+		| 'draggable'
+		| 'role'
+		| 'aria-label'
+		| 'defaultValue'
+		| 'dangerouslySetInnerHTML'
+		| keyof DOMAttributes<HTMLDivElement>
+	>;
 };
 
 /**
@@ -50,35 +62,41 @@ export type Node<
  */
 export type InternalNode<NodeType extends Node = Node> = InternalNodeBase<NodeType>;
 
-export type NodeMouseHandler<NodeType extends Node = Node> = (event: ReactMouseEvent, node: NodeType) => void;
-export type SelectionDragHandler<NodeType extends Node = Node> = (event: ReactMouseEvent, nodes: NodeType[]) => void;
+export type NodeMouseHandler<NodeType extends Node = Node> = (
+	event: ReactMouseEvent,
+	node: NodeType,
+) => void;
+export type SelectionDragHandler<NodeType extends Node = Node> = (
+	event: ReactMouseEvent,
+	nodes: NodeType[],
+) => void;
 export type OnNodeDrag<NodeType extends Node = Node> = (
-  event: MouseEvent | TouchEvent,
-  node: NodeType,
-  nodes: NodeType[]
+	event: MouseEvent | TouchEvent,
+	node: NodeType,
+	nodes: NodeType[],
 ) => void;
 
 export type NodeWrapperProps<NodeType extends Node> = {
-  id: string;
-  nodesConnectable: boolean;
-  elementsSelectable: boolean;
-  nodesDraggable: boolean;
-  nodesFocusable: boolean;
-  onClick?: NodeMouseHandler<NodeType>;
-  onDoubleClick?: NodeMouseHandler<NodeType>;
-  onMouseEnter?: NodeMouseHandler<NodeType>;
-  onMouseMove?: NodeMouseHandler<NodeType>;
-  onMouseLeave?: NodeMouseHandler<NodeType>;
-  onContextMenu?: NodeMouseHandler<NodeType>;
-  resizeObserver: ResizeObserver | null;
-  noDragClassName: string;
-  noPanClassName: string;
-  rfId: string;
-  disableKeyboardA11y: boolean;
-  nodeTypes?: NodeTypes;
-  nodeExtent?: CoordinateExtent;
-  onError?: OnError;
-  nodeClickDistance?: number;
+	id: string;
+	nodesConnectable: boolean;
+	elementsSelectable: boolean;
+	nodesDraggable: boolean;
+	nodesFocusable: boolean;
+	onClick?: NodeMouseHandler<NodeType>;
+	onDoubleClick?: NodeMouseHandler<NodeType>;
+	onMouseEnter?: NodeMouseHandler<NodeType>;
+	onMouseMove?: NodeMouseHandler<NodeType>;
+	onMouseLeave?: NodeMouseHandler<NodeType>;
+	onContextMenu?: NodeMouseHandler<NodeType>;
+	resizeObserver: ResizeObserver | null;
+	noDragClassName: string;
+	noPanClassName: string;
+	rfId: string;
+	disableKeyboardA11y: boolean;
+	nodeTypes?: NodeTypes;
+	nodeExtent?: CoordinateExtent;
+	onError?: OnError;
+	nodeClickDistance?: number;
 };
 
 /**
@@ -93,8 +111,8 @@ export type NodeWrapperProps<NodeType extends Node> = {
  * ```
  */
 export type BuiltInNode =
-  | Node<{ label: string }, 'input' | 'output' | 'default' | undefined>
-  | Node<Record<string, never>, 'group'>;
+	| Node<{ label: string }, 'input' | 'output' | 'default' | undefined>
+	| Node<Record<string, never>, 'group'>;
 
 /**
  * When you implement a [custom node](/learn/customization/custom-nodes) it is

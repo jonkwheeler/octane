@@ -25,7 +25,7 @@ import type { Edge, Node } from '../types';
  *```
  */
 export const isNode = <NodeType extends Node = Node>(element: unknown): element is NodeType =>
-  isNodeBase<NodeType>(element);
+	isNodeBase<NodeType>(element);
 
 /**
  * Test whether an object is usable as an [`Edge`](/api-reference/types/edge).
@@ -49,17 +49,24 @@ export const isNode = <NodeType extends Node = Node>(element: unknown): element 
  *```
  */
 export const isEdge = <EdgeType extends Edge = Edge>(element: unknown): element is EdgeType =>
-  isEdgeBase<EdgeType>(element);
+	isEdgeBase<EdgeType>(element);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function fixedForwardRef<T, P extends object = Record<string, unknown>>(
-  render: (props: P, ref: ((instance: T | null) => void) | { current: T | null } | null) => Octane.JSX.Element
-): ((props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null }) => Octane.JSX.Element) & {
-  displayName?: string;
+	render: (
+		props: P,
+		ref: ((instance: T | null) => void) | { current: T | null } | null,
+	) => Octane.JSX.Element,
+): ((
+	props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null },
+) => Octane.JSX.Element) & {
+	displayName?: string;
 } {
-  function Forwarded(props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null }) {
-    const { ref, ...rest } = props;
-    return render(rest as P, ref ?? null);
-  }
-  return Forwarded;
+	function Forwarded(
+		props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null },
+	) {
+		const { ref, ...rest } = props;
+		return render(rest as P, ref ?? null);
+	}
+	return Forwarded;
 }

@@ -32,42 +32,45 @@ import type { BaseEdgeProps } from '../../types';
  * You can see all the props passed to a custom edge by looking at the [`EdgeProps`](/api-reference/types/edge-props) type.
  */
 export function BaseEdge({
-  path,
-  labelX,
-  labelY,
-  label,
-  labelStyle,
-  labelShowBg,
-  labelBgStyle,
-  labelBgPadding,
-  labelBgBorderRadius,
-  interactionWidth = 20,
-  ...props
+	path,
+	labelX,
+	labelY,
+	label,
+	labelStyle,
+	labelShowBg,
+	labelBgStyle,
+	labelBgPadding,
+	labelBgBorderRadius,
+	interactionWidth = 20,
+	...props
 }: BaseEdgeProps) {
-  return (
-    <>
-      <path {...props} d={path} fill="none" className={cc(['react-flow__edge-path', props.className])} />
-      {interactionWidth ? (
-        <path
-          d={path}
-          fill="none"
-          strokeOpacity={0}
-          strokeWidth={interactionWidth}
-          className="react-flow__edge-interaction"
-        />
-      ) : null}
-      {label && isNumeric(labelX) && isNumeric(labelY) ? (
-        <EdgeText
-          x={labelX}
-          y={labelY}
-          label={label}
-          labelStyle={labelStyle}
-          labelShowBg={labelShowBg}
-          labelBgStyle={labelBgStyle}
-          labelBgPadding={labelBgPadding}
-          labelBgBorderRadius={labelBgBorderRadius}
-        />
-      ) : null}
-    </>
-  );
+	return <>
+		<path
+			{...props}
+			d={path}
+			fill="none"
+			className={cc(['react-flow__edge-path', props.className])}
+		/>
+		{interactionWidth
+			? <path
+					d={path}
+					fill="none"
+					strokeOpacity={0}
+					strokeWidth={interactionWidth}
+					className="react-flow__edge-interaction"
+				/>
+			: null}
+		{label && isNumeric(labelX) && isNumeric(labelY)
+			? <EdgeText
+					x={labelX}
+					y={labelY}
+					label={label}
+					labelStyle={labelStyle}
+					labelShowBg={labelShowBg}
+					labelBgStyle={labelBgStyle}
+					labelBgPadding={labelBgPadding}
+					labelBgBorderRadius={labelBgBorderRadius}
+				/>
+			: null}
+	</>;
 }

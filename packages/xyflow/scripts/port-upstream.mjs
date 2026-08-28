@@ -1,5 +1,14 @@
 #!/usr/bin/env node
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+	cpSync,
+	existsSync,
+	mkdirSync,
+	readdirSync,
+	readFileSync,
+	rmSync,
+	statSync,
+	writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -25,7 +34,10 @@ function walk(dir) {
 }
 
 function shimImportPath(fromFile) {
-	const destRel = relative(join(DEST, dirname(fromFile)), join(DEST, 'react-shim.ts')).replace(/\\/g, '/');
+	const destRel = relative(join(DEST, dirname(fromFile)), join(DEST, 'react-shim.ts')).replace(
+		/\\/g,
+		'/',
+	);
 	return destRel.startsWith('.') ? destRel : `./${destRel}`;
 }
 
@@ -35,10 +47,18 @@ function transformSource(text, destRel) {
 
 	out = out.replace(/from 'react-dom'/g, "from 'octane/client'");
 	out = out.replace(/from "react-dom"/g, 'from "octane/client"');
-	out = out.replace(/import type \{([^}]+)\} from 'react';/g, `import type {$1} from '${shimPath}';`);
-	out = out.replace(/import type \{([^}]+)\} from "react";/g, `import type {$1} from "${shimPath}";`);
+	out = out.replace(
+		/import type \{([^}]+)\} from 'react';/g,
+		`import type {$1} from '${shimPath}';`,
+	);
+	out = out.replace(
+		/import type \{([^}]+)\} from "react";/g,
+		`import type {$1} from "${shimPath}";`,
+	);
 	out = out.replace(/import \{([^}]+)\} from 'react';/g, (match, imports) => {
-		const typeOnly = !imports.includes(' type ') && imports.split(',').every((part) => part.trim().startsWith('type '));
+		const typeOnly =
+			!imports.includes(' type ') &&
+			imports.split(',').every((part) => part.trim().startsWith('type '));
 		if (typeOnly) return `import {${imports}} from '${shimPath}';`;
 		return `import {${imports}} from 'octane';`;
 	});

@@ -1,3 +1,3 @@
 export function GroupNode() {
-  return null;
+	return null;
 }

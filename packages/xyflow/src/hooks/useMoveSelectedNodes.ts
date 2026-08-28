@@ -6,7 +6,7 @@ import { type Node } from '../types';
 import { useStoreApi } from './useStore';
 
 const selectedAndDraggable = (nodesDraggable: boolean) => (n: Node) =>
-  n.selected && (n.draggable || (nodesDraggable && typeof n.draggable === 'undefined'));
+	n.selected && (n.draggable || (nodesDraggable && typeof n.draggable === 'undefined'));
 
 /**
  * Hook for updating node positions by passing a direction and factor
@@ -15,56 +15,68 @@ const selectedAndDraggable = (nodesDraggable: boolean) => (n: Node) =>
  * @returns function for updating node positions
  */
 export function useMoveSelectedNodes(...rest: [slot?: symbol]) {
-  const slot = resolveHookSlot(rest);
-  const store = useStoreApi(slot);
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(slot);
 
-  const moveSelectedNodes = useCallback(function moveSelectedNodes(params: { direction: XYPosition; factor: number }) {
-    const { nodeExtent, snapToGrid, snapGrid, nodesDraggable, onError, updateNodePositions, nodeLookup, nodeOrigin } =
-      store.getState();
-    const nodeUpdates = new Map();
-    const isSelected = selectedAndDraggable(nodesDraggable);
+	const moveSelectedNodes = useCallback(
+		function moveSelectedNodes(params: { direction: XYPosition; factor: number }) {
+			const {
+				nodeExtent,
+				snapToGrid,
+				snapGrid,
+				nodesDraggable,
+				onError,
+				updateNodePositions,
+				nodeLookup,
+				nodeOrigin,
+			} = store.getState();
+			const nodeUpdates = new Map();
+			const isSelected = selectedAndDraggable(nodesDraggable);
 
-    /*
-     * by default a node moves 5px on each key press
-     * if snap grid is enabled, we use that for the velocity
-     */
-    const xVelo = snapToGrid ? snapGrid[0] : 5;
-    const yVelo = snapToGrid ? snapGrid[1] : 5;
+			/*
+			 * by default a node moves 5px on each key press
+			 * if snap grid is enabled, we use that for the velocity
+			 */
+			const xVelo = snapToGrid ? snapGrid[0] : 5;
+			const yVelo = snapToGrid ? snapGrid[1] : 5;
 
-    const xDiff = params.direction.x * xVelo * params.factor;
-    const yDiff = params.direction.y * yVelo * params.factor;
+			const xDiff = params.direction.x * xVelo * params.factor;
+			const yDiff = params.direction.y * yVelo * params.factor;
 
-    for (const [, node] of nodeLookup) {
-      if (!isSelected(node)) {
-        continue;
-      }
+			for (const [, node] of nodeLookup) {
+				if (!isSelected(node)) {
+					continue;
+				}
 
-      let nextPosition = {
-        x: node.internals.positionAbsolute.x + xDiff,
-        y: node.internals.positionAbsolute.y + yDiff,
-      };
+				let nextPosition = {
+					x: node.internals.positionAbsolute.x + xDiff,
+					y: node.internals.positionAbsolute.y + yDiff,
+				};
 
-      if (snapToGrid) {
-        nextPosition = snapPosition(nextPosition, snapGrid);
-      }
+				if (snapToGrid) {
+					nextPosition = snapPosition(nextPosition, snapGrid);
+				}
 
-      const { position, positionAbsolute } = calculateNodePosition({
-        nodeId: node.id,
-        nextPosition,
-        nodeLookup,
-        nodeExtent,
-        nodeOrigin,
-        onError,
-      });
+				const { position, positionAbsolute } = calculateNodePosition({
+					nodeId: node.id,
+					nextPosition,
+					nodeLookup,
+					nodeExtent,
+					nodeOrigin,
+					onError,
+				});
 
-      node.position = position;
-      node.internals.positionAbsolute = positionAbsolute;
+				node.position = position;
+				node.internals.positionAbsolute = positionAbsolute;
 
-      nodeUpdates.set(node.id, node);
-    }
+				nodeUpdates.set(node.id, node);
+			}
 
-    updateNodePositions(nodeUpdates);
-  }, [], slot);
+			updateNodePositions(nodeUpdates);
+		},
+		[],
+		slot,
+	);
 
-  return moveSelectedNodes;
+	return moveSelectedNodes;
 }
