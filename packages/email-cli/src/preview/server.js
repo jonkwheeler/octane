@@ -4,7 +4,7 @@ import { octane } from 'octane/compiler/vite';
 import { createServer as createViteServer } from 'vite';
 import { discoverTemplatePaths, isDirectory } from '../templates.js';
 
-/** @typedef {{ directory?: string, host?: string, port?: number, logLevel?: import('vite').LogLevel }} PreviewServerOptions */
+/** @typedef {{ directory?: string, host?: string, port?: number, logLevel?: 'error' | 'warn' | 'info' | 'silent' }} PreviewServerOptions */
 
 /**
  * Start an Octane-native development server for `.tsrx` email templates.

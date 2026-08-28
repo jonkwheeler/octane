@@ -9,7 +9,7 @@
     "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["node"]
+    "types": []
   },
   "include": ["src", "vitest.config.ts"],
   "exclude": ["node_modules", "tests"]
