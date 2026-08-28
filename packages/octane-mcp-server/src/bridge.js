@@ -8,6 +8,10 @@ import { join, resolve } from 'node:path';
 export const KNOWN_BINDINGS = {
 	'@gsap/react': '@octanejs/gsap',
 	animejs: '@octanejs/animejs',
+	'react-hotkeys-hook': '@octanejs/hotkeys-hook',
+	'react-use': '@octanejs/use',
+	'react-player': '@octanejs/player',
+	'react-responsive-carousel': '@octanejs/responsive-carousel',
 	'usehooks-ts': '@octanejs/usehooks-ts',
 	zustand: '@octanejs/zustand',
 	valtio: '@octanejs/valtio',
