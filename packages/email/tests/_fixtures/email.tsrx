@@ -3,6 +3,7 @@ import {
 	Button,
 	Column,
 	Container,
+	Font,
 	Head,
 	Heading,
 	Html,
@@ -16,7 +17,13 @@ import {
 
 export function WelcomeEmail(props: { name: string }) @{
 	<Html lang="en">
-		<Head />
+		<Head>
+			<Font
+				fontFamily="Inter"
+				fallbackFontFamily="Arial"
+				webFont={{ url: 'https://example.com/inter.woff2', format: 'woff2' }}
+			/>
+		</Head>
 		<Preview text={`Welcome, ${props.name}`} />
 		<Body style={{ backgroundColor: '#f6f9fc', margin: 0 }}>
 			<Container style={{ padding: '20px', backgroundColor: '#ffffff' }}>

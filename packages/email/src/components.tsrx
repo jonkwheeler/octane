@@ -68,7 +68,8 @@ export function Head({ children }: HeadProps) @{
 	<>
 		<meta content="text/html; charset=UTF-8" httpEquiv="Content-Type" />
 		<meta name="x-apple-disable-message-reformatting" />
-		{children}
+		{/* Octane forbids authored <head>; render() extracts this temporary carrier. */}
+		<body data-octane-email-head="head">{children}</body>
 	</>
 }
 
@@ -251,7 +252,9 @@ export function Font({
 	const css = `\n    @font-face {\n      font-family: '${fontFamily}';\n      font-style: ${fontStyle};\n      font-weight: ${fontWeight};\n      mso-font-alt: '${fallbacks[0]}';\n      ${source}\n    }\n\n    * {\n      font-family: '${fontFamily}', ${fallbacks.join(
 		', ',
 	)};\n    }\n  `;
-	<style dangerouslySetInnerHTML={{ __html: css }} />
+	// A dynamic host keeps email CSS global instead of entering Octane's scoped-style pipeline.
+	const Style = 'style';
+	<Style dangerouslySetInnerHTML={{ __html: css }} />
 }
 
 const PREVIEW_MAX_LENGTH = 200;

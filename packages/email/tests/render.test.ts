@@ -11,6 +11,9 @@ describe('@octanejs/email', () => {
 		expect(html).toContain('Hello, Ada');
 		expect(html).toContain('role="presentation"');
 		expect(html).toContain('background-color:#000');
+		const fontStyle = html.indexOf('@font-face');
+		expect(fontStyle).toBeGreaterThan(html.indexOf('<head>'));
+		expect(fontStyle).toBeLessThan(html.indexOf('</head>'));
 		expect(html).toContain('<!--[if mso]><i style="mso-font-width:500%;mso-text-raise:18px"');
 		expect(html).toContain('mso-text-raise:9px');
 		expect(html).toContain('mso-font-width:500%" hidden>&#8202;&#8202;&#8203;');
