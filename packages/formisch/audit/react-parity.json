@@ -39,7 +39,7 @@
       "arch": "any",
       "packageManager": "pnpm@11.15.1",
       "lockfile": "pnpm-lock.yaml",
-      "lockfileSha256": "3fd3545e05b0e0e2b3bcb506aa8454e5aa07a1e44b59aa8e97d34c5067802c8d"
+      "lockfileSha256": "d5f1d96716871e165f5adf3d3cdfcb5a8390ffba279bf6d014197372b0cc321b"
     }
   },
   "lanes": [
@@ -75,11 +75,6 @@
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -132,11 +127,6 @@
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
-        },
-        {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
           "role": "support",
           "sha256": "4d52a41ec7cf3a90214ca774b7216091909d36f86235e52e2327e95fda88adb6"
@@ -187,11 +177,6 @@
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
-        },
-        {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
           "role": "support",
           "sha256": "4d52a41ec7cf3a90214ca774b7216091909d36f86235e52e2327e95fda88adb6"
@@ -240,11 +225,6 @@
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
@@ -302,11 +282,6 @@
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
         },
         {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
-        },
-        {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
           "role": "support",
           "sha256": "4d52a41ec7cf3a90214ca774b7216091909d36f86235e52e2327e95fda88adb6"
@@ -355,11 +330,6 @@
           "path": "scripts/react-parity/formisch-upstream-lib.mjs",
           "role": "support",
           "sha256": "9fdc24895345a7001661fa3e32d5ea5aee33e06bc316a879492fd93fc874057e"
-        },
-        {
-          "path": "vitest.config.js",
-          "role": "support",
-          "sha256": "f22127656746d54847445118e2ffe5fd225f243b23551b5b0648e3c4c2733b98"
         },
         {
           "path": "packages/formisch/audit/pristine-react-core-setup.ts",
