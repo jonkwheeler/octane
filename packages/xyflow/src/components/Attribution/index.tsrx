@@ -2,6 +2,9 @@ import type { PanelPosition, ProOptions } from '@xyflow/system';
 
 import { Panel } from '../Panel/index.tsrx';
 
+// Kept module-local so browser consumers do not need `@types/node`.
+declare const process: { env: { NODE_ENV?: string } };
+
 type AttributionProps = {
 	proOptions?: ProOptions;
 	position?: PanelPosition;
