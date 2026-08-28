@@ -31,6 +31,19 @@ describe('rich email content', () => {
 		expect(html).not.toContain('<img src=x>');
 	});
 
+	it('escapes Markdown link and image attributes', () => {
+		const html = renderMarkdown(
+			`[Terms](https://example.com/?a=1&copy=2 'Say <hello> & "goodbye"')\n\n![A&B <C> 'D'](https://example.com/image?a=1&copy=2 'Title <x> & "y"')`,
+		);
+
+		expect(html).toContain(
+			'href="https://example.com/?a=1&amp;copy=2" target="_blank" title="Say &lt;hello&gt; &amp; &quot;goodbye&quot;"',
+		);
+		expect(html).toContain(
+			'src="https://example.com/image?a=1&amp;copy=2" alt="A&amp;B &lt;C&gt; &#39;D&#39;" title="Title &lt;x&gt; &amp; &quot;y&quot;"',
+		);
+	});
+
 	it('renders syntax-highlighted code with optional line numbers', async () => {
 		const html = await render(CodeBlockEmail);
 

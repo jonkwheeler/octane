@@ -132,7 +132,7 @@ const styleAttribute = (style: EmailStyle | undefined) => {
 	return css ? ` style="${css}"` : '';
 };
 const styled = (tag: string, style: EmailStyle | undefined) => `${tag}${styleAttribute(style)}`;
-const escapeAttribute = (value: string) => value.replaceAll('"', '&quot;');
+const escapeAttribute = (value: string) => escapeHtml(value);
 
 function escapeHtml(value: string): string {
 	return value
