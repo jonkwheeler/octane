@@ -12,15 +12,14 @@ import {
 	type Percentage,
 	type Rule,
 } from 'css-tree';
+import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { dirname } from 'node:path';
 import { compile } from 'tailwindcss';
 import { collectTailwindBoundaries, type TailwindBoundaryOptions } from './context.ts';
 
-const DEFAULT_THEME = `@theme default {
---breakpoint-md:48rem;--spacing:0.25rem;
---font-size-sm:0.875rem;--text-sm--line-height:1.25rem;
---font-size-lg:1.125rem;--text-lg--line-height:1.75rem;
---color-blue-500:oklch(62.3% .214 259.815);--color-red-500:oklch(63.7% .237 25.331);
-}`;
+const require = createRequire(import.meta.url);
+const TAILWIND_STYLESHEETS = new Set(['tailwindcss/theme.css', 'tailwindcss/utilities.css']);
 
 interface CompiledStyles {
 	inline: Map<string, string>;
@@ -62,9 +61,21 @@ async function compileStyles(
 	options: TailwindBoundaryOptions,
 ): Promise<CompiledStyles> {
 	if (classes.length === 0) return { inline: new Map(), nonInline: '' };
-	const css = `@layer theme, utilities;${DEFAULT_THEME}${options.theme ?? ''}\n@tailwind utilities;${options.utility ?? ''}\n@config;`;
+	const css = `@layer theme, utilities;
+@import "tailwindcss/theme.css";
+@import "tailwindcss/utilities.css";
+${options.theme ?? ''}
+${options.utility ?? ''}
+@config;`;
 	const compiler = await compile(css, {
 		polyfills: 0,
+		async loadStylesheet(id) {
+			if (!TAILWIND_STYLESHEETS.has(id)) {
+				throw new Error(`Unsupported Tailwind stylesheet: ${id}`);
+			}
+			const path = require.resolve(id);
+			return { path, base: dirname(path), content: await readFile(path, 'utf8') };
+		},
 		async loadModule(id, base, resourceHint) {
 			if (resourceHint === 'config') return { path: id, base, module: options.config ?? {} };
 			throw new Error(`Unsupported Tailwind module: ${id}`);
@@ -122,31 +133,42 @@ async function compileStyles(
 
 function collectClasses(html: string): string[] {
 	const classes = new Set<string>();
-	for (const match of html.matchAll(/\bclass=["']([^"']*)["']/g)) {
-		for (const name of match[1].trim().split(/\s+/)) if (name) classes.add(name);
+	for (const match of html.matchAll(/\bclass=(["'])([\s\S]*?)\1/g)) {
+		for (const name of match[2].trim().split(/\s+/)) if (name) classes.add(name);
 	}
 	return [...classes];
 }
 
 function inlineFragment(html: string, styles: ReadonlyMap<string, string>): string {
 	return html.replace(
-		/<([a-z][^>]*?)\bclass=["']([^"']*)["']([^>]*)>/gi,
-		(tag, before, names, after) => {
+		/<([a-z][^>]*?)\bclass=(["'])([\s\S]*?)\2([^>]*)>/gi,
+		(tag, before, classQuote, names, after) => {
 			const generated = names
 				.split(/\s+/)
 				.map((name: string) => styles.get(name) ?? '')
 				.join('');
 			if (!generated) return tag;
-			const existing = /\bstyle=["']([^"']*)["']/.exec(`${before}${after}`);
-			if (existing) return tag.replace(existing[0], `style="${generated}${existing[1]}"`);
+			const existing = /\bstyle=(["'])([\s\S]*?)\1/.exec(`${before}${after}`);
+			if (existing) {
+				const styleQuote = existing[1] as '"' | "'";
+				return tag.replace(
+					existing[0],
+					`style=${styleQuote}${escapeAttributeFragment(generated, styleQuote)}${existing[2]}${styleQuote}`,
+				);
+			}
+			const escapedGenerated = escapeAttributeFragment(generated, '"');
 			const selfClosing = /(\s*\/\s*)$/.exec(after);
 			if (selfClosing) {
 				const attributes = after.slice(0, selfClosing.index);
-				return `<${before}class="${names}"${attributes} style="${generated}"${selfClosing[1]}>`;
+				return `<${before}class=${classQuote}${names}${classQuote}${attributes} style="${escapedGenerated}"${selfClosing[1]}>`;
 			}
-			return `<${before}class="${names}"${after} style="${generated}">`;
+			return `<${before}class=${classQuote}${names}${classQuote}${after} style="${escapedGenerated}">`;
 		},
 	);
+}
+
+function escapeAttributeFragment(value: string, quote: '"' | "'"): string {
+	return value.replaceAll('&', '&amp;').replaceAll(quote, quote === '"' ? '&quot;' : '&#39;');
 }
 
 function injectHeadStyle(html: string, css: string): string {

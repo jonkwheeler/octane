@@ -20,12 +20,10 @@ function resolveTextChild(child: unknown): string {
 }
 
 export type MarkdownProps =
-	Readonly<{
+	Readonly<Omit<EmailElementProps<HTMLDivElement>, 'children' | 'style'>> & Readonly<{
 		children: string;
 		markdownCustomStyles?: MarkdownStyles;
 		markdownContainerStyles?: EmailStyle;
-		ref?: ((element: HTMLDivElement | null) => void) | { current: HTMLDivElement | null } | null;
-		[key: string]: unknown;
 	}>;
 
 export function Markdown(props: MarkdownProps) @{

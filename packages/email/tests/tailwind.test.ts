@@ -18,6 +18,20 @@ describe('Tailwind email styling', () => {
 		expect(html).not.toContain('data-octane-email-tailwind');
 	});
 
+	it('loads the complete stock Tailwind theme', async () => {
+		const html = await render(TailwindEmail);
+		expect(html).toMatch(
+			/class="rounded bg-white text-gray-900"[^>]*style="[^"]*border-radius:0\.25rem;[^"]*background-color:\s*#fff;[^"]*color:rgb\(16,24,40\)/,
+		);
+	});
+
+	it('preserves quoted values in authored inline styles', async () => {
+		const html = await render(TailwindEmail);
+		expect(html).toMatch(
+			/style="padding:8px;[^"]*font-family:'Helvetica Neue',\s*Arial,\s*sans-serif;/,
+		);
+	});
+
 	it('moves responsive and pseudo utilities into the document head', async () => {
 		const html = await render(TailwindEmail);
 		expect(html).toMatch(/<style[^>]*>[\s\S]*@media[\s\S]*hover\\:text-red-500/);

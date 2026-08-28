@@ -257,13 +257,10 @@ export function Font({
 const PREVIEW_MAX_LENGTH = 200;
 const WHITE_SPACE = ' ‌​‍‎‏﻿';
 export type PreviewProps =
-	Readonly<{
+	Readonly<Omit<EmailElementProps<HTMLDivElement>, 'children'>> & Readonly<{
 		text?: string;
 		children?: string | string[];
 		useTitleTag?: boolean;
-		style?: EmailStyle;
-		ref?: ((element: HTMLDivElement | null) => void) | { current: HTMLDivElement | null } | null;
-		[key: string]: unknown;
 	}>;
 export function Preview({
 	text: explicitText,

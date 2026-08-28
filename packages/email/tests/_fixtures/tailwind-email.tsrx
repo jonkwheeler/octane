@@ -7,6 +7,10 @@ export function TailwindEmail() @{
 			<Head />
 			<Body>
 				<img className="p-2" alt="Spacer" src="spacer.png" />
+				<Text className="rounded bg-white text-gray-900">Stock theme</Text>
+				<Text className="p-2" style={{ fontFamily: '\'Helvetica Neue\', Arial, sans-serif' }}>
+					Quoted font
+				</Text>
 				<Text
 					className="bg-blue-500 p-4 !p-8 text-sm hover:text-red-500 md:text-lg"
 					style={{ color: 'rebeccapurple', paddingTop: '99px' }}
