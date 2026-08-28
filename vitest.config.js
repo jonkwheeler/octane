@@ -8468,6 +8468,19 @@ export default defineConfig({
 					],
 				},
 			},
+			...['hotkeys-hook', 'use', 'player', 'responsive-carousel'].map((name) => ({
+				test: {
+					name,
+					include: [`packages/${name}/tests/**/*.test.ts`],
+					exclude: [`packages/${name}/tests/types/**`],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					extensions: ['.tsrx', '.ts', '.mjs', '.js', '.json'],
+				},
+			})),
 			...['pristine', 'adapted'].map((lane) => ({
 				testExecution: { group: 'react-parity' },
 				test: {

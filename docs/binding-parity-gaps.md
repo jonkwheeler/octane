@@ -11,7 +11,7 @@ remain at zero. Zero pins does **not** imply complete upstream parity. Consult
 [`docs/bindings-status.md`](bindings-status.md) for each binding's supported
 surface and evidence.
 
-**29 active pin(s) across 96 binding package(s).**
+**29 active pin(s) across 100 binding package(s).**
 
 | Package | Active pins |
 | --- | ---: |
@@ -38,6 +38,7 @@ surface and evidence.
 | `@octanejs/formisch` | 0 |
 | `@octanejs/gsap` | 0 |
 | `@octanejs/hook-form` | 0 |
+| `@octanejs/hotkeys-hook` | 0 |
 | `@octanejs/html-react-parser` | 0 |
 | `@octanejs/i18next` | 0 |
 | `@octanejs/image-crop` | 0 |
@@ -59,6 +60,7 @@ surface and evidence.
 | `@octanejs/opentui` | 0 |
 | `@octanejs/pdf` | 0 |
 | `@octanejs/phosphor-icons` | 0 |
+| `@octanejs/player` | 0 |
 | `@octanejs/popper` | 0 |
 | `@octanejs/radix` | 0 |
 | `@octanejs/rainbowkit` | 0 |
@@ -69,6 +71,7 @@ surface and evidence.
 | `@octanejs/redux-toolkit` | 0 |
 | `@octanejs/remix-router` | 0 |
 | `@octanejs/resizable-panels` | 0 |
+| `@octanejs/responsive-carousel` | 0 |
 | `@octanejs/rxjs` | 0 |
 | `@octanejs/shadcn` | 0 |
 | `@octanejs/solana-kit` | 0 |
@@ -99,6 +102,7 @@ surface and evidence.
 | `@octanejs/tiptap` | 0 |
 | `@octanejs/to-print` | 0 |
 | `@octanejs/transition-group` | 0 |
+| `@octanejs/use` | 0 |
 | `@octanejs/usehooks-ts` | 0 |
 | `@octanejs/valtio` | 0 |
 | `@octanejs/vaul` | 0 |

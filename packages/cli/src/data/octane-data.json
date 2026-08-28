@@ -376,6 +376,21 @@
       "verified": "2026-08-01"
     },
     {
+      "name": "@octanejs/hotkeys-hook",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-hotkeys-hook",
+        "version": "5.3.3",
+        "commit": "7f3fffdec3e3bd1aeeadb9d00827368c7eb83e04",
+        "license": "MIT"
+      },
+      "surface": "Complete published entrypoint for react-hotkeys-hook@5.3.3.",
+      "divergences": [],
+      "ssr": "Browser work is deferred to effects; server import is safe.",
+      "verified": "2026-08-12"
+    },
+    {
       "name": "@octanejs/html-react-parser",
       "version": "0.0.4",
       "category": "Forms and content",
@@ -687,6 +702,21 @@
       "verified": "2026-08-02"
     },
     {
+      "name": "@octanejs/player",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-player",
+        "version": "3.4.0",
+        "commit": "258fce939638a295f6a429ad683935254d1bfda2",
+        "license": "MIT"
+      },
+      "surface": "Complete published entrypoint for react-player@3.4.0.",
+      "divergences": [],
+      "ssr": "Browser work is deferred to effects; server import is safe.",
+      "verified": "2026-08-12"
+    },
+    {
       "name": "@octanejs/popper",
       "version": "0.0.14",
       "category": "UI and interaction",
@@ -824,6 +854,21 @@
       ],
       "ssr": "Deterministic server rendering and live hydration adoption are covered by dedicated executable projects.",
       "verified": "2026-08-02"
+    },
+    {
+      "name": "@octanejs/responsive-carousel",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-responsive-carousel",
+        "version": "3.2.23",
+        "commit": "6d0896aaf55780e5bd53d2ae30e8faa14845fce4",
+        "license": "MIT"
+      },
+      "surface": "Complete published entrypoint for react-responsive-carousel@3.2.23.",
+      "divergences": [],
+      "ssr": "Browser work is deferred to effects; server import is safe.",
+      "verified": "2026-08-12"
     },
     {
       "name": "@octanejs/rxjs",
@@ -1288,6 +1333,21 @@
       ],
       "ssr": "Transition state and wrapper markup render on the server; DOM class mutation begins only after client mount and requires nodeRef.",
       "verified": "2026-08-09"
+    },
+    {
+      "name": "@octanejs/use",
+      "version": "0.0.1",
+      "category": "UI and interaction",
+      "upstream": {
+        "package": "react-use",
+        "version": "17.6.1",
+        "commit": "fbe99c6327e6af94df03bc8bd6ecc5e3ff04fbcc",
+        "license": "Unlicense"
+      },
+      "surface": "Complete published entrypoint for react-use@17.6.1.",
+      "divergences": [],
+      "ssr": "Browser work is deferred to effects; server import is safe.",
+      "verified": "2026-08-12"
     },
     {
       "name": "@octanejs/usehooks-ts",

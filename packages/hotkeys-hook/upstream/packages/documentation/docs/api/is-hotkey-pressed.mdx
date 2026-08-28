@@ -1,0 +1,55 @@
+---
+sidebar_position: 3
+title: isHotkeyPressed
+---
+
+# isHotkeyPressed API
+
+Function signature:
+
+```ts
+function isHotkeyPressed(key: string | string[], delimiter: string = ','): boolean
+```
+
+Check if a specific key or combination of keys is currently pressed.
+
+```jsx
+import { isHotkeyPressed } from 'react-hotkeys-hook';
+
+const onClick = () => isHotkeyPressed('shift') ? setCount(count => count - 1) : setCount(count => count + 1);
+```
+
+***
+
+## Arguments
+
+### `key`
+
+```ts
+key: string | string[]
+```
+
+The key or keys to check. This can be:
+* A single keycode string like `'a'`
+* A delimited string of keycodes like `'shift,a'`
+* An array of keycode strings like `['shift', 'a']`
+
+When multiple keys are provided, **all** of them must be pressed down for the function to return `true`.
+
+:::caution `mod` is not supported
+Use `isHotkeyPressed(['ctrl', 'a'])` or `isHotkeyPressed(['meta', 'a'])` instead of `mod`.
+:::
+
+### `delimiter`
+
+```ts
+delimiter: string // default: ","
+```
+
+The delimiter used to parse multiple keys from a single string.
+
+## Return value
+
+### `boolean`
+
+Returns `true` if the key or key combination is currently pressed, otherwise `false`.

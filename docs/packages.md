@@ -6,7 +6,7 @@ This inventory is derived from the manifests directly under `packages/`.
 Repository tooling imports the same discovery helper, so adding, renaming, or
 privatizing a package updates every package-wide check together.
 
-**110 publishable package(s), including 96 framework binding(s) and 3 framework integration(s).**
+**114 publishable package(s), including 100 framework binding(s) and 3 framework integration(s).**
 
 All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 
@@ -41,6 +41,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/formisch` | [`packages/formisch`](../packages/formisch) | framework binding | `0.0.3` | 1 |
 | `@octanejs/gsap` | [`packages/gsap`](../packages/gsap) | framework binding | `0.0.17` | 1 |
 | `@octanejs/hook-form` | [`packages/hook-form`](../packages/hook-form) | framework binding | `0.1.45` | 1 |
+| `@octanejs/hotkeys-hook` | [`packages/hotkeys-hook`](../packages/hotkeys-hook) | framework binding | `0.0.1` | 1 |
 | `@octanejs/html-react-parser` | [`packages/html-react-parser`](../packages/html-react-parser) | framework binding | `0.0.4` | 2 |
 | `@octanejs/i18next` | [`packages/i18next`](../packages/i18next) | framework binding | `0.1.43` | 3 |
 | `@octanejs/image-crop` | [`packages/image-crop`](../packages/image-crop) | framework binding | `0.0.4` | 5 |
@@ -63,6 +64,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/opentui` | [`packages/opentui`](../packages/opentui) | framework binding | `0.0.3` | 6 |
 | `@octanejs/pdf` | [`packages/pdf`](../packages/pdf) | framework binding | `0.0.14` | 3 |
 | `@octanejs/phosphor-icons` | [`packages/phosphor-icons`](../packages/phosphor-icons) | framework binding | `0.0.28` | 2 |
+| `@octanejs/player` | [`packages/player`](../packages/player) | framework binding | `0.0.1` | 1 |
 | `@octanejs/popper` | [`packages/popper`](../packages/popper) | framework binding | `0.0.14` | 2 |
 | `@octanejs/radix` | [`packages/radix`](../packages/radix) | framework binding | `0.1.47` | 1 |
 | `@octanejs/rainbowkit` | [`packages/rainbowkit`](../packages/rainbowkit) | framework binding | `0.0.28` | 2 |
@@ -73,6 +75,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/redux-toolkit` | [`packages/redux-toolkit`](../packages/redux-toolkit) | framework binding | `0.1.43` | 4 |
 | `@octanejs/remix-router` | [`packages/remix-router`](../packages/remix-router) | framework binding | `0.1.44` | 2 |
 | `@octanejs/resizable-panels` | [`packages/resizable-panels`](../packages/resizable-panels) | framework binding | `0.0.6` | 1 |
+| `@octanejs/responsive-carousel` | [`packages/responsive-carousel`](../packages/responsive-carousel) | framework binding | `0.0.1` | 1 |
 | `@octanejs/rsbuild-plugin` | [`packages/rsbuild-plugin-octane`](../packages/rsbuild-plugin-octane) | metaframework | `0.1.43` | 3 |
 | `@octanejs/rspack-plugin` | [`packages/rspack-plugin-octane`](../packages/rspack-plugin-octane) | compiler integration | `0.1.43` | 2 |
 | `@octanejs/rxjs` | [`packages/rxjs`](../packages/rxjs) | framework binding | `0.1.27` | 2 |
@@ -107,6 +110,7 @@ All publishable packages share the enforced Node.js engine baseline `>=22.22.2`.
 | `@octanejs/tiptap` | [`packages/tiptap`](../packages/tiptap) | framework binding | `0.0.42` | 2 |
 | `@octanejs/to-print` | [`packages/to-print`](../packages/to-print) | framework binding | `0.0.4` | 2 |
 | `@octanejs/transition-group` | [`packages/transition-group`](../packages/transition-group) | framework binding | `0.0.14` | 7 |
+| `@octanejs/use` | [`packages/use`](../packages/use) | framework binding | `0.0.1` | 1 |
 | `@octanejs/usehooks-ts` | [`packages/usehooks-ts`](../packages/usehooks-ts) | framework binding | `0.0.29` | 1 |
 | `@octanejs/valtio` | [`packages/valtio`](../packages/valtio) | framework binding | `0.1.31` | 5 |
 | `@octanejs/vaul` | [`packages/vaul`](../packages/vaul) | framework binding | `0.0.14` | 3 |

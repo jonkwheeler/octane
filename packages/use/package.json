@@ -1,0 +1,69 @@
+{
+  "name": "@octanejs/use",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "description": "Complete react-use hook collection for Octane.",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/use"
+  },
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": [
+    "src",
+    "README.md",
+    "UPSTREAM.md",
+    "LICENSE",
+    "LICENSE.upstream",
+    "status.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "test": "vitest run --root ../.. --config vitest.config.js --project use",
+    "typecheck": "tsrx-tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/js-cookie": "^3.0.0",
+    "@xobotyi/scrollbar-width": "^1.9.5",
+    "copy-to-clipboard": "^3.3.1",
+    "fast-deep-equal": "^3.1.3",
+    "fast-shallow-equal": "^1.0.0",
+    "js-cookie": "^3.0.0",
+    "nano-css": "^5.6.2",
+    "resize-observer-polyfill": "^1.5.1",
+    "screenfull": "^5.1.0",
+    "set-harmonic-interval": "^1.0.1",
+    "throttle-debounce": "^3.0.1",
+    "ts-easing": "^0.2.0",
+    "tslib": "^2.1.0"
+  },
+  "peerDependencies": {
+    "octane": "workspace:*"
+  },
+  "devDependencies": {
+    "octane": "workspace:*",
+    "vitest": "catalog:default",
+    "@octanejs/testing-library": "workspace:*",
+    "react": "catalog:default",
+    "react-dom": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
+    "@tsrx/react": "catalog:default",
+    "esbuild": "catalog:default"
+  }
+}

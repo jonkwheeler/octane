@@ -1,0 +1,12 @@
+{
+  "upstream": {
+    "package": "react-use",
+    "version": "17.6.1",
+    "commit": "fbe99c6327e6af94df03bc8bd6ecc5e3ff04fbcc",
+    "license": "Unlicense"
+  },
+  "surface": "Complete published entrypoint for react-use@17.6.1.",
+  "divergences": [],
+  "ssr": "Browser work is deferred to effects; server import is safe.",
+  "verified": "2026-08-12"
+}

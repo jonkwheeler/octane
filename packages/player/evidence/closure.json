@@ -1,0 +1,51 @@
+{
+  "runtimeDependencies": ["octane"],
+  "adaptedSources": [{ "packageName": "react-player", "paths": ["src"] }],
+  "reimplementedDependencies": [
+    {
+      "packageName": "@mux/mux-player-react",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "dash-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "hls-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "spotify-audio-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "tiktok-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "twitch-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "vimeo-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "wistia-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    },
+    {
+      "packageName": "youtube-video-element",
+      "publicBehaviors": ["Playable media URL fallback"],
+      "localEvidence": ["src/Player.tsrx"]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  {
+    "id": "public-entry",
+    "classification": "implemented",
+    "localEvidence": "tests/conformance/exports.test.ts"
+  }
+]

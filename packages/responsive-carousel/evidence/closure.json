@@ -1,0 +1,11 @@
+{
+  "runtimeDependencies": ["octane"],
+  "adaptedSources": [{ "packageName": "react-responsive-carousel", "paths": ["src"] }],
+  "reimplementedDependencies": [
+    {
+      "packageName": "react-easy-swipe",
+      "publicBehaviors": ["Pointer-selectable carousel navigation"],
+      "localEvidence": ["src/Carousel.tsrx"]
+    }
+  ]
+}

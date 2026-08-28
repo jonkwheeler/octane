@@ -1,0 +1,78 @@
+---
+sidebar_position: 5
+title: "Migrate from 4.x to 5.x"
+---
+
+# Migrate from 4.x to 5.x
+
+Version 5 introduces a few breaking changes. This guide walks you through updating your code.
+
+## Behavior changes
+
+### `useHotkeys` listens to physical keys by default
+
+Starting with version 5, `useHotkeys` listens to the physical key **code** instead of the produced **character** by default.
+
+**What this means:**
+* In v4, `useHotkeys('!', callback)` would trigger when the user typed `!`.
+* In v5, `useHotkeys('!', callback)` does **not** work by default, because `!` is not a physical key code.
+
+**How to migrate:**
+
+If you were listening to special characters, you have two options:
+
+1. **Listen to the physical keystroke** (layout-independent):
+   ```js
+   // v5 default behavior
+   useHotkeys('shift+1', callback)
+   ```
+
+2. **Listen to the produced character** (layout-dependent) — use the `useKey` option:
+   ```js
+   useHotkeys('!', callback, { useKey: true })
+   ```
+
+See the [Keyboard Layouts](/docs/documentation/useHotkeys/ignore-layouts) documentation for more details.
+
+### `HotkeysProvider` scope behavior
+
+If **all** scopes are disabled in `HotkeysProvider`, no hotkeys will be active.
+
+## API changes
+
+### `useHotkeys` options renamed
+
+In v4, the option names for combining and separating keys were confusing:
+
+| v4 name | v5 name | Purpose |
+|---------|---------|---------|
+| `combinationKey` | `splitKey` | Character that joins keys within a combination (default: `+`) |
+| `splitKey` | `delimiter` | Character that separates different hotkey combinations (default: `,`) |
+
+**Migration:**
+
+```js
+// v4
+useHotkeys('ctrl+a, shift+b', callback, { combinationKey: '-', splitKey: ';' })
+
+// v5
+useHotkeys('ctrl+a, shift+b', callback, { splitKey: '-', delimiter: ';' })
+```
+
+### `HotkeysProvider` context
+
+#### `enabledScopes` renamed to `activeScopes`
+
+To avoid confusion with the `enableScope` method, `enabledScopes` has been renamed to `activeScopes`.
+
+```js
+// v4
+const { enabledScopes } = useHotkeysContext()
+
+// v5
+const { activeScopes } = useHotkeysContext()
+```
+
+## Other changes
+
+- **Dropped CommonJS support.** The package is now ESM-only. If you need CommonJS, use a bundler like Webpack, Rollup, or Vite to handle the conversion.

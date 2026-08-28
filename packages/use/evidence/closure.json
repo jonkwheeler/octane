@@ -1,0 +1,25 @@
+{
+  "runtimeDependencies": [
+    "octane",
+    "@xobotyi/scrollbar-width",
+    "copy-to-clipboard",
+    "fast-deep-equal",
+    "fast-shallow-equal",
+    "js-cookie",
+    "nano-css",
+    "resize-observer-polyfill",
+    "screenfull",
+    "set-harmonic-interval",
+    "throttle-debounce",
+    "ts-easing",
+    "tslib"
+  ],
+  "adaptedSources": [{ "packageName": "react-use", "paths": ["src"] }],
+  "reimplementedDependencies": [
+    {
+      "packageName": "react-universal-interface",
+      "publicBehaviors": ["Render-prop children receive state and ref"],
+      "localEvidence": ["src/useScratch.js"]
+    }
+  ]
+}
