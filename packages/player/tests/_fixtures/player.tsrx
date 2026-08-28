@@ -12,3 +12,7 @@ export function PlayerChildrenFixture() @{
 		<track src="/captions.vtt" kind="captions" srcLang="en" label="English" />
 	</Player>
 }
+
+export function PlayerPlaybackFixture(props: { src: string; playing: boolean }) @{
+	<Player src={props.src} playing={props.playing} />
+}

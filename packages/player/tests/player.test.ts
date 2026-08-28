@@ -1,6 +1,14 @@
-import { describe, expect, it } from 'vitest';
-import { mount } from '../../octane/tests/_helpers';
-import { PlayerChildrenFixture, PlayerRefFixture } from './_fixtures/player.tsrx';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { flushEffects, mount } from '../../octane/tests/_helpers';
+import {
+	PlayerChildrenFixture,
+	PlayerPlaybackFixture,
+	PlayerRefFixture,
+} from './_fixtures/player.tsrx';
+
+afterEach(() => {
+	vi.restoreAllMocks();
+});
 
 describe('@octanejs/player rendering', () => {
 	it('exposes the rendered video through callback and object refs', () => {
@@ -33,6 +41,19 @@ describe('@octanejs/player rendering', () => {
 		expect(source.getAttribute('src')).toBe('/video.webm');
 		expect(track.parentElement).toBe(video);
 		expect(track.getAttribute('src')).toBe('/captions.vtt');
+		app.unmount();
+	});
+
+	it('reapplies playback when the source changes while playing', () => {
+		const play = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+		vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {});
+		const app = mount(PlayerPlaybackFixture, { src: '/first.mp4', playing: true });
+		flushEffects();
+		expect(play).toHaveBeenCalledTimes(1);
+
+		app.update(PlayerPlaybackFixture, { src: '/second.mp4', playing: true });
+		flushEffects();
+		expect(play).toHaveBeenCalledTimes(2);
 		app.unmount();
 	});
 });

@@ -1,4 +1,5 @@
 import { useEffect, useRef, type OctaneNode } from 'octane';
+import { canPlay as canPlayPattern } from './patterns';
 import type { ReactPlayerProps } from './types';
 
 export type PlayerProps =
@@ -15,7 +16,7 @@ export function Player(props: PlayerProps) @{
 		node.muted = props.muted ?? false;
 		if (props.playing) void node.play();
 		else node.pause();
-	}, [props.playing, props.volume, props.muted]);
+	}, [props.src, props.playing, props.volume, props.muted]);
 	<video
 		ref={[media, props.ref ?? null]}
 		src={typeof props.src === 'string' ? props.src : undefined}
@@ -30,7 +31,8 @@ export function Player(props: PlayerProps) @{
 		onError={props.onError}
 	>{props.children}</video>
 }
-Player.canPlay = (src: string) => /^(https?:|blob:|data:)/.test(src);
+Player.canPlay = (src: string) =>
+	/^blob:/i.test(src) || /^data:(?:audio|video)\//i.test(src) || canPlayPattern.html(src);
 Player.canEnablePIP = (src: string) => Player.canPlay(src);
 Player.addCustomPlayer = () => {};
 Player.removeCustomPlayers = () => {};
