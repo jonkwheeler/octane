@@ -388,6 +388,38 @@ describe('full Select in Chromium', () => {
 		}
 	}, 30_000);
 
+	it('keeps keyboard focus when the pointer has not moved since the key press', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectFull));
+
+			async function selectAfterStaleHover(rootId: string) {
+				const input = page.locator(`#${rootId} [role="combobox"]`);
+				await input.focus();
+				await input.press('ArrowDown');
+				await input.press('ArrowDown');
+				await page
+					.locator(`#${rootId} [role="option"]`)
+					.filter({ hasText: 'One' })
+					.dispatchEvent('mousemove', { bubbles: true });
+				await input.press('Enter');
+			}
+
+			await selectAfterStaleHover('octane-select-root');
+			await selectAfterStaleHover('react-select-root');
+			const logs = await page.evaluate(() => window.__reactSelectFull.logs());
+			const lastChange = (entries: Array<Record<string, unknown>>) =>
+				entries.filter((entry) => entry.type === 'change').at(-1);
+			expect(lastChange(logs.octane)).toEqual(lastChange(logs.react));
+			expect(lastChange(logs.octane)).toMatchObject({
+				value: { label: 'Two', value: '2' },
+			});
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React autoFocus behavior on mount', async () => {
 		const page = await browser.newPage();
 		try {
@@ -645,6 +677,27 @@ describe('touch Select in Chromium', () => {
 });
 
 describe('multi-value keyboard navigation in Chromium', () => {
+	it('allows a selected disabled option to be deselected through the public instance', async () => {
+		const page = await browser.newPage();
+		try {
+			await page.goto(origin, { waitUntil: 'networkidle' });
+			await page.waitForFunction(() => Boolean(window.__reactSelectMulti));
+			await page.evaluate(() => {
+				window.__reactSelectMulti.deselectDisabledThroughInstance('octane');
+				window.__reactSelectMulti.deselectDisabledThroughInstance('react');
+			});
+
+			const logs = await page.evaluate(() => window.__reactSelectMulti.logs());
+			expect(logs.octane).toEqual(logs.react);
+			expect(logs.octane.at(-1)).toMatchObject({
+				actionMeta: { action: 'deselect-option', option: { label: 'One', value: '1' } },
+				value: [{ label: 'Two', value: '2' }],
+			});
+		} finally {
+			await page.close();
+		}
+	}, 30_000);
+
 	it('matches React clear-indicator behavior and focus restoration', async () => {
 		const page = await browser.newPage();
 		try {

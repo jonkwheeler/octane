@@ -1,10 +1,15 @@
 import Select from '../../src/index';
-import type { ActionMeta, OnChangeValue } from '../../src/types';
+import type { Ref } from '../../src/components.tsrx';
+import type { ActionMeta, OnChangeValue, Options, SelectInstance } from '../../src/index';
 import type { BrowserSelectOption } from './select-fixture.tsrx';
 
 export function MultiSelectFixture(props: {
 	options: readonly BrowserSelectOption[];
 	defaultValue: readonly BrowserSelectOption[];
+	ref?: Ref<SelectInstance<BrowserSelectOption, true>>;
+	isOptionDisabled?: (option: BrowserSelectOption, selectValue: Options<
+		BrowserSelectOption
+	>) => boolean;
 	onChange: (value: OnChangeValue<BrowserSelectOption, true>, actionMeta: ActionMeta<
 		BrowserSelectOption
 	>) => void;

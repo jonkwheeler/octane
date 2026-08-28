@@ -668,7 +668,7 @@ export function Select<
 	const [isFocused, setIsFocused] = useState(false);
 	const [isComposing, setIsComposing] = useState(false);
 	const [inputIsHidden, setInputIsHidden] = useState(false);
-	const [appleDevice] = useState(isAppleDevice);
+	const [appleDevice, setAppleDevice] = useState(false);
 	const [focusedOption, setFocusedOption] = useState<Option | null>(initialFocusedOption);
 	const [focusedValue, setFocusedValue] = useState<Option | null>(null);
 	const clearFocusValueOnUpdateRef = useRef(false);
@@ -684,6 +684,7 @@ export function Select<
 	const controlRef = useRef<HTMLDivElement | null>(null);
 	const initialTouch = useRef({ x: 0, y: 0 });
 	const userIsDragging = useRef(false);
+	const blockOptionHover = useRef(false);
 	const initialFocusPass = useRef(selectValue.length > 0);
 	const menuRef = useRef<HTMLDivElement | null>(null);
 	const menuListRef = useRef<HTMLDivElement | null>(null);
@@ -729,6 +730,9 @@ export function Select<
 	]);
 	useEffect(() => {
 		if (props.autoFocus) inputRef.current?.focus();
+	}, []);
+	useEffect(() => {
+		if (isAppleDevice()) setAppleDevice(true);
 	}, []);
 	useEffect(() => {
 		if (initialFocusPass.current) {
@@ -862,7 +866,16 @@ export function Select<
 		props.onChange(newValue, actionMeta);
 	};
 	const selectOption = (option: Option) => {
-		if (props.isOptionDisabled(option, selectValue)) {
+		const optionIsSelected = isSelected(props, option, selectValue);
+		if (props.isMulti && optionIsSelected) {
+			setValue(
+				selectValue.filter(
+					(value) => props.getOptionValue(value) !== props.getOptionValue(option),
+				) as OnChangeValue<Option, IsMulti>,
+				'deselect-option',
+				option,
+			);
+		} else if (props.isOptionDisabled(option, selectValue)) {
 			setAriaSelection(
 				{
 					action: 'select-option',
@@ -872,24 +885,8 @@ export function Select<
 				} as AriaSelection<Option, IsMulti>,
 			);
 			return;
-		}
-		const optionIsSelected = isSelected(props, option, selectValue);
-		if (props.isMulti) {
-			if (optionIsSelected) {
-				setValue(
-					selectValue.filter(
-						(value) => props.getOptionValue(value) !== props.getOptionValue(option),
-					) as OnChangeValue<Option, IsMulti>,
-					'deselect-option',
-					option,
-				);
-			} else {
-				setValue(
-					[...selectValue, option] as OnChangeValue<Option, IsMulti>,
-					'select-option',
-					option,
-				);
-			}
+		} else if (props.isMulti) {
+			setValue([...selectValue, option] as OnChangeValue<Option, IsMulti>, 'select-option', option);
 		} else {
 			setValue(option as OnChangeValue<Option, IsMulti>, 'select-option');
 		}
@@ -1054,6 +1051,7 @@ export function Select<
 	const onKeyDown = (event: KeyboardEvent) => {
 		props.onKeyDown?.(event);
 		if (event.defaultPrevented || props.isDisabled) return;
+		blockOptionHover.current = true;
 		switch (event.key) {
 			case 'ArrowLeft':
 				if (!props.isMulti || props.inputValue) return;
@@ -1334,6 +1332,10 @@ export function Select<
 					aria-describedby={ariaDescribedBy}
 				/>;
 
+	const onOptionHover = (option: Option) => {
+		if (blockOptionHover.current || focusedOption === option) return;
+		setFocusedOption(option);
+	};
 	const renderOption = (option: CategorizedOption<Option>, id: string) => {
 		const optionIsFocused = focusedOption === option.data;
 		const optionId = elementId(`option-${id}`);
@@ -1345,8 +1347,8 @@ export function Select<
 			innerProps={{
 				id: optionId,
 				onClick: option.isDisabled ? undefined : () => selectOption(option.data),
-				onMouseMove: option.isDisabled ? undefined : () => setFocusedOption(option.data),
-				onMouseOver: option.isDisabled ? undefined : () => setFocusedOption(option.data),
+				onMouseMove: option.isDisabled ? undefined : () => onOptionHover(option.data),
+				onMouseOver: option.isDisabled ? undefined : () => onOptionHover(option.data),
 				onTouchEnd: option.isDisabled
 					? undefined
 					: () => {
@@ -1408,7 +1410,10 @@ export function Select<
 						event.stopPropagation();
 						event.preventDefault();
 					},
-					onMouseMove: (event: MouseEvent) => event.stopPropagation(),
+					onMouseMove: (event: MouseEvent) => {
+						blockOptionHover.current = false;
+						event.stopPropagation();
+					},
 				}}
 				isLoading={props.isLoading}
 				placement={menuPlacement}

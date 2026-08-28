@@ -425,12 +425,27 @@ const reactMultiElement = document.getElementById('react-multi-root');
 if (!octaneMultiElement || !reactMultiElement) throw new Error('missing multi roots');
 const multiLogs = { octane: [] as unknown[], react: [] as unknown[] };
 const multiDefaults = browserSelectOptions.slice(0, 2);
-const multiProps = (engine: 'octane' | 'react') => ({
+let octaneMultiInstance: SelectInstance<BrowserSelectOption, true> | null = null;
+let reactMultiInstance: ReactSelect<BrowserSelectOption, true> | null = null;
+const multiProps = (engine: 'octane' | 'react', disableSelected = false) => ({
 	defaultValue: multiDefaults,
 	instanceId: 'multi-browser',
+	...(disableSelected
+		? {
+				isOptionDisabled: (option: BrowserSelectOption) =>
+					option.value === browserSelectOptions[0]!.value,
+			}
+		: {}),
 	isMulti: true as const,
 	name: 'multi-choice',
 	options: browserSelectOptions,
+	ref: (instance: unknown) => {
+		if (engine === 'octane') {
+			octaneMultiInstance = instance as SelectInstance<BrowserSelectOption, true> | null;
+		} else {
+			reactMultiInstance = instance as ReactSelect<BrowserSelectOption, true> | null;
+		}
+	},
 	onChange(value: unknown, actionMeta: unknown) {
 		multiLogs[engine].push({ value, actionMeta });
 	},
@@ -447,6 +462,26 @@ flushReact(() => {
 window.__reactSelectMulti = {
 	logs() {
 		return { octane: [...multiLogs.octane], react: [...multiLogs.react] };
+	},
+	deselectDisabledThroughInstance(engine: 'octane' | 'react') {
+		if (engine === 'octane') {
+			flushSync(() => {
+				octaneMultiRoot.render(MultiSelectFixture, multiProps('octane', true) as never);
+			});
+			if (!octaneMultiInstance) throw new Error('missing Octane multi Select instance');
+			flushSync(() => octaneMultiInstance!.selectOption(browserSelectOptions[0]!));
+			return;
+		}
+		flushReact(() => {
+			reactMultiRoot.render(
+				React.createElement(
+					ReactSelect<BrowserSelectOption, true>,
+					multiProps('react', true) as never,
+				),
+			);
+		});
+		if (!reactMultiInstance) throw new Error('missing React multi Select instance');
+		flushReact(() => reactMultiInstance!.selectOption(browserSelectOptions[0]!));
 	},
 };
 
@@ -584,6 +619,7 @@ declare global {
 		};
 		__reactSelectMulti: {
 			logs(): { octane: unknown[]; react: unknown[] };
+			deselectDisabledThroughInstance(engine: 'octane' | 'react'): void;
 		};
 		__reactSelectAnimated: {
 			snapshot(engine: 'octane' | 'react'): {

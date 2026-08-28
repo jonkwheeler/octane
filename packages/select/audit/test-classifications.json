@@ -62,6 +62,11 @@
       "oracle": "Repo-authored leaf-component comparison against the published React implementation."
     },
     {
+      "path": "packages/select/tests/hydration.test.ts",
+      "disposition": "octane-only-framework-contract",
+      "reason": "Repo-authored Octane SSR hydration coverage is not counted as adapted upstream evidence."
+    },
+    {
       "path": "packages/select/tests/local-crosswalk.test.ts",
       "disposition": "octane-only-framework-contract",
       "reason": "Verifies the repo-authored source crosswalk rather than an upstream runtime case."
