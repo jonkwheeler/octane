@@ -16,7 +16,7 @@ export async function render<Props>(
 	props?: Props,
 	options?: RenderOptions,
 ): Promise<string> {
-	return renderWithTailwind(() => {
+	const document = await renderWithTailwind(() => {
 		const { html, css } = renderToStaticMarkup(component, props);
 		const cleanHtml = html.replace(/<!DOCTYPE.*?>/i, '');
 		const htmlStart = cleanHtml.indexOf('<html');
@@ -29,9 +29,9 @@ export async function render<Props>(
 		} else if (css.length > 0) {
 			documentHtml = cleanHtml.replace('<head>', `<head>${css}`);
 		}
-		const document = `${DOCTYPE}${documentHtml}`;
-		return options?.pretty ? formatEmailHtml(document) : document;
+		return `${DOCTYPE}${documentHtml}`;
 	});
+	return options?.pretty ? formatEmailHtml(document) : document;
 }
 
 export function formatEmailHtml(html: string): string {

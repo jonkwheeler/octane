@@ -15,3 +15,13 @@ export function ParityEmail(props: { name: string }) @{
 		</Body>
 	</Html>
 }
+
+export function TextMarginsEmail() @{
+	<Html>
+		<Head />
+		<Body>
+			<Text style={{ margin: 0 }}>No margins</Text>
+			<Text style={{ margin: 0, marginTop: '8px' }}>Top margin override</Text>
+		</Body>
+	</Html>
+}

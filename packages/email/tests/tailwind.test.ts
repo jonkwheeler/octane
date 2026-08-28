@@ -36,6 +36,13 @@ describe('Tailwind email styling', () => {
 		expect(html).not.toContain('/ style=');
 	});
 
+	it('pretty-prints the transformed document without skipping Tailwind styles', async () => {
+		const html = await render(TailwindEmail, undefined, { pretty: true });
+		expect(html).toContain('>\n<');
+		expect(html).toMatch(/style="[^"]*background-color:rgb\(43,127,255\)/);
+		expect(html).not.toContain('data-octane-email-tailwind');
+	});
+
 	it('isolates multiple Tailwind boundaries in one async render', async () => {
 		const html = await render(TwoTailwindBoundaries);
 		expect(html).toContain('padding:8px');

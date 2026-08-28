@@ -31,12 +31,32 @@ function expandSpace(value: Space): [Space, Space, Space, Space] {
 }
 
 export function computeMargins(style: EmailStyle): EmailStyle {
-	let [top, right, bottom, left] = expandSpace(style.margin as Space);
-	if (style.marginTop !== undefined) top = style.marginTop as Space;
-	if (style.marginRight !== undefined) right = style.marginRight as Space;
-	if (style.marginBottom !== undefined) bottom = style.marginBottom as Space;
-	if (style.marginLeft !== undefined) left = style.marginLeft as Space;
-	return { marginTop: top, marginRight: right, marginBottom: bottom, marginLeft: left };
+	let result: EmailStyle = {
+		marginTop: undefined,
+		marginRight: undefined,
+		marginBottom: undefined,
+		marginLeft: undefined,
+	};
+	for (const [key, value] of Object.entries(style)) {
+		if (key === 'margin') {
+			const [top, right, bottom, left] = expandSpace(value as Space);
+			result = {
+				marginTop: top,
+				marginBottom: bottom,
+				marginLeft: left,
+				marginRight: right,
+			};
+		} else if (key === 'marginTop') {
+			result.marginTop = value as Space;
+		} else if (key === 'marginRight') {
+			result.marginRight = value as Space;
+		} else if (key === 'marginBottom') {
+			result.marginBottom = value as Space;
+		} else if (key === 'marginLeft') {
+			result.marginLeft = value as Space;
+		}
+	}
+	return result;
 }
 
 export function withMargins(props: Record<string, Space>): EmailStyle {
