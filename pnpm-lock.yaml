@@ -5565,6 +5565,12 @@ importers:
 
   packages/email:
     dependencies:
+      '@types/css-tree':
+        specifier: 2.3.10
+        version: 2.3.10
+      '@types/prismjs':
+        specifier: 1.26.6
+        version: 1.26.6
       css-tree:
         specifier: 3.2.1
         version: 3.2.1
@@ -5587,12 +5593,6 @@ importers:
       '@tsrx/react':
         specifier: catalog:default
         version: 0.2.61(react@19.2.7)
-      '@types/css-tree':
-        specifier: 2.3.10
-        version: 2.3.10
-      '@types/prismjs':
-        specifier: 1.26.6
-        version: 1.26.6
       esbuild:
         specifier: catalog:default
         version: 0.28.1

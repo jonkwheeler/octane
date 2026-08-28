@@ -34,6 +34,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@types/css-tree": "2.3.10",
+    "@types/prismjs": "1.26.6",
     "css-tree": "3.2.1",
     "marked": "^15.0.12",
     "prismjs": "^1.30.0",
@@ -46,8 +48,6 @@
     "@react-email/components": "catalog:default",
     "@react-email/render": "catalog:default",
     "@tsrx/react": "catalog:default",
-    "@types/css-tree": "2.3.10",
-    "@types/prismjs": "1.26.6",
     "esbuild": "catalog:default",
     "octane": "workspace:*",
     "react": "catalog:default",
