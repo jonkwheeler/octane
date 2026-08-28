@@ -133,38 +133,121 @@ ${options.utility ?? ''}
 
 function collectClasses(html: string): string[] {
 	const classes = new Set<string>();
-	for (const match of html.matchAll(/\bclass=(["'])([\s\S]*?)\1/g)) {
-		for (const name of match[2].trim().split(/\s+/)) if (name) classes.add(name);
-	}
+	mapStartTags(html, (tag) => {
+		const attribute = findQuotedAttribute(tag, 'class');
+		if (attribute) {
+			for (const name of attribute.value.trim().split(/\s+/)) if (name) classes.add(name);
+		}
+		return tag;
+	});
 	return [...classes];
 }
 
 function inlineFragment(html: string, styles: ReadonlyMap<string, string>): string {
-	return html.replace(
-		/<([a-z][^>]*?)\bclass=(["'])([\s\S]*?)\2([^>]*)>/gi,
-		(tag, before, classQuote, names, after) => {
-			const generated = names
-				.split(/\s+/)
-				.map((name: string) => styles.get(name) ?? '')
-				.join('');
-			if (!generated) return tag;
-			const existing = /\bstyle=(["'])([\s\S]*?)\1/.exec(`${before}${after}`);
-			if (existing) {
-				const styleQuote = existing[1] as '"' | "'";
-				return tag.replace(
-					existing[0],
-					`style=${styleQuote}${escapeAttributeFragment(generated, styleQuote)}${existing[2]}${styleQuote}`,
-				);
+	return mapStartTags(html, (tag) => {
+		const classAttribute = findQuotedAttribute(tag, 'class');
+		if (!classAttribute) return tag;
+		const generated = classAttribute.value
+			.split(/\s+/)
+			.map((name) => styles.get(name) ?? '')
+			.join('');
+		if (!generated) return tag;
+
+		const styleAttribute = findQuotedAttribute(tag, 'style');
+		if (styleAttribute) {
+			const escapedGenerated = escapeAttributeFragment(generated, styleAttribute.quote);
+			return `${tag.slice(0, styleAttribute.valueStart)}${escapedGenerated}${styleAttribute.value}${tag.slice(styleAttribute.valueEnd)}`;
+		}
+
+		const escapedGenerated = escapeAttributeFragment(generated, '"');
+		const selfClosing = /\/\s*>$/.exec(tag);
+		const insertionPoint = selfClosing?.index ?? tag.lastIndexOf('>');
+		const prefix = tag.slice(0, insertionPoint);
+		const separator = /\s$/.test(prefix) ? '' : ' ';
+		return `${prefix}${separator}style="${escapedGenerated}"${tag.slice(insertionPoint)}`;
+	});
+}
+
+interface QuotedAttribute {
+	quote: '"' | "'";
+	value: string;
+	valueStart: number;
+	valueEnd: number;
+}
+
+function findQuotedAttribute(tag: string, expectedName: string): QuotedAttribute | undefined {
+	const tagName = /^<[a-z][^\s/>]*/i.exec(tag);
+	if (!tagName) return;
+	let cursor = tagName[0].length;
+	while (cursor < tag.length) {
+		while (/\s/.test(tag[cursor] ?? '')) cursor++;
+		if (tag[cursor] === '>' || (tag[cursor] === '/' && /^\/\s*>/.test(tag.slice(cursor)))) return;
+
+		const nameStart = cursor;
+		while (cursor < tag.length && !/[\s=/>]/.test(tag[cursor])) cursor++;
+		if (cursor === nameStart) {
+			cursor++;
+			continue;
+		}
+		const name = tag.slice(nameStart, cursor);
+		while (/\s/.test(tag[cursor] ?? '')) cursor++;
+		if (tag[cursor] !== '=') continue;
+		cursor++;
+		while (/\s/.test(tag[cursor] ?? '')) cursor++;
+		const quote = tag[cursor];
+		if (quote !== '"' && quote !== "'") {
+			while (cursor < tag.length && !/[\s>]/.test(tag[cursor])) cursor++;
+			continue;
+		}
+
+		const valueStart = ++cursor;
+		while (cursor < tag.length && tag[cursor] !== quote) cursor++;
+		if (cursor === tag.length) return;
+		const valueEnd = cursor;
+		cursor++;
+		if (name.toLowerCase() === expectedName) {
+			return {
+				quote,
+				value: tag.slice(valueStart, valueEnd),
+				valueStart,
+				valueEnd,
+			};
+		}
+	}
+}
+
+function mapStartTags(html: string, transform: (tag: string) => string): string {
+	let output = '';
+	let copiedThrough = 0;
+	let cursor = 0;
+	while (cursor < html.length) {
+		const tagStart = html.indexOf('<', cursor);
+		if (tagStart === -1) break;
+		if (!/[a-z]/i.test(html[tagStart + 1] ?? '')) {
+			cursor = tagStart + 1;
+			continue;
+		}
+
+		let tagEnd = tagStart + 2;
+		let quote: '"' | "'" | undefined;
+		for (; tagEnd < html.length; tagEnd++) {
+			const character = html[tagEnd];
+			if (quote) {
+				if (character === quote) quote = undefined;
+			} else if (character === '"' || character === "'") {
+				quote = character;
+			} else if (character === '>') {
+				break;
 			}
-			const escapedGenerated = escapeAttributeFragment(generated, '"');
-			const selfClosing = /(\s*\/\s*)$/.exec(after);
-			if (selfClosing) {
-				const attributes = after.slice(0, selfClosing.index);
-				return `<${before}class=${classQuote}${names}${classQuote}${attributes} style="${escapedGenerated}"${selfClosing[1]}>`;
-			}
-			return `<${before}class=${classQuote}${names}${classQuote}${after} style="${escapedGenerated}">`;
-		},
-	);
+		}
+		if (tagEnd === html.length) break;
+
+		output += html.slice(copiedThrough, tagStart);
+		output += transform(html.slice(tagStart, tagEnd + 1));
+		copiedThrough = tagEnd + 1;
+		cursor = copiedThrough;
+	}
+	return output + html.slice(copiedThrough);
 }
 
 function escapeAttributeFragment(value: string, quote: '"' | "'"): string {

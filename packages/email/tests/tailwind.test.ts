@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '../src/render.ts';
+import { pixelBasedPreset } from '../src/tailwind/index.ts';
+import { transformTailwindHtml } from '../src/tailwind/transform.ts';
 import {
 	NestedTailwindBoundaries,
 	TailwindEmail,
@@ -48,6 +50,17 @@ describe('Tailwind email styling', () => {
 		const html = await render(TailwindEmail);
 		expect(html).toMatch(/<img\b[^>]*\bstyle="padding:8px;"\/>/);
 		expect(html).not.toContain('/ style=');
+	});
+
+	it('only reads class and style text from actual attributes', async () => {
+		const id = 'quoted-attribute-text';
+		const html = await transformTailwindHtml(
+			`<html><head></head><body><template data-octane-email-tailwind-start="${id}"></template><div title='class="ignored" style="ignored"' class="p-2">Content</div><template data-octane-email-tailwind-end="${id}"></template></body></html>`,
+			new Map([[id, { config: { presets: [pixelBasedPreset] } }]]),
+		);
+
+		expect(html).toContain(`title='class="ignored" style="ignored"'`);
+		expect(html).toMatch(/class="p-2" style="padding:8px;"/);
 	});
 
 	it('pretty-prints the transformed document without skipping Tailwind styles', async () => {

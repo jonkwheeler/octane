@@ -1,4 +1,5 @@
 import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import { request as httpRequest } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +31,28 @@ async function preview(emails: string) {
 	const server = await startPreviewServer({ directory: emails, port: 0, logLevel: 'silent' });
 	closeServers.push(server.close);
 	return server;
+}
+
+async function requestPath(url: string, path: string) {
+	const target = new URL(url);
+	return new Promise<{ status: number; body: string }>((resolvePromise, reject) => {
+		const request = httpRequest(
+			{
+				hostname: target.hostname,
+				port: target.port,
+				path,
+			},
+			(response) => {
+				response.setEncoding('utf8');
+				let body = '';
+				response.on('data', (chunk) => (body += chunk));
+				response.on('end', () => resolvePromise({ status: response.statusCode ?? 0, body }));
+			},
+		);
+		request.on('error', reject);
+		request.setTimeout(1_000, () => request.destroy(new Error('Preview request timed out')));
+		request.end();
+	});
 }
 
 afterEach(async () => {
@@ -92,6 +115,16 @@ describe('startPreviewServer', () => {
 		const response = await fetch(`${server.url}preview/broken`);
 		expect(response.status).toBe(500);
 		expect(await response.text()).toMatch(/broken\.tsrx|Unexpected|error/i);
+		expect((await fetch(server.url)).status).toBe(200);
+	});
+
+	it('reports malformed request URLs and remains available', async () => {
+		const { emails } = await fixture();
+		const server = await preview(emails);
+
+		const response = await requestPath(server.url, 'http://[invalid');
+		expect(response.status).toBe(500);
+		expect(response.body).toContain('Invalid URL');
 		expect((await fetch(server.url)).status).toBe(200);
 	});
 });

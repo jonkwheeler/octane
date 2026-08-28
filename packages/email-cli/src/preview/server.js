@@ -41,9 +41,9 @@ export async function startPreviewServer(options = {}) {
 
 	vite.middlewares.use(async (request, response, next) => {
 		if (request.method !== 'GET' && request.method !== 'HEAD') return next();
-		const url = new URL(request.url ?? '/', 'http://preview.local');
 
 		try {
+			const url = new URL(request.url ?? '/', 'http://preview.local');
 			if (url.pathname === '/') {
 				const templates = await discoverTemplates(sourceDirectory);
 				return sendHtml(response, 200, renderIndex(templates));
@@ -74,7 +74,14 @@ export async function startPreviewServer(options = {}) {
 		return next();
 	});
 
-	httpServer.on('request', vite.middlewares);
+	httpServer.on('request', (request, response) => {
+		try {
+			new URL(request.url ?? '/', 'http://preview.local');
+		} catch (error) {
+			return sendHtml(response, 500, renderError(formatError(error)));
+		}
+		vite.middlewares(request, response);
+	});
 	try {
 		await new Promise((resolvePromise, reject) => {
 			httpServer.once('error', reject);
