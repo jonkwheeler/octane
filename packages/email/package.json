@@ -6,6 +6,9 @@
   "engines": {
     "node": ">=22.22.2"
   },
+  "octane": {
+    "sourceEnvironment": "node"
+  },
   "description": "React Email's email-safe component primitives and static renderer for Octane.",
   "author": {
     "name": "Dominic Gannaway",
