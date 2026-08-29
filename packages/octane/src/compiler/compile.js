@@ -9448,25 +9448,46 @@ function compileInternal(
 	// anchorlessRootShape for the shape rules and the hazard). Optimistic
 	// fixpoint over the same-module component-arm edges: cycles of safe-shaped
 	// components stay safe; a locally-unsafe shape drains through its
-	// dependents, so declaration order and recursion do not matter (same scheme
-	// as the autoMemo loop above). An edge to a non-lite or cross-module callee
-	// is safe outright — its componentSlot mints its own positional markers.
+	// dependents, so declaration order and recursion do not matter. An edge to a
+	// non-lite or cross-module callee is safe outright — its componentSlot mints
+	// its own positional markers.
 	for (const [, info] of ctx.componentInfo) {
 		info.anchorlessRootShape = anchorlessRootShape(info.node);
 		info.anchorlessRootSafe = info.anchorlessRootShape !== null;
 	}
-	let anchorlessChanged = true;
-	while (anchorlessChanged) {
-		anchorlessChanged = false;
-		for (const [, info] of ctx.componentInfo) {
-			if (!info.anchorlessRootSafe) continue;
-			for (const name of info.anchorlessRootShape.edges) {
-				const dep = ctx.componentInfo.get(name);
-				if (dep !== undefined && dep.eligible === true && dep.anchorlessRootSafe !== true) {
-					info.anchorlessRootSafe = false;
-					anchorlessChanged = true;
-					break;
-				}
+	// Index each relevant edge in the direction invalidation travels.
+	// Keep the graph lazy: modules without a same-module lite edge need no queue
+	// or adjacency state beyond the shape/safety fields above.
+	let anchorlessDependents = null;
+	for (const [dependentName, info] of ctx.componentInfo) {
+		if (!info.anchorlessRootSafe) continue;
+		for (const calleeName of info.anchorlessRootShape.edges) {
+			const callee = ctx.componentInfo.get(calleeName);
+			if (callee === undefined || callee.eligible !== true) continue;
+			anchorlessDependents ??= new Map();
+			let dependents = anchorlessDependents.get(calleeName);
+			if (dependents === undefined) {
+				dependents = [];
+				anchorlessDependents.set(calleeName, dependents);
+			}
+			dependents.push(dependentName);
+		}
+	}
+	if (anchorlessDependents !== null) {
+		const unsafeWorklist = [];
+		for (const [name, info] of ctx.componentInfo) {
+			if (info.eligible === true && info.anchorlessRootSafe !== true) unsafeWorklist.push(name);
+		}
+		for (let cursor = 0; cursor < unsafeWorklist.length; cursor++) {
+			const dependents = anchorlessDependents.get(unsafeWorklist[cursor]);
+			if (dependents === undefined) continue;
+			for (const dependentName of dependents) {
+				const dependent = ctx.componentInfo.get(dependentName);
+				if (dependent.anchorlessRootSafe !== true) continue;
+				dependent.anchorlessRootSafe = false;
+				// Only lite-eligible callees can invalidate their callers. An
+				// ineligible dependent still records its own result, but stops here.
+				if (dependent.eligible === true) unsafeWorklist.push(dependentName);
 			}
 		}
 	}
