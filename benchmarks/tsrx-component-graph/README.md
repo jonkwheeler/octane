@@ -30,6 +30,49 @@ the lower sizes as permanent timed targets:
 | 4,800 | 1,643.181 ms | 1,063.515 ms | 1.545x | 579.666 ms | 1.217x | 253.040 ms |
 | 9,600 | 4,541.318 ms | 2,131.667 ms | 2.130x | 2,409.650 ms | 1.948x | 2,062.224 ms |
 
+The final candidate was ratified with a paired process comparison. The initial
+eight-iteration attempt was not used for a verdict because pinned main's
+combined dependent-first `scoreRme` was 12.118%. The one permitted retry used
+16 iterations per process, then combined the two processes for each checkout
+through `benchmarks/lib/stats.mjs` (32 raw samples per checkout and declaration
+order):
+
+| Checkout | Order | Score | Score RME | Conservative 95% score bounds | Minimum |
+| --- | --- | ---: | ---: | ---: | ---: |
+| pinned main | dependent-first | 4,299.112 ms | 9.117% | 3,907.142–4,691.083 ms | 3,588.260 ms |
+| pinned main | dependency-first | 2,092.369 ms | 1.477% | 2,061.459–2,123.279 ms | 2,027.267 ms |
+| candidate | dependent-first | 2,091.446 ms | 2.777% | 2,033.360–2,149.532 ms | 1,945.406 ms |
+| candidate | dependency-first | 2,143.928 ms | 2.370% | 2,093.116–2,194.739 ms | 2,056.346 ms |
+
+The candidate declaration-order ratio was `0.975521`, below the frozen `1.25`
+ceiling. The headline root-first score improvement was 2,207.667 ms. The conservative
+bound was 1,757.610 ms (`main lower bound - candidate upper bound`), above the
+25 ms floor. Dependency-first candidate/main score and minimum ratios were
+`1.024641` and `1.014344`; neither exceeded its 1.15 or 1.10 limit, so the
+existing benchmark-runner non-regression predicate passed.
+
+The comparator spawns fresh runner processes in
+main-candidate-candidate-main order and emits the raw samples, shared-statistics
+aggregates, formulas, gate results, and pass/fail/inconclusive status as JSON.
+Any combined representative `scoreRme` above 10% causes the whole process order
+to rerun once at 16 iterations; persistent noise exits 2 rather than changing a
+threshold.
+
+```bash
+node benchmarks/tsrx-component-graph/compare.mjs \
+  --reference-root=/private/tmp/octane-tsrx-main.5AWJdo \
+  --candidate-root=. \
+  --iterations=8 \
+  --max-score-rme=10 \
+  --max-order-ratio=1.25 \
+  --min-root-improvement-ms=25
+```
+
+This is a same-machine compiler-latency claim for the 9,600-component
+anchorless-safety pair. It is not a runtime, SSR, hydration, memory, bundle-size,
+or general compiler-throughput claim. The deterministic semantic controls and
+the two representative output validations run outside every timed sample.
+
 Small untimed controls also require a closed synchronous cycle to emit no warm
 plan and a cycle that reaches an opaque component to keep both reachable plans.
 Anchorless controls compile through the public compiler path and parse the
@@ -64,8 +107,9 @@ The ratio guards allow timing noise but reject whole-module fixed-point rescans,
 whose work grows with both component count and dependency depth. The opaque-leaf
 pair specifically protects fetch-tree warm reachability from declaration-order
 dependent rescans.
-The anchorless characterization freezes a 1.25 maximum order ratio and a 25ms
-material penalty floor at 9,600 components. The durable runner reports both
-score RMEs for the load-bearing pair.
+The anchorless characterization freezes a 1.25 maximum order ratio at 9,600
+components. Its paired comparator separately requires a conservative 25 ms
+root-first improvement and reports confidence bounds and score RMEs for both
+checkouts and declaration orders.
 `OCTANE_GRAPH_ROOT=/path/to/checkout` selects a different compiler checkout for
 an A/B run while retaining this exact harness and fixture generator.

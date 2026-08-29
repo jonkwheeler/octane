@@ -16,11 +16,30 @@ const sourceRequire = createRequire(path.join(SOURCE_ROOT, 'packages/octane/pack
 const { parseModule } = await import(pathToFileURL(sourceRequire.resolve('@tsrx/core')).href);
 const COMPONENTS = 2_400;
 const ANCHORLESS_COMPONENTS = 9_600;
-const iterations = Number.parseInt(process.argv[2] ?? '8', 10);
+const runnerArgs = process.argv.slice(2);
+const positionalArgs = runnerArgs.filter((arg) => !arg.startsWith('--'));
+const flags = new Set(runnerArgs.filter((arg) => arg.startsWith('--')));
+const iterations = Number.parseInt(positionalArgs[0] ?? '8', 10);
+const anchorlessOnly = flags.has('--anchorless-only');
+const includeRawSamples = flags.has('--raw-samples');
 const options = { mode: 'client', hmr: false, dev: false, autoMemo: true };
 const anchorlessOptions = { ...options, autoMemo: false };
 
-if (!Number.isSafeInteger(iterations) || iterations < 1) {
+const unknownFlags = [...flags].filter(
+	(flag) => flag !== '--anchorless-only' && flag !== '--raw-samples',
+);
+if (positionalArgs.length > 1 || unknownFlags.length > 0) {
+	throw new Error(
+		`Unknown TSrX component graph arguments: ${[...positionalArgs.slice(1), ...unknownFlags].join(
+			', ',
+		)}`,
+	);
+}
+if (
+	!Number.isSafeInteger(iterations) ||
+	iterations < 1 ||
+	(positionalArgs[0] !== undefined && String(iterations) !== positionalArgs[0])
+) {
 	throw new Error('TSrX component graph iterations must be a positive integer');
 }
 
@@ -68,7 +87,7 @@ const variants = [
 		source: anchorlessSourceFor(ANCHORLESS_COMPONENTS, reverse),
 		samples: [],
 	})),
-];
+].filter((variant) => !anchorlessOnly || variant.kind === 'anchorless');
 
 function warmPlanCount(code) {
 	return code.match(/\b__warm:\s*\(/g)?.length ?? 0;
@@ -420,7 +439,7 @@ const rows = [];
 let semanticControls = [];
 
 try {
-	assertCycleControls();
+	if (!anchorlessOnly) assertCycleControls();
 	semanticControls = assertAnchorlessControls();
 	// Compile and validate every deterministic semantic surface before the warmups.
 	// Timed samples below contain only the public compiler call.
@@ -446,7 +465,12 @@ try {
 				{ p99: true },
 			);
 		}
-		rows.push({ name: variant.name, ops, meta: variant.meta });
+		rows.push({
+			name: variant.name,
+			ops,
+			meta: variant.meta,
+			...(includeRawSamples ? { rawSamples: { compile: variant.samples } } : {}),
+		});
 		console.log(
 			`PASS tsrx-component-graph/${variant.name}: ${compileStat.score.toFixed(3)}ms ` +
 				`for ${variant.components ?? COMPONENTS} components`,
