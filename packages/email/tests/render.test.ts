@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '../src/index.ts';
-import { WelcomeEmail } from './_fixtures/email.tsrx';
+import { NoHeadEmail, WelcomeEmail } from './_fixtures/email.tsrx';
 
 describe('@octanejs/email', () => {
 	it('renders an email-safe static document through the public API', async () => {
@@ -24,5 +24,13 @@ describe('@octanejs/email', () => {
 		const html = await render(WelcomeEmail, { name: 'Grace' }, { pretty: true });
 		expect(html).toContain('>\n<');
 		expect(html).toContain('Hello, Grace');
+	});
+
+	it('creates a document head for collected styles when Head is omitted', async () => {
+		const html = await render(NoHeadEmail);
+		const style = html.indexOf('<style data-octane=');
+		expect(style).toBeGreaterThan(html.indexOf('<head>'));
+		expect(style).toBeLessThan(html.indexOf('</head>'));
+		expect(html).toContain('Styled without Head');
 	});
 });

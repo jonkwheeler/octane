@@ -271,13 +271,118 @@ function escapeRegExp(value: string): string {
 
 function resolveCssVariables(value: string, variables: ReadonlyMap<string, string>): string {
 	let resolved = value;
-	for (let pass = 0; pass < 8 && resolved.includes('var('); pass++) {
-		resolved = resolved.replace(
-			/var\((--[\w-]+)(?:,\s*([^()]+))?\)/g,
-			(_match, name, fallback) => variables.get(name) ?? fallback ?? `var(${name})`,
-		);
+	for (let pass = 0; pass < 8 && /var\(/i.test(resolved); pass++) {
+		const next = replaceCssVariables(resolved, variables);
+		if (next === resolved) break;
+		resolved = next;
 	}
 	return resolved;
+}
+
+function replaceCssVariables(value: string, variables: ReadonlyMap<string, string>): string {
+	let output = '';
+	let copiedThrough = 0;
+	let cursor = 0;
+
+	while (cursor < value.length) {
+		const character = value[cursor];
+		if (character === '"' || character === "'") {
+			cursor = skipCssString(value, cursor, character);
+			continue;
+		}
+		if (character === '/' && value[cursor + 1] === '*') {
+			cursor = skipCssComment(value, cursor);
+			continue;
+		}
+
+		const previous = value[cursor - 1];
+		if (
+			value.slice(cursor, cursor + 4).toLowerCase() !== 'var(' ||
+			(previous !== undefined && /[\w-]/.test(previous))
+		) {
+			cursor++;
+			continue;
+		}
+
+		const closingParenthesis = findClosingParenthesis(value, cursor + 3);
+		if (closingParenthesis === -1) break;
+
+		const argumentsText = value.slice(cursor + 4, closingParenthesis);
+		const comma = findTopLevelComma(argumentsText);
+		const name = argumentsText.slice(0, comma === -1 ? undefined : comma).trim();
+		if (!/^--[\w-]+$/.test(name)) {
+			cursor = closingParenthesis + 1;
+			continue;
+		}
+
+		const fallback = comma === -1 ? undefined : argumentsText.slice(comma + 1).trim();
+		const replacement = variables.get(name) ?? fallback;
+		if (replacement === undefined) {
+			cursor = closingParenthesis + 1;
+			continue;
+		}
+
+		output += value.slice(copiedThrough, cursor) + replacement;
+		cursor = closingParenthesis + 1;
+		copiedThrough = cursor;
+	}
+
+	return output + value.slice(copiedThrough);
+}
+
+function findClosingParenthesis(value: string, openingParenthesis: number): number {
+	let depth = 1;
+	let cursor = openingParenthesis + 1;
+	while (cursor < value.length) {
+		const character = value[cursor];
+		if (character === '"' || character === "'") {
+			cursor = skipCssString(value, cursor, character);
+			continue;
+		}
+		if (character === '/' && value[cursor + 1] === '*') {
+			cursor = skipCssComment(value, cursor);
+			continue;
+		}
+		if (character === '(') depth++;
+		else if (character === ')' && --depth === 0) return cursor;
+		cursor++;
+	}
+	return -1;
+}
+
+function findTopLevelComma(value: string): number {
+	let depth = 0;
+	let cursor = 0;
+	while (cursor < value.length) {
+		const character = value[cursor];
+		if (character === '"' || character === "'") {
+			cursor = skipCssString(value, cursor, character);
+			continue;
+		}
+		if (character === '/' && value[cursor + 1] === '*') {
+			cursor = skipCssComment(value, cursor);
+			continue;
+		}
+		if (character === '(') depth++;
+		else if (character === ')') depth--;
+		else if (character === ',' && depth === 0) return cursor;
+		cursor++;
+	}
+	return -1;
+}
+
+function skipCssString(value: string, start: number, quote: '"' | "'"): number {
+	let cursor = start + 1;
+	while (cursor < value.length) {
+		if (value[cursor] === '\\') cursor += 2;
+		else if (value[cursor++] === quote) break;
+	}
+	return cursor;
+}
+
+function skipCssComment(value: string, start: number): number {
+	const end = value.indexOf('*/', start + 2);
+	return end === -1 ? value.length : end + 2;
 }
 
 const OKLAB_TO_LMS = {

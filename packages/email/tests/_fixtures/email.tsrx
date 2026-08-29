@@ -45,3 +45,22 @@ export function WelcomeEmail(props: { name: string }) @{
 		</Body>
 	</Html>
 }
+
+function ScopedEmailText() @{
+	<>
+		<style>
+			.no-head {
+				color: rebeccapurple;
+			}
+		</style>
+		<Text className="no-head">Styled without Head</Text>
+	</>
+}
+
+export function NoHeadEmail() @{
+	<Html>
+		<Body>
+			<ScopedEmailText />
+		</Body>
+	</Html>
+}

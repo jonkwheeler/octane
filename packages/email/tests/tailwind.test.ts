@@ -63,6 +63,24 @@ describe('Tailwind email styling', () => {
 		expect(html).toMatch(/class="p-2" style="padding:8px;"/);
 	});
 
+	it('resolves custom-property fallbacks containing CSS functions', async () => {
+		const id = 'function-fallback';
+		const html = await transformTailwindHtml(
+			`<html><head></head><body><template data-octane-email-tailwind-start="${id}"></template><p class="function-fallback">Content</p><template data-octane-email-tailwind-end="${id}"></template></body></html>`,
+			new Map([
+				[
+					id,
+					{
+						utility: '@utility function-fallback { color: var(--missing-color, rgb(12, 34, 56)); }',
+					},
+				],
+			]),
+		);
+
+		expect(html).toContain('style="color:rgb(12, 34, 56);"');
+		expect(html).not.toContain('var(--missing-color');
+	});
+
 	it('pretty-prints the transformed document without skipping Tailwind styles', async () => {
 		const html = await render(TailwindEmail, undefined, { pretty: true });
 		expect(html).toContain('>\n<');

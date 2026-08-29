@@ -28,11 +28,14 @@ export async function render<Props>(
 		});
 		const htmlStart = bodyHtml.indexOf('<html');
 		let documentHtml = bodyHtml;
-		if (htmlStart > 0) {
+		if (htmlStart >= 0) {
 			const hoistedHead = bodyHtml.slice(0, htmlStart);
 			const root = bodyHtml.slice(htmlStart);
-			const openingEnd = root.indexOf('>') + 1;
-			documentHtml = `${root.slice(0, openingEnd)}<head>${hoistedHead}${authoredHead}${css}</head>${root.slice(openingEnd)}`;
+			const head = `${hoistedHead}${authoredHead}${css}`;
+			if (head.length > 0) {
+				const openingEnd = root.indexOf('>') + 1;
+				documentHtml = `${root.slice(0, openingEnd)}<head>${head}</head>${root.slice(openingEnd)}`;
+			}
 		} else if (authoredHead.length > 0 || css.length > 0) {
 			documentHtml = bodyHtml.replace('<head>', `<head>${authoredHead}${css}`);
 		}
