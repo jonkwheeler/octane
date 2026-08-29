@@ -30,30 +30,32 @@ the lower sizes as permanent timed targets:
 | 4,800 | 1,643.181 ms | 1,063.515 ms | 1.545x | 579.666 ms | 1.217x | 253.040 ms |
 | 9,600 | 4,541.318 ms | 2,131.667 ms | 2.130x | 2,409.650 ms | 1.948x | 2,062.224 ms |
 
-The final candidate was ratified with a paired process comparison. The initial
-eight-iteration attempt was not used for a verdict because pinned main's
-combined dependent-first `scoreRme` was 12.118%. The one permitted retry used
-16 iterations per process, then combined the two processes for each checkout
-through `benchmarks/lib/stats.mjs` (32 raw samples per checkout and declaration
-order):
+The final candidate was ratified with a paired process comparison. The
+eight-iteration attempt passed the 10% combined-score RME ceiling, so the
+permitted retry was not needed. The comparator scored the arithmetic mean of
+all samples from both balanced process positions for each checkout (16 raw
+samples per checkout and declaration order):
 
 | Checkout | Order | Score | Score RME | Conservative 95% score bounds | Minimum |
 | --- | --- | ---: | ---: | ---: | ---: |
-| pinned main | dependent-first | 4,299.112 ms | 9.117% | 3,907.142–4,691.083 ms | 3,588.260 ms |
-| pinned main | dependency-first | 2,092.369 ms | 1.477% | 2,061.459–2,123.279 ms | 2,027.267 ms |
-| candidate | dependent-first | 2,091.446 ms | 2.777% | 2,033.360–2,149.532 ms | 1,945.406 ms |
-| candidate | dependency-first | 2,143.928 ms | 2.370% | 2,093.116–2,194.739 ms | 2,056.346 ms |
+| pinned main | dependent-first | 4,416.381 ms | 7.610% | 4,080.294–4,752.469 ms | 3,698.488 ms |
+| pinned main | dependency-first | 2,046.282 ms | 1.813% | 2,009.182–2,083.383 ms | 1,928.451 ms |
+| candidate | dependent-first | 2,002.861 ms | 2.050% | 1,961.798–2,043.924 ms | 1,901.701 ms |
+| candidate | dependency-first | 2,050.881 ms | 2.443% | 2,000.771–2,100.990 ms | 1,926.741 ms |
 
-The candidate declaration-order ratio was `0.975521`, below the frozen `1.25`
-ceiling. The headline root-first score improvement was 2,207.667 ms. The conservative
-bound was 1,757.610 ms (`main lower bound - candidate upper bound`), above the
+The candidate declaration-order ratio was `0.976586`, below the frozen `1.25`
+ceiling. The headline root-first score improvement was 2,413.520 ms. The conservative
+bound was 2,036.370 ms (`main lower bound - candidate upper bound`), above the
 25 ms floor. Dependency-first candidate/main score and minimum ratios were
-`1.024641` and `1.014344`; neither exceeded its 1.15 or 1.10 limit, so the
+`1.002247` and `0.999113`; neither exceeded its 1.15 or 1.10 limit, so the
 existing benchmark-runner non-regression predicate passed.
 
 The comparator spawns fresh runner processes in
 main-candidate-candidate-main order and emits the raw samples, shared-statistics
 aggregates, formulas, gate results, and pass/fail/inconclusive status as JSON.
+The aggregate verdict includes every sample from both process positions. The
+reference checkout must be clean and exactly match the required full commit
+SHA; both checkout states are recorded in the result.
 Any combined representative `scoreRme` above 10% causes the whole process order
 to rerun once at 16 iterations; persistent noise exits 2 rather than changing a
 threshold.
@@ -61,6 +63,7 @@ threshold.
 ```bash
 node benchmarks/tsrx-component-graph/compare.mjs \
   --reference-root=/private/tmp/octane-tsrx-main.5AWJdo \
+  --reference-revision=9779569e46f02e28c73d0a8ed74065931a2fd7fa \
   --candidate-root=. \
   --iterations=8 \
   --max-score-rme=10 \

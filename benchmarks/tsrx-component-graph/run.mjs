@@ -75,10 +75,34 @@ function anchorlessSourceFor(components, reverse) {
 }
 
 const variants = [
-	{ name: 'dependent-first', kind: 'existing', source: sourceFor(false, false), samples: [] },
-	{ name: 'dependency-first', kind: 'existing', source: sourceFor(true, false), samples: [] },
-	{ name: 'warm-dependent-first', kind: 'existing', source: sourceFor(false, true), samples: [] },
-	{ name: 'warm-dependency-first', kind: 'existing', source: sourceFor(true, true), samples: [] },
+	...(!anchorlessOnly
+		? [
+				{
+					name: 'dependent-first',
+					kind: 'existing',
+					source: sourceFor(false, false),
+					samples: [],
+				},
+				{
+					name: 'dependency-first',
+					kind: 'existing',
+					source: sourceFor(true, false),
+					samples: [],
+				},
+				{
+					name: 'warm-dependent-first',
+					kind: 'existing',
+					source: sourceFor(false, true),
+					samples: [],
+				},
+				{
+					name: 'warm-dependency-first',
+					kind: 'existing',
+					source: sourceFor(true, true),
+					samples: [],
+				},
+			]
+		: []),
 	...[false, true].map((reverse) => ({
 		name: `anchorless-${reverse ? 'dependency-first' : 'dependent-first'}-${ANCHORLESS_COMPONENTS}`,
 		kind: 'anchorless',
@@ -87,7 +111,7 @@ const variants = [
 		source: anchorlessSourceFor(ANCHORLESS_COMPONENTS, reverse),
 		samples: [],
 	})),
-].filter((variant) => !anchorlessOnly || variant.kind === 'anchorless');
+];
 
 function warmPlanCount(code) {
 	return code.match(/\b__warm:\s*\(/g)?.length ?? 0;
@@ -398,6 +422,11 @@ function validateAnchorlessVariant(variant, result) {
 	const hoistedDeclarations = result.code.match(/^function AnchorlessChain\d+\(/gm)?.length ?? 0;
 	const expectedHoistedDeclarations = variant.reverse ? 0 : variant.components - 1;
 	assert.equal(anchors, 2, `${variant.name} lost the unsafe-chain positional anchors`);
+	assert.equal(
+		warmPlans,
+		0,
+		`${variant.name} unexpectedly emitted warm plans with autoMemo disabled`,
+	);
 	assert.equal(
 		analysis.singleRootCapabilities,
 		2,

@@ -5,7 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { summarizeSamples, timingStatForJson } from '../lib/stats.mjs';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
+const CURRENT_FILE = fileURLToPath(import.meta.url);
+const HERE = path.dirname(CURRENT_FILE);
 const RUNNER = path.join(HERE, 'run.mjs');
 const ROOT_FIRST = 'anchorless-dependent-first-9600';
 const LEAF_FIRST = 'anchorless-dependency-first-9600';
@@ -31,6 +32,9 @@ function parseArguments(argv) {
 			case 'reference-root':
 				values.referenceRoot = value;
 				break;
+			case 'reference-revision':
+				values.referenceRevision = value;
+				break;
 			case 'candidate-root':
 				values.candidateRoot = value;
 				break;
@@ -54,6 +58,10 @@ function parseArguments(argv) {
 		}
 	}
 	if (!values.referenceRoot) throw new Error('--reference-root is required');
+	if (!values.referenceRevision) throw new Error('--reference-revision is required');
+	if (!/^[0-9a-f]{40}$/i.test(values.referenceRevision)) {
+		throw new Error('--reference-revision must be a full 40-character commit SHA');
+	}
 	if (!Number.isSafeInteger(values.iterations) || values.iterations < 1) {
 		throw new Error('--iterations must be a positive integer');
 	}
@@ -77,8 +85,40 @@ function validateRoot(root, option) {
 	return resolved;
 }
 
-function confidenceStat(samples) {
-	const summarized = summarizeSamples(samples);
+function gitOutput(root, args) {
+	const child = spawnSync('git', ['-C', root, ...args], { encoding: 'utf8' });
+	if (child.error) throw child.error;
+	if (child.status !== 0) {
+		throw new Error(
+			`git ${args.join(' ')} failed for ${root}: ${(child.stderr || child.stdout).trim()}`,
+		);
+	}
+	return child.stdout.trim();
+}
+
+function checkoutState(root) {
+	const changes = gitOutput(root, ['status', '--short']);
+	return {
+		head: gitOutput(root, ['rev-parse', 'HEAD']),
+		branch: gitOutput(root, ['branch', '--show-current']) || null,
+		dirty: changes.length > 0,
+		changes: changes === '' ? [] : changes.split('\n'),
+	};
+}
+
+export function assertReferenceState(state, expectedRevision) {
+	if (state.head !== expectedRevision) {
+		throw new Error(
+			`--reference-root is at ${state.head}, expected --reference-revision=${expectedRevision}`,
+		);
+	}
+	if (state.dirty) {
+		throw new Error(`--reference-root has changes:\n${state.changes.join('\n')}`);
+	}
+}
+
+function confidenceStat(samples, options) {
+	const summarized = summarizeSamples(samples, options);
 	const scoreMoe = (summarized.score * summarized.scoreRme) / 100;
 	return {
 		...timingStatForJson(summarized, { p99: true }),
@@ -149,14 +189,20 @@ function runProcess(kind, root, iterations, position, temporaryDirectory) {
 	};
 }
 
-function aggregateProcesses(processes, kind) {
+export function aggregateProcesses(processes, kind) {
 	const matching = processes.filter((process) => process.implementation === kind);
 	if (matching.length !== 2) throw new Error(`expected two ${kind} processes`);
 	const rootFirstSamples = matching.flatMap((process) => process.rootFirst.samples);
 	const leafFirstSamples = matching.flatMap((process) => process.leafFirst.samples);
 	return {
-		rootFirst: { samples: rootFirstSamples, stat: confidenceStat(rootFirstSamples) },
-		leafFirst: { samples: leafFirstSamples, stat: confidenceStat(leafFirstSamples) },
+		rootFirst: {
+			samples: rootFirstSamples,
+			stat: confidenceStat(rootFirstSamples, { scoreMode: 'mean' }),
+		},
+		leafFirst: {
+			samples: leafFirstSamples,
+			stat: confidenceStat(leafFirstSamples, { scoreMode: 'mean' }),
+		},
 	};
 }
 
@@ -194,7 +240,7 @@ function collectAttempt(config, iterations) {
 	}
 }
 
-function evaluateGates(config, attempt) {
+export function evaluateGates(config, attempt) {
 	const { main, candidate } = attempt.aggregate;
 	const candidateOrderRatio = candidate.rootFirst.stat.score / candidate.leafFirst.stat.score;
 	const conservativeRootImprovementMs =
@@ -238,54 +284,67 @@ function emit(result, output) {
 	process.stdout.write(serialized);
 }
 
-let config;
-try {
-	config = parseArguments(process.argv.slice(2));
-	const attempts = [collectAttempt(config, config.iterations)];
-	if (!attempts[0].noise.passed) attempts.push(collectAttempt(config, 16));
-	const finalAttempt = attempts.at(-1);
-	if (!finalAttempt.noise.passed) {
+function main() {
+	let config;
+	try {
+		config = parseArguments(process.argv.slice(2));
+		const revisions = {
+			main: checkoutState(config.referenceRoot),
+			candidate: checkoutState(config.candidateRoot),
+		};
+		assertReferenceState(revisions.main, config.referenceRevision);
+		const attempts = [collectAttempt(config, config.iterations)];
+		if (!attempts[0].noise.passed) attempts.push(collectAttempt(config, 16));
+		const finalAttempt = attempts.at(-1);
+		if (!finalAttempt.noise.passed) {
+			const result = {
+				suite: 'tsrx-component-graph-paired',
+				status: 'inconclusive',
+				exitCode: 2,
+				config,
+				revisions,
+				scorer: {
+					module: 'benchmarks/lib/stats.mjs',
+					aggregate: 'arithmetic mean of all samples from both process positions',
+					confidenceBounds: 'score +/- (score * scoreRme / 100)',
+				},
+				attempts,
+				reason:
+					'representative scoreRme remained above the configured ceiling after one 16-iteration rerun',
+			};
+			emit(result, config.output);
+			process.exitCode = 2;
+		} else {
+			const gates = evaluateGates(config, finalAttempt);
+			const passed = Object.values(gates).every((gate) => gate.passed);
+			const result = {
+				suite: 'tsrx-component-graph-paired',
+				status: passed ? 'pass' : 'fail',
+				exitCode: passed ? 0 : 1,
+				config,
+				revisions,
+				scorer: {
+					module: 'benchmarks/lib/stats.mjs',
+					aggregate: 'arithmetic mean of all samples from both process positions',
+					confidenceBounds: 'score +/- (score * scoreRme / 100)',
+				},
+				attempts,
+				gates,
+			};
+			emit(result, config.output);
+			if (!passed) process.exitCode = 1;
+		}
+	} catch (error) {
 		const result = {
 			suite: 'tsrx-component-graph-paired',
-			status: 'inconclusive',
-			exitCode: 2,
-			config,
-			scorer: {
-				module: 'benchmarks/lib/stats.mjs',
-				confidenceBounds: 'score +/- (score * scoreRme / 100)',
-			},
-			attempts,
-			reason:
-				'representative scoreRme remained above the configured ceiling after one 16-iteration rerun',
+			status: 'fail',
+			exitCode: 1,
+			...(config ? { config } : {}),
+			error: error instanceof Error ? (error.stack ?? error.message) : String(error),
 		};
-		emit(result, config.output);
-		process.exitCode = 2;
-	} else {
-		const gates = evaluateGates(config, finalAttempt);
-		const passed = Object.values(gates).every((gate) => gate.passed);
-		const result = {
-			suite: 'tsrx-component-graph-paired',
-			status: passed ? 'pass' : 'fail',
-			exitCode: passed ? 0 : 1,
-			config,
-			scorer: {
-				module: 'benchmarks/lib/stats.mjs',
-				confidenceBounds: 'score +/- (score * scoreRme / 100)',
-			},
-			attempts,
-			gates,
-		};
-		emit(result, config.output);
-		if (!passed) process.exitCode = 1;
+		emit(result, config?.output ?? null);
+		process.exitCode = 1;
 	}
-} catch (error) {
-	const result = {
-		suite: 'tsrx-component-graph-paired',
-		status: 'fail',
-		exitCode: 1,
-		...(config ? { config } : {}),
-		error: error instanceof Error ? (error.stack ?? error.message) : String(error),
-	};
-	emit(result, config?.output ?? null);
-	process.exitCode = 1;
 }
+
+if (process.argv[1] && path.resolve(process.argv[1]) === CURRENT_FILE) main();
