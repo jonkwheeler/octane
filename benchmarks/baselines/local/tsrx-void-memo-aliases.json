@@ -1,0 +1,155 @@
+{
+  "suite": "tsrx-void-memo-aliases",
+  "iterations": 9,
+  "targets": [
+    {
+      "name": "dependent-first-250",
+      "ops": {
+        "classification": {
+          "score": 0.03929980000000057,
+          "median": 0.039540999999999826,
+          "min": 0.036166999999991845,
+          "mean": 0.0893748888888884,
+          "p95": 0.47341699999999776,
+          "sd": 0.14412896821722168,
+          "rme": 123.95778607050265,
+          "scoreRme": 8.445840058066686,
+          "warmupRatio": 3.1936142168661523,
+          "samples": 9
+        },
+        "classification_per_100_aliases": {
+          "score": 0.015719920000000227,
+          "median": 0.015816399999999932,
+          "min": 0.014466799999996737,
+          "mean": 0.035749955555555366,
+          "p95": 0.1893667999999991,
+          "sd": 0.057651587286888684,
+          "rme": 123.95778607050268,
+          "scoreRme": 8.44584005806669,
+          "warmupRatio": 3.1936142168661523,
+          "samples": 9
+        }
+      },
+      "meta": {
+        "aliases": 250,
+        "dependencyFirst": false,
+        "exports": ["Memo0"],
+        "sourceBytes": 7854,
+        "sourceDigest": "81d241dfb2ef430f7ceb571ecb4fcab8e77180626a9a1d0dbe7d4161945ca50e",
+        "correctness": "pass"
+      }
+    },
+    {
+      "name": "dependency-first-250",
+      "ops": {
+        "classification": {
+          "score": 0.040200000000001526,
+          "median": 0.04137500000000216,
+          "min": 0.037082999999995536,
+          "mean": 0.04305077777777752,
+          "p95": 0.06304099999999835,
+          "sd": 0.007940596762488778,
+          "rme": 14.17784383890282,
+          "scoreRme": 10.665919289194756,
+          "warmupRatio": 1.1121393034824734,
+          "samples": 9
+        },
+        "classification_per_100_aliases": {
+          "score": 0.01608000000000061,
+          "median": 0.016550000000000863,
+          "min": 0.014833199999998214,
+          "mean": 0.01722031111111101,
+          "p95": 0.02521639999999934,
+          "sd": 0.0031762387049955113,
+          "rme": 14.177843838902815,
+          "scoreRme": 10.665919289194752,
+          "warmupRatio": 1.1121393034824734,
+          "samples": 9
+        }
+      },
+      "meta": {
+        "aliases": 250,
+        "dependencyFirst": true,
+        "exports": ["Memo0"],
+        "sourceBytes": 7854,
+        "sourceDigest": "0edb81b366f79710d68d266805c5aa9de9806b30f67f72e8fef60aa3e0b7f1fc",
+        "correctness": "pass"
+      }
+    },
+    {
+      "name": "dependent-first-1000",
+      "ops": {
+        "classification": {
+          "score": 0.17192499999999597,
+          "median": 0.15800000000000125,
+          "min": 0.14804200000000378,
+          "mean": 0.17329177777777716,
+          "p95": 0.24920799999999588,
+          "sd": 0.034740196360907076,
+          "rme": 15.40963528594394,
+          "scoreRme": 31.30278024131957,
+          "warmupRatio": 0.9865266831467654,
+          "samples": 9
+        },
+        "classification_per_100_aliases": {
+          "score": 0.0171924999999996,
+          "median": 0.015800000000000126,
+          "min": 0.014804200000000378,
+          "mean": 0.017329177777777715,
+          "p95": 0.024920799999999587,
+          "sd": 0.0034740196360907075,
+          "rme": 15.40963528594394,
+          "scoreRme": 31.30278024131957,
+          "warmupRatio": 0.9865266831467652,
+          "samples": 9
+        }
+      },
+      "meta": {
+        "aliases": 1000,
+        "dependencyFirst": false,
+        "exports": ["Memo0"],
+        "sourceBytes": 31854,
+        "sourceDigest": "adb1610aaa1bf477ae7aeb952d1a0ccef87f6dfe26b3e932e055e8aedcf90a3e",
+        "correctness": "pass"
+      }
+    },
+    {
+      "name": "dependency-first-1000",
+      "ops": {
+        "classification": {
+          "score": 0.1670581999999996,
+          "median": 0.1629170000000073,
+          "min": 0.15162499999999568,
+          "mean": 0.183537111111112,
+          "p95": 0.2523340000000047,
+          "sd": 0.03676303126934916,
+          "rme": 15.396622803584156,
+          "scoreRme": 17.617688288820077,
+          "warmupRatio": 1.2274177502211971,
+          "samples": 9
+        },
+        "classification_per_100_aliases": {
+          "score": 0.01670581999999996,
+          "median": 0.01629170000000073,
+          "min": 0.015162499999999569,
+          "mean": 0.018353711111111202,
+          "p95": 0.02523340000000047,
+          "sd": 0.0036763031269349154,
+          "rme": 15.396622803584151,
+          "scoreRme": 17.617688288820073,
+          "warmupRatio": 1.227417750221197,
+          "samples": 9
+        }
+      },
+      "meta": {
+        "aliases": 1000,
+        "dependencyFirst": true,
+        "exports": ["Memo0"],
+        "sourceBytes": 31854,
+        "sourceDigest": "91601083ba86472889414be6c03b0e668b4c80bdf20a8714c4ac51a682a8258a",
+        "correctness": "pass"
+      }
+    }
+  ],
+  "harnessExit": 0
+}
