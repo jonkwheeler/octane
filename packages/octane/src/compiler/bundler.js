@@ -286,28 +286,34 @@ export function findVoidComponentExports(source, id) {
 	}
 	// Resolve only the exact, immutable `const Export = memo(Local)` form. The
 	// imported memo identity is lexical proof; method calls, comparators, and
-	// arbitrary wrappers stay unknown.
-	let changed = true;
-	while (changed) {
-		changed = false;
-		for (const declaration of declarations) {
-			if (declaration.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
-			for (const item of declaration.declarations || []) {
-				const init = item.init;
-				if (
-					item.id?.type !== 'Identifier' ||
-					voidBindings.has(item.id.name) ||
-					init?.type !== 'CallExpression' ||
-					init.callee?.type !== 'Identifier' ||
-					!memoLocals.has(init.callee.name) ||
-					init.arguments?.length !== 1 ||
-					init.arguments[0]?.type !== 'Identifier' ||
-					!voidBindings.has(init.arguments[0].name)
-				)
-					continue;
-				voidBindings.add(item.id.name);
-				changed = true;
-			}
+	// arbitrary wrappers stay unknown. Index the reverse edges once so a chain
+	// declared outermost-first does not rescan every declaration per link.
+	const memoDependents = new Map();
+	for (const declaration of declarations) {
+		if (declaration.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
+		for (const item of declaration.declarations || []) {
+			const init = item.init;
+			if (
+				item.id?.type !== 'Identifier' ||
+				init?.type !== 'CallExpression' ||
+				init.callee?.type !== 'Identifier' ||
+				!memoLocals.has(init.callee.name) ||
+				init.arguments?.length !== 1 ||
+				init.arguments[0]?.type !== 'Identifier'
+			)
+				continue;
+			const target = init.arguments[0].name;
+			let dependents = memoDependents.get(target);
+			if (dependents === undefined) memoDependents.set(target, (dependents = []));
+			dependents.push(item.id.name);
+		}
+	}
+	const pending = [...voidBindings];
+	for (let index = 0; index < pending.length; index++) {
+		for (const dependent of memoDependents.get(pending[index]) ?? []) {
+			if (voidBindings.has(dependent)) continue;
+			voidBindings.add(dependent);
+			pending.push(dependent);
 		}
 	}
 
