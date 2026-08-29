@@ -259,6 +259,7 @@ export function findVoidComponentExports(source, id) {
 	}
 
 	const voidBindings = new Set();
+	const memoDependents = new Map();
 	const hasLowerableJsxReturnBranches = createJsxReturnBranchClassifier(ast.body || []);
 	// Mirrors the compile-time lowering decisions exactly (nullish-guard @{}
 	// bodies AND React-style conditional JSX returns), so cross-module call-site
@@ -273,26 +274,19 @@ export function findVoidComponentExports(source, id) {
 			continue;
 		}
 		if (declaration.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
+		// Resolve only the exact, immutable `const Export = memo(Local)` form. The
+		// imported memo identity is lexical proof; method calls, comparators, and
+		// arbitrary wrappers stay unknown. Index the reverse edges once so a chain
+		// declared outermost-first does not rescan every declaration per link.
 		for (const item of declaration.declarations || []) {
+			const init = item.init;
 			if (
 				item.id?.type === 'Identifier' &&
-				(item.init?.type === 'FunctionExpression' ||
-					item.init?.type === 'ArrowFunctionExpression') &&
-				isVoidFunction(item.init)
+				(init?.type === 'FunctionExpression' || init?.type === 'ArrowFunctionExpression') &&
+				isVoidFunction(init)
 			) {
 				voidBindings.add(item.id.name);
 			}
-		}
-	}
-	// Resolve only the exact, immutable `const Export = memo(Local)` form. The
-	// imported memo identity is lexical proof; method calls, comparators, and
-	// arbitrary wrappers stay unknown. Index the reverse edges once so a chain
-	// declared outermost-first does not rescan every declaration per link.
-	const memoDependents = new Map();
-	for (const declaration of declarations) {
-		if (declaration.type !== 'VariableDeclaration' || declaration.kind !== 'const') continue;
-		for (const item of declaration.declarations || []) {
-			const init = item.init;
 			if (
 				item.id?.type !== 'Identifier' ||
 				init?.type !== 'CallExpression' ||
