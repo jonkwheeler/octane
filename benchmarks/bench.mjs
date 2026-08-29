@@ -877,6 +877,15 @@ const SUITES = [
 		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
 	},
 	{
+		// Exact local memo-alias closure at two chain lengths and both
+		// declaration orders, with identical void-export semantic controls.
+		name: 'tsrx-void-memo-aliases',
+		cwd: 'tsrx-void-memo-aliases',
+		servers: [],
+		iter: { normal: 9, quick: 4 },
+		runs: [{ script: 'run.mjs', args: (n) => [String(n)] }],
+	},
+	{
 		// Conditional JSX return analysis at two component counts plus a
 		// same-sized structurally ineligible parse/print control.
 		name: 'tsrx-jsx-return-branches',
