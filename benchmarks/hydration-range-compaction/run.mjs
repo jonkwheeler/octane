@@ -88,22 +88,41 @@ async function setupDom() {
 	return dom;
 }
 
+function hydrationMarker(data) {
+	if (data === '[' || data === '[f0' || data === '[f1') {
+		return { kind: 'open', multiplicity: 1 };
+	}
+	if (data === ']') return { kind: 'close', multiplicity: 1 };
+	const match = /^(\[|\])([1-9]\d*)$/.exec(data);
+	if (match === null) return null;
+	const multiplicity = Number(match[2]);
+	if (!Number.isSafeInteger(multiplicity) || multiplicity < 2) return null;
+	return { kind: match[1] === '[' ? 'open' : 'close', multiplicity };
+}
+
 function hydrationMarkers(container) {
 	const iterator = document.createNodeIterator(container, NodeFilter.SHOW_COMMENT);
-	let opens = 0;
-	let closes = 0;
-	let logicalDepth = 0;
+	const stack = [];
+	let logicalPairs = 0;
+	let physicalPairs = 0;
 	for (let node = iterator.nextNode(); node !== null; node = iterator.nextNode()) {
-		const open = /^\[(\d*)$/.exec(node.data);
-		if (open !== null) {
-			opens++;
-			logicalDepth += open[1] === '' ? 1 : Number(open[1]);
+		const marker = hydrationMarker(node.data);
+		if (marker === null) continue;
+		if (marker.kind === 'open') {
+			stack.push(marker.multiplicity);
+			logicalPairs += marker.multiplicity;
+			physicalPairs++;
 			continue;
 		}
-		const close = /^\](\d*)$/.exec(node.data);
-		if (close !== null) closes++;
+		const openMultiplicity = stack.pop();
+		if (openMultiplicity !== marker.multiplicity) {
+			throw new Error(
+				`Unbalanced hydration close marker ${node.data}; matching open multiplicity was ${String(openMultiplicity)}.`,
+			);
+		}
 	}
-	return { opens, closes, logicalDepth };
+	if (stack.length !== 0) throw new Error('Hydration left unclosed marker pairs.');
+	return { logicalPairs, physicalPairs };
 }
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'octane-hydration-range-'));
@@ -129,10 +148,13 @@ try {
 		const before = hydrationMarkers(container);
 		const result = client.hydrateCase(container, depth);
 		const after = hydrationMarkers(container);
-		if (before.opens !== before.closes || after.opens !== after.closes) {
-			throw new Error(`${depth}-wrapper hydration left unbalanced marker pairs.`);
-		}
-		if (before.logicalDepth !== after.logicalDepth || after.opens >= before.opens) {
+		const expectedPairs = depth + 2;
+		if (
+			before.logicalPairs !== expectedPairs ||
+			before.physicalPairs !== expectedPairs ||
+			after.logicalPairs !== expectedPairs ||
+			after.physicalPairs !== 1
+		) {
 			throw new Error(
 				`${depth}-wrapper hydration did not preserve and compact its logical ranges: ` +
 					JSON.stringify({ before, after }),
@@ -166,9 +188,9 @@ try {
 			},
 			meta: {
 				correctness: 'pass',
-				logicalRanges: control.after.logicalDepth,
-				physicalPairsBefore: control.before.opens,
-				physicalPairsAfter: control.after.opens,
+				logicalRanges: control.after.logicalPairs,
+				physicalPairsBefore: control.before.physicalPairs,
+				physicalPairsAfter: control.after.physicalPairs,
 				serverLeafAdopted: true,
 				interactionHandled: true,
 				unmountClean: true,
