@@ -2,6 +2,13 @@
 
 Develop and compile Octane `.tsrx` email templates.
 
+## Installation
+
+```sh
+npm install --save-dev @octanejs/email-cli
+pnpm add --save-dev @octanejs/email-cli
+```
+
 ```sh
 octane-email dev --dir ./emails
 ```

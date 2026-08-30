@@ -2,6 +2,13 @@
 
 Email-safe components from [React Email](https://github.com/resend/react-email), ported to Octane.
 
+## Installation
+
+```sh
+npm install @octanejs/email
+pnpm add @octanejs/email
+```
+
 ```tsrx
 import { Button, Html, render } from '@octanejs/email';
 
