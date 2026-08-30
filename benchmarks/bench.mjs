@@ -788,7 +788,7 @@ const SUITES = [
 	},
 	{
 		// Universal fallback collapsed-template events (Node-only): handler-only
-		// updates across 256 and 2,048 retained native event sites.
+		// updates across 128 and 1,024 retained native event sites.
 		name: 'universal-template-events',
 		cwd: 'universal-template-events',
 		servers: [],

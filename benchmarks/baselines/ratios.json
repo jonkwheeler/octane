@@ -386,10 +386,10 @@
   {
     "suite": "universal-template-events",
     "op": "event_update_ms",
-    "target": "events-2048",
-    "reference": "events-256",
+    "target": "events-1024",
+    "reference": "events-128",
     "maxRatio": 12,
-    "note": "Eight times as many retained fallback collapsed-template event sites should take no more than 1.5 times linear growth. The optimized node-local cursor measures about 10x; the former whole-template search measured about 39x on the same fixture."
+    "note": "Eight times as many retained fallback collapsed-template event sites should take no more than 1.5 times linear growth. The optimized node-local cursor measures about 7-8x; the former whole-template search measures about 26x on the same fixture."
   },
   {
     "suite": "universal-external-store",

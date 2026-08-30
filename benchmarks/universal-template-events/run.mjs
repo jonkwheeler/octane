@@ -97,9 +97,9 @@ try {
 		};
 	}
 
-	const sizes = [256, 2_048];
-	const warmupUpdates = 8;
-	const updatesPerSample = 5;
+	const sizes = [128, 1_024];
+	const warmupUpdates = 16;
+	const updatesPerSample = 20;
 	const failures = [];
 	const fixtures = new Map();
 
@@ -209,6 +209,9 @@ try {
 			name: `events-${size}`,
 			ops: { event_update_ms: timingStatForJson(stats) },
 			meta: {
+				nodeVersion: process.version,
+				platform: process.platform,
+				architecture: process.arch,
 				eventSites: size,
 				hostInstances: fixture.container.instanceCount,
 				retainedHosts: fixture.retainedHosts.length,

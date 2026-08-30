@@ -2,7 +2,7 @@
 
 This Node-only benchmark measures shape-stable handler updates through the
 public universal root and the fallback collapsed-template host capability. It
-uses 256 and 2,048 event-bearing hosts so the same-run ratio exposes work that
+uses 128 and 1,024 event-bearing hosts so the same-run ratio exposes work that
 scans every accepted event for every next event.
 
 Fixture construction, handler allocation, initial mount, event dispatch,

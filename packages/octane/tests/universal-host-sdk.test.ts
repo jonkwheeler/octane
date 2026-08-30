@@ -1204,10 +1204,10 @@ describe('universal prepared host SDK', () => {
 					}),
 				),
 		);
-		const active = new Set<number>();
+		const noInactiveSites = new Set<number>();
 		const sampled = [0, 15, 31];
 
-		root.render(Scene, { version: 'accepted', inactive: active });
+		root.render(Scene, { version: 'accepted', inactive: noInactiveSites });
 		const row = container.children[0];
 		const actions = [...row.children];
 		for (const index of sampled) {
@@ -1218,7 +1218,10 @@ describe('universal prepared host SDK', () => {
 			sampled.flatMap((index) => [`accepted:${index}:select`, `accepted:${index}:press`]),
 		);
 
-		const abandoned = root.prepare(Scene, { version: 'abandoned', inactive: active });
+		const abandoned = root.prepare(Scene, {
+			version: 'abandoned',
+			inactive: noInactiveSites,
+		});
 		if (abandoned.status !== 'prepared') throw new Error('Expected a prepared transaction.');
 		abandoned.abort();
 		container.dispatchEvent(actions[0], 'select', undefined);
@@ -1247,7 +1250,7 @@ describe('universal prepared host SDK', () => {
 			'next:30:select',
 		]);
 
-		root.render(Scene, { version: 'restored', inactive: active });
+		root.render(Scene, { version: 'restored', inactive: noInactiveSites });
 		for (const index of sampled) {
 			container.dispatchEvent(actions[index], 'select', undefined);
 			container.dispatchEvent(actions[index], 'press', undefined);
