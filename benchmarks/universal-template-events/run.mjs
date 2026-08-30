@@ -200,11 +200,11 @@ try {
 		}
 		if (
 			fixture.dispatches.length !== 3 ||
-			fixture.dispatches.some(({ epoch }, index) => epoch !== latestEpoch || index > 2)
+			fixture.dispatches.some(({ epoch }) => epoch !== latestEpoch)
 		) {
 			failures.push(`events-${size}: final handlers did not own all semantic dispatches`);
 		}
-		const stats = summarizeSamples(fixture.samples, { scoreMode: 'mean' });
+		const stats = summarizeSamples(fixture.samples);
 		targets.push({
 			name: `events-${size}`,
 			ops: { event_update_ms: timingStatForJson(stats) },
