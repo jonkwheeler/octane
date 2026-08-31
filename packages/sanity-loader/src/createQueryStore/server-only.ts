@@ -33,7 +33,7 @@ export const createQueryStore = (options: CreateQueryStoreOptions): QueryStore =
 			unstable__serverClient.instance?.config().perspective ||
 			'published';
 		const variant = loadOptions.variant || undefined;
-		const useCdn = loadOptions.useCdn || unstable__serverClient.instance!.config().useCdn;
+		const useCdn = loadOptions.useCdn ?? unstable__serverClient.instance!.config().useCdn;
 		const previewPerspective =
 			Array.isArray(perspective) || perspective === 'drafts' || perspective === 'previewDrafts';
 

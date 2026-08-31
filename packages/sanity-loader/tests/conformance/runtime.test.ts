@@ -6,7 +6,7 @@ import { createQueryStore as createClientQueryStore } from '../../src/createQuer
 import { createQueryStore as createServerQueryStore } from '../../src/createQueryStore/server-only';
 import { defineUseLiveMode } from '../../src/defineUseLiveMode';
 import { defineStudioUrlStore } from '../../src/defineStudioUrlStore';
-import { InitialQuery } from '../_fixtures/initial-query.tsrx';
+import { InitialQuery, QuerySnapshot } from '../_fixtures/initial-query.tsrx';
 import { LiveModeStudioUrl } from '../_fixtures/live-mode-studio-url.tsrx';
 import { OptionalQueryArguments } from '../_fixtures/optional-query-arguments.tsrx';
 
@@ -19,6 +19,26 @@ describe('@octanejs/sanity-loader — runtime', () => {
 		const mounted = mount(InitialQuery);
 		expect(mounted.find('output').textContent).toBe('Octane and Sanity');
 		expect(mounted.find('output').getAttribute('data-loading')).toBe('false');
+		mounted.unmount();
+	});
+
+	it('publishes the current snapshot immediately when the query changes', () => {
+		const { useQuery } = sanityLoader.createQueryStore({ client: false, ssr: true });
+		const first = {
+			data: { title: 'First query' },
+			sourceMap: undefined,
+		};
+		const second = {
+			data: { title: 'Second query' },
+			sourceMap: undefined,
+		};
+		const mounted = mount(QuerySnapshot, { useQuery, query: 'first', initial: first });
+		flushEffects();
+
+		expect(mounted.find('output').textContent).toBe('First query');
+		mounted.update(QuerySnapshot, { useQuery, query: 'second', initial: second });
+		expect(mounted.find('output').textContent).toBe('Second query');
+
 		mounted.unmount();
 	});
 

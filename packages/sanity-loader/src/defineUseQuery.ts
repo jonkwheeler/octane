@@ -2,7 +2,7 @@ import type { QueryParams } from '@sanity/client';
 import type { QueryStore, QueryStoreState } from '@sanity/core-loader';
 import type { EncodeDataAttributeFunction } from '@sanity/core-loader/encode-data-attribute';
 import isEqual from 'fast-deep-equal';
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'octane';
+import { useEffect, useLinkedState, useMemo, useSyncExternalStore } from 'octane';
 
 import { defineStudioUrlStore } from './defineStudioUrlStore';
 import type { UseQueryOptions } from './types';
@@ -42,23 +42,21 @@ export function defineUseQuery({
 		);
 		const serializedParams = useMemo(() => JSON.stringify(params), [params]);
 
-		const [snapshot, setSnapshot] = useState<
+		const fetcher = useMemo(
+			() =>
+				createFetcherStore<QueryResponseResult, QueryResponseError>(
+					query,
+					JSON.parse(serializedParams),
+					initial,
+				),
+			[serializedParams, initial, query],
+		);
+		const [snapshot, setSnapshot] = useLinkedState<
+			typeof fetcher,
 			QueryStoreState<QueryResponseResult, QueryResponseError>
-		>(() => {
-			const fetcher = createFetcherStore<QueryResponseResult, QueryResponseError>(
-				query,
-				JSON.parse(serializedParams),
-				initial,
-			);
-			return fetcher.value!;
-		});
+		>(fetcher, (currentFetcher) => currentFetcher.value!);
 
 		useEffect(() => {
-			const fetcher = createFetcherStore<QueryResponseResult, QueryResponseError>(
-				query,
-				JSON.parse(serializedParams),
-				initial,
-			);
 			return fetcher.subscribe((nextSnapshot) => {
 				setSnapshot((previous) => {
 					if (!isEqual(previous.sourceMap, nextSnapshot.sourceMap)) return nextSnapshot;
@@ -70,7 +68,7 @@ export function defineUseQuery({
 					return previous;
 				});
 			});
-		}, [serializedParams, initial, query]);
+		}, [fetcher]);
 
 		const studioUrl = useSyncExternalStore(
 			studioUrlStore.subscribe,
