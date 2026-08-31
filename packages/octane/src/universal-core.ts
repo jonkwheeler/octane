@@ -12672,10 +12672,10 @@ export function createObjectDriver(
 				flushPendingDetaches(parent, children);
 				return children;
 			};
-			const detachSimulated = (id: number): void => {
+			const detachSimulated = (id: number, defer: boolean): void => {
 				const parent = readParent(id);
 				if (parent === DETACHED) return;
-				if (useBatchedDetaches) {
+				if (useBatchedDetaches && defer) {
 					const detaches = (pendingDetaches ??= new Map());
 					const detached = detaches.get(parent);
 					if (detached === undefined) detaches.set(parent, new Set([id]));
@@ -12780,7 +12780,7 @@ export function createObjectDriver(
 					}
 					if (!hasSimulated(command.id))
 						throw new Error(`Object driver: unknown child ${command.id}.`);
-					detachSimulated(command.id);
+					detachSimulated(command.id, false);
 					const children = simulatedChildren(command.parent);
 					const before =
 						command.before === null ? children.length : children.indexOf(command.before);
@@ -12801,7 +12801,7 @@ export function createObjectDriver(
 					if (readParent(command.id) !== command.parent) {
 						throw new Error(`Object driver: child ${command.id} is not attached.`);
 					}
-					detachSimulated(command.id);
+					detachSimulated(command.id, true);
 					for (const type of readSimulated(command.id)!.localCallbacks.keys()) {
 						cleanupKeys.add(keyFor(command.id, type));
 					}
@@ -12809,7 +12809,7 @@ export function createObjectDriver(
 					const instance = readSimulated(command.id);
 					if (instance === undefined)
 						throw new Error(`Object driver: unknown destroy ${command.id}.`);
-					detachSimulated(command.id);
+					detachSimulated(command.id, true);
 					for (const child of instance.children) parentChanges.set(child, DETACHED);
 					instance.children.length = 0;
 					forgetPendingDetachParent(command.id);
@@ -12846,11 +12846,11 @@ export function createObjectDriver(
 				if (pendingLiveDetaches!.size === 0) pendingLiveDetaches = null;
 				return children;
 			};
-			const detachLive = (id: number): void => {
+			const detachLive = (id: number, defer: boolean): void => {
 				if (!state.parents.has(id)) return;
 				const parent = state.parents.get(id)!;
 				const instance = state.instances.get(id)!;
-				if (useBatchedDetaches) {
+				if (useBatchedDetaches && defer) {
 					const detaches = (pendingLiveDetaches ??= new Map());
 					const detached = detaches.get(parent);
 					if (detached === undefined) detaches.set(parent, new Set([id]));
@@ -12929,7 +12929,7 @@ export function createObjectDriver(
 									throw new Error('Object driver does not support portal target parents.');
 								}
 								const instance = state.instances.get(command.id)!;
-								detachLive(command.id);
+								detachLive(command.id, false);
 								const children = liveChildren(command.parent);
 								const before =
 									command.before === null
@@ -12941,10 +12941,10 @@ export function createObjectDriver(
 								if (command.parent !== null && typeof command.parent !== 'number') {
 									throw new Error('Object driver does not support portal target parents.');
 								}
-								detachLive(command.id);
+								detachLive(command.id, true);
 							} else if (command.op === 'destroy') {
 								const instance = state.instances.get(command.id)!;
-								detachLive(command.id);
+								detachLive(command.id, true);
 								for (const child of instance.children) state.parents.delete(child.id);
 								instance.children.length = 0;
 								forgetPendingLiveParent(command.id);

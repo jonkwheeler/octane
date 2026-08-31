@@ -171,6 +171,32 @@ describe('universal runtime semantic regressions', () => {
 		expect(container.instanceCount).toBe(0);
 	});
 
+	it('preserves wide object-driver order when batched removals precede moves', () => {
+		const { container, root } = objectRoot();
+		const items = Array.from({ length: 4_096 }, (_, index) => `item-${index}`);
+		root.render(ObjectDriverSiblingScene, { groups: [{ id: 'wide', items }] });
+		const group = container.children[0];
+		const survivorLabels = [items.at(-1)!, items[2_048]!, items[0]!];
+		const survivors = new Map(
+			group.children
+				.filter((child) => survivorLabels.includes(child.props.label as string))
+				.map((child) => [child.props.label, child]),
+		);
+
+		root.render(ObjectDriverSiblingScene, {
+			groups: [{ id: 'wide', items: survivorLabels }],
+		});
+
+		expect(container.children).toEqual([group]);
+		expect(group.children.map((child) => child.props.label)).toEqual(survivorLabels);
+		for (const child of group.children) expect(child).toBe(survivors.get(child.props.label));
+		expect(container.instanceCount).toBe(survivorLabels.length + 1);
+
+		root.unmount();
+		expect(container.children).toEqual([]);
+		expect(container.instanceCount).toBe(0);
+	});
+
 	it('preserves object-driver sibling order and empties every detached parent', () => {
 		const { container, root } = objectRoot();
 		root.render(ObjectDriverSiblingScene, {
