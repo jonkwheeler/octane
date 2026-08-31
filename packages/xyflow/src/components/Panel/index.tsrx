@@ -1,6 +1,6 @@
 import cc from 'classcat';
 import type { PanelPosition } from '@xyflow/system';
-import type { HTMLAttributes } from '../react-shim.js';
+import type { HTMLAttributes } from '../../react-shim.js';
 import { fixedForwardRef } from '../../utils/general';
 
 /**

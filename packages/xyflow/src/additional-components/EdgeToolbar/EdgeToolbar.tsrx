@@ -3,7 +3,7 @@ import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import { getEdgeToolbarTransform } from '@xyflow/system';
 
-import { EdgeLabelRenderer } from '../../components/EdgeLabelRenderer';
+import { EdgeLabelRenderer } from '../../components/EdgeLabelRenderer/index.tsrx';
 import { useStore } from '../../hooks/useStore';
 import { Edge, ReactFlowState } from '../../types';
 import type { EdgeToolbarProps } from './types';

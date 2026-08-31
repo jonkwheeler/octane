@@ -14,8 +14,8 @@ import { BINDING_CATEGORIES, BINDING_COUNT } from '../src/content/bindings.ts';
 import {
 	FRAMEWORK_INTEGRATIONS,
 	FRAMEWORK_INTEGRATION_COUNT,
-	frameworkIntegrationRepositoryHref,
 } from '../src/content/framework-integrations.ts';
+import { ecosystemPackageGuideHref } from '../src/lib/ecosystem-presentation.ts';
 import {
 	FRAMEWORK_CARDS,
 	HOME_SUMMARY,
@@ -182,13 +182,20 @@ describe('website routes', () => {
 		for (const card of FRAMEWORK_CARDS) {
 			const keys = card.series.map((series) => series.key);
 			if (card.id === 'svg-dashboard') {
-				expect(keys).toEqual(['octane-tsrx', 'react', 'solid', 'svelte']);
+				expect(keys).toEqual(['octane-tsrx', 'react', 'solid', 'svelte', 'inferno']);
 			} else if (card.id === 'spa-navigation') {
-				expect(keys).toEqual(['octane-tsrx', 'octane-jsx', 'react', 'solid', 'vue-vapor']);
+				expect(keys).toEqual([
+					'octane-tsrx',
+					'octane-jsx',
+					'react',
+					'solid',
+					'vue-vapor',
+					'inferno',
+				]);
 			} else {
 				expect(keys, card.id).toContain('preact');
 			}
-			if (card.id === 'streaming-ssr' || card.id === 'spa-navigation') {
+			if (card.id === 'streaming-ssr' || card.id === 'spa-navigation' || card.id === 'uibench') {
 				expect(keys, card.id).not.toContain('svelte');
 			} else {
 				expect(keys, card.id).toContain('svelte');
@@ -198,15 +205,38 @@ describe('website routes', () => {
 				if (card.id !== 'svg-dashboard' && card.id !== 'spa-navigation') {
 					expect(typeof row.preact, `${card.id}/${row.op}/preact`).toBe('number');
 				}
-				if (card.id !== 'streaming-ssr' && card.id !== 'spa-navigation') {
+				if (card.id !== 'streaming-ssr' && card.id !== 'spa-navigation' && card.id !== 'uibench') {
 					expect(typeof row.svelte, `${card.id}/${row.op}/svelte`).toBe('number');
 				}
 			}
 		}
 
 		const summaryKeys = HOME_SUMMARY.series.map((series) => series.key);
-		expect(summaryKeys).toEqual(expect.arrayContaining(['react', 'preact', 'svelte']));
+		expect(summaryKeys).toEqual(expect.arrayContaining(['react', 'preact', 'svelte', 'inferno']));
 		expect(summaryKeys).not.toContain('react-uncompiled');
+
+		const uibench = FRAMEWORK_CARDS.find((card) => card.id === 'uibench')!;
+		expect(uibench.series.map((series) => series.key)).toEqual([
+			'octane-tsrx',
+			'react',
+			'preact',
+			'solid',
+			'ripple',
+			'vue-vapor',
+			'inferno',
+		]);
+		expect(uibench.rows).toHaveLength(96);
+		for (const diagnostic of ['cases', 'elements_largest', 'identity_shared']) {
+			expect(
+				uibench.rows.some((row) => row.op === diagnostic),
+				diagnostic,
+			).toBe(false);
+		}
+		for (const row of uibench.rows) {
+			for (const series of uibench.series) {
+				expect(typeof row[series.key], `${uibench.id}/${row.op}/${series.key}`).toBe('number');
+			}
+		}
 
 		const memoWall = FRAMEWORK_CARDS.find((card) => card.id === 'memo-wall')!;
 		expect(memoWall.series.map((series) => series.key)).toEqual(
@@ -582,17 +612,20 @@ describe('website routes', () => {
 		const packages = BINDING_CATEGORIES.flatMap((category) => category.packages);
 
 		const packageLinks = Array.from(
-			container.querySelectorAll<HTMLAnchorElement>('.binding-directory a[href*="/packages/"]'),
+			container.querySelectorAll<HTMLAnchorElement>(
+				'.ecosystem-entity[id^="binding-"] a[href*="/packages/"]',
+			),
 		);
 		expect(packageLinks).toHaveLength(BINDING_COUNT);
 		expect(container.querySelector('.doc-eyebrow')?.textContent).toBe(
-			`${BINDING_COUNT} first-party bindings`,
+			`${FRAMEWORK_INTEGRATION_COUNT} integrations · ${BINDING_COUNT} bindings`,
 		);
-		for (const packageName of packages) {
+		for (const binding of packages) {
+			const packageName = binding.packageName;
 			const directory = packageName.slice('@octanejs/'.length);
 			const href = `https://github.com/octanejs/octane/tree/main/packages/${directory}`;
 			const link = packageLinks.find((candidate) => candidate.getAttribute('href') === href);
-			expect(link?.textContent).toBe(packageName);
+			expect(link?.textContent).toContain(packageName);
 		}
 	});
 
@@ -609,13 +642,15 @@ describe('website routes', () => {
 			`${FRAMEWORK_INTEGRATION_COUNT} first-party framework integrations`,
 		);
 		for (const integration of FRAMEWORK_INTEGRATIONS) {
-			const href = frameworkIntegrationRepositoryHref(integration.packageName);
+			const href = ecosystemPackageGuideHref(integration.packageName);
 			const link = packageLinks.find((candidate) => candidate.getAttribute('href') === href);
 			expect(link?.textContent).toBe(integration.packageName);
 		}
-		expect(findLink(container, '/docs/bindings#find-a-binding')?.textContent).toContain(
-			'TanStack bindings',
+		const tanstackBindings = Array.from(container.querySelectorAll<HTMLAnchorElement>('a')).find(
+			(link) => link.textContent?.includes('TanStack bindings'),
 		);
+		expect(tanstackBindings?.getAttribute('href')).toContain('/docs/bindings?q=TanStack');
+		expect(tanstackBindings?.getAttribute('href')).toContain('kind=binding');
 	});
 
 	it('an unknown route renders the root notFoundComponent inside the layout', async () => {

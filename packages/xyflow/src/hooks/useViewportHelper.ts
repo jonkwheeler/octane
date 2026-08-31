@@ -1,5 +1,5 @@
 import { useMemo } from 'octane';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, subSlot } from './slot';
 import {
 	pointToRendererPoint,
 	getViewportForBounds,
@@ -12,9 +12,8 @@ import { useStoreApi } from '../hooks/useStore';
 import type { ViewportHelperFunctions } from '../types';
 
 const useViewportHelper = (...rest: [slot?: symbol]): ViewportHelperFunctions => {
-	const slot = rest[rest.length - 1];
-	const hookSlot = typeof slot === 'symbol' ? (slot as symbol) : undefined;
-	const store = useStoreApi(hookSlot);
+	const slot = resolveHookSlot(rest);
+	const store = useStoreApi(subSlot(slot, 'store'));
 
 	return useMemo<ViewportHelperFunctions>(
 		function buildViewportHelper() {
@@ -97,7 +96,7 @@ const useViewportHelper = (...rest: [slot?: symbol]): ViewportHelperFunctions =>
 			};
 		},
 		[store],
-		hookSlot,
+		subSlot(slot, 'helper'),
 	);
 };
 

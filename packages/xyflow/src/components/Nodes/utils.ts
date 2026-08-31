@@ -1,5 +1,5 @@
 import type { RefObject } from '../../react-shim.js';
-import type { StoreApi } from 'zustand';
+import type { StoreApi } from '@octanejs/zustand';
 import { errorMessages } from '@xyflow/system';
 
 import type { ReactFlowState } from '../../types';

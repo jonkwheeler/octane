@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'octane';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, subSlot } from './slot';
 import type { NodeChange } from '@xyflow/system';
 
 import { useStoreApi } from './useStore';
@@ -16,10 +16,13 @@ export function experimental_useOnNodesChangeMiddleware<NodeType extends Node = 
 	...rest: [slot?: symbol]
 ) {
 	const slot = resolveHookSlot(rest);
-	const store = useStoreApi<NodeType, Edge>(slot);
-	const [symbol] = useState(function createSymbol() {
-		return Symbol();
-	}, slot);
+	const store = useStoreApi<NodeType, Edge>(subSlot(slot, 'store'));
+	const [symbol] = useState(
+		function createSymbol() {
+			return Symbol();
+		},
+		subSlot(slot, 'symbol'),
+	);
 
 	useEffect(
 		function registerMiddleware() {
@@ -27,7 +30,7 @@ export function experimental_useOnNodesChangeMiddleware<NodeType extends Node = 
 			onNodesChangeMiddlewareMap.set(symbol, fn);
 		},
 		[fn],
-		slot,
+		subSlot(slot, 'register'),
 	);
 
 	useEffect(
@@ -38,6 +41,6 @@ export function experimental_useOnNodesChangeMiddleware<NodeType extends Node = 
 			};
 		},
 		[],
-		slot,
+		subSlot(slot, 'unregister'),
 	);
 }

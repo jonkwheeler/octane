@@ -1,5 +1,5 @@
 import { nodeHasDimensions } from '@xyflow/system';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, withoutSlot } from './slot';
 
 import { useStore } from './useStore';
 import type { ReactFlowState } from '../types';
@@ -61,13 +61,14 @@ const selector = (options: UseNodesInitializedOptions) => (s: ReactFlowState) =>
  *```
  */
 export function useNodesInitialized(
-	options: UseNodesInitializedOptions = {
+	options: UseNodesInitializedOptions | symbol = {
 		includeHiddenNodes: false,
 	},
 	...rest: [slot?: symbol]
 ): boolean {
-	const slot = resolveHookSlot(rest);
-	const initialized = useStore(selector(options), undefined, slot);
+	let slot = resolveHookSlot(rest);
+	const resolved = withoutSlot(options) ?? { includeHiddenNodes: false };
+	const initialized = useStore(selector(resolved), undefined, slot);
 
 	return initialized;
 }

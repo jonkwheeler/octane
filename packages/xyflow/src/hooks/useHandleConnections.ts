@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'octane';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, subSlot } from './slot';
 import {
 	Connection,
 	HandleConnection,
@@ -43,24 +43,35 @@ export function useHandleConnections(
 	const _nodeId = useNodeId();
 	const currentNodeId = nodeId ?? _nodeId;
 
-	const prevConnections = useRef<Map<string, HandleConnection> | null>(null);
+	const prevConnections = useRef<Map<string, HandleConnection> | null>(
+		null,
+		subSlot(slot, 'previous-connections'),
+	);
 
 	const connections = useStore(
 		(state) => state.connectionLookup.get(`${currentNodeId}-${type}${id ? `-${id}` : ''}`),
 		areConnectionMapsEqual,
-		slot,
+		subSlot(slot, 'connections'),
 	);
 
-	useEffect(() => {
-		// @todo discuss if onConnect/onDisconnect should be called when the component mounts/unmounts
-		if (prevConnections.current && prevConnections.current !== connections) {
-			const _connections = connections ?? new Map();
-			handleConnectionChange(prevConnections.current, _connections, onDisconnect);
-			handleConnectionChange(_connections, prevConnections.current, onConnect);
-		}
+	useEffect(
+		() => {
+			// @todo discuss if onConnect/onDisconnect should be called when the component mounts/unmounts
+			if (prevConnections.current && prevConnections.current !== connections) {
+				const _connections = connections ?? new Map();
+				handleConnectionChange(prevConnections.current, _connections, onDisconnect);
+				handleConnectionChange(_connections, prevConnections.current, onConnect);
+			}
 
-		prevConnections.current = connections ?? new Map();
-	}, [connections, onConnect, onDisconnect]);
+			prevConnections.current = connections ?? new Map();
+		},
+		[connections, onConnect, onDisconnect],
+		subSlot(slot, 'connection-change'),
+	);
 
-	return useMemo(() => Array.from(connections?.values() ?? []), [connections]);
+	return useMemo(
+		() => Array.from(connections?.values() ?? []),
+		[connections],
+		subSlot(slot, 'connection-list'),
+	);
 }

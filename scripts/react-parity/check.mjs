@@ -9,6 +9,8 @@ import { assertPristineOracleEnvironment } from './alien-signals-pristine-runtim
 import { verifyAlienSignalsTestClassifications } from './alien-signals-classifications-lib.mjs';
 import { verifyAlienSignalsRuntimeStructure } from './alien-signals-runtime-lib.mjs';
 import { verifyAlienSignalsTypes } from './alien-signals-types-lib.mjs';
+import { verifyBetterAuthRuntimeInventory } from './better-auth-runtime-lib.mjs';
+import { verifyBetterAuthTypes } from './better-auth-types-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import {
 	createRequiredNonVitestManifestShardPlan,
@@ -18,6 +20,8 @@ import {
 import { verifyDreiReactParity } from './drei-parity-lib.mjs';
 import { verifyDreiTypes } from './drei-types-lib.mjs';
 import { verifyEmblaCarouselTestClassifications } from './embla-carousel-classifications-lib.mjs';
+import { verifyFormischTestClassifications } from './formisch-classifications-lib.mjs';
+import { verifyFormischUpstream } from './formisch-upstream-lib.mjs';
 import {
 	isVitestLane,
 	loadManifest,
@@ -54,6 +58,7 @@ import { verifyReactMarkdownTypes } from './react-markdown-types-lib.mjs';
 import { verifyReactResizablePanelsTestClassifications } from './react-resizable-panels-classifications-lib.mjs';
 import { verifyReactResizablePanelsTypes } from './react-resizable-panels-types-lib.mjs';
 import { verifyReactResizablePanelsUpstream } from './react-resizable-panels-upstream-lib.mjs';
+import { verifyReactSelectTestClassifications } from './react-select-classifications-lib.mjs';
 import { verifyReactSpringUpstream } from './react-spring-upstream-lib.mjs';
 import { verifyReactTextareaAutosizeTestClassifications } from './react-textarea-autosize-classifications-lib.mjs';
 import { verifyReactTextareaAutosizeCrosswalk } from './react-textarea-autosize-crosswalk-lib.mjs';
@@ -72,6 +77,7 @@ import { verifyTanstackTableTypes } from './tanstack-table-types-lib.mjs';
 import { verifyTiptapTestClassifications } from './tiptap-classifications-lib.mjs';
 import { verifyTiptapRuntimeCrosswalk } from './tiptap-runtime-lib.mjs';
 import { verifyTiptapTypes } from './tiptap-types-lib.mjs';
+import { verifyTypeParity } from './type-parity-lib.mjs';
 import { verifyVaulTestClassifications } from './vaul-classifications-lib.mjs';
 import { verifyVaulAdaptedRuntimeStructure } from './vaul-runtime-lib.mjs';
 import { verifyVaulUpstream } from './vaul-upstream-lib.mjs';
@@ -141,12 +147,14 @@ const SPECIALIZED_CLASSIFICATION_BINDINGS = new Set([
 	'dropzone',
 	'drei',
 	'embla-carousel',
+	'formisch',
 	'intersection-observer',
 	'livestore',
 	'markdown',
 	'pdf',
 	'popper',
 	'resizable-panels',
+	'select',
 	'transition-group',
 	'tanstack-devtools',
 	'tanstack-hotkeys',
@@ -169,6 +177,15 @@ async function capture(label, check) {
 
 await capture('react-hook-form upstream evidence', () => verifyHookFormUpstream(REPO));
 await capture('react-hook-form type evidence', () => verifyHookFormTypes(REPO));
+await capture('formisch upstream evidence', () =>
+	verifyFormischUpstream(REPO, {
+		integrity: '3f9c1c6da89473296033cc2701405080b2cb11478724bc7f045063ee618aaf57',
+	}),
+);
+await capture('formisch type evidence', () =>
+	verifyTypeParity(REPO, { configPath: 'packages/formisch/audit/type-parity.json' }),
+);
+await capture('formisch test classifications', () => verifyFormischTestClassifications(REPO));
 await capture('react-intersection-observer upstream evidence', () =>
 	verifyIntersectionObserverUpstream(REPO),
 );
@@ -184,12 +201,17 @@ await capture('react-resizable-panels type evidence', () => verifyReactResizable
 await capture('react-resizable-panels test classifications', () =>
 	verifyReactResizablePanelsTestClassifications(REPO),
 );
+await capture('react-select test classifications', () =>
+	verifyReactSelectTestClassifications(REPO),
+);
 await capture('livestore type evidence', () => verifyLivestoreTypes(REPO));
 await capture('livestore test classifications', () => verifyLivestoreTestClassifications(REPO));
 await capture('alien-signals type evidence', () => verifyAlienSignalsTypes(REPO));
 await capture('alien-signals runtime structure evidence', () =>
 	verifyAlienSignalsRuntimeStructure(REPO),
 );
+await capture('better-auth type evidence', () => verifyBetterAuthTypes(REPO));
+await capture('better-auth runtime inventory', () => verifyBetterAuthRuntimeInventory(REPO));
 await capture('alien-signals pristine oracle environment', () =>
 	assertPristineOracleEnvironment({
 		environmentPath: path.join(

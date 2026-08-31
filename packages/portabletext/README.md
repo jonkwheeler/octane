@@ -3,6 +3,11 @@
 Octane renderer for [Portable Text](https://www.portabletext.org/), compatible with the
 runtime API of `@portabletext/react@8.0.1`.
 
+```sh
+npm install @octanejs/portabletext
+pnpm add @octanejs/portabletext
+```
+
 ```tsrx
 import {PortableText} from '@octanejs/portabletext'
 

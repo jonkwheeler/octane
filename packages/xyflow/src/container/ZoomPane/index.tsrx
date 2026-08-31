@@ -7,7 +7,7 @@ import { useKeyPress } from '../../hooks/useKeyPress';
 import { useResizeHandler } from '../../hooks/useResizeHandler';
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { containerStyle } from '../../styles/utils';
-import type { FlowRendererProps } from '../FlowRenderer';
+import type { FlowRendererProps } from '../FlowRenderer/index.tsrx';
 import type { ReactFlowState } from '../../types';
 
 type ZoomPaneProps =
@@ -52,10 +52,10 @@ export function ZoomPane({
 	selectionOnDrag,
 }: ZoomPaneProps) {
 	const store = useStoreApi();
-	const zoomPane = useRef<HTMLDivElement>(null);
+	const zoomPane = useRef<HTMLDivElement | null>(null);
 	const { userSelectionActive, lib, connectionInProgress } = useStore(selector, shallow);
 	const zoomActivationKeyPressed = useKeyPress(zoomActivationKeyCode);
-	const panZoom = useRef<PanZoomInstance>();
+	const panZoom = useRef<PanZoomInstance | undefined>(undefined);
 
 	useResizeHandler(zoomPane);
 
@@ -76,7 +76,7 @@ export function ZoomPane({
 				translateExtent,
 				viewport: defaultViewport,
 				onDraggingChange: (paneDragging) => store.setState(
-					(prevState) => prevState.paneDragging === paneDragging ? prevState : { paneDragging },
+					(prevState) => (prevState.paneDragging === paneDragging ? prevState : { paneDragging }),
 				),
 				onPanZoomStart: (event, vp) => {
 					const { onViewportChangeStart, onMoveStart } = store.getState();

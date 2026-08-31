@@ -1,6 +1,8 @@
-import { useState, useCallback, type Dispatch, type SetStateAction } from 'octane';
+import { useState, useCallback } from 'octane';
+import type { Dispatch, SetStateAction } from '../react-shim.js';
 
 import { applyNodeChanges, applyEdgeChanges } from '../utils/changes';
+import { resolveHookSlot, subSlot } from './slot';
 import type { Node, Edge, OnNodesChange, OnEdgesChange } from '../types';
 
 /**
@@ -50,16 +52,19 @@ import type { Node, Edge, OnNodesChange, OnEdgesChange } from '../types';
  */
 export function useNodesState<NodeType extends Node>(
 	initialNodes: NodeType[],
+	...rest: [slot?: symbol]
 ): [
 	//
 	nodes: NodeType[],
 	setNodes: Dispatch<SetStateAction<NodeType[]>>,
 	onNodesChange: OnNodesChange<NodeType>,
 ] {
-	const [nodes, setNodes] = useState(initialNodes);
+	const slot = resolveHookSlot(rest);
+	const [nodes, setNodes] = useState(initialNodes, subSlot(slot, 'state'));
 	const onNodesChange: OnNodesChange<NodeType> = useCallback(
 		(changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
 		[],
+		subSlot(slot, 'changes'),
 	);
 
 	return [nodes, setNodes, onNodesChange];
@@ -114,16 +119,19 @@ export function useNodesState<NodeType extends Node>(
  */
 export function useEdgesState<EdgeType extends Edge = Edge>(
 	initialEdges: EdgeType[],
+	...rest: [slot?: symbol]
 ): [
 	//
 	edges: EdgeType[],
 	setEdges: Dispatch<SetStateAction<EdgeType[]>>,
 	onEdgesChange: OnEdgesChange<EdgeType>,
 ] {
-	const [edges, setEdges] = useState(initialEdges);
+	const slot = resolveHookSlot(rest);
+	const [edges, setEdges] = useState(initialEdges, subSlot(slot, 'state'));
 	const onEdgesChange: OnEdgesChange<EdgeType> = useCallback(
 		(changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
 		[],
+		subSlot(slot, 'changes'),
 	);
 
 	return [edges, setEdges, onEdgesChange];

@@ -1,7 +1,6 @@
 {
   "name": "@octanejs/xyflow",
-  "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -58,6 +57,8 @@
   "devDependencies": {
     "@octanejs/zustand": "workspace:*",
     "@tsrx/react": "catalog:default",
+    "@types/react": "catalog:default",
+    "@types/react-dom": "catalog:default",
     "@xyflow/react": "catalog:default",
     "esbuild": "catalog:default",
     "octane": "workspace:*",

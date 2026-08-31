@@ -1,7 +1,7 @@
 import { memo } from 'octane';
 import { Position, getBezierEdgeCenter } from '@xyflow/system';
 
-import { BaseEdge } from './BaseEdge';
+import { BaseEdge } from './BaseEdge.tsrx';
 import type { SimpleBezierEdgeProps } from '../../types';
 
 export interface GetSimpleBezierPathParams {
@@ -140,7 +140,11 @@ function createSimpleBezierEdge(params: { isInternal: boolean }) {
 const SimpleBezierEdge = createSimpleBezierEdge({ isInternal: false });
 const SimpleBezierEdgeInternal = createSimpleBezierEdge({ isInternal: true });
 
-SimpleBezierEdge.displayName = 'SimpleBezierEdge';
-SimpleBezierEdgeInternal.displayName = 'SimpleBezierEdgeInternal';
+(SimpleBezierEdge as typeof SimpleBezierEdge & { displayName?: string }).displayName =
+	'SimpleBezierEdge';
+(SimpleBezierEdgeInternal as
+	typeof SimpleBezierEdgeInternal & {
+		displayName?: string;
+	}).displayName = 'SimpleBezierEdgeInternal';
 
 export { SimpleBezierEdge, SimpleBezierEdgeInternal };

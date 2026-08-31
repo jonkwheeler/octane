@@ -5,6 +5,7 @@ the Octane counterpart to `@sanity/react-loader@2.2.1` and delegates the data
 layer to Sanity's framework-neutral `@sanity/core-loader` package.
 
 ```sh
+npm install @octanejs/sanity-loader @sanity/client
 pnpm add @octanejs/sanity-loader @sanity/client
 ```
 

@@ -1,16 +1,19 @@
-export { default as ReactFlow } from './container/ReactFlow';
-export { Handle, type HandleProps } from './components/Handle';
-export { EdgeText } from './components/Edges/EdgeText';
-export { StraightEdge } from './components/Edges/StraightEdge';
-export { StepEdge } from './components/Edges/StepEdge';
-export { BezierEdge } from './components/Edges/BezierEdge';
-export { SimpleBezierEdge, getSimpleBezierPath } from './components/Edges/SimpleBezierEdge';
-export { SmoothStepEdge } from './components/Edges/SmoothStepEdge';
-export { BaseEdge } from './components/Edges/BaseEdge';
-export { ReactFlowProvider } from './components/ReactFlowProvider';
-export { Panel, type PanelProps } from './components/Panel';
-export { EdgeLabelRenderer, type EdgeLabelRendererProps } from './components/EdgeLabelRenderer';
-export { ViewportPortal } from './components/ViewportPortal';
+export { default as ReactFlow } from './container/ReactFlow/index.tsrx';
+export { Handle, type HandleProps } from './components/Handle/index.tsrx';
+export { EdgeText } from './components/Edges/EdgeText.tsrx';
+export { StraightEdge } from './components/Edges/StraightEdge.tsrx';
+export { StepEdge } from './components/Edges/StepEdge.tsrx';
+export { BezierEdge } from './components/Edges/BezierEdge.tsrx';
+export { SimpleBezierEdge, getSimpleBezierPath } from './components/Edges/SimpleBezierEdge.tsrx';
+export { SmoothStepEdge } from './components/Edges/SmoothStepEdge.tsrx';
+export { BaseEdge } from './components/Edges/BaseEdge.tsrx';
+export { ReactFlowProvider } from './components/ReactFlowProvider/index.tsrx';
+export { Panel, type PanelProps } from './components/Panel/index.tsrx';
+export {
+	EdgeLabelRenderer,
+	type EdgeLabelRendererProps,
+} from './components/EdgeLabelRenderer/index.tsrx';
+export { ViewportPortal } from './components/ViewportPortal/index.tsrx';
 
 export { useReactFlow } from './hooks/useReactFlow';
 export { useUpdateNodeInternals } from './hooks/useUpdateNodeInternals';

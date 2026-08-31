@@ -422,31 +422,6 @@ function inheritGeneratedOrigin(root, origin) {
 	return root;
 }
 
-function mapAstCow(value, replace) {
-	if (!value || typeof value !== 'object') return value;
-	if (Array.isArray(value)) {
-		let output = null;
-		for (let index = 0; index < value.length; index++) {
-			const mapped = mapAstCow(value[index], replace);
-			if (output === null && mapped !== value[index]) output = value.slice(0, index);
-			if (output !== null && mapped !== null) output.push(mapped);
-		}
-		return output ?? value;
-	}
-	const replacement = replace(value);
-	if (replacement !== undefined) return replacement;
-	let output = null;
-	for (const [key, child] of Object.entries(value)) {
-		if (AST_SKIP_KEYS.has(key)) continue;
-		const mapped = mapAstCow(child, replace);
-		if (mapped !== child) {
-			if (output === null) output = { ...value };
-			output[key] = mapped;
-		}
-	}
-	return output ?? value;
-}
-
 function jsonValueToAst(value, origin) {
 	const valueOrigin =
 		value && typeof value === 'object' && value[PLAN_ORIGIN] ? value[PLAN_ORIGIN] : origin;
@@ -1882,15 +1857,44 @@ function validateRendererSource(ast, state) {
 	validateHostTemplates(ast, state, validation, isAuthored);
 }
 
+function createSourceRangeContainmentIndex(ranges) {
+	const orderedRanges = ranges
+		.filter(
+			(range) =>
+				typeof range?.start === 'number' &&
+				typeof range?.end === 'number' &&
+				range.end >= range.start,
+		)
+		.sort((left, right) => left.start - right.start || left.end - right.end);
+	const maximumEnds = new Array(orderedRanges.length);
+	let maximumEnd = -Infinity;
+	for (let index = 0; index < orderedRanges.length; index++) {
+		maximumEnd = Math.max(maximumEnd, orderedRanges[index].end);
+		maximumEnds[index] = maximumEnd;
+	}
+	return { maximumEnds, ranges: orderedRanges };
+}
+
+function sourceRangeIndexContains(index, node) {
+	if (typeof node?.start !== 'number' || typeof node?.end !== 'number') return false;
+	let low = 0;
+	let high = index.ranges.length;
+	while (low < high) {
+		const middle = (low + high) >>> 1;
+		if (index.ranges[middle].start <= node.start) low = middle + 1;
+		else high = middle;
+	}
+	// Keep each range's original extent. Merging adjacent ranges would select a
+	// parent that spans them even though neither authored range contains it.
+	return low > 0 && index.maximumEnds[low - 1] >= node.end;
+}
+
 function validateRendererSourceRanges(ast, state, ranges, exclusions = []) {
 	const validation = state.renderer.validation;
 	if (validation === undefined) return;
-	const selected = ranges.filter(
-		(range) =>
-			typeof range?.start === 'number' &&
-			typeof range?.end === 'number' &&
-			range.end >= range.start,
-	);
+	const selected = createSourceRangeContainmentIndex(ranges);
+	const excluded =
+		exclusions.length === 0 ? undefined : createSourceRangeContainmentIndex(exclusions);
 	const staticModuleSources = new WeakSet();
 	for (const statement of ast.body ?? []) {
 		const source =
@@ -1900,16 +1904,8 @@ function validateRendererSourceRanges(ast, state, ranges, exclusions = []) {
 		if (source && typeof source === 'object') staticModuleSources.add(source);
 	}
 	const isSelected = (node) =>
-		typeof node?.start === 'number' &&
-		typeof node?.end === 'number' &&
-		selected.some((range) => range.start <= node.start && node.end <= range.end) &&
-		!exclusions.some(
-			(range) =>
-				typeof range?.start === 'number' &&
-				typeof range?.end === 'number' &&
-				range.start <= node.start &&
-				node.end <= range.end,
-		);
+		sourceRangeIndexContains(selected, node) &&
+		(excluded === undefined || !sourceRangeIndexContains(excluded, node));
 	const isAuthored = (node) => isSelected(node) && !staticModuleSources.has(node);
 	const needsLexicalAnalysis =
 		(validation.forbiddenImports?.length ?? 0) > 0 ||

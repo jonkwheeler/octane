@@ -1,9 +1,10 @@
-import { CSSProperties, memo, useRef } from 'octane';
+import { memo, useRef } from 'octane';
+import type { CSSProperties } from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 
 import { useStore } from '../../hooks/useStore';
-import { DotPattern, LinePattern } from './Patterns';
+import { DotPattern, LinePattern } from './Patterns.tsrx';
 import { containerStyle } from '../../styles/utils';
 import { type BackgroundProps, BackgroundVariant } from './types';
 import { type ReactFlowState } from '../../types';
@@ -34,7 +35,7 @@ function BackgroundComponent({
 	className,
 	patternClassName,
 }: BackgroundProps) {
-	const ref = useRef<SVGSVGElement>(null);
+	const ref = useRef<SVGSVGElement | null>(null);
 	const { transform, patternId } = useStore(selector, shallow);
 	const patternSize = size || defaultSize[variant];
 	const isDots = variant === BackgroundVariant.Dots;

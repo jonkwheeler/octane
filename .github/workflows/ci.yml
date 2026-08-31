@@ -696,6 +696,10 @@ jobs:
           BUN_BINARY: bun
         run: node --test packages/octane/tests/register-hook-bun.integration.test.mjs
 
+      - name: Run OpenTUI native integration tests
+        if: ${{ !cancelled() && steps.install_heavy_node_dependencies.outcome == 'success' && steps.setup_heavy_node_bun.outcome == 'success' }}
+        run: pnpm --dir packages/opentui test:native
+
       - name: Run Astro integration tests
         if: ${{ !cancelled() && steps.install_heavy_node_dependencies.outcome == 'success' && steps.install_heavy_node_chromium.outcome == 'success' }}
         run: >-
@@ -858,6 +862,11 @@ jobs:
       # hard-coded package counts before they spread to docs and tooling.
       - name: Check package inventory is current
         run: pnpm packages:inventory:check
+
+      # Header and directory search consume one compact browser-safe snapshot
+      # assembled from the authored catalogs, package manifests, and statuses.
+      - name: Check website ecosystem index is current
+        run: pnpm website:ecosystem-data:check
 
       - name: Check binding parity-gap index is current
         run: pnpm binding-parity:gaps:check

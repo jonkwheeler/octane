@@ -3,6 +3,11 @@
 Octane port of `@sanity/logos@2.2.5`, including `SanityLogo`, `SanityMonogram`,
 `GroqLogo`, and `GroqMonogram`.
 
+```sh
+npm install @octanejs/sanity-logos
+pnpm add @octanejs/sanity-logos
+```
+
 ```tsrx
 import {SanityLogo} from '@octanejs/sanity-logos'
 

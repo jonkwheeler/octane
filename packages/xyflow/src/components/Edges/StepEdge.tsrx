@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'octane';
 
-import { SmoothStepEdge } from './SmoothStepEdge';
+import { SmoothStepEdge } from './SmoothStepEdge.tsrx';
 import type { StepEdgeProps } from '../../types';
 
 function createStepEdge(params: { isInternal: boolean }) {
@@ -48,7 +48,8 @@ const StepEdge = createStepEdge({ isInternal: false });
  */
 const StepEdgeInternal = createStepEdge({ isInternal: true });
 
-StepEdge.displayName = 'StepEdge';
-StepEdgeInternal.displayName = 'StepEdgeInternal';
+(StepEdge as typeof StepEdge & { displayName?: string }).displayName = 'StepEdge';
+(StepEdgeInternal as typeof StepEdgeInternal & { displayName?: string }).displayName =
+	'StepEdgeInternal';
 
 export { StepEdge, StepEdgeInternal };

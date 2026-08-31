@@ -1,13 +1,11 @@
-import {
-	useEffect,
-	useRef,
-	type MouseEventHandler,
-	type RefObject,
-	type MouseEvent as ReactMouseEvent,
-	type PointerEvent as ReactPointerEvent,
-	type WheelEvent as ReactWheelEvent,
-	type OctaneNode,
-} from 'octane';
+import { useEffect, useRef, type OctaneNode } from 'octane';
+import type {
+	EventHandler,
+	RefObject,
+	MouseEvent as ReactMouseEvent,
+	PointerEvent as ReactPointerEvent,
+	WheelEvent as ReactWheelEvent,
+} from '../../react-shim.js';
 import { shallow } from '@octanejs/zustand/shallow';
 import cc from 'classcat';
 import {
@@ -21,7 +19,7 @@ import {
 	XYPosition,
 } from '@xyflow/system';
 
-import { UserSelection } from '../../components/UserSelection';
+import { UserSelection } from '../../components/UserSelection/index.tsrx';
 import { containerStyle } from '../../styles/utils';
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { getSelectionChanges } from '../../utils';
@@ -51,11 +49,11 @@ type PaneProps =
 		>
 	>;
 
-const wrapHandler = (
-	handler: MouseEventHandler | undefined,
+const wrapHandler = <EventType extends Event,>(
+	handler: EventHandler<EventType> | undefined,
 	containerRef: RefObject<HTMLDivElement | null>,
-): MouseEventHandler => {
-	return (event: ReactMouseEvent) => {
+): EventHandler<EventType> => {
+	return (event: EventType) => {
 		if (event.target !== containerRef.current) {
 			return;
 		}
@@ -98,7 +96,7 @@ export function Pane({
 	const isSelectionEnabled = elementsSelectable && (isSelecting || userSelectionActive);
 
 	const container = useRef<HTMLDivElement | null>(null);
-	const containerBounds = useRef<DOMRect>();
+	const containerBounds = useRef<DOMRect | undefined>(undefined);
 	const selectedNodeIds = useRef<Set<string>>(new Set());
 	const selectedEdgeIds = useRef<Set<string>>(new Set());
 	const connectionEndedOnPane = useRef<boolean>(false);
@@ -174,7 +172,7 @@ export function Pane({
 
 		selectionInProgress.current = false;
 
-		const { x, y } = getEventPosition(event.nativeEvent, containerBounds.current);
+		const { x, y } = getEventPosition(event, containerBounds.current);
 		const userSelectionStartPosition = pointToRendererPoint({ x, y }, transform);
 
 		store.setState({
@@ -302,7 +300,7 @@ export function Pane({
 			return;
 		}
 
-		const { x: mouseX, y: mouseY } = getEventPosition(event.nativeEvent, containerBounds.current);
+		const { x: mouseX, y: mouseY } = getEventPosition(event, containerBounds.current);
 		position.current = { x: mouseX, y: mouseY };
 
 		const screenStart = rendererPointToPoint(

@@ -10,7 +10,6 @@
   "ssr": "Store/provider render on server; canvas interactions are client-driven like upstream.",
   "verified": "2026-08-07",
   "notes": [
-    "Private workspace scaffold until the published source passes strict external-consumer validation.",
     "Mechanical source port with hook-slot forwarding via subSlot in plain .ts hooks.",
     "Conformance and differential parity tests pass for initial flow mount."
   ]

@@ -1,10 +1,10 @@
-import {
-	type HTMLAttributes,
-	type MouseEvent as ReactMouseEvent,
-	type TouchEvent as ReactTouchEvent,
-	type ForwardedRef,
-	memo,
-} from 'octane';
+import { memo } from 'octane';
+import type {
+	HTMLAttributes,
+	MouseEvent as ReactMouseEvent,
+	TouchEvent as ReactTouchEvent,
+	ForwardedRef,
+} from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import {
@@ -25,7 +25,7 @@ import {
 
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { useNodeId } from '../../contexts/NodeIdContext';
-import { useHandleConfig } from '../../contexts/HandleConfigContext';
+import { useHandleConfig } from '../../contexts/HandleConfigContext.tsrx';
 import { type ReactFlowState } from '../../types';
 import { fixedForwardRef } from '../../utils';
 import { addEdge } from '../../utils/edges';
@@ -146,7 +146,7 @@ function HandleComponent(
 			return;
 		}
 
-		const isMouseTriggered = isMouseEvent(event.nativeEvent);
+		const isMouseTriggered = isMouseEvent(event);
 
 		if (
 			isConnectableStart &&
@@ -154,12 +154,10 @@ function HandleComponent(
 					!isMouseTriggered)
 		) {
 			const currentStore = store.getState();
-			let connectionValidator = isValidConnection;
-			if (!connectionValidator) {
-				connectionValidator = (...args) => store.getState().isValidConnection?.(...args) ?? true;
-			}
+			const fallbackIsValidConnection: NonNullable<HandleProps['isValidConnection']> = (...args) =>
+				store.getState().isValidConnection?.(...args) ?? true;
 
-			XYHandle.onPointerDown(event.nativeEvent, {
+			XYHandle.onPointerDown(event, {
 				handleDomNode: event.currentTarget,
 				autoPanOnConnect: currentStore.autoPanOnConnect,
 				connectionMode: currentStore.connectionMode,
@@ -177,7 +175,7 @@ function HandleComponent(
 				onConnectEnd: (...args) => store.getState().onConnectEnd?.(...args),
 				updateConnection: currentStore.updateConnection,
 				onConnect: onConnectExtended,
-				isValidConnection: connectionValidator,
+				isValidConnection: isValidConnection || fallbackIsValidConnection,
 				getTransform: () => store.getState().transform,
 				getFromHandle: () => store.getState().connection.fromHandle,
 				autoPanSpeed: currentStore.autoPanSpeed,
@@ -210,14 +208,14 @@ function HandleComponent(
 		}
 
 		if (!connectionClickStartHandle) {
-			onClickConnectStart?.(event.nativeEvent, { nodeId, handleId, handleType: type });
+			onClickConnectStart?.(event, { nodeId, handleId, handleType: type });
 			store.setState({ connectionClickStartHandle: { nodeId, type, id: handleId } });
 			return;
 		}
 
-		const doc = getHostForElement(event.target);
+		const doc = getHostForElement(event.target as Element);
 		const isValidConnectionHandler = isValidConnection || isValidConnectionStore;
-		const { connection, isValid } = XYHandle.isValid(event.nativeEvent, {
+		const { connection, isValid } = XYHandle.isValid(event, {
 			handle: {
 				nodeId,
 				id: handleId,

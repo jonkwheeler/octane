@@ -121,6 +121,40 @@ function lowerUniversalRendererRegion(
 	return { ...lowered, prelude, expression };
 }
 
+function lowerUniversalRendererAuthoredRanges(
+	authoredSource: string,
+	validationRanges: ReadonlyArray<{ start: unknown; end: unknown }>,
+	validationExclusions: ReadonlyArray<{ start: unknown; end: unknown }> = [],
+	authoredAst: any = parseModule(authoredSource, '/src/ValidationRanges.native.tsx'),
+) {
+	const wrapped = parseModule('const __region = <view />;', '/src/ValidationRanges.native.tsx');
+	const regionExpression = wrapped.body[0]?.declarations?.[0]?.init;
+	if (!regionExpression) throw new Error('test validation region did not parse');
+	const lowered = lowerUniversalRendererRegionAst(
+		regionExpression,
+		'/src/ValidationRanges.native.tsx',
+		'dom',
+		validationRenderer,
+		0,
+		{
+			authoredAst,
+			authoredSource,
+			hmr: false,
+			validationExclusions,
+			validationRanges,
+		},
+	);
+	const code = esrapPrint(
+		{
+			type: 'Program',
+			sourceType: 'module',
+			body: [...lowered.statements, b.stmt(lowered.expression)],
+		},
+		esrapTsx(),
+	).code;
+	return { ...lowered, code };
+}
+
 const itemPlan = universalPlan('object', {
 	kind: 'range',
 	children: [
@@ -1724,6 +1758,99 @@ export function Scene() @{ <view><Frame content={<>Allowed</>} /></view> }
 		expect(Object.isFrozen(lowered.metadata.universalRuntime)).toBe(true);
 	});
 
+	it('preserves exact authored validation range containment', () => {
+		const authoredSource = 'const selected = <view onClick={() => undefined} />;';
+		const authoredAst = parseModule(authoredSource, '/src/ValidationRanges.native.tsx');
+		const statement: any = authoredAst.body[0];
+		const attribute = statement.declarations[0].init.openingElement.attributes[0];
+		const selectedAttribute = { start: attribute.start, end: attribute.end };
+		const selectedElement = {
+			start: statement.declarations[0].init.start,
+			end: statement.declarations[0].init.end,
+		};
+		const expected =
+			'Octane universal compiler: renderer "object" does not allow static attribute "onClick" on <view>. at /src/ValidationRanges.native.tsx:1:23';
+		const validate =
+			(
+				ranges: ReadonlyArray<{ start: unknown; end: unknown }>,
+				exclusions: ReadonlyArray<{ start: unknown; end: unknown }> = [],
+				ast: any = authoredAst,
+			) =>
+			() =>
+				lowerUniversalRendererAuthoredRanges(authoredSource, ranges, exclusions, ast);
+
+		for (const ranges of [
+			[selectedAttribute, selectedElement],
+			[selectedElement, selectedAttribute],
+		]) {
+			expect(validate(ranges)).toThrow(expected);
+		}
+
+		expect(validate([selectedElement], [selectedAttribute])).not.toThrow();
+
+		const split = attribute.start + Math.floor((attribute.end - attribute.start) / 2);
+		expect(
+			validate([
+				{ start: attribute.start, end: split },
+				{ start: split, end: attribute.end },
+			]),
+		).not.toThrow();
+
+		expect(
+			validate([
+				selectedAttribute,
+				{ start: attribute.start, end: attribute.start },
+				selectedAttribute,
+			]),
+		).toThrow(expected);
+		expect(validate([{ start: attribute.start, end: attribute.start }])).not.toThrow();
+
+		expect(
+			validate([
+				{ start: '0', end: authoredSource.length },
+				{ start: attribute.end, end: attribute.start },
+				{ start: Number.NaN, end: Number.NaN },
+			]),
+		).not.toThrow();
+
+		const locationlessAst: any = structuredClone(authoredAst);
+		const locationlessAttribute =
+			locationlessAst.body[0].declarations[0].init.openingElement.attributes[0];
+		delete locationlessAttribute.start;
+		delete locationlessAttribute.end;
+		delete locationlessAttribute.loc;
+		expect(validate([{ start: 0, end: authoredSource.length }], [], locationlessAst)).not.toThrow();
+
+		const importSource = "import runtime from 'browser-only';";
+		const importAst = parseModule(importSource, '/src/ValidationRanges.native.tsx');
+		const sourceLiteral: any = importAst.body[0]?.source;
+		expect(() =>
+			lowerUniversalRendererAuthoredRanges(
+				importSource,
+				[{ start: sourceLiteral.start, end: sourceLiteral.end }],
+				[],
+				importAst,
+			),
+		).not.toThrow();
+	});
+
+	it('keeps validation-free lowered output independent of authored range order', () => {
+		const authoredSource = 'const selected = <view id="safe" />;';
+		const authoredAst = parseModule(authoredSource, '/src/ValidationRanges.native.tsx');
+		const statement: any = authoredAst.body[0];
+		const element = statement.declarations[0].init;
+		const ranges = [
+			{ start: statement.start, end: statement.end },
+			{ start: element.start, end: element.end },
+		];
+		const lowered = [ranges, ranges.toReversed()].map((orderedRanges) =>
+			lowerUniversalRendererAuthoredRanges(authoredSource, orderedRanges, [], authoredAst),
+		);
+
+		expect(lowered[0].code).toBe(lowered[1].code);
+		expect(lowered[0].metadata).toEqual(lowered[1].metadata);
+	});
+
 	it('keeps owning and lowered renderer validation scoped to their authored regions', () => {
 		const config = normalizeRendererConfig({
 			registry: {
@@ -1867,6 +1994,83 @@ export function Scene() @{
 		expect(() => compile(sharedChild, '/src/SharedChild.native.tsrx', outerStrictOptions)).toThrow(
 			/renderer "outer" forbids unbound global "document".*SharedChild\.native\.tsrx:3:/,
 		);
+	});
+
+	it('walks deep local component graphs for child specialization and owner validation', () => {
+		const localChain = (prefix: string) => {
+			const components: string[] = [];
+			for (let index = 0; index < 63; index++) {
+				components.push(`function ${prefix}${index}() @{ <${prefix}${index + 1} /> }`);
+			}
+			components.push(`function ${prefix}63() @{ <view id={document.title} /> }`);
+			return components.join('\n');
+		};
+		const config = normalizeRendererConfig({
+			registry: {
+				inner: {
+					module: '@renderers/inner',
+					text: 'host',
+					validation: { forbiddenGlobals: ['document'] },
+				},
+				outer: {
+					module: '@renderers/outer',
+					text: 'host',
+					validation: {},
+				},
+			},
+			boundaries: {
+				'@scene/bridge': {
+					Native: {
+						ownerRenderer: 'outer',
+						childRenderer: 'inner',
+						prop: 'children',
+					},
+				},
+			},
+		});
+		const options = {
+			hmr: false,
+			renderer: { id: 'outer', ...config.registry.outer },
+			rendererBoundaries: config.boundaries,
+			rendererRegistry: config.registry,
+		};
+		const childOnly = `
+import { Native } from '@scene/bridge';
+${localChain('Child')}
+export function Scene() @{ <Native><Child0 /></Native> }
+`;
+		expect(() => compile(childOnly, '/src/DeepChild.native.tsrx', options)).toThrow(
+			/renderer "inner" forbids unbound global "document".*DeepChild\.native\.tsrx:/,
+		);
+
+		const ownerStrictConfig = normalizeRendererConfig({
+			registry: {
+				inner: {
+					module: '@renderers/inner',
+					text: 'host',
+					validation: {},
+				},
+				outer: {
+					module: '@renderers/outer',
+					text: 'host',
+					validation: { forbiddenGlobals: ['document'] },
+				},
+			},
+			boundaries: config.boundaries,
+		});
+		const shared = `
+import { Native } from '@scene/bridge';
+${localChain('Shared')}
+export function Scene() @{ <><Shared0 /><Native><Shared0 /></Native></> }
+`;
+		expect(() =>
+			compile(shared, '/src/DeepShared.native.tsrx', {
+				...options,
+				renderer: { id: 'outer', ...ownerStrictConfig.registry.outer },
+				rendererBoundaries: ownerStrictConfig.boundaries,
+				rendererRegistry: ownerStrictConfig.registry,
+			}),
+		).toThrow(/renderer "outer" forbids unbound global "document".*DeepShared\.native\.tsrx:/);
 	});
 
 	it('emits a static host plan with dynamic values and keyed range lowering', () => {
@@ -2638,12 +2842,19 @@ export function Scene() @{
 		expect(output).toContain('_$useBatch([__pu$0, __pu$1])');
 		expect(output).toContain('__warm:');
 		expect(output).toContain('import.meta.hot.accept');
-		expect(inspectProfileOutput(output).hooks.map(({ metadata }) => metadata)).toContainEqual(
-			expect.objectContaining({
-				componentId: '/src/Profiled.object.tsrx#Scene@3:10',
-				line: 4,
-				column: 14,
-			}),
+		expect(inspectProfileOutput(output).hooks.map(({ metadata }) => metadata)).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					componentId: '/src/Profiled.object.tsrx#Scene@3:10',
+					line: 4,
+					column: 14,
+				}),
+				expect.objectContaining({
+					componentId: '/src/Profiled.object.tsrx#Scene@3:10',
+					line: 5,
+					column: 14,
+				}),
+			]),
 		);
 	});
 

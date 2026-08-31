@@ -13,7 +13,7 @@ type ViewportProps = {
 
 export function Viewport({ children }: ViewportProps) {
 	const store = useStoreApi();
-	const viewportRef = useRef<HTMLDivElement>(null);
+	const viewportRef = useRef<HTMLDivElement | null>(null);
 	// seed the transform for first paint and SSR without subscribing, so we don't re-render on pan/zoom
 	const [initialTransform] = useState(() => store.getState().transform);
 

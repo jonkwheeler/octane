@@ -1,4 +1,5 @@
-import { useCallback, CSSProperties } from 'octane';
+import { useCallback } from 'octane';
+import type { CSSProperties } from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import {
@@ -11,7 +12,7 @@ import {
 import { InternalNode, ReactFlowState } from '../../types';
 import { useStore } from '../../hooks/useStore';
 import { useNodeId } from '../../contexts/NodeIdContext';
-import { NodeToolbarPortal } from './NodeToolbarPortal';
+import { NodeToolbarPortal } from './NodeToolbarPortal.tsrx';
 import type { NodeToolbarProps } from './types';
 
 const nodeEqualityFn = (a?: InternalNode, b?: InternalNode) =>

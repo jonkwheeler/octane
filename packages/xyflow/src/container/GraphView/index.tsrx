@@ -1,12 +1,12 @@
 import { memo } from 'octane';
 
-import { FlowRenderer } from '../FlowRenderer';
-import { NodeRenderer } from '../NodeRenderer';
-import { EdgeRenderer } from '../EdgeRenderer';
-import { Viewport } from '../Viewport';
+import { FlowRenderer } from '../FlowRenderer/index.tsrx';
+import { NodeRenderer } from '../NodeRenderer/index.tsrx';
+import { EdgeRenderer } from '../EdgeRenderer/index.tsrx';
+import { Viewport } from '../Viewport/index.tsrx';
 import { useOnInitHandler } from '../../hooks/useOnInitHandler';
 import { useViewportSync } from '../../hooks/useViewportSync';
-import { ConnectionLineWrapper } from '../../components/ConnectionLine';
+import { ConnectionLineWrapper } from '../../components/ConnectionLine/index.tsrx';
 import { useNodeOrEdgeTypesWarning } from './useNodeOrEdgeTypesWarning';
 import type { Edge, Node, ReactFlowProps } from '../../types';
 import { useStylesLoadedWarning } from './useStylesLoadedWarning';

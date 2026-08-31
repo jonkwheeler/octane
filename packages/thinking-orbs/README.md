@@ -2,6 +2,11 @@
 
 Octane binding for [`thinking-orbs`](https://www.npmjs.com/package/thinking-orbs) — dotted thought-orb loading indicators for AI and agent UIs.
 
+```sh
+npm install @octanejs/thinking-orbs
+pnpm add @octanejs/thinking-orbs
+```
+
 ## Usage
 
 ```tsx

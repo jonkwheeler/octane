@@ -11,6 +11,7 @@ packages:
   - benchmarks/spa-navigation/*
   - benchmarks/signal-favoring
   - benchmarks/signal-favoring/*
+  - benchmarks/scoped-signals
   - benchmarks/dbmon
   - benchmarks/dbmon/*
   - benchmarks/effectful-list
@@ -22,6 +23,7 @@ packages:
   - benchmarks/portal-swarm
   - benchmarks/portal-swarm/*
   - benchmarks/react-hosted-islands
+  - benchmarks/dev-form-diagnostics
   - benchmarks/ssr-throughput
   - benchmarks/ssr-throughput/*
   - benchmarks/streaming-ssr
@@ -48,6 +50,8 @@ packages:
   - benchmarks/streamdown-hosted/*
   - benchmarks/svg-dashboard
   - benchmarks/svg-dashboard/*
+  - benchmarks/uibench
+  - benchmarks/uibench/*
   - benchmarks/tauri-shell
   - benchmarks/tauri-shell/*
   - benchmarks/tanstack-start
@@ -92,6 +96,8 @@ allowBuilds:
   keccak: false
   utf-8-validate: false
   bun: true
+  # Inferno's postinstall only prints OpenCollective funding information.
+  inferno: false
 
 # Variables
 esrap_common: &esrap_common ^2.3.2
@@ -165,6 +171,7 @@ catalogs:
     '@rspack/core': 2.1.3
     typescript: 5.9.3
   default:
+    babel-plugin-inferno: 6.8.5
     '@react-rxjs/core': 0.10.8
     '@react-rxjs/utils': 0.9.7
     '@rx-state/core': 0.1.4
@@ -175,6 +182,7 @@ catalogs:
     '@livestore/utils': 0.4.0
     '@opentelemetry/api': 1.9.0
     '@apollo/client': 4.2.6
+    '@opentui/core': 0.5.8
     animejs: 4.5.0
     dexie: 4.4.4
     fake-indexeddb: 6.2.5
@@ -188,12 +196,12 @@ catalogs:
     '@babel/core': 7.29.7
     '@rolldown/plugin-babel': 0.2.3
     babel-plugin-react-compiler: 1.0.0
-    '@changesets/changelog-github': ^0.7.0
     '@changesets/changelog-git': ^0.2.1
     '@changesets/cli': ^2.31.1
     '@floating-ui/dom': ^1.8.0
     '@floating-ui/react': 0.27.19
     '@floating-ui/utils': ^0.2.12
+    '@formisch/react': 1.0.0-rc.0
     '@tanstack/form-core': 1.33.2
     '@tanstack/react-form': 1.33.2
     'aria-hidden': ^1.2.6
@@ -345,6 +353,10 @@ catalogs:
     gsap: 3.15.0
     '@gsap/react': 2.1.2
     happy-dom: ^20.11.0
+    inferno: 9.1.0
+    inferno-create-element: 9.1.0
+    inferno-hydrate: 9.1.0
+    inferno-server: 9.1.0
     html-parse-stringify: ^3.0.1
     i18next: 26.3.6
     jsdom: ^30.0.1
@@ -372,6 +384,8 @@ catalogs:
     picocolors: ^1.1.1
     '@clack/prompts': ^1.7.0
     prettier: ^3.9.6
+    '@xyflow/system': 0.0.79
+    '@xyflow/react': 12.11.2
     preact: ^10.29.8
     preact-render-to-string: ^6.7.0
     proxy-compare: ^3.0.1
@@ -380,8 +394,6 @@ catalogs:
     '@blocknote/core': 0.53.0
     '@blocknote/react': 0.53.0
     '@measured/puck': 0.20.2
-    '@xyflow/react': 12.11.2
-    '@xyflow/system': 0.0.79
     '@internationalized/date': ^3.12.2
     '@internationalized/number': ^3.6.7
     '@internationalized/string': ^3.2.9
@@ -398,8 +410,8 @@ catalogs:
     '@rspack/core': ^2.1.4
     class-variance-authority: 0.7.1
     classnames: ^2.5.1
-    classcat: 5.0.5
     clsx: ^2.1.1
+    classcat: 5.0.5
     cmdk: 1.1.1
     tailwind-merge: 3.6.0
     d3-array: 3.2.1
@@ -469,6 +481,7 @@ catalogs:
     three: 0.172.0
     type-fest: ^5.8.0
     typescript: ^5.9.3
+    valibot: ^1.4.1
     valtio: ^2.3.2
     vite: ^8.1.5
     astro: ^5.16.0
@@ -576,7 +589,7 @@ catalogs:
 # superseded — @tsrx/core >= 0.1.42 ships the fix.
 
 minimumReleaseAgeExclude:
-  - octane@0.1.29 || 0.1.31 || 0.1.32 || 0.1.33 || 0.1.34 || 0.1.36 || 0.1.37 || 0.1.39 || 0.1.42 || 0.1.43 || 0.1.45 || 0.1.46
+  - octane@0.1.29 || 0.1.31 || 0.1.32 || 0.1.33 || 0.1.34 || 0.1.36 || 0.1.37 || 0.1.39 || 0.1.42 || 0.1.43 || 0.1.45 || 0.1.46 || 0.1.47 || 0.1.49
   - react-dropzone@20.0.0
   - '@blocknote/core@0.53.0'
   - '@blocknote/react@0.53.0'
@@ -609,3 +622,5 @@ minimumReleaseAgeExclude:
 # are published in the required @tsrx/core >= 0.1.60.
 patchedDependencies:
   '@changesets/cli@2.31.1': patches/@changesets__cli@2.31.1.patch
+  # Temporary until tsrx-org/tsrx#4 is released; remove this patch when that release is adopted.
+  '@tsrx/core@0.1.61': patches/@tsrx__core@0.1.61.patch

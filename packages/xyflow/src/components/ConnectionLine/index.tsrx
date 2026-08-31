@@ -1,4 +1,4 @@
-import { CSSProperties } from 'octane';
+import type { CSSProperties } from '../../react-shim.js';
 import { shallow } from '@octanejs/zustand/shallow';
 import cc from 'classcat';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@xyflow/system';
 
 import { useStore } from '../../hooks/useStore';
-import { getSimpleBezierPath } from '../Edges/SimpleBezierEdge';
+import { getSimpleBezierPath } from '../Edges/SimpleBezierEdge.tsrx';
 import type { ConnectionLineComponent, Node, ReactFlowState } from '../../types';
 import { useConnection } from '../../hooks/useConnection';
 
@@ -61,7 +61,7 @@ type ConnectionLineProps<NodeType extends Node = Node> = {
 	isValid: boolean | null;
 };
 
-const ConnectionLine = <NodeType extends Node = Node>({
+const ConnectionLine = <NodeType extends Node = Node,>({
 	style,
 	type = ConnectionLineType.Bezier,
 	CustomComponent,

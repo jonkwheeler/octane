@@ -1,7 +1,7 @@
 import { isNumeric } from '@xyflow/system';
 import cc from 'classcat';
 
-import { EdgeText } from './EdgeText';
+import { EdgeText } from './EdgeText.tsrx';
 import type { BaseEdgeProps } from '../../types';
 
 /**

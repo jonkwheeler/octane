@@ -55,15 +55,21 @@ Source maps, module layers, compiler metadata, and watched package manifests
 are preserved in both modes. Worker startup has a fixed cost, so very small
 builds may be faster with `parallel: false`.
 
-Set `strong: true` to reject state updates during rendering, state updates from
-effects, and ref writes during rendering in your application code:
+Set `strong: true` to opt application code into Strong mode's immutable
+render-snapshot and pure-render contract. The compiler rejects detectable state,
+ref, Effect Event, snapshot-mutation, and nondeterministic-render violations;
+production client builds condition memoization on the author's assertion that
+every user-authored render operation is pure for its witnessed inputs. Callee
+shape and `use*` spelling do not disable that optimization:
 
 ```js
 new OctaneRspackPlugin({ strong: true });
 ```
 
-Dependencies keep their existing behavior. Any module can opt in on its own by
-putting `"use strong"` before its imports.
+Dependencies keep their existing compatibility behavior. Any module can opt in
+on its own by putting `"use strong"` before its imports. Strong analysis is
+bounded: unknown calls are assumed pure, so live accessors must remain in a
+compatibility-mode consumer or receive an actual snapshot.
 
 The experimental `renderers` option accepts the same declarative registry,
 filename rules, and module/export boundary metadata as `compiler.renderers` in

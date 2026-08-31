@@ -4,6 +4,9 @@ import { errorMessages } from '@xyflow/system';
 import { useStoreApi } from '../../hooks/useStore';
 import type { EdgeTypes, NodeTypes } from '../../types';
 
+// Kept module-local so browser consumers do not need `@types/node`.
+declare const process: { env: { NODE_ENV?: string } };
+
 const emptyTypes = {};
 
 /**

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type RefObject } from 'octane';
+import { useEffect, useRef, useState } from 'octane';
+import type { RefObject } from '../react-shim.js';
 import { resolveHookSlot, subSlot } from './slot';
 import { XYDrag, type XYDragInstance } from '@xyflow/system';
 
@@ -35,7 +36,7 @@ export function useDrag(
 	const slot = resolveHookSlot(rest);
 	const store = useStoreApi(slot);
 	const [dragging, setDragging] = useState<boolean>(false, subSlot(slot, 'dragging'));
-	const xyDrag = useRef<XYDragInstance>(undefined, subSlot(slot, 'xyDrag'));
+	const xyDrag = useRef<XYDragInstance | undefined>(undefined, subSlot(slot, 'xyDrag'));
 
 	useEffect(
 		function setupDrag() {

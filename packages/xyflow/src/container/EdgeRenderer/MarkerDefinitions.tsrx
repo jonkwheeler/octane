@@ -2,7 +2,7 @@ import { memo, useMemo } from 'octane';
 import { type MarkerProps, createMarkerIds } from '@xyflow/system';
 
 import { useStore } from '../../hooks/useStore';
-import { useMarkerSymbol } from './MarkerSymbols';
+import { useMarkerSymbol } from './MarkerSymbols.tsrx';
 
 type MarkerDefinitionsProps = {
 	defaultColor: string | null;

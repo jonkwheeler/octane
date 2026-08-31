@@ -3,6 +3,9 @@ import { errorMessages } from '@xyflow/system';
 
 import { useStoreApi } from '../../hooks/useStore';
 
+// Kept module-local so browser consumers do not need `@types/node`.
+declare const process: { env: { NODE_ENV?: string } };
+
 export function useStylesLoadedWarning() {
 	const store = useStoreApi();
 	const checked = useRef(false);

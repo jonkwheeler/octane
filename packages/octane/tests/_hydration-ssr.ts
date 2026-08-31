@@ -10,10 +10,12 @@ type HydrationBinding =
 	| 'aria'
 	| 'base-ui'
 	| 'docusaurus'
+	| 'formisch'
 	| 'monaco-editor'
 	| 'pdf'
 	| 'rainbowkit'
 	| 'react-map-gl'
+	| 'select'
 	| 'solana-kit'
 	| 'testing-library';
 
@@ -57,6 +59,10 @@ function bindingAliases(binding: HydrationBinding) {
 				replacement: resolve(repositoryRoot, 'packages/remix-router/src/index.ts'),
 			},
 		];
+	}
+
+	if (binding === 'formisch') {
+		return [{ find: /^@octanejs\/formisch$/, replacement: resolve(source, 'index.ts') }];
 	}
 
 	if (binding === 'solana-kit') {
@@ -110,6 +116,8 @@ function bindingAliases(binding: HydrationBinding) {
 	if (binding === 'react-map-gl') {
 		return [{ find: /^@octanejs\/react-map-gl$/, replacement: resolve(source, 'index.ts') }];
 	}
+
+	if (binding === 'select') return [];
 
 	if (binding === 'testing-library') {
 		// Its hydration fixtures import `octane` and nothing else — the binding

@@ -1,5 +1,116 @@
 # octane
 
+## 0.1.50
+
+### Patch Changes
+
+- 157543f: Reuse normalized renderer configuration and compiled filename matchers across
+  TSRX module classifications. Compiler integrations that retain normalized
+  options no longer repeat renderer validation, signature serialization, brace
+  expansion, and regular-expression construction for every source file.
+- 4d13159: Make hydration of deeply nested, coextensive component wrappers scale linearly.
+
+  Hydration now remembers matching nested marker pairs for the lifetime of the
+  adoption pass, resolves compacted range owners through a deferred parent chain,
+  and removes contiguous redundant marker runs in one DOM mutation. A production
+  SSR benchmark at 512 wrappers dropped from 39.2 ms to 4.9 ms while preserving
+  server-node adoption, delegated interaction, logical marker multiplicity, and
+  clean unmount behavior.
+
+- a944ff3: Make anchorless-safety propagation linear across deep same-module component
+  graphs while preserving the emitted positional anchors and single-root
+  classification.
+- f9f0d23: Keep fallback collapsed-template handler updates linear in the number of native
+  event sites by matching accepted listeners within each host's ordered event
+  range. A 1,024-site update dropped from 2.4 ms to 0.5 ms while preserving host
+  identity, atomic handler publication, nullable listeners, and teardown behavior.
+- edf2b9d: Speed up TSRX universal renderer validation by indexing authored source ranges
+  before walking the AST. Validation diagnostics and compiled output are unchanged.
+- 9779569: Export ReactCompat from octane/react to host real React components inside Octane templates. Preserve React state, refs, local boundaries, portals, and Activity lifetimes, map Octane context explicitly with bridgeReactContext, and support buffered server rendering with client hydration. Add a working ReactCompat playground example.
+- 96c86fc: Reduce SSR latency for promises recreated by ancestor renders. Initialize the
+  recreation guard from the actual first pending pass and immediately retry when
+  switching to per-site replay, without waiting for an abandoned batch. Continue
+  observing abandoned rejections and preserve dependency-waterfall, abort, and
+  request-isolation behavior.
+
+## 0.1.49
+
+### Patch Changes
+
+- 8adc693: Add an opt-in experimental scoped signal engine backed by Alien Signals 3.2.0, with owned async resources, retained values, ready-state adoption, and native compiler read tracking. Expose the `nativeReads` compiler option through the application and bundler integrations while preserving explicit hook dependency arrays and the external Alien Signals binding.
+
+  The experiment is not a stable API or a release recommendation. Local derived and async hooks remain deferred, and the accompanying evidence distinguishes supplemental compiler, runtime, and browser checks from the acceptance gates for the locked workspace.
+
+  Expose native read ownership and cached activity metadata through the existing DevTools inspector without evaluating signals or retaining a global graph registry. Match the private compiler ABI's CommonJS entry points to the public runtime so native SSR reads use one protocol instance.
+
+  Collect native reads around actual component invocation, including parameter defaults and indirect returns. Track and replay native reads in inferred memos, preserve deferred element inspection and rendering, and revoke live retained results when a contributing data owner retires. Keep held Suspense output, refs, effects, and native subscriptions together until replacement work is accepted.
+
+  Avoid duplicate native collection setup when invocation collection already owns the scope, while preserving independent child retirement, observer restoration, write guards, and stored-value witness replay.
+
+  Preserve nested Suspense ref lifetimes, finish caught deletion cleanup before replacement effects connect, and reveal the latest urgent state when it supersedes every held state update. Register native compiler and server hook diagnostics in the production error catalog and CLI explanations.
+
+- a51c8c6: Skip native text-change diagnostic AST analysis when authored TSRX cannot contain an input or textarea host.
+
+## 0.1.48
+
+### Patch Changes
+
+- 3ca30fc: Cache configured root membership and the sorted language-service root list in TypeScript-backed text inference so repeated warm snapshots no longer scale with unrelated project roots, and expose the regression benchmark through the MCP benchmark runner.
+- efdc8cb: Index component references once when compiling component-heavy modules.
+
+  Component declaration lowering now preserves the same client and server hoisting
+  semantics without repeatedly sanitizing and scanning every growing source prefix.
+
+- 922df8c: Skip manifest-cache scans for ordinary watched source changes while preserving package-manifest, full-reset, and diagnostic invalidation behavior. Expose the accompanying manifest-cache invalidation benchmark through the Octane MCP benchmark tool.
+- 8a8afd8: Cache shared ancestry while ordering batched component updates so deeply nested render waves do not repeatedly walk the same parent chains.
+
+  Expose the scheduler-depth benchmark through the Octane MCP benchmark tool.
+
+- 37a8ca1: Index conditional JSX return value uses once per module so component-heavy
+  TSRX modules no longer repeat a full AST scan for every component.
+- c84edbb: Propagate same-module fetch-tree warm reachability through reverse component
+  edges instead of repeatedly rescanning every component. Deep TSrX component
+  graphs now compile without a declaration-order-dependent fixed-point penalty
+  while preserving opaque descendants, prop ownership, and synchronous cycles.
+- d5175ca: Keep virtual TypeScript generation working for computed object methods and create deferred FocusScope autofocus events in the scope element's DOM realm.
+- 4a4996e: Treat `"use strong"` as an author assertion that every user-authored render call
+  is a pure projection of immutable snapshots and witnessed inputs. Condition
+  local, dynamic, ordinary hook-shaped, callback-bearing, constructed, and tagged
+  call shapes without React hook-name heuristics, while preserving compiler-proven
+  hook setup, compatibility-mode live receivers, and changing event captures.
+  Witness callable and receiver identities alongside explicit inputs, compare
+  memoized component and ordinary-list projection inputs with `Object.is`, and
+  preserve optional, aliased, cyclic, function-valued, or lexically shadowed
+  setup-hook paths. Add
+  bounded diagnostics for detectable state-snapshot mutations, cross-row writes
+  from retained keyed scopes, and impure clock or random reads, and document the
+  assumptions the production memoizer trusts.
+
+  Expose the template-call memoization benchmark through the Octane MCP benchmark
+  tool.
+
+## 0.1.47
+
+### Patch Changes
+
+- af0d999: Drain queued behavior-root interactions with amortized cursor compaction and
+  constant-time pending-adoption bookkeeping so late modules and separately
+  settling async adoptions stay linear while preserving FIFO and reentrant delivery.
+  Expose the accompanying browser benchmark through the Octane MCP benchmark tool.
+- c800a1f: Allow nested TSRX `@{ ... }` child blocks to contain setup statements, hooks,
+  and no rendered JSX. Setup-bearing blocks now compile as scoped child render
+  bodies in client, server, and hydration output, while render-only blocks remain
+  transparent grouping.
+- c1bb057: Keep compiler-generated local names compact in production modules with many components, reducing compile work and intermediate output size.
+- 97b9349: Skip unrelated sibling boundaries when pruning completed streaming SSR segments.
+- 4393bea: Speed up production TSrX compilation for deep same-module component graphs by propagating automatic-memoization witnesses incrementally.
+- 7dfef16: Speed up pure-host keyed-list upgrades and compiler queue walks while preserving adopted keyed nodes across suspended upgrade retries.
+- 7e62361: Speed up development commits with many controlled form hosts by keeping diagnostic queue deduplication linear.
+- 964783a: Keep development TSRX HTML-nesting diagnostics linear by deduplicating them with
+  one identity set per compiled render plan instead of rescanning and serializing
+  every diagnostic already collected for each new authored site.
+- d3dbd78: Skip sorting normalized client and server host props when no later raw alias changes their insertion order.
+
 ## 0.1.46
 
 ### Patch Changes

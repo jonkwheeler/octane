@@ -1,4 +1,6 @@
-import { useState, useMemo, useRef, type KeyboardEvent, useCallback, JSX, memo } from 'octane';
+import { useState, useMemo, useRef, useCallback, memo } from 'octane';
+import type { KeyboardEvent, MouseEvent as ReactMouseEvent } from '../../react-shim.js';
+import type { Octane } from 'octane/jsx-runtime';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import {
@@ -10,9 +12,9 @@ import {
 } from '@xyflow/system';
 
 import { useStoreApi, useStore } from '../../hooks/useStore';
-import { ARIA_EDGE_DESC_KEY } from '../A11yDescriptions';
+import { ARIA_EDGE_DESC_KEY } from '../A11yDescriptions/index.tsrx';
 import { builtinEdgeTypes, nullPosition } from './utils';
-import { EdgeUpdateAnchors } from './EdgeUpdateAnchors';
+import { EdgeUpdateAnchors } from './EdgeUpdateAnchors.tsrx';
 import type { Edge, EdgeWrapperProps } from '../../types';
 
 function EdgeWrapper<EdgeType extends Edge = Edge>({
@@ -56,7 +58,7 @@ function EdgeWrapper<EdgeType extends Edge = Edge>({
 	const isSelectable = !!(edge.selectable ||
 		elementsSelectable && typeof edge.selectable === 'undefined');
 
-	const edgeRef = useRef<SVGGElement>(null);
+	const edgeRef = useRef<SVGGElement | null>(null);
 	const [updateHover, setUpdateHover] = useState<boolean>(false);
 	const [reconnecting, setReconnecting] = useState<boolean>(false);
 	const store = useStoreApi();
@@ -119,7 +121,7 @@ function EdgeWrapper<EdgeType extends Edge = Edge>({
 		return null;
 	}
 
-	const onEdgeClick = (event: React.MouseEvent<SVGGElement, MouseEvent>): void => {
+	const onEdgeClick = (event: ReactMouseEvent<SVGGElement, MouseEvent>): void => {
 		const { addSelectedEdges, unselectNodesAndEdges, multiSelectionActive } = store.getState();
 
 		if (isSelectable) {
@@ -140,31 +142,31 @@ function EdgeWrapper<EdgeType extends Edge = Edge>({
 
 	const onEdgeDoubleClick =
 		onDoubleClick
-			? (event: React.MouseEvent) => {
+			? (event: ReactMouseEvent) => {
 					onDoubleClick(event, { ...edge });
 				}
 			: undefined;
 	const onEdgeContextMenu =
 		onContextMenu
-			? (event: React.MouseEvent) => {
+			? (event: ReactMouseEvent) => {
 					onContextMenu(event, { ...edge });
 				}
 			: undefined;
 	const onEdgeMouseEnter =
 		onMouseEnter
-			? (event: React.MouseEvent) => {
+			? (event: ReactMouseEvent) => {
 					onMouseEnter(event, { ...edge });
 				}
 			: undefined;
 	const onEdgeMouseMove =
 		onMouseMove
-			? (event: React.MouseEvent) => {
+			? (event: ReactMouseEvent) => {
 					onMouseMove(event, { ...edge });
 				}
 			: undefined;
 	const onEdgeMouseLeave =
 		onMouseLeave
-			? (event: React.MouseEvent) => {
+			? (event: ReactMouseEvent) => {
 					onMouseLeave(event, { ...edge });
 				}
 			: undefined;

@@ -2,7 +2,8 @@
  * The nodes selection rectangle gets displayed when a user
  * made a selection with on or several nodes
  */
-import { useRef, useEffect, type MouseEvent, type KeyboardEvent } from 'octane';
+import { useRef, useEffect } from 'octane';
+import type { KeyboardEvent, MouseEvent } from '../../react-shim.js';
 import cc from 'classcat';
 import { shallow } from '@octanejs/zustand/shallow';
 import { getInternalNodesBounds, isNumeric } from '@xyflow/system';
@@ -10,7 +11,7 @@ import { getInternalNodesBounds, isNumeric } from '@xyflow/system';
 import { useStore, useStoreApi } from '../../hooks/useStore';
 import { useDrag } from '../../hooks/useDrag';
 import { useMoveSelectedNodes } from '../../hooks/useMoveSelectedNodes';
-import { arrowKeyDiffs } from '../NodeWrapper/utils';
+import { arrowKeyDiffs } from '../NodeWrapper/utils.tsrx';
 import type { Node, ReactFlowState } from '../../types';
 
 export type NodesSelectionProps<NodeType> = {
@@ -41,7 +42,7 @@ export function NodesSelection<NodeType extends Node>({
 	const { width, height, transformString, userSelectionActive } = useStore(selector, shallow);
 	const moveSelectedNodes = useMoveSelectedNodes();
 
-	const nodeRef = useRef<HTMLDivElement>(null);
+	const nodeRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		if (!disableKeyboardA11y) {

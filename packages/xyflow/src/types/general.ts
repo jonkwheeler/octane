@@ -1,4 +1,4 @@
-import { ComponentType } from 'octane';
+import type { ComponentType } from '../react-shim.js';
 import {
 	FitViewParamsBase,
 	FitViewOptionsBase,

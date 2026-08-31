@@ -52,12 +52,21 @@ export const isEdge = <EdgeType extends Edge = Edge>(element: unknown): element 
 	isEdgeBase<EdgeType>(element);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export function fixedForwardRef<T, P extends Record<string, unknown> = Record<string, unknown>>(
-	render: (props: P, ref: Octane.Ref<T>) => Octane.JSX.Element,
-): (props: P & { ref?: Octane.Ref<T> }) => Octane.JSX.Element {
-	function Forwarded(props: P & { ref?: Octane.Ref<T> }) {
+export function fixedForwardRef<T, P extends object = Record<string, unknown>>(
+	render: (
+		props: P,
+		ref: ((instance: T | null) => void) | { current: T | null } | null,
+	) => Octane.JSX.Element,
+): ((
+	props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null },
+) => Octane.JSX.Element) & {
+	displayName?: string;
+} {
+	function Forwarded(
+		props: P & { ref?: ((instance: T | null) => void) | { current: T | null } | null },
+	) {
 		const { ref, ...rest } = props;
-		return render(rest as P, ref as Octane.Ref<T>);
+		return render(rest as P, ref ?? null);
 	}
 	return Forwarded;
 }

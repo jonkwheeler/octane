@@ -1,7 +1,7 @@
 import { memo } from 'octane';
 import { Position, getSmoothStepPath } from '@xyflow/system';
 
-import { BaseEdge } from './BaseEdge';
+import { BaseEdge } from './BaseEdge.tsrx';
 import type { SmoothStepEdgeProps } from '../../types';
 
 function createSmoothStepEdge(params: { isInternal: boolean }) {
@@ -89,7 +89,8 @@ const SmoothStepEdge = createSmoothStepEdge({ isInternal: false });
  */
 const SmoothStepEdgeInternal = createSmoothStepEdge({ isInternal: true });
 
-SmoothStepEdge.displayName = 'SmoothStepEdge';
-SmoothStepEdgeInternal.displayName = 'SmoothStepEdgeInternal';
+(SmoothStepEdge as typeof SmoothStepEdge & { displayName?: string }).displayName = 'SmoothStepEdge';
+(SmoothStepEdgeInternal as typeof SmoothStepEdgeInternal & { displayName?: string }).displayName =
+	'SmoothStepEdgeInternal';
 
 export { SmoothStepEdge, SmoothStepEdgeInternal };

@@ -1,7 +1,7 @@
 import { memo } from 'octane';
 import { getStraightPath } from '@xyflow/system';
 
-import { BaseEdge } from './BaseEdge';
+import { BaseEdge } from './BaseEdge.tsrx';
 import type { StraightEdgeProps } from '../../types';
 
 function createStraightEdge(params: { isInternal: boolean }) {
@@ -74,7 +74,8 @@ const StraightEdge = createStraightEdge({ isInternal: false });
  */
 const StraightEdgeInternal = createStraightEdge({ isInternal: true });
 
-StraightEdge.displayName = 'StraightEdge';
-StraightEdgeInternal.displayName = 'StraightEdgeInternal';
+(StraightEdge as typeof StraightEdge & { displayName?: string }).displayName = 'StraightEdge';
+(StraightEdgeInternal as typeof StraightEdgeInternal & { displayName?: string }).displayName =
+	'StraightEdgeInternal';
 
 export { StraightEdge, StraightEdgeInternal };

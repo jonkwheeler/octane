@@ -1,5 +1,5 @@
 import { useEffect } from 'octane';
-import { resolveHookSlot } from './slot';
+import { resolveHookSlot, subSlot } from './slot';
 import type { OnViewportChange } from '@xyflow/system';
 
 import { useStoreApi } from './useStore';
@@ -40,14 +40,14 @@ export function useOnViewportChange(
 	...rest: [slot?: symbol]
 ) {
 	const slot = resolveHookSlot(rest);
-	const store = useStoreApi(slot);
+	const store = useStoreApi(subSlot(slot, 'store'));
 
 	useEffect(
 		function setOnStart() {
 			store.setState({ onViewportChangeStart: onStart });
 		},
 		[onStart],
-		slot,
+		subSlot(slot, 'start'),
 	);
 
 	useEffect(
@@ -55,7 +55,7 @@ export function useOnViewportChange(
 			store.setState({ onViewportChange: onChange });
 		},
 		[onChange],
-		slot,
+		subSlot(slot, 'change'),
 	);
 
 	useEffect(
@@ -63,6 +63,6 @@ export function useOnViewportChange(
 			store.setState({ onViewportChangeEnd: onEnd });
 		},
 		[onEnd],
-		slot,
+		subSlot(slot, 'end'),
 	);
 }

@@ -2,6 +2,11 @@
 
 Complete Octane port of `@sanity/icons@5.2.1`.
 
+```sh
+npm install @octanejs/sanity-icons
+pnpm add @octanejs/sanity-icons
+```
+
 ```tsrx
 import {RocketIcon} from '@octanejs/sanity-icons/Rocket'
 

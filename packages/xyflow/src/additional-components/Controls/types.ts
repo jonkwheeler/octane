@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, OctaneNode } from '../../react-shim.js';
+import type { ButtonHTMLAttributes, CSSProperties, OctaneNode } from '../../react-shim.js';
 import type { PanelPosition } from '@xyflow/system';
 
 import type { FitViewOptions } from '../../types';

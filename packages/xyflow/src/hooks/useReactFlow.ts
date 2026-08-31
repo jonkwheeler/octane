@@ -14,8 +14,8 @@ import {
 
 import useViewportHelper from './useViewportHelper';
 import { useStore, useStoreApi } from './useStore';
-import { useBatchContext } from '../components/BatchProvider';
-import { resolveHookSlot } from './slot';
+import { useBatchContext } from '../components/BatchProvider/index.tsrx';
+import { resolveHookSlot, subSlot } from './slot';
 import { elementToRemoveChange, isEdge, isNode } from '../utils';
 import type {
 	ReactFlowInstance,
@@ -60,10 +60,10 @@ export function useReactFlow<NodeType extends Node = Node, EdgeType extends Edge
 	...rest: [slot?: symbol]
 ): ReactFlowInstance<NodeType, EdgeType> {
 	const slot = resolveHookSlot(rest);
-	const viewportHelper = useViewportHelper(slot);
-	const store = useStoreApi<NodeType, EdgeType>(slot);
-	const batchContext = useBatchContext(slot);
-	const viewportInitialized = useStore(selector, undefined, slot);
+	const viewportHelper = useViewportHelper(subSlot(slot, 'viewport-helper'));
+	const store = useStoreApi<NodeType, EdgeType>(subSlot(slot, 'store'));
+	const batchContext = useBatchContext(subSlot(slot, 'batch'));
+	const viewportInitialized = useStore(selector, undefined, subSlot(slot, 'viewport-initialized'));
 
 	const generalHelper = useMemo<GeneralHelpers<NodeType, EdgeType>>(
 		function buildGeneralHelper() {
@@ -183,9 +183,12 @@ export function useReactFlow<NodeType extends Node = Node, EdgeType extends Edge
 						onDelete,
 						onBeforeDelete,
 					} = store.getState();
-					const { nodes: matchingNodes, edges: matchingEdges } = await getElementsToRemove({
-						nodesToRemove,
-						edgesToRemove,
+					const { nodes: matchingNodes, edges: matchingEdges } = await getElementsToRemove<
+						NodeType,
+						EdgeType
+					>({
+						nodesToRemove: nodesToRemove as Partial<NodeType>[],
+						edgesToRemove: edgesToRemove as Partial<EdgeType>[],
 						nodes,
 						edges,
 						onBeforeDelete,
@@ -327,7 +330,7 @@ export function useReactFlow<NodeType extends Node = Node, EdgeType extends Edge
 			};
 		},
 		[],
-		slot,
+		subSlot(slot, 'general-helper'),
 	);
 
 	return useMemo(
@@ -339,6 +342,6 @@ export function useReactFlow<NodeType extends Node = Node, EdgeType extends Edge
 			};
 		},
 		[viewportInitialized, generalHelper, viewportHelper],
-		slot,
+		subSlot(slot, 'combined-helper'),
 	);
 }
