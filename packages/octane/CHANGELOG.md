@@ -1,5 +1,56 @@
 # octane
 
+## 0.1.50
+
+### Patch Changes
+
+- 157543f: Reuse normalized renderer configuration and compiled filename matchers across
+  TSRX module classifications. Compiler integrations that retain normalized
+  options no longer repeat renderer validation, signature serialization, brace
+  expansion, and regular-expression construction for every source file.
+- 4d13159: Make hydration of deeply nested, coextensive component wrappers scale linearly.
+
+  Hydration now remembers matching nested marker pairs for the lifetime of the
+  adoption pass, resolves compacted range owners through a deferred parent chain,
+  and removes contiguous redundant marker runs in one DOM mutation. A production
+  SSR benchmark at 512 wrappers dropped from 39.2 ms to 4.9 ms while preserving
+  server-node adoption, delegated interaction, logical marker multiplicity, and
+  clean unmount behavior.
+
+- a944ff3: Make anchorless-safety propagation linear across deep same-module component
+  graphs while preserving the emitted positional anchors and single-root
+  classification.
+- f9f0d23: Keep fallback collapsed-template handler updates linear in the number of native
+  event sites by matching accepted listeners within each host's ordered event
+  range. A 1,024-site update dropped from 2.4 ms to 0.5 ms while preserving host
+  identity, atomic handler publication, nullable listeners, and teardown behavior.
+- edf2b9d: Speed up TSRX universal renderer validation by indexing authored source ranges
+  before walking the AST. Validation diagnostics and compiled output are unchanged.
+- 9779569: Export ReactCompat from octane/react to host real React components inside Octane templates. Preserve React state, refs, local boundaries, portals, and Activity lifetimes, map Octane context explicitly with bridgeReactContext, and support buffered server rendering with client hydration. Add a working ReactCompat playground example.
+- 96c86fc: Reduce SSR latency for promises recreated by ancestor renders. Initialize the
+  recreation guard from the actual first pending pass and immediately retry when
+  switching to per-site replay, without waiting for an abandoned batch. Continue
+  observing abandoned rejections and preserve dependency-waterfall, abort, and
+  request-isolation behavior.
+
+## 0.1.49
+
+### Patch Changes
+
+- 8adc693: Add an opt-in experimental scoped signal engine backed by Alien Signals 3.2.0, with owned async resources, retained values, ready-state adoption, and native compiler read tracking. Expose the `nativeReads` compiler option through the application and bundler integrations while preserving explicit hook dependency arrays and the external Alien Signals binding.
+
+  The experiment is not a stable API or a release recommendation. Local derived and async hooks remain deferred, and the accompanying evidence distinguishes supplemental compiler, runtime, and browser checks from the acceptance gates for the locked workspace.
+
+  Expose native read ownership and cached activity metadata through the existing DevTools inspector without evaluating signals or retaining a global graph registry. Match the private compiler ABI's CommonJS entry points to the public runtime so native SSR reads use one protocol instance.
+
+  Collect native reads around actual component invocation, including parameter defaults and indirect returns. Track and replay native reads in inferred memos, preserve deferred element inspection and rendering, and revoke live retained results when a contributing data owner retires. Keep held Suspense output, refs, effects, and native subscriptions together until replacement work is accepted.
+
+  Avoid duplicate native collection setup when invocation collection already owns the scope, while preserving independent child retirement, observer restoration, write guards, and stored-value witness replay.
+
+  Preserve nested Suspense ref lifetimes, finish caught deletion cleanup before replacement effects connect, and reveal the latest urgent state when it supersedes every held state update. Register native compiler and server hook diagnostics in the production error catalog and CLI explanations.
+
+- a51c8c6: Skip native text-change diagnostic AST analysis when authored TSRX cannot contain an input or textarea host.
+
 ## 0.1.48
 
 ### Patch Changes
