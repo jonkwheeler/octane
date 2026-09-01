@@ -384,6 +384,22 @@
     "note": "Compact leaf rows driven by their list component's selection state replay only that component (its 100 rows), so unrelated siblings must not change the cost. Rejects the compact-range bail that forced list selection through a whole-root replay."
   },
   {
+    "suite": "universal-object-teardown",
+    "op": "unmount_ms",
+    "target": "siblings-16384",
+    "reference": "siblings-4096",
+    "maxRatio": 8,
+    "note": "Four times as many flat object-driver siblings should stay within twice linear growth. Transaction-local detach sets measure about 4-5x; per-child indexOf/splice during both simulation and apply grows about 19x."
+  },
+  {
+    "suite": "universal-template-events",
+    "op": "event_update_ms",
+    "target": "events-1024",
+    "reference": "events-128",
+    "maxRatio": 12,
+    "note": "Eight times as many retained fallback collapsed-template event sites should take no more than 1.5 times linear growth. The optimized node-local cursor measures about 7-8x; the former whole-template search measures about 26x on the same fixture."
+  },
+  {
     "suite": "universal-external-store",
     "op": "lifetime_subscribe_calls",
     "target": "stable-getter",
@@ -456,12 +472,108 @@
     "note": "Same-process development TSRX compilation with every emitted nesting validation parsed and checked. The original repeated serialization and whole-array scan measured 1.59x per invalid site at 2,000 versus 500 sites, while plan-local Set membership measured 1.07x. The 1.3x ceiling leaves timing headroom while catching the quadratic path."
   },
   {
+    "suite": "tsrx-hydrate-module-slicing",
+    "op": "compile_per_1000_boundaries",
+    "target": "focused-movable-high",
+    "reference": "focused-movable-low",
+    "maxRatio": 1.5,
+    "note": "Same-process hydrate preparation normalizes 2,400 and 150 sibling split boundaries by boundary count. Exact pinned main measured about 3.3x more CPU per boundary at the large size, while the indexed/direct-selection path measured about 1.1x; the 1.5x ceiling catches restoration of module-wide Set copies, synthetic child modules, or boundary/declaration cross-products."
+  },
+  {
+    "suite": "tsrx-renderer-validation-ranges",
+    "op": "compile_per_1000_ranges",
+    "target": "focused-high",
+    "reference": "focused-low",
+    "maxRatio": 1.5,
+    "note": "Same-process universal lowering normalizes the validated AST walk by selected-range count. Exact main's repeated range-by-node scan measured about 3.3x more time per range at 3,200 versus 32 ranges, while verified indexed runs measured about 0.6x to 1.2x; the 1.5x ceiling leaves timing headroom while catching the quadratic path."
+  },
+  {
+    "suite": "tsrx-renderer-validation-ranges",
+    "op": "compile",
+    "target": "pipeline-validated-high",
+    "reference": "pipeline-reference-high",
+    "maxRatio": 1.3,
+    "note": "Same-process production compilation of 1,600 local renderer components differs only by whether the child renderer validates authored ranges, and both targets require byte-identical output. Verified indexed runs measured 0.99x to 1.15x the no-validation reference; the 1.3x ceiling retains timing headroom while catching restoration of repeated linear range scans."
+  },
+  {
+    "suite": "tsrx-local-component-name-catalog",
+    "op": "prepare",
+    "target": "components-high",
+    "reference": "components-low",
+    "maxRatio": 3,
+    "note": "Same-process renderer-boundary preparation holds 1,000 sibling boundaries constant while varying unrelated local components from 1,000 to 10,000. The guard retains the component Map collected during analysis while rejecting reconstruction of a full component-name Set for every boundary. Seven-sample checks measured 3.44x on exact main and 2.38x after Map reuse."
+  },
+  {
+    "suite": "tsrx-renderer-selection",
+    "op": "resolve",
+    "target": "normalized-config",
+    "reference": "raw-config",
+    "maxRatio": 0.5,
+    "note": "Same-process filename classification across ordered renderer rules with exact matching checksums. The parent implementation redundantly normalized and compiled globs for retained normalized input, measuring 1.02x versus raw revalidation. Reusing validated config and compiled matchers measured below 0.1x; the 0.5 ceiling leaves more than 5x timing headroom while catching restoration of either repeated path."
+  },
+  {
+    "suite": "tsrx-native-change-analysis",
+    "op": "analysis",
+    "target": "hostless-4000",
+    "reference": "forced-scan-4000",
+    "maxRatio": 0.15,
+    "note": "Same-byte sources parse to identical ASTs after normalizing one ignored JSX comment. Exact main analyzed the hostless target at 0.85x the conservative forced-scan control; verified native-host source-proof runs measured about 0.05x. The 0.15 ceiling leaves 3x timing headroom while catching restoration of the whole-AST walk."
+  },
+  {
+    "suite": "tsrx-native-change-analysis",
+    "op": "client_compile",
+    "target": "hostless-4000",
+    "reference": "forced-scan-4000",
+    "maxRatio": 1.15,
+    "note": "Paired development client compilation must not make the hostless fast path materially slower than the structurally identical source that conservatively retains analysis. Both outputs have exact matching digests; verified quick runs ranged from 0.99x to 1.04x, and the 1.15 ceiling leaves timing headroom while catching a real regression."
+  },
+  {
+    "suite": "tsrx-native-change-analysis",
+    "op": "server_compile",
+    "target": "hostless-4000",
+    "reference": "forced-scan-4000",
+    "maxRatio": 1.15,
+    "note": "Paired development server compilation must not make the hostless fast path materially slower than the structurally identical source that conservatively retains analysis. Both outputs have exact matching digests; verified quick runs ranged from 1.00x to 1.08x, and the 1.15 ceiling leaves timing headroom while catching a real regression."
+  },
+  {
     "suite": "behavior-root-events",
     "op": "resume_per_1000_events",
     "target": "events-8000",
     "reference": "events-1000",
     "maxRatio": 1.6,
     "note": "Same-page production Chromium resume cost for FIFO queued events whose distinct async adoptions settle one at a time. The rejected per-resume compaction/full-scan path measured 6.05x per event at 8k versus 1k, while amortized compaction and constant-time pending bookkeeping measured 0.93x and 1.14x in verified quick runs. The 1.6x ceiling leaves browser timing headroom."
+  },
+  {
+    "suite": "radix-collection-order",
+    "op": "order",
+    "target": "production-16",
+    "reference": "reference-16",
+    "maxRatio": 1.15,
+    "note": "Same-process 16-item Radix collection ordering through the unchanged indexOf comparator. Verified normal runs measured at parity; the 1.15 ceiling protects the common small-list path from indexed-map allocation."
+  },
+  {
+    "suite": "radix-collection-order",
+    "op": "order",
+    "target": "production-64",
+    "reference": "reference-64",
+    "maxRatio": 1.15,
+    "note": "Same-process 64-item Radix collection ordering through the unchanged indexOf comparator. Verified normal runs measured at parity; the 1.15 ceiling protects the small-list path while allowing timing noise."
+  },
+  {
+    "suite": "radix-collection-order",
+    "op": "order",
+    "target": "production-256",
+    "reference": "reference-256",
+    "maxRatio": 0.8,
+    "note": "Same-process deterministic 256-item collection ordering with identical order and checksum gates. The first indexed size measured at 0.28x the prior comparator; the 0.8 ceiling enforces the measured crossover without tuning to one machine."
+  },
+  {
+    "suite": "radix-collection-order",
+    "op": "order",
+    "target": "production-4096",
+    "reference": "reference-4096",
+    "maxRatio": 0.15,
+    "note": "Same-process deterministic 4,096-item collection ordering, including node-index construction. The indexed helper measured at 0.06x the repeated indexOf comparator; the 0.15 ceiling leaves over 2x timing headroom while catching restoration of repeated scans."
   },
   {
     "suite": "router-dispatch",
@@ -486,6 +598,102 @@
     "reference": "scan-4096",
     "maxRatio": 0.08,
     "note": "Same-process categorical color lookup across 4,096 domain keys, with index construction included in every sample and first-match duplicate and missing-key gates. Repeated linear scans measured 1.59ms per 1,000 lookups while the first-occurrence index measured 0.04ms, a 0.02x ratio across three normal runs. The 0.08 ceiling leaves more than 3x timing headroom while catching restoration of quadratic lookup work."
+  },
+  {
+    "suite": "rspack-css-graph",
+    "op": "graph_traversals",
+    "target": "sixteen-requests",
+    "reference": "one-request",
+    "maxRatio": 1,
+    "note": "Deterministic public module-graph traversals through collection, post-rebuild verification, and seal. The repeated resolver performed 48 traversals for sixteen requests versus 3 for one request; the phase-local batch performs 3 for both, so the exact 1x ceiling catches restoration of request-by-connection graph scans."
+  },
+  {
+    "suite": "floating-tree-navigation",
+    "op": "node_reads",
+    "target": "indexed-deep-chain",
+    "reference": "previous-deep-chain",
+    "maxRatio": 0.01,
+    "note": "Deterministic indexed reads for the production deepest-open-node lookup versus the exact previous recursive descendant expansion. The full 16-node chain measured 32 reads versus 1,048,576; the 0.01 ceiling leaves more than 300x headroom while requiring work to remain linear on the virtual-keyboard-navigation path."
+  },
+  {
+    "suite": "floating-tree-navigation",
+    "op": "node_reads",
+    "target": "indexed-equal-depth-fork",
+    "reference": "previous-equal-depth-fork",
+    "maxRatio": 0.05,
+    "note": "Deterministic indexed reads for two equal-depth open branches, with node identity pinned to the first tree-order leaf. The full fixture measured 33 reads versus 17,373; the 0.05 ceiling leaves more than 26x headroom while catching repeated all-descendant expansion."
+  },
+  {
+    "suite": "floating-tree-navigation",
+    "op": "lookup",
+    "target": "indexed-deep-chain",
+    "reference": "previous-deep-chain",
+    "maxRatio": 0.25,
+    "note": "Same-process warmed lookup time for production versus the exact previous algorithm on a 16-node open chain. One full run measured 0.000848 ms versus 7.419794 ms; the deterministic node-read guard is primary, and the 0.25 ceiling leaves broad timing headroom while requiring the indexed traversal's advantage to remain visible."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "batch",
+    "target": "production-standard-representative",
+    "reference": "previous-standard-representative",
+    "maxRatio": 0.35,
+    "note": "Same-process standard Ink renderer over 80 separately materialized equal copies of a fixed 20,000-line frame. Byte and split gates require equivalent output while production removes the previous branch's redundant newline split; the harness also requires at least 10 ms saved."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "batch",
+    "target": "production-incremental-representative",
+    "reference": "previous-incremental-representative",
+    "maxRatio": 0.35,
+    "note": "Same-process incremental Ink renderer over 80 separately materialized equal copies of a fixed 20,000-line frame. Byte and split gates require equivalent output while production removes the previous branch's redundant newline split; the harness also requires at least 10 ms saved."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "cursor_update",
+    "target": "production-standard-scaling-80000",
+    "reference": "production-standard-scaling-20000",
+    "maxRatio": 2,
+    "note": "Production standard cursor-only time per update over a stable 80,000-line stress frame must remain within 2x the stable 20,000-line control. Both batches contain 20,000 writes and the harness requires every sample to exceed 1 ms."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "cursor_update",
+    "target": "production-incremental-scaling-80000",
+    "reference": "production-incremental-scaling-20000",
+    "maxRatio": 2,
+    "note": "Production incremental cursor-only time per update over a stable 80,000-line stress frame must remain within 2x the stable 20,000-line control. Both batches contain 20,000 writes and the harness requires every sample to exceed 1 ms."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "render",
+    "target": "production-standard-initial",
+    "reference": "previous-standard-initial",
+    "maxRatio": 1.25,
+    "note": "Standard initial rendering retains exactly one newline split. The same-process 20,000-line control guards against shifting cursor-only work into initial rendering; the harness also caps the absolute slowdown at 1 ms per render."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "render",
+    "target": "production-incremental-initial",
+    "reference": "previous-incremental-initial",
+    "maxRatio": 1.25,
+    "note": "Incremental initial rendering retains exactly one newline split. The same-process 20,000-line control guards against shifting cursor-only work into initial rendering; the harness also caps the absolute slowdown at 1 ms per render."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "render",
+    "target": "production-standard-changed",
+    "reference": "previous-standard-changed",
+    "maxRatio": 1.25,
+    "note": "Standard content-changing rendering retains exactly one newline split. The same-process 20,000-line control guards against shifting cursor-only work into changed output; the harness also caps the absolute slowdown at 1 ms per render."
+  },
+  {
+    "suite": "ink-cursor-update",
+    "op": "render",
+    "target": "production-incremental-changed",
+    "reference": "previous-incremental-changed",
+    "maxRatio": 1.25,
+    "note": "Incremental content-changing rendering retains exactly one newline split. The same-process 20,000-line control guards against shifting cursor-only work into changed output; the harness also caps the absolute slowdown at 1 ms per render."
   },
   {
     "suite": "vite-client-assets",
@@ -3152,6 +3360,30 @@
     "note": "A 2,400-component chain ending at an opaque component must stay within 8% of the same graph declared leaf-first. Both orders verify all 2,400 warm plans; whole-module warm-reachability rescans exceeded this ceiling on current main."
   },
   {
+    "suite": "tsrx-component-graph",
+    "op": "compile",
+    "target": "anchorless-dependent-first-9600",
+    "reference": "anchorless-dependency-first-9600",
+    "maxRatio": 1.25,
+    "note": "A 9,600-component anchorless-safety chain declared root-first must stay within 25% of the same graph declared leaf-first. Exact pinned main measured 2.130x while the linear candidate's paired result measured 0.976x; both orders retain the same semantic controls and output witnesses."
+  },
+  {
+    "suite": "tsrx-stable-hookful-propagation",
+    "op": "compile",
+    "target": "dependent-first-high-1000",
+    "reference": "dependency-first-high-1000",
+    "maxRatio": 1.25,
+    "note": "Matched 1,000-component stable-hookful chains differ only in declaration order and verify identical live-capture and private-setter witnesses. Exact pinned main measured 1.784x while the linear candidate's paired result measured 1.204x."
+  },
+  {
+    "suite": "tsrx-stable-hookful-propagation",
+    "op": "compile_per_100_components",
+    "target": "dependent-first-high-1000",
+    "reference": "dependent-first-low-40",
+    "maxRatio": 1.5,
+    "note": "The dependent-first stable-hookful graph normalizes the 1,000- and 40-component targets by component count. Exact pinned main measured 1.707x more time per component at high cardinality while the linear candidate measured 1.159x; the ceiling leaves timing headroom while catching whole-map rescans."
+  },
+  {
     "suite": "tsrx-jsx-return-branches",
     "op": "client_compile_per_100_components",
     "target": "eligible-480",
@@ -3519,5 +3751,53 @@
     "reference": "work-model",
     "maxRatio": 0,
     "note": "Reordering index-independent Strong rows must preserve output and DOM identity without repeating any author-asserted pure call shape."
+  },
+  {
+    "suite": "scoped-signals-trace",
+    "op": "trace_event",
+    "target": "wrapped-max-budget",
+    "reference": "unfilled-max-budget",
+    "maxRatio": 1.5,
+    "note": "Same-process production trace retention at the supported 10,000-event budget, with exact chronological history checks outside timing. Front-removal measured 15.93x the unfilled control in the full run and 5.60x in quick mode; bounded slot replacement measured 0.58-0.62x across full runs and 0.18x in quick mode. The 1.5x ceiling leaves more than 2.4x timing headroom over the slowest candidate ratio while catching the previous path by more than 3.7x in quick mode."
+  },
+  {
+    "suite": "scoped-native-reads",
+    "op": "five_dependency_hit_calls",
+    "target": "current:native",
+    "reference": "work-model",
+    "maxRatio": 0,
+    "note": "An actual compiled component using use() with five stable factory dependencies must reuse its created resource while unrelated props update. Factory calls are counted outside the component AST, and every render checks the visible value."
+  },
+  {
+    "suite": "scoped-native-reads",
+    "op": "five_dependency_miss_calls",
+    "target": "current:native",
+    "reference": "work-model",
+    "maxRatio": 1,
+    "note": "Each of 32 changes cycling through all five use() factory dependencies must refresh the resource once and display the new value. This guards generic automatic caching without pinning private compiler helper names."
+  },
+  {
+    "suite": "hydration-range-compaction",
+    "op": "hydrate_per_100_wrappers",
+    "target": "wrappers-512",
+    "reference": "wrappers-64",
+    "maxRatio": 1.5,
+    "note": "Production SSR hydration of 8x more coextensive component wrappers must retain near-linear normalized range-adoption cost. The introduction runs measured 0.99x-1.05x on 2026-08-29; the harness separately gates server-node adoption, delegated interaction, logical marker multiplicity, physical compaction, and clean unmount."
+  },
+  {
+    "suite": "hydration-render-phase-queue",
+    "op": "hydrate_per_100_rows",
+    "target": "rows-1024",
+    "reference": "rows-128",
+    "maxRatio": 1.5,
+    "note": "Production multi-root hydration with an equal-width foreign update wave already queued must retain near-linear normalized cost per row. Exact origin/main measured 2.43x per row before the single-pass drain; the harness separately gates synchronous convergence, adoption of every server node, cross-root isolation and later completion, delegated interaction, and clean unmount."
+  },
+  {
+    "suite": "activity",
+    "op": "reports",
+    "target": "octane-tsrx-caught-reveal-large-normalized",
+    "reference": "octane-tsrx-caught-reveal-small",
+    "maxRatio": 1.35,
+    "note": "Revealing 4,096 hidden caught-error reports, normalized to the 512-report work count, must remain near-linear. Exact origin/main measured 2.00x before direct queue-entry claims; every sample separately gates hidden deferral, FIFO exactly-once reporting, retained output identity, visible text, and clean unmount."
   }
 ]

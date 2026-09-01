@@ -9,6 +9,8 @@ import { assertPristineOracleEnvironment } from './alien-signals-pristine-runtim
 import { verifyAlienSignalsTestClassifications } from './alien-signals-classifications-lib.mjs';
 import { verifyAlienSignalsRuntimeStructure } from './alien-signals-runtime-lib.mjs';
 import { verifyAlienSignalsTypes } from './alien-signals-types-lib.mjs';
+import { verifyBetterAuthRuntimeInventory } from './better-auth-runtime-lib.mjs';
+import { verifyBetterAuthTypes } from './better-auth-types-lib.mjs';
 import { verifyPortTestClassifications } from './binding-classifications-lib.mjs';
 import {
 	createRequiredNonVitestManifestShardPlan,
@@ -56,6 +58,7 @@ import { verifyReactMarkdownTypes } from './react-markdown-types-lib.mjs';
 import { verifyReactResizablePanelsTestClassifications } from './react-resizable-panels-classifications-lib.mjs';
 import { verifyReactResizablePanelsTypes } from './react-resizable-panels-types-lib.mjs';
 import { verifyReactResizablePanelsUpstream } from './react-resizable-panels-upstream-lib.mjs';
+import { verifyReactSelectTestClassifications } from './react-select-classifications-lib.mjs';
 import { verifyReactSpringUpstream } from './react-spring-upstream-lib.mjs';
 import { verifyReactTextareaAutosizeTestClassifications } from './react-textarea-autosize-classifications-lib.mjs';
 import { verifyReactTextareaAutosizeCrosswalk } from './react-textarea-autosize-crosswalk-lib.mjs';
@@ -151,6 +154,7 @@ const SPECIALIZED_CLASSIFICATION_BINDINGS = new Set([
 	'pdf',
 	'popper',
 	'resizable-panels',
+	'select',
 	'transition-group',
 	'tanstack-devtools',
 	'tanstack-hotkeys',
@@ -197,12 +201,17 @@ await capture('react-resizable-panels type evidence', () => verifyReactResizable
 await capture('react-resizable-panels test classifications', () =>
 	verifyReactResizablePanelsTestClassifications(REPO),
 );
+await capture('react-select test classifications', () =>
+	verifyReactSelectTestClassifications(REPO),
+);
 await capture('livestore type evidence', () => verifyLivestoreTypes(REPO));
 await capture('livestore test classifications', () => verifyLivestoreTestClassifications(REPO));
 await capture('alien-signals type evidence', () => verifyAlienSignalsTypes(REPO));
 await capture('alien-signals runtime structure evidence', () =>
 	verifyAlienSignalsRuntimeStructure(REPO),
 );
+await capture('better-auth type evidence', () => verifyBetterAuthTypes(REPO));
+await capture('better-auth runtime inventory', () => verifyBetterAuthRuntimeInventory(REPO));
 await capture('alien-signals pristine oracle environment', () =>
 	assertPristineOracleEnvironment({
 		environmentPath: path.join(

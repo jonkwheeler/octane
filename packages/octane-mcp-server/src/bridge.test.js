@@ -298,6 +298,10 @@ describe('KNOWN_BINDINGS', () => {
 		expect(KNOWN_BINDINGS['react-textarea-autosize']).toBe('@octanejs/textarea-autosize');
 	});
 
+	it('maps react-select to the exact Octane binding', () => {
+		expect(KNOWN_BINDINGS['react-select']).toBe('@octanejs/select');
+	});
+
 	it('maps react-window to its exact official Octane binding', () => {
 		expect(KNOWN_BINDINGS['react-window']).toBe('@octanejs/window');
 	});
@@ -305,6 +309,11 @@ describe('KNOWN_BINDINGS', () => {
 	it('maps TanStack React DB to the Octane binding and framework-neutral core', () => {
 		expect(KNOWN_BINDINGS['@tanstack/react-db']).toBe('@octanejs/tanstack-db');
 		expect(KNOWN_VANILLA_CORES['@tanstack/react-db']).toBe('@tanstack/db');
+	});
+
+	it('maps XYFlow React to the Octane binding and framework-neutral system core', () => {
+		expect(KNOWN_BINDINGS['@xyflow/react']).toBe('@octanejs/xyflow');
+		expect(KNOWN_VANILLA_CORES['@xyflow/react']).toBe('@xyflow/system');
 	});
 
 	it('maps Streamdown and every official plugin package to the consolidated binding', () => {
