@@ -130,9 +130,16 @@ test('publishes semantic list checkpoints and teardown without claiming device a
 });
 
 test('keeps startup publication behind render ACK, two frames, and an observed list checkpoint', () => {
-	const renderAckBody = findNestedBlock(entrySource, 'void rendering.then(').body;
-	const firstFrame = findNestedBlock(renderAckBody, 'requestAnimationFrame(');
-	const secondFrame = findNestedBlock(firstFrame.body, 'requestAnimationFrame(');
+	const renderGuard = findNestedBlock(
+		entrySource,
+		"if (rendering !== null && typeof rendering === 'object' && 'then' in rendering)",
+	);
+	const renderAckBody = findNestedBlock(renderGuard.body, 'void rendering.then(').body;
+	const firstFrame = findNestedBlock(renderAckBody, 'benchmarkGlobal.lynx.requestAnimationFrame(');
+	const secondFrame = findNestedBlock(
+		firstFrame.body,
+		'benchmarkGlobal.lynx.requestAnimationFrame(',
+	);
 	const checkpointRead = secondFrame.body.indexOf(
 		"__LYNX_BOUNDED_LIST_CHECKPOINT__?.('list-startup')",
 	);
@@ -150,6 +157,7 @@ test('keeps startup publication behind render ACK, two frames, and an observed l
 	assert.match(secondFrame.body, /kind: 'octane-root\.render'/);
 	assert.match(secondFrame.body, /acknowledged: true/);
 	assert.match(secondFrame.body, /renderEvidence: \{ kind: 'native-animation-frame', frames: 2 \}/);
+	assert.match(renderGuard.body, /},\s*reportRenderFailure,?\s*\);/);
 
 	const failureBody = findNestedBlock(entrySource, 'function reportRenderFailure').body;
 	assert.match(failureBody, /native-list-unavailable/);

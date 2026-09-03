@@ -41,6 +41,9 @@ interface NativeTeardownReceipt {
 }
 
 type BenchmarkGlobal = typeof globalThis & {
+	readonly lynx: {
+		requestAnimationFrame(callback: () => void): void;
+	};
 	__LYNX_BENCH_ERROR__?: string;
 	__LYNX_BENCH_STARTUP__?: NativeStartupReceipt;
 	__LYNX_BENCH_UNSUPPORTED__?: NativeUnsupportedReceipt;
@@ -92,36 +95,39 @@ benchmarkGlobal.__LYNX_BOUNDED_LIST_TEARDOWN__ = async () => {
 	return receipt;
 };
 
-// The fixture keeps the established startup protocol. Its distinct role,
-// identity, scale, and initial semantic checkpoint are bound in postState.
-void rendering.then(() => {
-	const commitAckMs = Date.now();
-	requestAnimationFrame(() => {
-		const firstFrameMs = Date.now();
-		requestAnimationFrame(() => {
-			const secondFrameMs = Date.now();
-			const postState = benchmarkGlobal.__LYNX_BOUNDED_LIST_CHECKPOINT__?.('list-startup');
-			if (postState === undefined) {
-				benchmarkGlobal.__LYNX_BENCH_ERROR__ =
-					'Octane bounded Native list started without an observed semantic checkpoint.';
-				return;
-			}
-			const receipt: NativeStartupReceipt = {
-				protocol: 'lynx-native-startup-v1',
-				moduleStartMs,
-				commitAckMs,
-				firstFrameMs,
-				secondFrameMs,
-				renderEvidence: { kind: 'native-animation-frame', frames: 2 },
-				transportEvidence: {
-					kind: 'octane-root.render',
-					acknowledged: true,
-					ackMs: commitAckMs,
-				},
-				postState,
-			};
-			benchmarkGlobal.__LYNX_BENCH_STARTUP__ = receipt;
-			console.log('__NATIVE_BENCH_STARTUP__', JSON.stringify(receipt));
+// The generated main-thread entry returns synchronously. Only the background
+// root returns the transport acknowledgement promise used by the producer
+// receipt, so the engine receives one receipt from the successful live root.
+if (rendering !== null && typeof rendering === 'object' && 'then' in rendering) {
+	void rendering.then(() => {
+		const commitAckMs = Date.now();
+		benchmarkGlobal.lynx.requestAnimationFrame(() => {
+			const firstFrameMs = Date.now();
+			benchmarkGlobal.lynx.requestAnimationFrame(() => {
+				const secondFrameMs = Date.now();
+				const postState = benchmarkGlobal.__LYNX_BOUNDED_LIST_CHECKPOINT__?.('list-startup');
+				if (postState === undefined) {
+					benchmarkGlobal.__LYNX_BENCH_ERROR__ =
+						'Octane bounded Native list started without an observed semantic checkpoint.';
+					return;
+				}
+				const receipt: NativeStartupReceipt = {
+					protocol: 'lynx-native-startup-v1',
+					moduleStartMs,
+					commitAckMs,
+					firstFrameMs,
+					secondFrameMs,
+					renderEvidence: { kind: 'native-animation-frame', frames: 2 },
+					transportEvidence: {
+						kind: 'octane-root.render',
+						acknowledged: true,
+						ackMs: commitAckMs,
+					},
+					postState,
+				};
+				benchmarkGlobal.__LYNX_BENCH_STARTUP__ = receipt;
+				console.log('__NATIVE_BENCH_STARTUP__', JSON.stringify(receipt));
+			});
 		});
-	});
-}, reportRenderFailure);
+	}, reportRenderFailure);
+}
