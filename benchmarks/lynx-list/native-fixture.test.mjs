@@ -8,6 +8,7 @@ const appRoot = path.join(benchmarkRoot, 'app');
 const appSource = fs.readFileSync(path.join(appRoot, 'src/App.lynx.tsrx'), 'utf8');
 const entrySource = fs.readFileSync(path.join(appRoot, 'src/index.ts'), 'utf8');
 const data = await import('./app/src/data.ts');
+const build = await import('./scripts/build-app.mjs');
 
 function findNestedBlock(source, anchor) {
 	const anchorStart = source.indexOf(anchor);
@@ -28,7 +29,7 @@ function findNestedBlock(source, anchor) {
 	assert.fail(`missing block end after: ${anchor}`);
 }
 
-test('authors a distinct 10,000-row workload through the native recycled-list contract', () => {
+test('authors a bounded workload through the native recycled-list contract', () => {
 	assert.equal(data.FIXTURE_ROLE, 'bounded-native-list');
 	assert.equal(data.FIXTURE_ID, 'octane-lynx-bounded-list-v1');
 	assert.equal(data.LOGICAL_ROW_COUNT, 10_000);
@@ -57,6 +58,25 @@ test('authors a distinct 10,000-row workload through the native recycled-list co
 	assert.match(appSource, /__LYNX_BOUNDED_LIST_CHECKPOINT__/);
 	assert.doesNotMatch(appSource, /<view\b[^>]*class="rows"/);
 	assert.equal((appSource.match(/<list-item\b/g) ?? []).length, 1);
+});
+
+test('binds the exact supported scale into distinct compile-time Native artifacts', () => {
+	assert.deepEqual(build.SUPPORTED_LOGICAL_ROW_COUNTS, [1_000, 10_000]);
+	assert.equal(build.resolveListLogicalRowCount('1000'), 1_000);
+	assert.equal(build.resolveListLogicalRowCount('10000'), 10_000);
+	for (const value of ['', '0', '1001', '01000', '1e3', '1000.0', 'ten-thousand']) {
+		assert.throws(
+			() => build.resolveListLogicalRowCount(value),
+			/BENCH_LIST_ROWS must be exactly 1000 or 10000/,
+		);
+	}
+
+	const buildSource = fs.readFileSync(path.join(benchmarkRoot, 'scripts/build-app.mjs'), 'utf8');
+	assert.match(buildSource, /BENCH_LIST_ROWS/);
+	assert.match(buildSource, /dist', `rows-\$\{logicalRowCount\}`/);
+	assert.match(buildSource, /dataSource\.replace\(/);
+	assert.doesNotMatch(appSource, /BENCH_LIST_ROWS|logicalRowCount\s*=/);
+	assert.doesNotMatch(entrySource, /BENCH_LIST_ROWS|logicalRowCount\s*=/);
 });
 
 test('publishes semantic list checkpoints and teardown without claiming device allocation', () => {

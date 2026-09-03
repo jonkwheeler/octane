@@ -10,12 +10,27 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repo = path.resolve(root, '../..');
 const STAGE_NAME = 'lynx-list-bench';
+export const SUPPORTED_LOGICAL_ROW_COUNTS = Object.freeze([1_000, 10_000]);
 
-export function buildListApp({ silent = false } = {}) {
+export function resolveListLogicalRowCount(value = process.env.BENCH_LIST_ROWS ?? '10000') {
+	const selected = String(value);
+	if (selected !== '1000' && selected !== '10000') {
+		throw new Error('BENCH_LIST_ROWS must be exactly 1000 or 10000.');
+	}
+	return Number(selected);
+}
+
+export function buildListApp({
+	silent = false,
+	logicalRowCount = resolveListLogicalRowCount(),
+} = {}) {
+	if (!SUPPORTED_LOGICAL_ROW_COUNTS.includes(logicalRowCount)) {
+		throw new Error('logicalRowCount must be exactly 1000 or 10000.');
+	}
 	const pluginDir = path.join(repo, 'packages/rspeedy-plugin-octane');
 	const appDir = path.join(root, 'app');
 	const stage = path.join(pluginDir, 'examples', STAGE_NAME);
-	const output = path.join(appDir, 'dist');
+	const output = path.join(appDir, 'dist', `rows-${logicalRowCount}`);
 
 	fs.rmSync(stage, { recursive: true, force: true });
 	fs.mkdirSync(path.join(stage, 'src'), { recursive: true });
@@ -25,8 +40,24 @@ export function buildListApp({ silent = false } = {}) {
 	for (const file of fs.readdirSync(path.join(appDir, 'src'))) {
 		fs.copyFileSync(path.join(appDir, 'src', file), path.join(stage, 'src', file));
 	}
+	const stagedData = path.join(stage, 'src/data.ts');
+	const dataSource = fs.readFileSync(stagedData, 'utf8');
+	const logicalRowDeclaration = /^export const LOGICAL_ROW_COUNT = 10_000;$/m;
+	const logicalRowDeclarations = dataSource.match(/^export const LOGICAL_ROW_COUNT = 10_000;$/gm);
+	if ((logicalRowDeclarations ?? []).length !== 1) {
+		throw new Error('bounded Native list row-count declaration is missing or ambiguous.');
+	}
+	fs.writeFileSync(
+		stagedData,
+		dataSource.replace(
+			logicalRowDeclaration,
+			`export const LOGICAL_ROW_COUNT = ${logicalRowCount};`,
+		),
+	);
 
-	if (!silent) console.log('[lynx-list] building bounded Native app (production)…');
+	if (!silent) {
+		console.log(`[lynx-list] building ${logicalRowCount}-row bounded Native app (production)…`);
+	}
 	try {
 		execFileSync(
 			'npx',
@@ -48,7 +79,9 @@ export function buildListApp({ silent = false } = {}) {
 		fs.rmSync(stage, { recursive: true, force: true });
 	}
 
-	if (!silent) console.log('[lynx-list] staged main.lynx.bundle → app/dist');
+	if (!silent) {
+		console.log(`[lynx-list] staged main.lynx.bundle → app/dist/rows-${logicalRowCount}`);
+	}
 	return output;
 }
 
