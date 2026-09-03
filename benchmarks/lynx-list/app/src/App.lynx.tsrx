@@ -32,13 +32,31 @@ type BoundedListGlobal =
 		__LYNX_BOUNDED_LIST_CHECKPOINT__?: (caseId: ListCaseId) => ListSemanticCheckpoint | undefined;
 	};
 
-function copyObservation(info: ListScrollEvent['detail']): ListObservation {
-	return Object.freeze({
-		scrollTop: info.scrollTop,
-		attachedCells: Object.freeze(
-			info.attachedCells.map(({ index, itemKey }) => Object.freeze({ index, itemKey })),
-		),
-	});
+interface MutableAttachedCellObservation {
+	index: number;
+	itemKey: string;
+}
+
+interface MutableListObservation {
+	scrollTop: number;
+	attachedCells: MutableAttachedCellObservation[];
+}
+
+function updateObservation(
+	current: MutableListObservation | null,
+	info: ListScrollEvent['detail'],
+): MutableListObservation {
+	const next = current ?? { scrollTop: 0, attachedCells: [] };
+	next.scrollTop = info.scrollTop;
+	for (let index = 0; index < info.attachedCells.length; index++) {
+		const observed = info.attachedCells[index]!;
+		const cell = next.attachedCells[index] ?? { index: observed.index, itemKey: observed.itemKey };
+		cell.index = observed.index;
+		cell.itemKey = observed.itemKey;
+		next.attachedCells[index] = cell;
+	}
+	next.attachedCells.length = info.attachedCells.length;
+	return next;
 }
 
 function readCheckpoint(
@@ -49,12 +67,12 @@ function readCheckpoint(
 }
 
 export function App() @{
-	const observation = useRef<ListObservation | null>(null);
+	const observation = useRef<MutableListObservation | null>(null);
 	const captureScroll = (event: ListScrollEvent): void => {
-		observation.current = copyObservation(event.detail);
+		observation.current = updateObservation(observation.current, event.detail);
 	};
 	const captureLayout = (event: ListLayoutEvent): void => {
-		observation.current = copyObservation(event.detail.scrollInfo);
+		observation.current = updateObservation(observation.current, event.detail.scrollInfo);
 	};
 
 	(globalThis as BoundedListGlobal).__LYNX_BOUNDED_LIST_CHECKPOINT__ = (caseId) => readCheckpoint(

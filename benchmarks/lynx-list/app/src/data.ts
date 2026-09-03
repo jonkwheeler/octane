@@ -55,14 +55,13 @@ export interface ListSemanticCheckpoint {
 	};
 }
 
-export const ROWS: readonly BoundedListRow[] = Object.freeze(
-	Array.from({ length: LOGICAL_ROW_COUNT }, (_, index) =>
-		Object.freeze({
-			id: `row-${index}`,
-			index,
-			label: `Row ${index}`,
-		}),
-	),
+export const ROWS: readonly BoundedListRow[] = Array.from(
+	{ length: LOGICAL_ROW_COUNT },
+	(_, index) => ({
+		id: `row-${index}`,
+		index,
+		label: `Row ${index}`,
+	}),
 );
 
 /**

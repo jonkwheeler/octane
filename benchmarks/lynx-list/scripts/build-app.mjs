@@ -11,11 +11,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const repo = path.resolve(root, '../..');
 const STAGE_NAME = 'lynx-list-bench';
 export const SUPPORTED_LOGICAL_ROW_COUNTS = Object.freeze([1_000, 10_000]);
+const SUPPORTED_LOGICAL_ROW_COUNT_STRINGS = new Set(SUPPORTED_LOGICAL_ROW_COUNTS.map(String));
 
 export function resolveListLogicalRowCount(value = process.env.BENCH_LIST_ROWS ?? '10000') {
 	const selected = String(value);
-	if (selected !== '1000' && selected !== '10000') {
-		throw new Error('BENCH_LIST_ROWS must be exactly 1000 or 10000.');
+	if (!SUPPORTED_LOGICAL_ROW_COUNT_STRINGS.has(selected)) {
+		throw new Error(
+			`BENCH_LIST_ROWS must be exactly ${SUPPORTED_LOGICAL_ROW_COUNTS.join(' or ')}.`,
+		);
 	}
 	return Number(selected);
 }
@@ -25,7 +28,9 @@ export function buildListApp({
 	logicalRowCount = resolveListLogicalRowCount(),
 } = {}) {
 	if (!SUPPORTED_LOGICAL_ROW_COUNTS.includes(logicalRowCount)) {
-		throw new Error('logicalRowCount must be exactly 1000 or 10000.');
+		throw new Error(
+			`logicalRowCount must be exactly ${SUPPORTED_LOGICAL_ROW_COUNTS.join(' or ')}.`,
+		);
 	}
 	const pluginDir = path.join(repo, 'packages/rspeedy-plugin-octane');
 	const appDir = path.join(root, 'app');
