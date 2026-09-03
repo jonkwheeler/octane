@@ -72,10 +72,7 @@ test('keeps the eager table controls and Native element topology stable', () => 
 	for (const { handler, rows } of visibleCreateControls) {
 		const buildArgument = rows === 1000 ? '' : String(rows);
 		const handlerBody = extractNestedBlock(appSource, `const ${handler} = useCallback`);
-		assert.match(
-			handlerBody,
-			new RegExp(`setRows\\(buildData\\(${buildArgument}\\)\\)`),
-		);
+		assert.match(handlerBody, new RegExp(`setRows\\(buildData\\(${buildArgument}\\)\\)`));
 	}
 	assert.match(
 		appSource,
