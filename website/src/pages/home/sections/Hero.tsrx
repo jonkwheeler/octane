@@ -1,12 +1,7 @@
 // Hero: the pitch, the two calls to action, and the Counter.tsrx sample — with
 // the live twin of that sample (HeroDemo) running underneath it. The sample is
 // an .mdx module so it rides the same Shiki pipeline as the docs.
-import { useRef } from 'octane';
-// `import { version } from 'octane'` reads as undefined in the SSR pass (the
-// package's `with { type: 'json' }` manifest import doesn't survive the
-// pipeline — observed rendering `vundefined`), so read the workspace manifest
-// directly. Named import keeps the rest of it out of the client bundle.
-import { version as octaneVersion } from '../../../../../packages/octane/package.json';
+import { useRef, version } from 'octane';
 import { Link } from '@octanejs/tanstack-router';
 import CodeSample from '../../../content/home-sample.mdx';
 import { HeroDemo } from '../../../components/HeroDemo.tsrx';
@@ -192,7 +187,7 @@ export function Hero() @{
 					href="https://www.npmjs.com/package/octane"
 					target="_blank"
 					rel="noreferrer"
-				>{'v' + octaneVersion as string}</a>
+				>{'v' + version as string}</a>
 				<h1 class="hero-title">
 					{'React’s programming model, '}
 					<span class="hero-accent">compiled</span>
