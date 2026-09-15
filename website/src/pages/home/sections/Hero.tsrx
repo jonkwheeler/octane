@@ -2,6 +2,11 @@
 // the live twin of that sample (HeroDemo) running underneath it. The sample is
 // an .mdx module so it rides the same Shiki pipeline as the docs.
 import { useRef } from 'octane';
+// `import { version } from 'octane'` reads as undefined in the SSR pass (the
+// package's `with { type: 'json' }` manifest import doesn't survive the
+// pipeline — observed rendering `vundefined`), so read the workspace manifest
+// directly. Named import keeps the rest of it out of the client bundle.
+import { version as octaneVersion } from '../../../../../packages/octane/package.json';
 import { Link } from '@octanejs/tanstack-router';
 import CodeSample from '../../../content/home-sample.mdx';
 import { HeroDemo } from '../../../components/HeroDemo.tsrx';
@@ -30,6 +35,25 @@ export function Hero() @{
 					grid-template-columns: 1fr;
 					padding-top: 3rem;
 				}
+			}
+			.hero-version {
+				display: inline-block;
+				margin-bottom: 1.25rem;
+				padding: 0.3rem 0.75rem;
+				border: 1px solid var(--border);
+				border-radius: 9999px;
+				background: var(--surface);
+				color: var(--text-secondary);
+				font-size: 0.8rem;
+				font-family: ui-monospace, Menlo, Consolas, monospace;
+				transition:
+					color 0.15s,
+					border-color 0.15s;
+			}
+			.hero-version:hover {
+				color: var(--accent);
+				border-color: var(--accent);
+				text-decoration: none;
 			}
 			.hero-title {
 				font-size: 3.25rem;
@@ -163,6 +187,12 @@ export function Hero() @{
 		</style>
 		<section class="hero">
 			<div class="hero-copy">
+				<a
+					class="hero-version"
+					href="https://www.npmjs.com/package/octane"
+					target="_blank"
+					rel="noreferrer"
+				>{'v' + octaneVersion as string}</a>
 				<h1 class="hero-title">
 					{'React’s programming model, '}
 					<span class="hero-accent">compiled</span>
