@@ -8,11 +8,7 @@ export default function htmlCompressPlugin(nitroApp) {
 	nitroApp.fetch = async (req) => {
 		const res = await inner(req);
 		const type = res.headers.get('content-type') ?? '';
-		if (
-			!type.includes('text/html') ||
-			res.headers.has('content-encoding') ||
-			!res.body
-		) {
+		if (!type.includes('text/html') || res.headers.has('content-encoding') || !res.body) {
 			return res;
 		}
 		const accept = req.headers.get('accept-encoding') ?? '';
