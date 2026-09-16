@@ -193,6 +193,9 @@ export default defineConfig({
 			octane: { renderers: threeRenderers, devtools: true },
 		}),
 		nitro({
+			// Emit .gz/.br siblings for static assets; Nitro's static handler
+			// negotiates them from Accept-Encoding at request time.
+			compressPublicAssets: { gzip: true, brotli: true },
 			// Keep production on the runtime selected by the previous Vercel
 			// adapter instead of deriving it from whichever Node version builds.
 			vercel: {
