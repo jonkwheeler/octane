@@ -1808,6 +1808,7 @@
     "react-dropzone": "@octanejs/dropzone",
     "react-email": "@octanejs/email",
     "react-error-boundary": "@octanejs/react-error-boundary",
+    "react-grab": "@octanejs/grab",
     "react-hook-form": "@octanejs/hook-form",
     "react-i18next": "@octanejs/i18next",
     "react-image-crop": "@octanejs/image-crop",
