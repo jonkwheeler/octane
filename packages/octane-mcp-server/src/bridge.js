@@ -177,6 +177,7 @@ export const KNOWN_BINDINGS = {
 	'dexie-react-hooks': '@octanejs/dexie',
 	'@livestore/react': '@octanejs/livestore',
 	wouter: '@octanejs/wouter',
+	'react-grab': '@octanejs/grab',
 };
 
 // Octane-specific ecosystem packages that have no React import to rewrite.
